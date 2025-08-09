@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Brain Viewer</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
+        .fade-in { animation: fadeIn 1s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; }}
+    </style>
+</head>
+<body>
+    <div id="loader"><p>Loading...</p></div>
+    <canvas id="brainViewer"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
+    <script>
+        const loader = document.getElementById('loader');
+        const canvas = document.getElementById('brainViewer');
+        const renderer = new THREE.WebGLRenderer({ canvas });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        loader.style.display = 'block';
+
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load('assets/brain.glb', (gltf) => {
+            scene.add(gltf.scene);
+            loader.style.display = 'none';
+            renderer.render(scene, camera);
+            animate();
+        }, undefined, (error) => {
+            console.error(error);
+            loader.innerHTML = '<p>Error loading model. Please try again later.</p>';
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const scrollSpeed = window.scrollY * 0.01;
+            scene.rotation.y += scrollSpeed;
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // AR button code (simplified)
+        // Add AR button functionality here
+    </script>
+</body>
+</html>
