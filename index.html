@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Neuroscience & Engineering</title>
     
+    <!-- Logo must be in the repository root -->
     <link rel="icon" href="/RSlogo.png"> 
     
+    <!-- Three.js and GLTFLoader CDNs are here -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
     <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     
@@ -39,7 +41,7 @@
             overflow-x: hidden;
         }
         
-        /* --- BACKGROUND EFFECTS --- */
+        /* --- BACKGROUND CONTAINERS --- */
         .brain-background {
             position: fixed;
             top: 50%;
@@ -93,7 +95,6 @@
             text-decoration: none;
         }
         .logo-image {
-            /* Using the high-res logo from our design process */
             height: 30px; 
             width: auto;
             transition: opacity 0.3s;
@@ -353,6 +354,7 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
+                <!-- LOGO PATH FIX: /RSlogo.png -->
                 <img src="/RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
             </a>
             <ul class="nav-links">
@@ -480,28 +482,42 @@
         const brainGroup = new THREE.Group();
         brainScene.add(brainGroup);
 
-        // Lighting for brain
-        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.6);
+        // Lighting for brain (Increased intensity slightly to help with visibility)
+        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.8); 
         brainScene.add(brainAmbient);
 
-        const brainLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        const brainLight1 = new THREE.DirectionalLight(0xffffff, 1.0); 
         brainLight1.position.set(5, 5, 5);
         brainScene.add(brainLight1);
 
         brainCamera.position.z = 10;
         let brainScrollRotation = 0;
-        let loadedBrainModel; // Variable to hold the loaded model
+        let loadedBrainModel; 
+        
+        // **NEW MATERIAL FOR VISIBILITY FIX**
+        const visibleMaterial = new THREE.MeshBasicMaterial({
+            color: 0x1d1d1f, // Use dark text color
+            wireframe: true, // Display the structure clearly
+            transparent: true,
+            opacity: 0.5 // Keep it subtle and translucent
+        });
 
-        // Initialize GLTF Loader
         const loader = new THREE.GLTFLoader();
 
-        // FIX #3: Added leading slash (/) to ensure the 3D model is found
+        // 3D MODEL PATH FIX: /uploads-files-2145984-brain.glb
         loader.load(
             '/uploads-files-2145984-brain.glb',
             function (gltf) {
                 loadedBrainModel = gltf.scene;
                 
-                // Adjust model size and initial position for the background
+                // 💡 Apply the new visible material to all meshes in the model
+                loadedBrainModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = visibleMaterial;
+                    }
+                });
+                
+                // Adjust model size and initial position
                 loadedBrainModel.scale.set(1.5, 1.5, 1.5); 
                 loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
                 
@@ -614,5 +630,3 @@
             });
         });
     </script>
-</body>
-</html>
