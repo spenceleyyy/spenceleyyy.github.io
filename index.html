@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Neuroscience & Engineering</title>
-    <link rel="icon" href="rs_brain_logo.svg"> 
+    <link rel="icon" href="final_rs_logo.png"> 
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
+    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     
     <style>
         :root {
-            /* Branding Colors (Use these to easily swap your brand palette) */
+            /* Branding Colors */
             --color-primary: #0071e3;
-            --color-secondary: #ff3b30; /* Example: A secondary highlight color */
-            
             /* UI Colors */
             --color-text-dark: #1d1d1f;
-            --color-text-body: #424245; /* Improved contrast over #6e6e73 */
+            --color-text-body: #424245; 
             --color-text-light: #6e6e73;
             --color-background-main: #fbfbfd;
             --color-background-secondary: #f5f5f7;
             --color-white: white;
-            
             /* Typography */
             --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
         }
@@ -50,8 +50,8 @@
             pointer-events: none;
         }
         #brain-container {
-            /* Subtle opacity for the background element */
-            opacity: 0.03; 
+            /* Subtle opacity for the loaded brain model */
+            opacity: 0.04; 
         }
         .contact-3d-background {
             position: absolute;
@@ -73,7 +73,6 @@
             position: fixed;
             top: 0;
             width: 100%;
-            /* Semi-transparent background with blur for a modern look */
             background: rgba(251, 251, 253, 0.8); 
             backdrop-filter: saturate(180%) blur(20px);
             padding: 1.2rem 5%;
@@ -88,24 +87,15 @@
             align-items: center;
         }
         .logo-link {
-            /* Logo Container */
             display: flex;
             align-items: center;
             text-decoration: none;
         }
         .logo-image {
-            /* Use your actual logo image here */
+            /* Using the high-res logo from our design process */
             height: 30px; 
             width: auto;
             transition: opacity 0.3s;
-        }
-        .logo-text {
-            /* Optional text fallback or additional brand text */
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--color-text-dark);
-            letter-spacing: -0.5px;
-            margin-left: 0.5rem;
         }
         .nav-links {
             display: flex;
@@ -183,7 +173,7 @@
             letter-spacing: -0.2px;
         }
         .cta-button:hover {
-            background: #0077ed; /* Slightly darker primary */
+            background: #0077ed; 
         }
         .secondary-button {
             display: inline-block;
@@ -204,7 +194,7 @@
             color: var(--color-white);
         }
         
-        /* --- CARDS & GRIDS --- */
+        /* --- CARDS & GRIDS (Rest of CSS omitted for brevity but is unchanged) --- */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -260,7 +250,6 @@
         .project-image {
             width: 100%;
             height: 240px;
-            /* Using branding colors for placeholders */
             background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%); 
             display: flex;
             align-items: center;
@@ -293,8 +282,6 @@
         .project-link:hover {
             opacity: 0.6;
         }
-        
-        /* --- CONTACT & FOOTER --- */
         .contact-section {
             background: var(--color-background-secondary);
             position: relative;
@@ -329,12 +316,10 @@
             font-size: 0.875rem;
             border-top: 0.5px solid rgba(0,0,0,0.05);
         }
-        
-        /* --- MOBILE MEDIA QUERIES --- */
         @media (max-width: 768px) {
             h1 {
                 font-size: 3rem;
-                letter-spacing: -1.5px; /* Adjusted letter spacing */
+                letter-spacing: -1.5px; 
             }
             h2 {
                 font-size: 2.5rem;
@@ -355,7 +340,7 @@
             }
             .secondary-button {
                 margin-left: 0;
-                margin-top: 1rem; /* Stack buttons on mobile */
+                margin-top: 1rem; 
             }
         }
     </style>
@@ -367,8 +352,8 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
-                <img src="rs_brain_logo.svg" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
-                </a>
+                <img src="final_rs_logo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+            </a>
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
@@ -391,8 +376,7 @@
         <div class="content-wrapper">
             <h2>Understanding interaction at the neural level.</h2>
             <p class="hero-text">I'm passionate about the intersection of neuroscience and engineering, focusing on how humans naturally interact with automated systems. My work explores cognitive ergonomics, neural interfaces, and designing technology that seamlessly integrates with human capabilities.</p>
-            
-            <div class="feature-grid">
+                        <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🧠</div>
                     <h3>Neuroscience</h3>
@@ -480,83 +464,106 @@
         <p>&copy; 2025 RS. Designed with curiosity and code.</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
-    
     <script>
-        // --- 3D BACKGROUND SETUP ---
         
-        // 1. Brain/Hero Background (Simple, Abstract Shape)
+        // --- 1. BRAIN BACKGROUND (Loads GLB file) ---
         const brainContainer = document.getElementById('brain-container');
         const brainScene = new THREE.Scene();
         const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
         const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        
+
         brainRenderer.setSize(window.innerWidth, window.innerHeight);
         brainRenderer.setClearColor(0x000000, 0);
         brainContainer.appendChild(brainRenderer.domElement);
-        
+
         const brainGroup = new THREE.Group();
-        
-        // Create a simple low-poly sphere or abstract mesh
-        const brainGeometry = new THREE.IcosahedronGeometry(4, 1);
-        const brainMaterial = new THREE.MeshPhongMaterial({
-            color: 0x1d1d1f, // Dark background color
-            shininess: 20,
-            flatShading: true,
-            wireframe: true // Added wireframe for an abstract tech look
-        });
-        const brainMesh = new THREE.Mesh(brainGeometry, brainMaterial);
-        brainGroup.add(brainMesh);
-        
         brainScene.add(brainGroup);
-        
+
         // Lighting for brain
-        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.4);
+        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.6);
         brainScene.add(brainAmbient);
-        
+
         const brainLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
         brainLight1.position.set(5, 5, 5);
         brainScene.add(brainLight1);
-        
+
         brainCamera.position.z = 10;
-        
         let brainScrollRotation = 0;
-        
-        // 2. Contact Page 3D Sphere (Wireframe/Geometric Sphere)
+        let loadedBrainModel; // Variable to hold the loaded model
+
+        // Initialize GLTF Loader
+        const loader = new THREE.GLTFLoader();
+
+        // Load your specific GLB file
+        // CRITICAL: File path must be correct relative to index.html
+        loader.load(
+            'uploads-files-2145984-brain.glb',
+            function (gltf) {
+                loadedBrainModel = gltf.scene;
+                
+                // Adjust model size and initial position for the background
+                loadedBrainModel.scale.set(1.5, 1.5, 1.5); 
+                loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
+                
+                // The loaded model likely has its own material/color, 
+                // which should show your R/S initials correctly!
+                
+                brainGroup.add(loadedBrainModel);
+            },
+            // Optional: called while loading is progressing
+            function (xhr) {
+                console.log('Brain Model: ' + (xhr.loaded / xhr.total * 100).toFixed(0) + '% loaded');
+            },
+            // Optional: called when loading has errors
+            function (error) {
+                console.error('An error occurred loading the GLB model:', error);
+            }
+        );
+
+
+        // --- 2. CONTACT PAGE 3D SPHERE ---
+
         const contactContainer = document.getElementById('contact-3d');
         const contactScene = new THREE.Scene();
         const contactCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
         const contactRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        
+
         contactRenderer.setSize(window.innerWidth, window.innerHeight);
         contactRenderer.setClearColor(0x000000, 0);
         contactContainer.appendChild(contactRenderer.domElement);
-        
+
         const sphereGroup = new THREE.Group();
-        
+
+        // Simple Icosahedron for an abstract, technical look
         const contactGeometry = new THREE.IcosahedronGeometry(3, 1);
         const contactMaterial = new THREE.MeshPhongMaterial({
-            color: 0x0071e3, // Primary brand color
-            wireframe: true, // Wireframe for futuristic look
+            color: 0x0071e3, 
+            wireframe: true, 
             shininess: 50
         });
-        
+
         const contactSphere = new THREE.Mesh(contactGeometry, contactMaterial);
         sphereGroup.add(contactSphere);
         contactScene.add(sphereGroup);
-        
+
         const contactAmbient = new THREE.AmbientLight(0xffffff, 0.8);
         contactScene.add(contactAmbient);
-        
+
         contactCamera.position.z = 8;
-        
-        // --- ANIMATION LOOP ---
+
+
+        // --- 3. ANIMATION LOOP AND EVENT HANDLERS ---
         function animate() {
             requestAnimationFrame(animate);
             
-            // Animate hero background
-            brainGroup.rotation.y = brainScrollRotation * 0.5;
-            brainGroup.rotation.x += 0.0005;
+            // Animate loaded brain model
+            if (loadedBrainModel) {
+                // Rotate based on scroll position
+                loadedBrainModel.rotation.y = brainScrollRotation * 0.5;
+                // Add a subtle sine wave tilt
+                loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
+            }
+            
             brainRenderer.render(brainScene, brainCamera);
             
             // Animate contact sphere
@@ -566,14 +573,10 @@
         }
         animate();
         
-        // --- EVENT HANDLERS ---
-        
-        // Handle scroll for hero background rotation
+        // Handle scroll for hero background rotation and contact visibility
         window.addEventListener('scroll', () => {
-            // Normalize scroll to a rotation value
             brainScrollRotation = window.scrollY * 0.0008; 
             
-            // Check if contact section is in view to activate its background
             const contactSection = document.getElementById('contact');
             if (contactSection) {
                 const rect = contactSection.getBoundingClientRect();
@@ -589,12 +592,10 @@
         
         // Handle resize
         window.addEventListener('resize', () => {
-            // Hero Background Resize
             brainCamera.aspect = window.innerWidth / window.innerHeight;
             brainCamera.updateProjectionMatrix();
             brainRenderer.setSize(window.innerWidth, window.innerHeight);
             
-            // Contact Background Resize
             contactCamera.aspect = window.innerWidth / window.innerHeight;
             contactCamera.updateProjectionMatrix();
             contactRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -603,7 +604,6 @@
         // Smooth scroll for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                // Prevent default hash behavior only for internal links
                 if (this.getAttribute('href') !== '#') { 
                     e.preventDefault();
                     const target = document.querySelector(this.getAttribute('href'));
