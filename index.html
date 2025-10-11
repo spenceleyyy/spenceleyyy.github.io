@@ -3,54 +3,619 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Brain Viewer</title>
+    <title>RS | Neuroscience & Engineering</title>
+    <link rel="icon" href="rs_brain_logo.svg"> 
+    
     <style>
-        body { margin: 0; overflow: hidden; }
-        #loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
-        .fade-in { animation: fadeIn 1s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; }}
+        :root {
+            /* Branding Colors (Use these to easily swap your brand palette) */
+            --color-primary: #0071e3;
+            --color-secondary: #ff3b30; /* Example: A secondary highlight color */
+            
+            /* UI Colors */
+            --color-text-dark: #1d1d1f;
+            --color-text-body: #424245; /* Improved contrast over #6e6e73 */
+            --color-text-light: #6e6e73;
+            --color-background-main: #fbfbfd;
+            --color-background-secondary: #f5f5f7;
+            --color-white: white;
+            
+            /* Typography */
+            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-display);
+            line-height: 1.6;
+            color: var(--color-text-dark);
+            background: var(--color-background-main);
+            overflow-x: hidden;
+        }
+        
+        /* --- BACKGROUND EFFECTS --- */
+        .brain-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #brain-container {
+            /* Subtle opacity for the background element */
+            opacity: 0.03; 
+        }
+        .contact-3d-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #contact.active .contact-3d-background {
+            opacity: 0.15;
+        }
+        
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            /* Semi-transparent background with blur for a modern look */
+            background: rgba(251, 251, 253, 0.8); 
+            backdrop-filter: saturate(180%) blur(20px);
+            padding: 1.2rem 5%;
+            z-index: 1000;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-link {
+            /* Logo Container */
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo-image {
+            /* Use your actual logo image here */
+            height: 30px; 
+            width: auto;
+            transition: opacity 0.3s;
+        }
+        .logo-text {
+            /* Optional text fallback or additional brand text */
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--color-text-dark);
+            letter-spacing: -0.5px;
+            margin-left: 0.5rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--color-text-dark);
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+        
+        /* --- SECTIONS & TYPOGRAPHY --- */
+        section {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 5%;
+        }
+        .content-wrapper {
+            max-width: 980px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 5rem;
+            font-weight: 600;
+            letter-spacing: -3px;
+            margin-bottom: 1.5rem;
+            color: var(--color-text-dark);
+            line-height: 1.05;
+        }
+        h2 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            color: var(--color-text-dark);
+            line-height: 1.1;
+        }
+        .subtitle {
+            font-size: 1.75rem;
+            font-weight: 400;
+            color: var(--color-text-light);
+            margin-bottom: 3rem;
+            line-height: 1.4;
+        }
+        .hero-text {
+            font-size: 1.25rem;
+            color: var(--color-text-body);
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+        
+        /* --- BUTTONS --- */
+        .cta-button {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: var(--color-primary);
+            color: var(--color-white);
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 1.0625rem;
+            font-weight: 400;
+            transition: background 0.3s;
+            letter-spacing: -0.2px;
+        }
+        .cta-button:hover {
+            background: #0077ed; /* Slightly darker primary */
+        }
+        .secondary-button {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: transparent;
+            color: var(--color-primary);
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 1.0625rem;
+            font-weight: 400;
+            border: 1px solid var(--color-primary);
+            transition: all 0.3s;
+            margin-left: 1rem;
+            letter-spacing: -0.2px;
+        }
+        .secondary-button:hover {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+        
+        /* --- CARDS & GRIDS --- */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            text-align: left;
+        }
+        .feature-card {
+            padding: 2.5rem;
+            background: var(--color-white);
+            border-radius: 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--color-text-dark);
+            letter-spacing: -0.5px;
+        }
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--color-text-body);
+            line-height: 1.5;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+        .project-card {
+            background: var(--color-white);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: left;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+        }
+        .project-image {
+            width: 100%;
+            height: 240px;
+            /* Using branding colors for placeholders */
+            background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+        .project-content {
+            padding: 2rem;
+        }
+        .project-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-dark);
+            letter-spacing: -0.5px;
+        }
+        .project-content p {
+            color: var(--color-text-body);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .project-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 400;
+            transition: opacity 0.3s;
+            font-size: 1rem;
+        }
+        .project-link:hover {
+            opacity: 0.6;
+        }
+        
+        /* --- CONTACT & FOOTER --- */
+        .contact-section {
+            background: var(--color-background-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+        .contact-link {
+            padding: 0.875rem 2rem;
+            background: var(--color-text-dark);
+            color: var(--color-white);
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 1.0625rem;
+            font-weight: 400;
+            transition: background 0.3s;
+            letter-spacing: -0.2px;
+        }
+        .contact-link:hover {
+            background: #424245;
+        }
+        footer {
+            background: var(--color-background-secondary);
+            color: var(--color-text-light);
+            text-align: center;
+            padding: 3rem 5%;
+            font-size: 0.875rem;
+            border-top: 0.5px solid rgba(0,0,0,0.05);
+        }
+        
+        /* --- MOBILE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+                letter-spacing: -1.5px; /* Adjusted letter spacing */
+            }
+            h2 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+            .subtitle {
+                font-size: 1.25rem;
+            }
+            .nav-links {
+                gap: 1.5rem;
+            }
+            .brain-background {
+                width: 500px;
+                height: 500px;
+            }
+            section {
+                padding: 6rem 5%;
+            }
+            .secondary-button {
+                margin-left: 0;
+                margin-top: 1rem; /* Stack buttons on mobile */
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="loader"><p>Loading...</p></div>
-    <canvas id="brainViewer"></canvas>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
+    <div id="brain-container" class="brain-background"></div>
+    <div id="contact-3d" class="contact-3d-background"></div>
+
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="#hero" class="logo-link">
+                <img src="rs_brain_logo.svg" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+                </a>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#research">Research</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="content-wrapper">
+            <h1>Bridging minds and machines.</h1>
+            <p class="subtitle">Neuroscience student exploring human-robot interaction.</p>
+            <a href="#about" class="cta-button">Learn more</a>
+            <a href="#contact" class="secondary-button">Get in touch</a>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="content-wrapper">
+            <h2>Understanding interaction at the neural level.</h2>
+            <p class="hero-text">I'm passionate about the intersection of neuroscience and engineering, focusing on how humans naturally interact with automated systems. My work explores cognitive ergonomics, neural interfaces, and designing technology that seamlessly integrates with human capabilities.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Neuroscience</h3>
+                    <p>Cognitive systems, neural interfaces, and understanding human perception and decision-making processes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Engineering</h3>
+                    <p>Robotics, automation systems, control theory, and embedded systems development.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>Research</h3>
+                    <p>Human-robot collaboration, user experience design, and experimental methodology.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="research">
+        <div class="content-wrapper">
+            <h2>Research focus areas.</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Human-Robot Collaboration</h3>
+                    <p>Investigating effective teamwork between humans and robots in shared environments, focusing on trust, communication, and shared decision-making.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Cognitive Ergonomics</h3>
+                    <p>Designing automation that aligns with human cognitive processes to reduce mental workload and enhance performance.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Neural Interfaces</h3>
+                    <p>Exploring brain-computer interfaces and neural control mechanisms for more intuitive human-machine interaction.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="content-wrapper">
+            <h2>Featured projects.</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">🤖</div>
+                    <div class="project-content">
+                        <h3>Project Title 1: Automated System Design</h3>
+                        <p>Brief description of your project focusing on human-robot interaction or automation systems.</p>
+                        <a href="#" class="project-link">View Project →</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">🧠</div>
+                    <div class="project-content">
+                        <h3>Project Title 2: EEG Data Analysis</h3>
+                        <p>Brief description of your neuroscience-related research or project work.</p>
+                        <a href="#" class="project-link">View Project →</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">⚙️</div>
+                    <div class="project-content">
+                        <h3>Project Title 3: Embedded Control System</h3>
+                        <p>Brief description of an engineering project or technical implementation.</p>
+                        <a href="#" class="project-link">View Project →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <div class="content-wrapper">
+            <h2>Let's connect.</h2>
+            <p class="hero-text">Interested in collaboration or have questions about my work?</p>
+            <div class="contact-links">
+                <a href="mailto:your.email@example.com" class="contact-link">Email</a>
+                <a href="https://linkedin.com/in/yourprofile" class="contact-link" target="_blank">LinkedIn</a>
+                <a href="https://github.com/yourusername" class="contact-link" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
+    
     <script>
-        const loader = document.getElementById('loader');
-        const canvas = document.getElementById('brainViewer');
-        const renderer = new THREE.WebGLRenderer({ canvas });
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-        loader.style.display = 'block';
-
-        const gltfLoader = new THREE.GLTFLoader();
-        gltfLoader.load('assets/brain.glb', (gltf) => {
-            scene.add(gltf.scene);
-            loader.style.display = 'none';
-            renderer.render(scene, camera);
-            animate();
-        }, undefined, (error) => {
-            console.error(error);
-            loader.innerHTML = '<p>Error loading model. Please try again later.</p>';
+        // --- 3D BACKGROUND SETUP ---
+        
+        // 1. Brain/Hero Background (Simple, Abstract Shape)
+        const brainContainer = document.getElementById('brain-container');
+        const brainScene = new THREE.Scene();
+        const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        brainRenderer.setSize(window.innerWidth, window.innerHeight);
+        brainRenderer.setClearColor(0x000000, 0);
+        brainContainer.appendChild(brainRenderer.domElement);
+        
+        const brainGroup = new THREE.Group();
+        
+        // Create a simple low-poly sphere or abstract mesh
+        const brainGeometry = new THREE.IcosahedronGeometry(4, 1);
+        const brainMaterial = new THREE.MeshPhongMaterial({
+            color: 0x1d1d1f, // Dark background color
+            shininess: 20,
+            flatShading: true,
+            wireframe: true // Added wireframe for an abstract tech look
         });
-
+        const brainMesh = new THREE.Mesh(brainGeometry, brainMaterial);
+        brainGroup.add(brainMesh);
+        
+        brainScene.add(brainGroup);
+        
+        // Lighting for brain
+        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.4);
+        brainScene.add(brainAmbient);
+        
+        const brainLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        brainLight1.position.set(5, 5, 5);
+        brainScene.add(brainLight1);
+        
+        brainCamera.position.z = 10;
+        
+        let brainScrollRotation = 0;
+        
+        // 2. Contact Page 3D Sphere (Wireframe/Geometric Sphere)
+        const contactContainer = document.getElementById('contact-3d');
+        const contactScene = new THREE.Scene();
+        const contactCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        const contactRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        contactRenderer.setSize(window.innerWidth, window.innerHeight);
+        contactRenderer.setClearColor(0x000000, 0);
+        contactContainer.appendChild(contactRenderer.domElement);
+        
+        const sphereGroup = new THREE.Group();
+        
+        const contactGeometry = new THREE.IcosahedronGeometry(3, 1);
+        const contactMaterial = new THREE.MeshPhongMaterial({
+            color: 0x0071e3, // Primary brand color
+            wireframe: true, // Wireframe for futuristic look
+            shininess: 50
+        });
+        
+        const contactSphere = new THREE.Mesh(contactGeometry, contactMaterial);
+        sphereGroup.add(contactSphere);
+        contactScene.add(sphereGroup);
+        
+        const contactAmbient = new THREE.AmbientLight(0xffffff, 0.8);
+        contactScene.add(contactAmbient);
+        
+        contactCamera.position.z = 8;
+        
+        // --- ANIMATION LOOP ---
         function animate() {
             requestAnimationFrame(animate);
-            const scrollSpeed = window.scrollY * 0.01;
-            scene.rotation.y += scrollSpeed;
-            renderer.render(scene, camera);
+            
+            // Animate hero background
+            brainGroup.rotation.y = brainScrollRotation * 0.5;
+            brainGroup.rotation.x += 0.0005;
+            brainRenderer.render(brainScene, brainCamera);
+            
+            // Animate contact sphere
+            sphereGroup.rotation.y += 0.005;
+            sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
+            contactRenderer.render(contactScene, contactCamera);
         }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        animate();
+        
+        // --- EVENT HANDLERS ---
+        
+        // Handle scroll for hero background rotation
+        window.addEventListener('scroll', () => {
+            // Normalize scroll to a rotation value
+            brainScrollRotation = window.scrollY * 0.0008; 
+            
+            // Check if contact section is in view to activate its background
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                const rect = contactSection.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                
+                if (isVisible) {
+                    contactSection.classList.add('active');
+                } else {
+                    contactSection.classList.remove('active');
+                }
+            }
         });
-
-        // AR button code (simplified)
-        // Add AR button functionality here
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            // Hero Background Resize
+            brainCamera.aspect = window.innerWidth / window.innerHeight;
+            brainCamera.updateProjectionMatrix();
+            brainRenderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Contact Background Resize
+            contactCamera.aspect = window.innerWidth / window.innerHeight;
+            contactCamera.updateProjectionMatrix();
+            contactRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                // Prevent default hash behavior only for internal links
+                if (this.getAttribute('href') !== '#') { 
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
     </script>
 </body>
 </html>
