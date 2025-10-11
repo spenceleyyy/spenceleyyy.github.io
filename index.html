@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Neuroscience & Engineering</title>
-    <link rel="icon" href="RSlogo.png"> 
+    
+    <link rel="icon" href="/RSlogo.png"> 
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
     <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -352,7 +353,7 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
-                <img src="RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+                <img src="/RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
             </a>
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
@@ -494,10 +495,9 @@
         // Initialize GLTF Loader
         const loader = new THREE.GLTFLoader();
 
-        // Load your specific GLB file
-        // CRITICAL: File path must be correct relative to index.html
+        // FIX #3: Added leading slash (/) to ensure the 3D model is found
         loader.load(
-            'uploads-files-2145984-brain.glb',
+            '/uploads-files-2145984-brain.glb',
             function (gltf) {
                 loadedBrainModel = gltf.scene;
                 
