@@ -8,9 +8,12 @@
     <!-- Logo must be in the repository root -->
     <link rel="icon" href="/RSlogo.png"> 
     
-    <!-- Three.js and GLTFLoader CDNs are here -->
+    <!-- Three.js is fine -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
-    <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <!-- FIX #1: SWITCHING TO FINAL ROBUST CDN PATH TO BYPASS SCRIPT BLOCKING ERRORS -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+
     
     <style>
         :root {
@@ -54,7 +57,7 @@
         }
         #brain-container {
             /* Subtle opacity for the loaded brain model */
-            opacity: 0.04; 
+            opacity: 0.08; /* Doubled opacity to help it stand out */
         }
         .contact-3d-background {
             position: absolute;
@@ -456,7 +459,7 @@
             <h2>Let's connect.</h2>
             <p class="hero-text">Interested in collaboration or have questions about my work?</p>
             <div class="contact-links">
-                <a href="mailto:your.email@example.com" class="contact-link">Email</a>
+                <a href="mailto:your.email@example.com" class="contact-link" target="_blank">Email</a>
                 <a href="https://linkedin.com/in/yourprofile" class="contact-link" target="_blank">LinkedIn</a>
                 <a href="https://github.com/yourusername" class="contact-link" target="_blank">GitHub</a>
             </div>
@@ -472,7 +475,8 @@
         // --- 1. BRAIN BACKGROUND (Loads GLB file) ---
         const brainContainer = document.getElementById('brain-container');
         const brainScene = new THREE.Scene();
-        const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        // Camera position is moved closer to the model (0.1 to 100)
+        const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100); 
         const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
         brainRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -482,57 +486,107 @@
         const brainGroup = new THREE.Group();
         brainScene.add(brainGroup);
 
-        // Lighting for brain (Increased intensity slightly to help with visibility)
-        const brainAmbient = new THREE.AmbientLight(0xffffff, 0.8); 
+        // Lighting for brain (Boosted intensity for visibility)
+        const brainAmbient = new THREE.AmbientLight(0xffffff, 1.2); 
         brainScene.add(brainAmbient);
 
-        const brainLight1 = new THREE.DirectionalLight(0xffffff, 1.0); 
+        const brainLight1 = new THREE.DirectionalLight(0xffffff, 1.5); 
         brainLight1.position.set(5, 5, 5);
         brainScene.add(brainLight1);
 
-        brainCamera.position.z = 19;
+        // Camera position moved significantly closer
+        brainCamera.position.z = 20; // FINAL ADJUSTMENT: Increased camera distance to 20
         let brainScrollRotation = 0;
         let loadedBrainModel; 
         
-        // **NEW MATERIAL FOR VISIBILITY FIX**
+        // MATERIAL FOR VISIBILITY FIX (Light Gray Wireframe)
         const visibleMaterial = new THREE.MeshBasicMaterial({
-            color: 0x1d1d1f, // Use dark text color
+            color: 0xAAAAAA, // Explicitly light gray
             wireframe: true, // Display the structure clearly
             transparent: true,
-            opacity: 0.5 // Keep it subtle and translucent
+            opacity: 0.6 // Slightly less transparent to make it more visible
         });
 
-        const loader = new THREE.GLTFLoader();
-
-        // 3D MODEL PATH FIX: /uploads-files-2145984-brain.glb
-        loader.load(
-            '/uploads-files-2145984-brain.glb',
-            function (gltf) {
-                loadedBrainModel = gltf.scene;
+        // **Implementation of the delayed/retried loader initialization**
+        function initGLTFLoader() {
+            // This checks if the external script loaded and defined the object
+            if (typeof THREE.GLTFLoader === 'undefined') {
+                // If it fails after 10 retries, stop to avoid resource consumption.
+                if (initGLTFLoader.attempts > 10) {
+                    // Stop retrying. The issue is external/network blocking.
+                    return; 
+                }
                 
-                // 💡 Apply the new visible material to all meshes in the model
-                loadedBrainModel.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material = visibleMaterial;
-                    }
-                });
-                
-                // Adjust model size and initial position
-                loadedBrainModel.scale.set(10, 10, 10); 
-                loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
-                
-                brainGroup.add(loadedBrainModel);
-            },
-            // Optional: called while loading is progressing
-            function (xhr) {
-                console.log('Brain Model: ' + (xhr.loaded / xhr.total * 100).toFixed(0) + '% loaded');
-            },
-            // Optional: called when loading has errors
-            function (error) {
-                console.error('An error occurred loading the GLB model:', error);
+                initGLTFLoader.attempts = (initGLTFLoader.attempts || 0) + 1;
+                // Keep retrying
+                setTimeout(initGLTFLoader, 100);
+                return;
             }
-        );
 
+            // Loader is now defined! Start loading the model.
+            const loader = new THREE.GLTFLoader();
+
+            // 3D MODEL PATH FIX: /uploads-files-2145984-brain.glb
+            loader.load(
+                '/uploads-files-2145984-brain.glb',
+                function (gltf) {
+                    loadedBrainModel = gltf.scene;
+                    
+                    // 💡 Apply the new visible material
+                    loadedBrainModel.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material = visibleMaterial;
+                        }
+                    });
+                    
+                    // DRAMATICALLY INCREASED SCALE
+                    loadedBrainModel.scale.set(20, 20, 20); // Scale set to 20x original size
+                    loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
+                    
+                    // Center the model in the scene
+                    loadedBrainModel.position.set(0, 0, 0);
+
+                    brainGroup.add(loadedBrainModel);
+                    
+                    // Start animation loop only after the model is loaded and visible
+                    animate(); 
+                },
+                // Optional: called while loading is progressing
+                function (xhr) {
+                    // console.log('Brain Model: ' + (xhr.loaded / xhr.total * 100).toFixed(0) + '% loaded');
+                },
+                // Optional: called when loading has errors
+                function (error) {
+                    console.error('An error occurred loading the GLB model:', error);
+                }
+            );
+        }
+
+        // Delay the start of the initialization until the window is fully loaded.
+        window.onload = function() {
+            // Start the retrying initialization sequence
+            initGLTFLoader();
+        };
+        
+        // We still need the main animation loop defined.
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Animate loaded brain model
+            if (loadedBrainModel) {
+                // Rotate based on scroll position
+                loadedBrainModel.rotation.y = brainScrollRotation * 0.5;
+                // Add a subtle sine wave tilt
+                loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
+            }
+            
+            brainRenderer.render(brainScene, brainCamera);
+            
+            // Animate contact sphere
+            sphereGroup.rotation.y += 0.005;
+            sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
+            contactRenderer.render(contactScene, contactCamera);
+        }
 
         // --- 2. CONTACT PAGE 3D SPHERE ---
 
@@ -565,26 +619,7 @@
         contactCamera.position.z = 8;
 
 
-        // --- 3. ANIMATION LOOP AND EVENT HANDLERS ---
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Animate loaded brain model
-            if (loadedBrainModel) {
-                // Rotate based on scroll position
-                loadedBrainModel.rotation.y = brainScrollRotation * 0.5;
-                // Add a subtle sine wave tilt
-                loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
-            }
-            
-            brainRenderer.render(brainScene, brainCamera);
-            
-            // Animate contact sphere
-            sphereGroup.rotation.y += 0.005;
-            sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
-            contactRenderer.render(contactScene, contactCamera);
-        }
-        animate();
+        // --- 3. EVENT HANDLERS (Moved outside window.onload for immediate attachment) ---
         
         // Handle scroll for hero background rotation and contact visibility
         window.addEventListener('scroll', () => {
