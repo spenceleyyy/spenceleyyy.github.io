@@ -482,7 +482,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; 
+            /* CRITICAL FIX: Center items vertically within the output area */
+            justify-content: center; 
             backdrop-filter: blur(10px);
             /* FIX: Add internal padding so content isn't flush */
             padding: 2.5rem; 
@@ -505,11 +506,9 @@
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto; /* Keep centered */
             width: 340px; 
-            /* This was the main culprit causing issues. Removing z-index/position for flow. */
             position: relative; /* Keep relative to ensure canvas clips correctly */
             z-index: 1; /* Lower z-index to allow flow */
-            /* CRITICAL FIX: Ensure the height matches the width to keep the card square */
-            height: 340px;
+            /* REMOVED: Removed explicit height: 340px to prevent vertical stretching */
             overflow: hidden; /* Ensure the QR code doesn't spill out */
         }
         
