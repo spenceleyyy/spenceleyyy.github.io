@@ -17,17 +17,30 @@
     
     <style>
         :root {
-            /* Branding Colors */
-            --color-primary: #0071e3;
+            /* Branding Colors - Based on your IMG_3400.jpg palette */
+            
+            /* Primary Accent: Bright Pink/Rose (Used for buttons and links) */
+            --color-primary: #C7488B; 
             
             /* --- DARK THEME UI COLORS --- */
-            --color-text-dark: #f5f5f7;       /* Main text (Titles, Nav, Buttons) */
-            --color-text-body: #A2A2A6;       /* Subtle text/Paragraphs (lighter gray) */
-            --color-text-light: #6e6e73;      /* Accent (kept subtle gray) */
             
-            --color-background-main: #1D1D1F; /* Dark Charcoal Background (Body/Hero) */
-            --color-background-secondary: #000000; /* Pure Black for contrast sections (Contact/Footer) */
-            --color-white: #f5f5f7;           /* Pure white replacement (Cards, etc.) */
+            /* Main Background: Deep Navy/Teal (Darkest color for the body) */
+            --color-background-main: #172D33; 
+            
+            /* Secondary Background: Deep Plum/Indigo (Used for contrast sections like Contact/Footer) */
+            --color-background-secondary: #47304F; 
+
+            /* Main Text: Off-White/Light Gray */
+            --color-text-dark: #F0F0F0;       
+            
+            /* Subtle Text/Paragraphs: Light/Desaturated Purple */
+            --color-text-body: #A294A6;       
+            
+            /* Accent: Deepest Purple (Used for specific details or shadows) */
+            --color-text-light: #641E4F;      
+            
+            /* Pure white replacement (Cards, etc.) - set to match main text color */
+            --color-white: #F0F0F0;          
 
             /* Typography */
             --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
@@ -61,7 +74,7 @@
             pointer-events: none;
         }
         #brain-container {
-            opacity: 0.1; 
+            opacity: 0.08; 
         }
         .contact-3d-background {
             position: absolute;
@@ -84,7 +97,7 @@
             top: 0;
             width: 100%;
             /* ADJUSTED FOR DARK THEME: Darker semi-transparent background */
-            background: rgba(29, 29, 31, 0.85); 
+            background: rgba(23, 45, 51, 0.85); /* Uses a semi-transparent version of main background */
             backdrop-filter: saturate(180%) blur(20px);
             padding: 1.2rem 5%;
             z-index: 1000;
@@ -103,7 +116,7 @@
             text-decoration: none;
         }
         .logo-image {
-            height: 60px; 
+            height: 50px; 
             width: auto;
             transition: opacity 0.3s;
         }
@@ -174,7 +187,7 @@
             display: inline-block;
             padding: 0.875rem 2rem;
             background: var(--color-primary);
-            color: var(--color-text-dark); /* Changed from white to text-dark for consistency */
+            color: var(--color-background-main); /* Pop color on top of bright pink */
             text-decoration: none;
             border-radius: 980px;
             font-size: 1.0625rem;
@@ -183,7 +196,7 @@
             letter-spacing: -0.2px;
         }
         .cta-button:hover {
-            background: #0077ed; 
+            background: #e0609d; /* Slightly lighter pink */
         }
         .secondary-button {
             display: inline-block;
@@ -201,7 +214,7 @@
         }
         .secondary-button:hover {
             background: var(--color-primary);
-            color: var(--color-background-main); /* Pop against dark background */
+            color: var(--color-background-main); /* Pop color on hover */
         }
         
         /* --- CARDS & GRIDS --- */
@@ -228,6 +241,7 @@
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
+            color: var(--color-primary); /* Use pink accent on icons */
         }
         .feature-card h3 {
             font-size: 1.5rem;
@@ -264,7 +278,8 @@
         .project-image {
             width: 100%;
             height: 240px;
-            background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%); 
+            /* Using a vertical gradient with the palette's deep colors */
+            background: linear-gradient(180deg, #641E4F 0%, #172D33 100%); 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -313,9 +328,9 @@
         }
         .contact-link {
             padding: 0.875rem 2rem;
-            /* Use dark background for button text */
-            background: var(--color-text-dark);
-            color: var(--color-background-main); /* Text is now dark background color */
+            /* Use accent color for button background */
+            background: var(--color-primary);
+            color: var(--color-background-main); 
             text-decoration: none;
             border-radius: 980px;
             font-size: 1.0625rem;
@@ -324,7 +339,7 @@
             letter-spacing: -0.2px;
         }
         .contact-link:hover {
-            background: var(--color-text-body);
+            background: #e0609d;
         }
         footer {
             background: var(--color-background-secondary);
@@ -509,13 +524,13 @@
         brainScene.add(brainLight1);
 
         // Camera position moved significantly further back
-        brainCamera.position.z = 10; 
+        brainCamera.position.z = 15; // CAMERA Z POSITION
         let brainScrollRotation = 0;
         let loadedBrainModel; 
         
         // MATERIAL FOR VISIBILITY FIX (Light Gray Wireframe)
         const visibleMaterial = new THREE.MeshBasicMaterial({
-            color: 0xAAAAAA, // Explicitly light gray
+            color: 0xA294A6, // Set to subtle light purple/gray from new palette
             wireframe: true, // Display the structure clearly
             transparent: true,
             opacity: 0.9 // Increased opacity for prominence
@@ -554,7 +569,7 @@
                     });
                     
                     // DRAMATICALLY INCREASED SCALE (The fix!)
-                    loadedBrainModel.scale.set(8, 8, 8); 
+                    loadedBrainModel.scale.set(8, 8, 8); // SCALE SETTING
                     loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
                     
                     // Center the model in the scene
