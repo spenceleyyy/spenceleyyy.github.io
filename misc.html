@@ -1090,14 +1090,15 @@
                 return;
             }
 
-            // 2. Clear previous QR code
+            // 2. Clear previous QR code completely
             qrContainer.innerHTML = '';
             
             // 3. Generate initial QR code using QRCode.js
             try {
-                // The QRCode.js library usually creates a canvas directly inside the target element.
-                // We ensure it's 300x300 for consistency.
-                const qrCodeInstance = new QRCode(qrContainer, {
+                // Create a temporary container for QR generation
+                const tempContainer = document.createElement('div');
+                
+                const qrCodeInstance = new QRCode(tempContainer, {
                     text: text,
                     width: 300, 
                     height: 300,
@@ -1107,10 +1108,17 @@
                 });
 
                 // Wait briefly for the library to draw the canvas
-                // This is crucial because the canvas is generated asynchronously
-                await new Promise(resolve => setTimeout(resolve, 100)); 
+                await new Promise(resolve => setTimeout(resolve, 150)); 
                 
-                const qrCanvas = qrContainer.querySelector('canvas');
+                // Get only the canvas element (ignore any img tags the library creates)
+                const qrCanvas = tempContainer.querySelector('canvas');
+                
+                if (!qrCanvas) {
+                    throw new Error("QR code canvas was not generated");
+                }
+                
+                // Move only the canvas to the actual container
+                qrContainer.appendChild(qrCanvas);
 
                 // 4. Overlay the logo if requested
                 if (includeLogo && qrCanvas) {
