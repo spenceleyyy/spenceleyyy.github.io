@@ -471,9 +471,8 @@
         
         /* --- OUTPUT AREAS --- */
         .output-area {
-            /* FIX: Removed padding here so inner elements can control their own spacing */
+            /* FIX: Ensure content is vertically spaced */
             margin-top: 2.5rem;
-            padding: 0; 
             /* UPDATED: Use secondary dark background */
             background: var(--color-background-secondary);
             border-radius: 20px;
@@ -496,7 +495,7 @@
         }
         
         #qrcode-wrapper {
-            /* FIX: Add top margin to separate it from output area's top boundary */
+            /* FIX: Removed bottom margin (it was 2.5rem). Download controls will push it down. */
             display: block; 
             padding: 2rem;
             background: white;
@@ -505,8 +504,7 @@
                 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 0 40px rgba(232, 144, 190, 0.2);
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            /* FIX: Ensures vertical spacing before the download controls */
-            margin: 0 auto 2.5rem; 
+            margin: 0 auto; /* Keep centered */
             width: 340px; 
         }
         
@@ -545,13 +543,13 @@
         }
         
         .download-controls {
-            /* FIX: Ensure download controls are spaced from the QR code above */
+            /* FIX: Pushed the download controls down using margin-top to clear the 340px tall QR wrapper */
             display: flex;
             gap: 1rem;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            /* Added vertical margin to control spacing *within* output-area if needed, but wrapper margin handles this now */
+            margin-top: 2rem; 
         }
         
         .preview-container {
