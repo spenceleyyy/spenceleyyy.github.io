@@ -552,8 +552,24 @@
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
+            /* Added margin-top to force spacing */
             margin-top: 2rem; 
         }
+
+        /* NEW FIX: Constrain the width of the select element in the download controls */
+        .download-controls select {
+            width: 120px; /* Constrain width to prevent stretching */
+            min-width: 120px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            /* Use the same styling as other inputs, but constrain width */
+            background: rgba(23, 45, 51, 0.6); 
+            border: 2px solid rgba(232, 144, 190, 0.2);
+            border-radius: 16px;
+            color: var(--color-text-dark);
+            height: auto;
+        }
+
         
         .preview-container {
             display: grid;
