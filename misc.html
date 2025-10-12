@@ -91,6 +91,20 @@
             list-style: none;
         }
         
+        .nav-links a {
+            /* FIX: Ensure navigation links are clearly visible */
+            color: var(--color-primary); 
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.875rem;
+            font-weight: 400;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+             color: var(--color-text-dark); /* Highlight color on hover */
+        }
+
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -435,6 +449,7 @@
         
         /* --- OUTPUT AREAS --- */
         .output-area {
+            /* FIX: Use flexbox settings to properly distribute vertical space */
             margin-top: 2.5rem;
             padding: 2.5rem;
             background: rgba(26, 58, 64, 0.6);
@@ -445,7 +460,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            /* FIX: Align items to start, allowing QR to take space and subsequent items to follow */
+            justify-content: flex-start; 
             backdrop-filter: blur(10px);
         }
         
@@ -456,7 +472,7 @@
         }
         
         #qrcode-wrapper {
-            /* Adjusted to ensure proper flow of elements below it */
+            /* FIX: Ensure proper vertical margin after the QR code canvas */
             display: block; 
             padding: 2rem;
             background: white;
@@ -465,8 +481,8 @@
                 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 0 40px rgba(232, 144, 190, 0.2);
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 0 auto; /* Center the wrapper */
-            width: 340px; /* Explicit width for centering and bounding the QR code + padding */
+            margin: 0 auto 20px; /* Added 20px bottom margin for spacing the download controls */
+            width: 340px; 
         }
         
         @keyframes scaleIn {
@@ -485,7 +501,7 @@
             display: block;
             width: 300px;
             height: 300px;
-            margin: 0 auto; /* Ensure the QR code generator container is centered within the wrapper */
+            margin: 0 auto; 
             /* Added for sharp rendering */
             image-rendering: pixelated; 
             image-rendering: -moz-crisp-edges;
@@ -508,7 +524,7 @@
             display: flex;
             gap: 1rem;
             align-items: center;
-            margin-top: 2rem;
+            /* FIX: Removed top margin here as it is applied to qrcode-wrapper instead */
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -1093,7 +1109,7 @@
                 
                 // 5. Update UI visibility
                 qrPlaceholder.style.display = 'none';
-                qrWrapper.style.display = 'block'; // Changed to block to allow full width and proper vertical flow
+                qrWrapper.style.display = 'block'; 
                 qrDownloadControls.style.display = 'flex';
 
             } catch (e) {
