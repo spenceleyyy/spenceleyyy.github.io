@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | Misc Tools</title>
+    
+    <link rel="icon" href="/RSlogo.png">
+    
+    <!-- QR Code Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        :root {
+            --color-primary: #e890be;
+            --color-background-main: #172D33;
+            --color-background-secondary: #47304F;
+            --color-text-dark: #FFFFED;
+            --color-text-body: #A294A6;
+            --color-text-light: #641E4F;
+            --color-white: #FFFBEB;
+            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-display);
+            line-height: 1.6;
+            color: var(--color-text-dark);
+            background: var(--color-background-main);
+            overflow-x: hidden;
+        }
+        
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(23, 45, 51, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            padding: 1.2rem 5%;
+            z-index: 1000;
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .logo-image {
+            height: 50px;
+            width: auto;
+            transition: opacity 0.3s;
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--color-text-dark);
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+        
+        /* --- MAIN CONTENT --- */
+        main {
+            padding-top: 100px;
+            padding-bottom: 60px;
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            text-align: center;
+            padding: 3rem 5%;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 600;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            color: var(--color-text-dark);
+        }
+        
+        .page-subtitle {
+            font-size: 1.25rem;
+            color: var(--color-text-body);
+            margin-bottom: 3rem;
+        }
+        
+        /* --- TOOLS CONTAINER --- */
+        .tools-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 3rem;
+        }
+        
+        .tool-card {
+            background: var(--color-background-main);
+            border-radius: 18px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .tool-card h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-dark);
+        }
+        
+        .tool-description {
+            color: var(--color-text-body);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        /* --- FORM ELEMENTS --- */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-dark);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--color-text-dark);
+            font-family: var(--font-display);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: rgba(255,255,255,0.08);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: var(--color-primary);
+            color: var(--color-background-main);
+            border-radius: 980px;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: none;
+        }
+        
+        .file-upload-btn:hover {
+            background: #e0609d;
+        }
+        
+        button {
+            padding: 0.875rem 2rem;
+            background: var(--color-primary);
+            color: var(--color-background-main);
+            border: none;
+            border-radius: 980px;
+            font-size: 1rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: var(--font-display);
+        }
+        
+        button:hover {
+            background: #e0609d;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* --- OUTPUT AREAS --- */
+        .output-area {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .output-placeholder {
+            color: var(--color-text-body);
+            font-size: 0.95rem;
+        }
+        
+        #qrcode-wrapper {
+            display: inline-flex;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #qrcode {
+            display: block;
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+        
+        #qrcode canvas {
+            display: block !important;
+            width: 300px !important;
+            height: 300px !important;
+            image-rendering: pixelated;
+        }
+        
+        .download-btn {
+            margin-top: 1.5rem;
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+        }
+        
+        .download-btn:hover {
+            background: var(--color-primary);
+            color: var(--color-background-main);
+        }
+        
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .preview-box {
+            text-align: center;
+        }
+        
+        .preview-box h3 {
+            color: var(--color-text-dark);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .preview-box img,
+        .preview-box canvas {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .file-name {
+            color: var(--color-text-body);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* --- FOOTER --- */
+        footer {
+            background: var(--color-background-secondary);
+            color: var(--color-text-body);
+            text-align: center;
+            padding: 3rem 5%;
+            font-size: 0.875rem;
+            border-top: 0.5px solid rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tools-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+            
+            .preview-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="/RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li><a href="misc.html">Misc</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Misc Tools</h1>
+            <p class="page-subtitle">Handy utilities built for quick tasks.</p>
+        </div>
+
+        <div class="tools-container">
+            <!-- QR CODE GENERATOR -->
+            <div class="tool-card">
+                <h2>🔲 QR Code Generator</h2>
+                <p class="tool-description">Create QR codes from any text or URL.</p>
+                
+                <div class="input-group">
+                    <label for="qr-input">Enter text or URL</label>
+                    <textarea id="qr-input" placeholder="https://example.com or any text..."></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="include-logo" style="display: inline-block; width: auto; margin-right: 0.5rem; cursor: pointer;">
+                        <span>Include RS logo in center</span>
+                    </label>
+                </div>
+                
+                <button id="generate-qr">Generate QR Code</button>
+                
+                <div class="output-area">
+                    <div id="qr-placeholder" class="output-placeholder">Your QR code will appear here</div>
+                    <div id="qrcode-wrapper" style="display: none;">
+                        <div id="qrcode"></div>
+                    </div>
+                    <button id="download-qr" class="download-btn" style="display: none;">Download QR Code</button>
+                </div>
+            </div>
+
+            <!-- BACKGROUND REMOVER -->
+            <div class="tool-card">
+                <h2>🖼️ Background Remover</h2>
+                <p class="tool-description">Remove backgrounds from images using edge detection.</p>
+                
+                <div class="input-group">
+                    <label for="image-upload">Upload an image</label>
+                    <label for="image-upload" class="file-upload-btn">Choose Image</label>
+                    <input type="file" id="image-upload" accept="image/*">
+                    <p class="file-name" id="file-name"></p>
+                </div>
+                
+                <button id="remove-bg" disabled>Remove Background</button>
+                
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <div class="preview-box">
+                        <h3>Original</h3>
+                        <img id="original-preview" src="" alt="Original image">
+                    </div>
+                    <div class="preview-box">
+                        <h3>Processed</h3>
+                        <canvas id="processed-canvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="output-area" id="bg-output" style="margin-top: 1.5rem;">
+                    <button id="download-result" class="download-btn" style="display: none;">Download Result</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script>
+        // ===== QR CODE GENERATOR =====
+        let qrCode = null;
+
+        document.getElementById('generate-qr').addEventListener('click', function() {
+            const text = document.getElementById('qr-input').value.trim();
+            const includeLogo = document.getElementById('include-logo').checked;
+            
+            if (!text) {
+                alert('Please enter some text or a URL');
+                return;
+            }
+            
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('qr-placeholder').style.display = 'none';
+            document.getElementById('qrcode-wrapper').style.display = 'inline-flex';
+            
+            // Create a temporary container for QR generation
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            document.body.appendChild(tempDiv);
+            
+            // Generate QR code in temp container
+            const tempQR = new QRCode(tempDiv, {
+                text: text,
+                width: 300,
+                height: 300,
+                colorDark: '#172D33',
+                colorLight: '#FFFBEB',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Wait for QR code to render, then process it
+            setTimeout(() => {
+                const tempCanvas = tempDiv.querySelector('canvas');
+                if (tempCanvas) {
+                    console.log('QR canvas found, creating final canvas');
+                    // Create our own square canvas
+                    const finalCanvas = document.createElement('canvas');
+                    const ctx = finalCanvas.getContext('2d');
+                    finalCanvas.width = 300;
+                    finalCanvas.height = 300;
+                    
+                    // Draw the QR code, forcing it to be square
+                    ctx.drawImage(tempCanvas, 0, 0, 300, 300);
+                    console.log('QR code drawn to canvas');
+                    
+                    if (includeLogo) {
+                        console.log('Logo checkbox is checked, loading logo...');
+                        // Add logo - use the same path as nav logo since that works
+                        const logo = new Image();
+                        
+                        logo.onload = function() {
+                            console.log('Logo onload fired! Drawing logo now...');
+                            console.log('Logo dimensions:', logo.width, 'x', logo.height);
+                            const logoSize = 60; // 20% of 300
+                            const x = (300 - logoSize) / 2;
+                            const y = (300 - logoSize) / 2;
+                            
+                            console.log('Drawing white circle at center');
+                            // Draw white background circle for logo (bigger for contrast)
+                            ctx.fillStyle = '#FFFBEB';
+                            ctx.beginPath();
+                            ctx.arc(150, 150, logoSize / 2 + 12, 0, 2 * Math.PI);
+                            ctx.fill();
+                            
+                            console.log('Drawing logo at position:', x, y, 'size:', logoSize);
+                            // Draw logo
+                            ctx.drawImage(logo, x, y, logoSize, logoSize);
+                            
+                            console.log('Logo drawn successfully, adding to page');
+                            // Add to page
+                            document.getElementById('qrcode').appendChild(finalCanvas);
+                            document.getElementById('download-qr').style.display = 'inline-block';
+                            
+                            // Clean up temp container
+                            document.body.removeChild(tempDiv);
+                        };
+                        
+                        logo.onerror = function(e) {
+                            console.error('Logo onerror fired:', e);
+                            console.error('Failed to load logo from /RSlogo.png');
+                            alert('Logo failed to load. Check console for details. Showing QR without logo.');
+                            document.getElementById('qrcode').appendChild(finalCanvas);
+                            document.getElementById('download-qr').style.display = 'inline-block';
+                            document.body.removeChild(tempDiv);
+                        };
+                        
+                        console.log('Setting logo.src to /RSlogo.png');
+                        // Use the same path as your nav logo which is working
+                        logo.src = '/RSlogo.png';
+                        console.log('logo.src has been set');
+                    } else {
+                        console.log('Logo checkbox NOT checked, showing QR without logo');
+                        // No logo - just add the QR code
+                        document.getElementById('qrcode').appendChild(finalCanvas);
+                        document.getElementById('download-qr').style.display = 'inline-block';
+                        document.body.removeChild(tempDiv);
+                    }
+                } else {
+                    console.error('No canvas found in temp container');
+                }
+            }, 200);
+        });
+
+        function addLogoToQR() {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (!qrCanvas) return;
+            
+            // Create a new canvas to combine QR + logo
+            const finalCanvas = document.createElement('canvas');
+            const ctx = finalCanvas.getContext('2d');
+            
+            // Force square dimensions
+            const size = 300;
+            finalCanvas.width = size;
+            finalCanvas.height = size;
+            
+            // Draw QR code scaled to fit square
+            ctx.drawImage(qrCanvas, 0, 0, size, size);
+            
+            // Load and draw logo in center
+            const logo = new Image();
+            logo.onload = function() {
+                // Logo should be ~20% of QR code size (safe with high error correction)
+                const logoSize = size * 0.2;
+                const x = (size - logoSize) / 2;
+                const y = (size - logoSize) / 2;
+                
+                // Draw white background circle for logo
+                ctx.fillStyle = '#FFFBEB';
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, logoSize / 2 + 8, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Draw logo
+                ctx.drawImage(logo, x, y, logoSize, logoSize);
+                
+                // Replace original canvas with new one
+                qrCanvas.parentNode.replaceChild(finalCanvas, qrCanvas);
+            };
+            logo.src = '/RSlogo.png';
+        }
+
+        document.getElementById('download-qr').addEventListener('click', function() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = url;
+                link.click();
+            }
+        });
+
+        // ===== BACKGROUND REMOVER =====
+        let uploadedImage = null;
+
+        document.getElementById('image-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('remove-bg').disabled = false;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImage = new Image();
+                uploadedImage.onload = function() {
+                    document.getElementById('original-preview').src = event.target.result;
+                    document.getElementById('preview-container').style.display = 'grid';
+                };
+                uploadedImage.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('remove-bg').addEventListener('click', function() {
+            if (!uploadedImage) return;
+            
+            const canvas = document.getElementById('processed-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match image
+            canvas.width = uploadedImage.width;
+            canvas.height = uploadedImage.height;
+            
+            // Draw original image
+            ctx.drawImage(uploadedImage, 0, 0);
+            
+            // Get image data
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Simple background removal based on corner color sampling
+            // Sample the four corners to determine background color
+            const corners = [
+                { x: 0, y: 0 },
+                { x: canvas.width - 1, y: 0 },
+                { x: 0, y: canvas.height - 1 },
+                { x: canvas.width - 1, y: canvas.height - 1 }
+            ];
+            
+            let avgR = 0, avgG = 0, avgB = 0;
+            corners.forEach(corner => {
+                const idx = (corner.y * canvas.width + corner.x) * 4;
+                avgR += data[idx];
+                avgG += data[idx + 1];
+                avgB += data[idx + 2];
+            });
+            
+            avgR /= 4;
+            avgG /= 4;
+            avgB /= 4;
+            
+            // Remove pixels similar to background color
+            const threshold = 50; // Adjust this for sensitivity
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                
+                // Calculate color difference
+                const diff = Math.sqrt(
+                    Math.pow(r - avgR, 2) +
+                    Math.pow(g - avgG, 2) +
+                    Math.pow(b - avgB, 2)
+                );
+                
+                // If color is similar to background, make it transparent
+                if (diff < threshold) {
+                    data[i + 3] = 0; // Set alpha to 0 (transparent)
+                }
+            }
+            
+            // Put modified image data back
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Show download button
+            document.getElementById('download-result').style.display = 'inline-block';
+        });
+
+        document.getElementById('download-result').addEventListener('click', function() {
+            const canvas = document.getElementById('processed-canvas');
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'background-removed.png';
+            link.href = url;
+            link.click();
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
