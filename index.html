@@ -19,13 +19,17 @@
         :root {
             /* Branding Colors */
             --color-primary: #0071e3;
-            /* UI Colors */
-            --color-text-dark: #1d1d1f;
-            --color-text-body: #424245; 
-            --color-text-light: #6e6e73;
-            --color-background-main: #fbfbfd;
-            --color-background-secondary: #f5f5f7;
-            --color-white: white;
+
+            /* --- DARK THEME UI COLORS --- */
+            /* Swapped: Backgrounds are now dark, main text is light/white */
+            --color-text-dark: #f5f5f7;       /* Main text (formerly black) */
+            --color-text-body: #A2A2A6;       /* Subtle text/Paragraphs (lighter gray) */
+            --color-text-light: #6e6e73;      /* Accent (kept subtle gray) */
+    
+            --color-background-main: #1D1D1F; /* Dark Charcoal Background */
+            --color-background-secondary: #000000; /* Pure Black for contrast/sections */
+            --color-white: #f5f5f7;           /* Pure white replacement */
+    
             /* Typography */
             --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
         }
