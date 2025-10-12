@@ -505,9 +505,12 @@
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto; /* Keep centered */
             width: 340px; 
-            /* Temporary fix: make it position relative and give it high z-index to clear the element above/below */
-            position: relative;
-            z-index: 10;
+            /* This was the main culprit causing issues. Removing z-index/position for flow. */
+            position: relative; /* Keep relative to ensure canvas clips correctly */
+            z-index: 1; /* Lower z-index to allow flow */
+            /* CRITICAL FIX: Ensure the height matches the width to keep the card square */
+            height: 340px;
+            overflow: hidden; /* Ensure the QR code doesn't spill out */
         }
         
         @keyframes scaleIn {
@@ -552,8 +555,8 @@
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            /* Added margin-top to force spacing */
-            margin-top: 2rem; 
+            /* CRITICAL FIX: Use specific padding to separate from the element above, rather than margin which was interfering with the layout flow */
+            padding-top: 2rem; 
         }
 
         /* NEW FIX: Constrain the width of the select element in the download controls */
@@ -751,6 +754,8 @@
             #qrcode-wrapper {
                 width: 90%;
                 max-width: 340px;
+                /* REVERTED: Remove explicit height on wrapper in responsive view to allow natural flow if canvas fails */
+                height: auto; 
             }
         }
         
