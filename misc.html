@@ -1130,12 +1130,19 @@
                         
                         logoImage.onload = function() {
                             const ctx = qrCanvas.getContext('2d');
+                            
+                            // Disable image smoothing for crisp rendering
+                            ctx.imageSmoothingEnabled = false;
+                            ctx.mozImageSmoothingEnabled = false;
+                            ctx.webkitImageSmoothingEnabled = false;
+                            ctx.msImageSmoothingEnabled = false;
+                            
                             const qrSize = qrCanvas.width; // Should be 300
-                            const logoRelativeSize = 0.25; // Logo will be 25% of QR code size
+                            const logoRelativeSize = 0.35; // Logo will be 35% of QR code size (increased from 25%)
                             const logoSize = qrSize * logoRelativeSize; 
                             const x = (qrSize - logoSize) / 2;
                             const y = (qrSize - logoSize) / 2;
-                            const padding = 10;
+                            const padding = 12;
                             
                             const backgroundSize = logoSize + (padding * 2);
                             const centerX = qrSize / 2;
@@ -1158,6 +1165,8 @@
                             ctx.clip(); // Apply the circular mask
 
                             // 3. Draw the logo in the center (it will be clipped to the circle)
+                            // Re-disable smoothing after clipping
+                            ctx.imageSmoothingEnabled = false;
                             ctx.drawImage(logoImage, x, y, logoSize, logoSize);
                             
                             ctx.restore(); // Restore the state to remove the clip mask
