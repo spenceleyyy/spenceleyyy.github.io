@@ -471,7 +471,6 @@
         
         /* --- OUTPUT AREAS --- */
         .output-area {
-            /* FIX: Ensure content is vertically spaced */
             margin-top: 2.5rem;
             /* UPDATED: Use secondary dark background */
             background: var(--color-background-secondary);
@@ -479,13 +478,12 @@
             border: 1px solid rgba(232, 144, 190, 0.1);
             text-align: center;
             min-height: 140px;
+            /* CRITICAL FIX: Use Flexbox to manage vertical layout properly */
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* CRITICAL FIX: Center items vertically within the output area */
-            justify-content: center; 
+            justify-content: center; /* Vertically center all content if min-height is large */
             backdrop-filter: blur(10px);
-            /* FIX: Add internal padding so content isn't flush */
             padding: 2.5rem; 
         }
         
@@ -506,11 +504,10 @@
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto; /* Keep centered horizontally */
             width: 340px; 
-            /* CRITICAL FIX: Set padding-bottom equal to padding-top (2rem) and remove height to ensure vertical centering based on content, not fixed height. */
-            padding-bottom: 2rem; 
+            /* REMOVED: padding-bottom property here, relying on download-controls padding-top for separation */
             position: relative;
             z-index: 1; 
-            overflow: hidden; 
+            /* REMOVED: overflow: hidden; as it may interfere with logo drawing outside the canvas boundaries */
         }
         
         @keyframes scaleIn {
@@ -554,8 +551,8 @@
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            /* CRITICAL FIX: Use specific padding-top to create vertical separation from the qrCode wrapper */
-            padding-top: 2rem; 
+            /* CRITICAL FIX: Use margin-top here to provide space below the QR wrapper, pushing the controls down */
+            margin-top: 2rem; 
         }
 
         /* NEW FIX: Constrain the width of the select element in the download controls */
