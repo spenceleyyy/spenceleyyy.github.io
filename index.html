@@ -8,7 +8,7 @@
     <!-- Logo must be in the repository root -->
     <link rel="icon" href="/RSlogo.png"> 
     
-    <!-- Three.js is fine -->
+    <!-- Three.js and GLTFLoader CDNs are here -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
     
     <!-- FIX #1: SWITCHING TO FINAL ROBUST CDN PATH TO BYPASS SCRIPT BLOCKING ERRORS -->
@@ -19,17 +19,16 @@
         :root {
             /* Branding Colors */
             --color-primary: #0071e3;
-
+            
             /* --- DARK THEME UI COLORS --- */
-            /* Swapped: Backgrounds are now dark, main text is light/white */
-            --color-text-dark: #f5f5f7;       /* Main text (formerly black) */
+            --color-text-dark: #f5f5f7;       /* Main text (Titles, Nav, Buttons) */
             --color-text-body: #A2A2A6;       /* Subtle text/Paragraphs (lighter gray) */
             --color-text-light: #6e6e73;      /* Accent (kept subtle gray) */
-    
-            --color-background-main: #1D1D1F; /* Dark Charcoal Background */
-            --color-background-secondary: #000000; /* Pure Black for contrast/sections */
-            --color-white: #f5f5f7;           /* Pure white replacement */
-    
+            
+            --color-background-main: #1D1D1F; /* Dark Charcoal Background (Body/Hero) */
+            --color-background-secondary: #000000; /* Pure Black for contrast sections (Contact/Footer) */
+            --color-white: #f5f5f7;           /* Pure white replacement (Cards, etc.) */
+
             /* Typography */
             --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
         }
@@ -43,7 +42,9 @@
         body {
             font-family: var(--font-display);
             line-height: 1.6;
+            /* Text color is now light */
             color: var(--color-text-dark);
+            /* Background is now dark charcoal */
             background: var(--color-background-main);
             overflow-x: hidden;
         }
@@ -60,8 +61,7 @@
             pointer-events: none;
         }
         #brain-container {
-            /* Subtle opacity for the loaded brain model */
-            opacity: 0.08; /* Doubled opacity to help it stand out */
+            opacity: 0.08; 
         }
         .contact-3d-background {
             position: absolute;
@@ -83,11 +83,12 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(251, 251, 253, 0.8); 
+            /* ADJUSTED FOR DARK THEME: Darker semi-transparent background */
+            background: rgba(29, 29, 31, 0.85); 
             backdrop-filter: saturate(180%) blur(20px);
             padding: 1.2rem 5%;
             z-index: 1000;
-            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+            border-bottom: 0.5px solid rgba(255,255,255,0.1); /* Lighter border */
         }
         .nav-content {
             max-width: 1200px;
@@ -112,7 +113,7 @@
             list-style: none;
         }
         .nav-links a {
-            color: var(--color-text-dark);
+            color: var(--color-text-dark); /* Now white/light gray */
             text-decoration: none;
             transition: opacity 0.3s;
             font-size: 0.875rem;
@@ -142,7 +143,7 @@
             font-weight: 600;
             letter-spacing: -3px;
             margin-bottom: 1.5rem;
-            color: var(--color-text-dark);
+            color: var(--color-text-dark); /* Now white/light gray */
             line-height: 1.05;
         }
         h2 {
@@ -150,19 +151,19 @@
             font-weight: 600;
             letter-spacing: -2px;
             margin-bottom: 2rem;
-            color: var(--color-text-dark);
+            color: var(--color-text-dark); /* Now white/light gray */
             line-height: 1.1;
         }
         .subtitle {
             font-size: 1.75rem;
             font-weight: 400;
-            color: var(--color-text-light);
+            color: var(--color-text-body); /* Now subtle light gray */
             margin-bottom: 3rem;
             line-height: 1.4;
         }
         .hero-text {
             font-size: 1.25rem;
-            color: var(--color-text-body);
+            color: var(--color-text-body); /* Now subtle light gray */
             line-height: 1.6;
             max-width: 700px;
             margin: 0 auto 3rem;
@@ -173,7 +174,7 @@
             display: inline-block;
             padding: 0.875rem 2rem;
             background: var(--color-primary);
-            color: var(--color-white);
+            color: var(--color-text-dark); /* Changed from white to text-dark for consistency */
             text-decoration: none;
             border-radius: 980px;
             font-size: 1.0625rem;
@@ -200,10 +201,10 @@
         }
         .secondary-button:hover {
             background: var(--color-primary);
-            color: var(--color-white);
+            color: var(--color-background-main); /* Pop against dark background */
         }
         
-        /* --- CARDS & GRIDS (Rest of CSS omitted for brevity but is unchanged) --- */
+        /* --- CARDS & GRIDS --- */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -213,14 +214,16 @@
         }
         .feature-card {
             padding: 2.5rem;
-            background: var(--color-white);
+            /* Background is now dark, not white */
+            background: var(--color-background-main);
             border-radius: 18px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4); /* Darker shadow for depth */
+            border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
         }
         .feature-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
         }
         .feature-icon {
             font-size: 2.5rem;
@@ -230,12 +233,12 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.75rem;
-            color: var(--color-text-dark);
+            color: var(--color-text-dark); /* Now white/light gray */
             letter-spacing: -0.5px;
         }
         .feature-card p {
             font-size: 1rem;
-            color: var(--color-text-body);
+            color: var(--color-text-body); /* Now subtle light gray */
             line-height: 1.5;
         }
         .projects-grid {
@@ -245,16 +248,18 @@
             margin-top: 4rem;
         }
         .project-card {
-            background: var(--color-white);
+            /* Background is now dark, not white */
+            background: var(--color-background-main);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
             text-align: left;
         }
         .project-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
         }
         .project-image {
             width: 100%;
@@ -272,11 +277,11 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--color-text-dark);
+            color: var(--color-text-dark); /* Now white/light gray */
             letter-spacing: -0.5px;
         }
         .project-content p {
-            color: var(--color-text-body);
+            color: var(--color-text-body); /* Now subtle light gray */
             margin-bottom: 1.5rem;
             font-size: 1rem;
             line-height: 1.5;
@@ -291,7 +296,10 @@
         .project-link:hover {
             opacity: 0.6;
         }
+        
+        /* --- CONTACT & FOOTER --- */
         .contact-section {
+            /* Uses pure black secondary background for deep contrast */
             background: var(--color-background-secondary);
             position: relative;
             overflow: hidden;
@@ -305,8 +313,9 @@
         }
         .contact-link {
             padding: 0.875rem 2rem;
+            /* Use dark background for button text */
             background: var(--color-text-dark);
-            color: var(--color-white);
+            color: var(--color-background-main); /* Text is now dark background color */
             text-decoration: none;
             border-radius: 980px;
             font-size: 1.0625rem;
@@ -315,15 +324,15 @@
             letter-spacing: -0.2px;
         }
         .contact-link:hover {
-            background: #424245;
+            background: var(--color-text-body);
         }
         footer {
             background: var(--color-background-secondary);
-            color: var(--color-text-light);
+            color: var(--color-text-body);
             text-align: center;
             padding: 3rem 5%;
             font-size: 0.875rem;
-            border-top: 0.5px solid rgba(0,0,0,0.05);
+            border-top: 0.5px solid rgba(255,255,255,0.1);
         }
         @media (max-width: 768px) {
             h1 {
@@ -361,8 +370,9 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
-                <!-- LOGO PATH FIX: /RSlogo.png -->
-                <img src="/RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+                
+
+<img src="/RSlogo.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
             </a>
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
@@ -498,8 +508,8 @@
         brainLight1.position.set(5, 5, 5);
         brainScene.add(brainLight1);
 
-        // Camera position moved significantly closer
-        brainCamera.position.z = 15; // FINAL ADJUSTMENT: Increased camera distance to 20
+        // Camera position moved significantly further back
+        brainCamera.position.z = 40; 
         let brainScrollRotation = 0;
         let loadedBrainModel; 
         
@@ -508,7 +518,7 @@
             color: 0xAAAAAA, // Explicitly light gray
             wireframe: true, // Display the structure clearly
             transparent: true,
-            opacity: 0.6 // Slightly less transparent to make it more visible
+            opacity: 0.9 // Increased opacity for prominence
         });
 
         // **Implementation of the delayed/retried loader initialization**
@@ -543,8 +553,8 @@
                         }
                     });
                     
-                    // DRAMATICALLY INCREASED SCALE
-                    loadedBrainModel.scale.set(20, 20, 20); // Scale set to 20x original size
+                    // DRAMATICALLY INCREASED SCALE (The fix!)
+                    loadedBrainModel.scale.set(50, 50, 50); 
                     loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
                     
                     // Center the model in the scene
