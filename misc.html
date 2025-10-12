@@ -545,11 +545,17 @@
             display: block !important;
             width: 300px !important;
             height: 300px !important;
+            max-width: 300px !important;
+            max-height: 300px !important;
             border-radius: 12px;
             image-rendering: pixelated; 
             image-rendering: -moz-crisp-edges;
             image-rendering: -webkit-crisp-edges;
             image-rendering: crisp-edges;
+        }
+        
+        #qrcode img {
+            display: none !important;
         }
         
         .download-controls {
