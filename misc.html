@@ -1100,8 +1100,8 @@
                 
                 const qrCodeInstance = new QRCode(tempContainer, {
                     text: text,
-                    width: 300, 
-                    height: 300,
+                    width: 600, // Generate at 2x resolution for better quality
+                    height: 600,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H // High error correction for logo inclusion
@@ -1137,12 +1137,12 @@
                             ctx.webkitImageSmoothingEnabled = false;
                             ctx.msImageSmoothingEnabled = false;
                             
-                            const qrSize = qrCanvas.width; // Should be 300
-                            const logoRelativeSize = 0.35; // Logo will be 35% of QR code size (increased from 25%)
+                            const qrSize = qrCanvas.width; // Should be 600
+                            const logoRelativeSize = 0.30; // Logo will be 30% of QR code size (180px on 600px canvas)
                             const logoSize = qrSize * logoRelativeSize; 
                             const x = (qrSize - logoSize) / 2;
                             const y = (qrSize - logoSize) / 2;
-                            const padding = 12;
+                            const padding = 24; // Scaled padding for larger canvas
                             
                             const backgroundSize = logoSize + (padding * 2);
                             const centerX = qrSize / 2;
