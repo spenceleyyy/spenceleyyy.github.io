@@ -504,12 +504,13 @@
                 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 0 40px rgba(232, 144, 190, 0.2);
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 0 auto; /* Keep centered */
+            margin: 0 auto; /* Keep centered horizontally */
             width: 340px; 
-            position: relative; /* Keep relative to ensure canvas clips correctly */
-            z-index: 1; /* Lower z-index to allow flow */
-            /* REMOVED: Removed explicit height: 340px to prevent vertical stretching */
-            overflow: hidden; /* Ensure the QR code doesn't spill out */
+            /* CRITICAL FIX: Set padding-bottom equal to padding-top (2rem) and remove height to ensure vertical centering based on content, not fixed height. */
+            padding-bottom: 2rem; 
+            position: relative;
+            z-index: 1; 
+            overflow: hidden; 
         }
         
         @keyframes scaleIn {
@@ -548,13 +549,12 @@
         }
         
         .download-controls {
-            /* FIX: Pushed the download controls down using margin-top to clear the 340px tall QR wrapper */
             display: flex;
             gap: 1rem;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            /* CRITICAL FIX: Use specific padding to separate from the element above, rather than margin which was interfering with the layout flow */
+            /* CRITICAL FIX: Use specific padding-top to create vertical separation from the qrCode wrapper */
             padding-top: 2rem; 
         }
 
