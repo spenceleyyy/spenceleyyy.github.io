@@ -91,15 +91,6 @@
             list-style: none;
         }
         
-        .nav-links a {
-            color: var(--color-text-dark);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-size: 0.875rem;
-            font-weight: 400;
-            position: relative;
-        }
-        
         .nav-links a::after {
             content: '';
             position: absolute;
@@ -465,7 +456,8 @@
         }
         
         #qrcode-wrapper {
-            display: inline-flex;
+            /* Adjusted to ensure proper flow of elements below it */
+            display: block; 
             padding: 2rem;
             background: white;
             border-radius: 20px;
@@ -473,6 +465,8 @@
                 0 20px 60px rgba(0, 0, 0, 0.3),
                 0 0 40px rgba(232, 144, 190, 0.2);
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 auto; /* Center the wrapper */
+            width: 340px; /* Explicit width for centering and bounding the QR code + padding */
         }
         
         @keyframes scaleIn {
@@ -491,6 +485,7 @@
             display: block;
             width: 300px;
             height: 300px;
+            margin: 0 auto; /* Ensure the QR code generator container is centered within the wrapper */
             /* Added for sharp rendering */
             image-rendering: pixelated; 
             image-rendering: -moz-crisp-edges;
@@ -665,17 +660,6 @@
             overflow: hidden;
         }
         
-        .shortened-url::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(232, 144, 190, 0.1), transparent);
-            animation: slideShine 2s ease-in-out infinite;
-        }
-        
         @keyframes slideShine {
             0% { left: -100%; }
             50%, 100% { left: 100%; }
@@ -703,6 +687,10 @@
         @media (max-width: 1024px) {
             .tools-container {
                 grid-template-columns: 1fr;
+            }
+            #qrcode-wrapper {
+                width: 90%;
+                max-width: 340px;
             }
         }
         
@@ -959,7 +947,7 @@
         }
 
         // Default logo source (using your specified logo)
-        const RS_LOGO_URL = "RobLogoBlack.png"; 
+        const RS_LOGO_URL = "RSLogoBlack.png"; 
 
         // ===== QR CODE GENERATOR =====
         let customLogoDataUrl = null;
@@ -1065,16 +1053,35 @@
                             const logoSize = qrSize * logoRelativeSize; 
                             const x = (qrSize - logoSize) / 2;
                             const y = (qrSize - logoSize) / 2;
-                            const padding = 10; // Padding around the logo
+                            const padding = 10;
                             
-                            // Draw a white background square for clarity, slightly larger than the logo
+                            const backgroundSize = logoSize + (padding * 2);
+                            const centerX = qrSize / 2;
+                            const centerY = qrSize / 2;
+                            const radius = backgroundSize / 2;
+
+                            ctx.save(); // Save the state before clipping
+
+                            // 1. Draw the white circular background
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, false);
                             ctx.fillStyle = '#ffffff';
-                            ctx.fillRect(x - padding, y - padding, logoSize + (padding * 2), logoSize + (padding * 2));
+                            ctx.fill();
+                            ctx.closePath();
                             
-                            // Draw the logo in the center
+                            // 2. Clip the drawing area to a slightly smaller circle for the logo
+                            const clipRadius = logoSize / 2;
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, clipRadius, 0, Math.PI * 2, false);
+                            ctx.clip(); // Apply the circular mask
+
+                            // 3. Draw the logo in the center (it will be clipped to the circle)
                             ctx.drawImage(logoImage, x, y, logoSize, logoSize);
+                            
+                            ctx.restore(); // Restore the state to remove the clip mask
                         };
                         logoImage.onerror = function(err) {
+                            // If the logo fails to load (e.g., wrong path), this will log the error.
                             console.error("Failed to load logo image. Check URL/path ('" + logoSrc + "') or file format.", err);
                             // Fallback to displaying QR without logo
                         };
@@ -1086,7 +1093,7 @@
                 
                 // 5. Update UI visibility
                 qrPlaceholder.style.display = 'none';
-                qrWrapper.style.display = 'inline-flex';
+                qrWrapper.style.display = 'block'; // Changed to block to allow full width and proper vertical flow
                 qrDownloadControls.style.display = 'flex';
 
             } catch (e) {
