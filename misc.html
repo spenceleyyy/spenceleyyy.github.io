@@ -482,7 +482,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Vertically center all content if min-height is large */
+            /* CRITICAL FIX: Changed from justify-content: center to space-between to help distribute vertical space */
+            justify-content: space-between; 
             backdrop-filter: blur(10px);
             padding: 2.5rem; 
         }
@@ -492,7 +493,21 @@
             font-size: 1rem;
             opacity: 0.7;
         }
+
+        /* NEW STYLE: Container for the displayed URL (was floating/overlapping) */
+        #generated-url-display {
+            color: var(--color-text-body);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            max-width: 340px;
+            word-break: break-all;
+            display: none; /* Starts hidden */
+        }
         
+        /* CRITICAL FIX: This wrapper contains the white background and QR code */
         #qrcode-wrapper {
             display: block; 
             padding: 2rem;
@@ -504,10 +519,8 @@
             animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto; /* Keep centered horizontally */
             width: 340px; 
-            /* REMOVED: padding-bottom property here, relying on download-controls padding-top for separation */
             position: relative;
             z-index: 1; 
-            /* REMOVED: overflow: hidden; as it may interfere with logo drawing outside the canvas boundaries */
         }
         
         @keyframes scaleIn {
@@ -551,8 +564,7 @@
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
-            /* CRITICAL FIX: Use margin-top here to provide space below the QR wrapper, pushing the controls down */
-            margin-top: 2rem; 
+            /* CRITICAL FIX: Removed margin-top here, relying on flex layout for spacing */
         }
 
         /* NEW FIX: Constrain the width of the select element in the download controls */
@@ -841,16 +853,23 @@
                 
                 <div class="output-area">
                     <div id="qr-placeholder" class="output-placeholder">Your QR code will appear here</div>
-                    <div id="qrcode-wrapper" style="display: none;">
-                        <div id="qrcode"></div>
-                    </div>
-                    <div class="download-controls" style="display: none;" id="qr-download-controls">
-                        <select id="qr-format">
-                            <option value="png">PNG</option>
-                            <option value="jpg">JPG</option>
-                            <option value="svg">SVG</option>
-                        </select>
-                        <button id="download-qr" class="button-secondary"><span>Download</span></button>
+                    
+                    <!-- NEW URL DISPLAY CONTAINER -->
+                    <div id="generated-url-display" style="display: none;"></div>
+
+                    <!-- NEW CONTAINER FOR CENTERING THE QR CODE BLOCK (Simplified content structure) -->
+                    <div id="qr-display-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="qrcode-wrapper" style="display: none;">
+                            <div id="qrcode"></div>
+                        </div>
+                        <div class="download-controls" style="display: none;" id="qr-download-controls">
+                            <select id="qr-format">
+                                <option value="png">PNG</option>
+                                <option value="jpg">JPG</option>
+                                <option value="svg">SVG</option>
+                            </select>
+                            <button id="download-qr" class="button-secondary"><span>Download</span></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1065,15 +1084,19 @@
 
             const qrWrapper = document.getElementById('qrcode-wrapper');
             const qrPlaceholder = document.getElementById('qr-placeholder');
+            const qrDisplayContent = document.getElementById('qr-display-content');
             const qrDownloadControls = document.getElementById('qr-download-controls');
             const qrContainer = document.getElementById('qrcode');
+            const generatedUrlDisplay = document.getElementById('generated-url-display');
 
             // 1. Validation and UI reset
             if (!text) {
                 qrPlaceholder.textContent = "Please enter text or a URL to generate the QR code.";
                 qrPlaceholder.style.display = 'block';
                 qrWrapper.style.display = 'none';
+                qrDisplayContent.style.display = 'none';
                 qrDownloadControls.style.display = 'none';
+                generatedUrlDisplay.style.display = 'none';
                 return;
             }
 
@@ -1154,6 +1177,13 @@
                 
                 // 5. Update UI visibility
                 qrPlaceholder.style.display = 'none';
+                
+                // Show the generated URL above the QR code
+                generatedUrlDisplay.textContent = text;
+                generatedUrlDisplay.style.display = 'block';
+
+                // Show the main content wrapper
+                qrDisplayContent.style.display = 'flex'; 
                 qrWrapper.style.display = 'block'; 
                 qrDownloadControls.style.display = 'flex';
 
@@ -1162,7 +1192,9 @@
                 qrPlaceholder.textContent = "An internal error occurred during generation. Check console for details.";
                 qrPlaceholder.style.display = 'block';
                 qrWrapper.style.display = 'none';
+                qrDisplayContent.style.display = 'none';
                 qrDownloadControls.style.display = 'none';
+                generatedUrlDisplay.style.display = 'none';
             }
         });
 
