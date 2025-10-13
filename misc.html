@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Misc Tools</title>
     
-    <link rel="icon" href="/RSlogo.png">
+    <!-- UPDATED: Using the consistent logo image for the favicon -->
+    <link rel="icon" href="/RSlogoUPDATED.png">
     
     <!-- QR Code Generation Library --><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
@@ -783,6 +784,7 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="index.html" class="logo-link">
+                <!-- Image path remains correct at /RSlogoUPDATED.png -->
                 <img src="/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
             </a>
             <ul class="nav-links">
@@ -1178,7 +1180,7 @@
                         };
                         logoImage.src = logoSrc;
                     } else if (useCustomLogo) {
-                         console.warn("Custom logo option selected but no file uploaded. Skipping logo inclusion.");
+                           console.warn("Custom logo option selected but no file uploaded. Skipping logo inclusion.");
                     }
                 }
                 
