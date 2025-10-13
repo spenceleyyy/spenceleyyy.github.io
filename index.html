@@ -65,6 +65,19 @@
             overflow-x: hidden;
         }
         
+        /* --- ANIMATION KEYFRAMES (COPIED FROM misc.html) --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        
         /* --- BACKGROUND CONTAINERS --- */
         .brain-background {
             position: fixed;
@@ -124,7 +137,7 @@
             gap: 0.75rem; /* Added gap for spacing between logo and name */
         }
         .logo-image {
-            height:70px; 
+            height: 55px; 
             width: auto;
             transition: opacity 0.3s;
         }
@@ -176,6 +189,8 @@
             margin-bottom: 1.5rem;
             color: var(--color-text-dark); /* Now cream */
             line-height: 1.05;
+            /* ADDED: Fade-in animation */
+            animation: fadeInUp 0.8s ease;
         }
         h2 {
             font-size: 3.5rem;
@@ -631,6 +646,9 @@
 
         // Delay the start of the initialization until the window is fully loaded.
         window.onload = function() {
+            // ADDED: Scrolls page to the top on load (handles navigation from other pages/links)
+            window.scrollTo(0, 0);
+            
             // Start the retrying initialization sequence
             initGLTFLoader();
         };
