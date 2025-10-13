@@ -442,7 +442,7 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <li><a href="misc.html">Misc</a></li>
+                <li><a href="misc.html">Misc">Misc</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -646,9 +646,6 @@
 
         // Delay the start of the initialization until the window is fully loaded.
         window.onload = function() {
-            // ADDED: Scrolls page to the top on load (handles navigation from other pages/links)
-            window.scrollTo(0, 0);
-            
             // Start the retrying initialization sequence
             initGLTFLoader();
         };
@@ -748,5 +745,20 @@
                     }
                 }
             });
+        });
+
+        // ====================================================================
+        // FIX: ROBUST SCROLL-TO-TOP IMPLEMENTATION
+        // This forces the scroll to the top regardless of browser history or dynamic element loading.
+        // ====================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Scroll immediately after the document structure is loaded
+            window.scrollTo(0, 0);
+            
+            // Add a slight timeout to combat issues related to dynamic element loading/reflow
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 10);
         });
     </script>
