@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Misc Tools</title>
     
-    <!-- UPDATED: Using the consistent logo image for the favicon -->
     <link rel="icon" href="/RSlogoUPDATED.png">
     
-    <!-- QR Code Generation Library --><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- QR Code Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- ADDED: Google Font for Cursive Name -->
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet"> 
     
     <style>
         /* UPDATED: Applied color scheme from index.html */
@@ -88,9 +91,21 @@
         }
         
         .logo-link {
+            /* MODIFIED for side-by-side name layout */
             display: flex;
             align-items: center;
             text-decoration: none;
+            gap: 0.75rem; /* Space between logo and name */
+            line-height: 1;
+        }
+
+        .full-name {
+            /* ADDED: Cursive font style */
+            font-family: 'Style Script', cursive; 
+            font-size: 1.5rem; 
+            font-weight: 400; 
+            color: var(--color-text-dark);
+            letter-spacing: 0.5px;
         }
         
         .logo-image {
@@ -784,8 +799,9 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="index.html" class="logo-link">
-                <!-- Image path remains correct at /RSlogoUPDATED.png -->
                 <img src="/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
+                <!-- ADDED: Full name next to the logo -->
+                <span class="full-name">Robert J. Spenceley</span>
             </a>
             <ul class="nav-links">
                 <li><a href="index.html#about">About</a></li>
@@ -1167,146 +1183,4 @@
                             ctx.clip(); // Apply the circular mask
 
                             // 3. Draw the logo in the center (it will be clipped to the circle)
-                            // Re-disable smoothing after clipping
-                            ctx.imageSmoothingEnabled = false;
-                            ctx.drawImage(logoImage, x, y, logoSize, logoSize);
-                            
-                            ctx.restore(); // Restore the state to remove the clip mask
-                        };
-                        logoImage.onerror = function(err) {
-                            // If the logo fails to load (e.g., wrong path), this will log the error.
-                            console.error("Failed to load logo image. Check URL/path ('" + logoSrc + "') or file format.", err);
-                            // Fallback to displaying QR without logo
-                        };
-                        logoImage.src = logoSrc;
-                    } else if (useCustomLogo) {
-                           console.warn("Custom logo option selected but no file uploaded. Skipping logo inclusion.");
-                    }
-                }
-                
-                // 5. Update UI visibility
-                qrPlaceholder.style.display = 'none';
-                
-                // Show the generated URL above the QR code
-                generatedUrlDisplay.textContent = text;
-                generatedUrlDisplay.style.display = 'block';
-
-                // Show the main content wrapper
-                qrDisplayContent.style.display = 'flex'; 
-                qrWrapper.style.display = 'flex'; 
-                qrDownloadControls.style.display = 'flex';
-
-            } catch (e) {
-                console.error("QR Code Generation Error:", e);
-                qrPlaceholder.textContent = "An internal error occurred during generation. Check console for details.";
-                qrPlaceholder.style.display = 'block';
-                qrWrapper.style.display = 'none';
-                qrDisplayContent.style.display = 'none';
-                qrDownloadControls.style.display = 'none';
-                generatedUrlDisplay.style.display = 'none';
-            }
-        });
-
-        // Download handler (correctly captures the canvas including the logo)
-        document.getElementById('download-qr').addEventListener('click', function() {
-            const format = document.getElementById('qr-format').value;
-            const qrContainer = document.getElementById('qrcode');
-            const qrCanvas = qrContainer.querySelector('canvas');
-            const fileNameBase = (document.getElementById('qr-input').value.substring(0, 15).replace(/[^a-z0-9]/gi, '_') || 'qrcode');
-            
-            if (!qrCanvas) {
-                console.warn("No QR Canvas found. Please generate the QR code first.");
-                return;
-            }
-
-            if (format === 'png') {
-                const dataURL = qrCanvas.toDataURL('image/png');
-                downloadFile(dataURL, `${fileNameBase}.png`);
-            } else if (format === 'jpg') {
-                const dataURL = qrCanvas.toDataURL('image/jpeg', 0.9);
-                downloadFile(dataURL, `${fileNameBase}.jpg`);
-            } else if (format === 'svg') {
-                // The QRCode.js library generates a canvas. To get an SVG, we would need a different approach or library.
-                // For now, if SVG is requested, we'll download a PNG.
-                console.warn("SVG download not directly supported by this library's canvas output. Downloading PNG instead.");
-                const dataURL = qrCanvas.toDataURL('image/png');
-                downloadFile(dataURL, `${fileNameBase}.png`);
-            }
-        });
-
-        // ===== OTHER TOOL STUBS (To prevent console errors) =====
-        
-        // Background Remover Stubs
-        document.getElementById('remove-bg').addEventListener('click', () => {
-            console.log("Background Remover button clicked. Functionality not implemented.");
-        });
-        document.getElementById('image-upload').addEventListener('change', (e) => {
-            const fileNameDisplay = document.getElementById('file-name');
-            if (e.target.files.length > 0) {
-                fileNameDisplay.textContent = `Selected: ${e.target.files[0].name}`;
-                document.getElementById('remove-bg').disabled = false;
-            } else {
-                fileNameDisplay.textContent = '';
-                document.getElementById('remove-bg').disabled = true;
-            }
-        });
-        document.getElementById('download-result').addEventListener('click', () => {
-             console.log("Download Result button clicked. Functionality not implemented.");
-        });
-
-
-        // Converter Stubs
-        document.getElementById('converter-upload').addEventListener('change', (e) => {
-            const fileNameDisplay = document.getElementById('converter-file-name');
-            if (e.target.files.length > 0) {
-                fileNameDisplay.textContent = `Selected: ${e.target.files[0].name}`;
-                document.getElementById('convert-image').disabled = false;
-                document.getElementById('converter-options').style.display = 'block';
-            } else {
-                fileNameDisplay.textContent = '';
-                document.getElementById('convert-image').disabled = true;
-                document.getElementById('converter-options').style.display = 'none';
-            }
-        });
-        document.getElementById('image-quality').addEventListener('input', (e) => {
-            document.getElementById('quality-value').textContent = e.target.value;
-        });
-        document.getElementById('convert-image').addEventListener('click', () => {
-            console.log("Image Converter button clicked. Functionality not implemented.");
-        });
-        document.getElementById('download-converted').addEventListener('click', () => {
-            console.log("Download Converted button clicked. Functionality not implemented.");
-        });
-        
-        // Link Shortener Stubs
-        document.getElementById('shorten-url').addEventListener('click', () => {
-            const longUrl = document.getElementById('long-url').value;
-            if (longUrl) {
-                document.getElementById('shortened-placeholder').style.display = 'none';
-                document.getElementById('shortened-result').style.display = 'block';
-                // Simulate a shortened URL result
-                document.getElementById('shortened-url-display').textContent = `https://is.gd/${Math.random().toString(36).substring(2, 8)}`;
-            } else {
-                console.warn("Please enter a long URL to shorten.");
-            }
-        });
-        document.getElementById('copy-shortened').addEventListener('click', function() {
-            const url = document.getElementById('shortened-url-display').textContent;
-            if (url) {
-                // Use document.execCommand('copy') for better iFrame compatibility
-                const tempInput = document.createElement('input');
-                tempInput.value = url;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                try {
-                    document.execCommand('copy');
-                    console.log('Copied to clipboard!');
-                } catch (err) {
-                    console.error('Could not copy text: ', err);
-                }
-                document.body.removeChild(tempInput);
-            }
-        });
-    </script>
-</body>
-</html>
+                            // Re
