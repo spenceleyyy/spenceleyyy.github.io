@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | RS</title>
+    
+    <link rel="icon" href="/RSlogoUPDATED.png"> 
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #e890be; 
+            --color-background-main: #172D33; 
+            --color-background-secondary: #47304F; 
+            --color-text-dark: #FFFFED;      
+            --color-text-body: #A294A6;      
+            --color-text-light: #641E4F;      
+            --color-white: #FFFBEB;          
+            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-display);
+            line-height: 1.6;
+            color: var(--color-text-dark);
+            background: var(--color-background-main);
+            overflow-x: hidden;
+        }
+        
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(23, 45, 51, 0.85);
+            backdrop-filter: saturate(180%) blur(20px);
+            padding: 1.2rem 5%;
+            z-index: 1000;
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        }
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-link {
+            display: flex;
+            flex-direction: row; 
+            align-items: center;
+            text-decoration: none;
+            line-height: 1; 
+            gap: 0.75rem;
+        }
+        .logo-image {
+            height: 55px; 
+            width: auto;
+            transition: opacity 0.3s;
+        }
+        .full-name {
+            font-family: 'Style Script', cursive; 
+            font-size: 1.5rem;
+            font-weight: 400; 
+            color: var(--color-text-dark);
+            margin-top: 0;
+            letter-spacing: 0.5px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--color-text-dark);
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+        
+        /* --- PAGE HEADER --- */
+        .page-header {
+            padding: 8rem 5% 4rem;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 4rem;
+            font-weight: 600;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+            color: var(--color-text-dark);
+        }
+        .page-header p {
+            font-size: 1.25rem;
+            color: var(--color-text-body);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* --- PROJECT SECTIONS --- */
+        .project-section {
+            margin-bottom: 6rem;
+        }
+        
+        .poster-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        
+        .poster-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Special layout for FIPRED project with side-by-side images */
+        .dual-image-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .dual-image-container .poster-container {
+            margin: 0;
+            width: 100%;
+        }
+        
+        .project-details {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+        
+        .project-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            color: var(--color-text-dark);
+            line-height: 1.2;
+        }
+        
+        .project-authors {
+            font-size: 1.125rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+        
+        .project-abstract {
+            font-size: 1.125rem;
+            color: var(--color-text-body);
+            line-height: 1.8;
+            text-align: justify;
+        }
+        
+        .project-abstract p {
+            margin-bottom: 1rem;
+        }
+        
+        .project-link {
+            display: inline-block;
+            margin: 1.5rem 0 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: var(--color-background-main);
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 1rem;
+            font-weight: 400;
+            transition: background 0.3s;
+        }
+        
+        .project-link:hover {
+            background: #e0609d;
+        }
+        
+        .project-citation {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem;
+            color: var(--color-text-body);
+            font-style: italic;
+            line-height: 1.6;
+        }
+        
+        /* --- FOOTER --- */
+        footer {
+            background: var(--color-background-secondary);
+            color: var(--color-text-body);
+            text-align: center;
+            padding: 3rem 5%;
+            font-size: 0.875rem;
+            border-top: 0.5px solid rgba(255,255,255,0.1);
+            margin-top: 6rem;
+        }
+        
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+            .project-title {
+                font-size: 1.75rem;
+            }
+            .project-authors {
+                font-size: 1rem;
+            }
+            .project-abstract {
+                font-size: 1rem;
+                text-align: left;
+            }
+            .nav-links {
+                gap: 1.5rem;
+            }
+            .dual-image-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .project-citation {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="misc.html">Misc</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>Research Projects</h1>
+        <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
+    </div>
+
+    <!-- PROJECT 1 - NEWEST: EEG Theta Power (Mixed Human-Robot Teams) -->
+    <div class="project-section">
+        <div class="poster-container">
+            <img src="/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image">
+        </div>
+        <div class="project-details">
+            <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
+            <p class="project-authors">Robert J. Spenceley, Aakash Yadav, & Ranjana Mehta</p>
+            <div class="project-abstract">
+                <p>Beyond traditional, dyadic human-robot interaction, embedding robots into multi-human teams, such as search and rescue (SAR), requires an understanding of fundamental aspects of team composition and dynamics. While considerable work has examined how robot agents influence both taskwork and teamwork, few studies have focused on identifying which factor best explains differences in team outputs. This research investigates the neurodynamics of taskwork and teamwork as SAR teams transition between multi-human (mH) and multi-human-robot (mHR) configurations.</p>
+                <p>Electroencephalogram (EEG) has been a key tool in human teamwork research because of its sensitivity to changes in cognitive states such as mental workload, sustained attention, and engagement. Specifically, EEG power spectral density (PSD), especially frontal theta activity (4-7 Hz), has been used to measure variations in mental workload and social cognition related to task performance. EEG hyperscanning, which evaluates interbrain synchrony between two or more individuals, using metrics such as weighted phase lag index (wPLI), has been widely employed to study teamwork among humans.</p>
+                <p>In this study, PSD and EEG hyperscanning were used to analyze the taskwork and teamwork of 22 teams, consisting of a highly engaged SAR team member (mission commander), a less involved member (safety officer), and a navigator, as they searched for victims in a virtual emergency environment. The navigator was either a trained researcher posing as a participant or a virtual robot, with the robot's performance manipulated using the Wizard of Oz technique. Results for taskwork show that the social cognition abilities of mission commanders, but not those of safety officers, are negatively impacted by a robot navigator compared to a human navigator, despite the perceived workload remaining stable.</p>
+                <p>Although team trust outcomes were similar, neural synchrony across occipital, parietal, and temporal regions increased in mHR teams relative to mH teams, indicating different neurodynamical patterns of teamwork. The study findings provide evidence that both taskwork and teamwork are fundamentally altered in mHR teams regardless of effective robotic capabilities and functions, when compared to mH teams. Therefore, beyond dyadic interactions, multi-human robot teaming must be viewed as a fundamentally distinct team construct, not simply an extension of human-human teaming.</p>
+            </div>
+            <div class="project-citation">
+                <strong>Citation:</strong> Spenceley, R. J., Yadav, A., & Mehta, R. K. (2024). EEG theta power varies across roles in mixed human-robot teams. Poster presented at the Human Factors and Ergonomics Society Annual Meeting.
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT 2 - MIDDLE: FIPRED (Wildfire Predictor) -->
+    <div class="project-section">
+        <div class="dual-image-container">
+            <div class="poster-container">
+                <img src="/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image">
+            </div>
+            <div class="poster-container">
+                <img src="/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image">
+            </div>
+        </div>
+        <div class="project-details">
+            <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
+            <p class="project-authors">Robert J. Spenceley, Christopher D. Wickens, & Bianca de Toledo Piza</p>
+            <div class="project-abstract">
+                <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
+                <p>Participants performed significantly worse when the raw data influences on the trajectory were removed in a control study, signaling the value of such data in calibrating dependence on the predictor. The FIPRED display was beneficial to participants, improving their ability to predict the future position of the fire. However, the automation bias indicated that participants may have over-relied on the automated assistance.</p>
+            </div>
+            <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
+            <div class="project-citation">
+                <strong>Citation:</strong> Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. <em>Proceedings of the Human Factors and Ergonomics Society Annual Meeting</em>. https://doi.org/10.1177/10711813251364799
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT 3 - OLDEST: Prospective Memory -->
+    <div class="project-section">
+        <div class="poster-container">
+            <img src="/REAL RMPA FINAL 2.pdf" alt="Prospective Memory Research Poster" class="poster-image">
+        </div>
+        <div class="project-details">
+            <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
+            <p class="project-authors">Robert J. Spenceley, Michaela Rice, & Deana Davalos</p>
+            <div class="project-abstract">
+                <p>Prospective memory (PM) involves setting intentions and remembering to complete tasks, a process essential for college students to manage daily responsibilities. Executive functioning supports these abilities through planning, monitoring, and managing attention, and prior research suggests the two are closely linked. Using the Dysexecutive Questionnaire (DEX), this study examined which components of executive functioning predict PM performance across five factors: inhibition, interference management, intentionality, planning, and social regulation.</p>
+                <p>Results from seventy-nine participants showed that greater inhibition impairment was associated with lower PM accuracy, while other factors were unrelated. These findings suggest that inhibition plays a key role in PM, supporting the PAM model and emphasizing the importance of self-monitoring and attentional control in remembering intended actions.</p>
+            </div>
+            <div class="project-citation">
+                <strong>Citation:</strong> Spenceley, R. J., Rice, M., & Davalos, D. (2023). Components of executive functioning involved in prospective memory performance. Poster presented at the Rocky Mountain Psychological Association Annual Conference.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 RS. To do things no one else has, you must do things no one else will.</p>
+    </footer>
+</body>
+</html>
