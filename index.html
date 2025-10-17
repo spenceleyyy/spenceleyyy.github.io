@@ -145,7 +145,7 @@
         .full-name {
             /* Now uses the imported cursive font */
             font-family: 'Style Script', cursive; 
-            font-size: 1.5rem; /* Increased size for prominence */
+            font-size: 1.5rem;
             font-weight: 400; 
             color: var(--color-text-dark);
             margin-top: 0; /* Removed top margin */
@@ -159,13 +159,35 @@
         .nav-links a {
             color: var(--color-text-dark); /* Now cream */
             text-decoration: none;
-            transition: opacity 0.3s;
+            /* REMOVED opacity transition to use sliding underline */
+            transition: color 0.3s; 
             font-size: 0.875rem;
             font-weight: 400;
+            position: relative; /* Needed for ::after positioning */
         }
-        .nav-links a:hover {
-            opacity: 0.6;
+        
+        /* --- ADDED/UPDATED HOVER STYLES FROM misc.html --- */
+        .nav-links a:hover,
+        .nav-links a:focus {
+            color: var(--color-primary); /* Highlight color on hover */
         }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0; /* Starts hidden */
+            height: 2px;
+            background: var(--color-primary);
+            transition: width 0.3s ease; /* Animation for the underline */
+        }
+        
+        .nav-links a:hover::after,
+        .nav-links a:focus::after {
+            width: 100%; /* Expands on hover */
+        }
+        /* ------------------------------------------------ */
         
         /* --- SECTIONS & TYPOGRAPHY --- */
         section {
@@ -440,11 +462,10 @@
                 <span class="full-name">Robert J. Spenceley</span>
             </a>
             <ul class="nav-links">
+                <!-- I'll use a class 'active' to highlight the current/home link -->
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
-                <!-- FUNCTIONAL FIX: Changed link from #projects to projects.html -->
                 <li><a href="projects.html">Projects</a></li>
-                <!-- FUNCTIONAL FIX: Removed erroneous closing quote and extra text -->
                 <li><a href="misc.html">Misc</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
