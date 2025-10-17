@@ -13,11 +13,11 @@
             --color-primary: #e890be; 
             --color-background-main: #172D33; 
             --color-background-secondary: #47304F; 
-            --color-text-dark: #FFFFED;      
-            --color-text-body: #A294A6;      
-            --color-text-light: #641E4F;      
-            --color-white: #FFFBEB;          
-            --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            --color-text-dark: #FFFFED;       
+            --color-text-body: #A294A6;       
+            --color-text-light: #641E4F;       
+            --color-white: #FFFBEB;           
+            --font-display: -apple-system, BlinkMacMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
         }
         
         * {
@@ -163,6 +163,25 @@
             color: var(--color-primary);
             margin-bottom: 2rem;
             font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* NEW STYLE: For co-author links */
+        .project-authors a {
+            color: var(--color-text-body);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            white-space: nowrap; /* Keep links together on one line */
+            display: inline-block;
+        }
+        .project-authors a:hover {
+            color: var(--color-primary);
+            background: rgba(232, 144, 190, 0.1);
         }
         
         .project-abstract {
@@ -223,7 +242,10 @@
                 font-size: 1.75rem;
             }
             .project-authors {
-                font-size: 1rem;
+                font-size: 1.125rem; /* Keep authors text size readable */
+            }
+            .project-authors a {
+                margin: 0.25rem 0.5rem;
             }
             .project-abstract {
                 font-size: 1rem;
@@ -267,11 +289,21 @@
     <!-- PROJECT 1 - NEWEST: EEG Theta Power (Mixed Human-Robot Teams) -->
     <div class="project-section">
         <div class="poster-container">
-            <img src="/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image">
+            <!-- FIX 1: Updated image source path -->
+            <img src="/Website docs/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image">
         </div>
         <div class="project-details">
             <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
-            <p class="project-authors">Robert J. Spenceley, Aakash Yadav, & Ranjana Mehta</p>
+            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <p class="project-authors">
+                Robert J. Spenceley, 
+                Aakash Yadav 
+                (<a href="[Aakash Yadav LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Aakash Yadav Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
+                & Ranjana Mehta 
+                (<a href="[Ranjana Mehta LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Ranjana Mehta Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+            </p>
             <div class="project-abstract">
                 <p>Beyond traditional, dyadic human-robot interaction, embedding robots into multi-human teams, such as search and rescue (SAR), requires an understanding of fundamental aspects of team composition and dynamics. While considerable work has examined how robot agents influence both taskwork and teamwork, few studies have focused on identifying which factor best explains differences in team outputs. This research investigates the neurodynamics of taskwork and teamwork as SAR teams transition between multi-human (mH) and multi-human-robot (mHR) configurations.</p>
                 <p>Electroencephalogram (EEG) has been a key tool in human teamwork research because of its sensitivity to changes in cognitive states such as mental workload, sustained attention, and engagement. Specifically, EEG power spectral density (PSD), especially frontal theta activity (4-7 Hz), has been used to measure variations in mental workload and social cognition related to task performance. EEG hyperscanning, which evaluates interbrain synchrony between two or more individuals, using metrics such as weighted phase lag index (wPLI), has been widely employed to study teamwork among humans.</p>
@@ -288,15 +320,26 @@
     <div class="project-section">
         <div class="dual-image-container">
             <div class="poster-container">
-                <img src="/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image">
+                <!-- FIX 1: Updated image source path -->
+                <img src="/Website docs/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image">
             </div>
             <div class="poster-container">
-                <img src="/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image">
+                <!-- FIX 1: Updated image source path -->
+                <img src="/Website docs/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image">
             </div>
         </div>
         <div class="project-details">
             <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
-            <p class="project-authors">Robert J. Spenceley, Christopher D. Wickens, & Bianca de Toledo Piza</p>
+            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <p class="project-authors">
+                Robert J. Spenceley, 
+                Christopher D. Wickens 
+                (<a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
+                & Bianca de Toledo Piza 
+                (<a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+            </p>
             <div class="project-abstract">
                 <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
                 <p>Participants performed significantly worse when the raw data influences on the trajectory were removed in a control study, signaling the value of such data in calibrating dependence on the predictor. The FIPRED display was beneficial to participants, improving their ability to predict the future position of the fire. However, the automation bias indicated that participants may have over-relied on the automated assistance.</p>
@@ -311,11 +354,21 @@
     <!-- PROJECT 3 - OLDEST: Prospective Memory -->
     <div class="project-section">
         <div class="poster-container">
-            <img src="/REAL RMPA FINAL 2.pdf" alt="Prospective Memory Research Poster" class="poster-image">
+            <!-- FIX 1: Updated image source path -->
+            <img src="/Website docs/REAL RMPA FINAL 2.pdf" alt="Prospective Memory Research Poster" class="poster-image">
         </div>
         <div class="project-details">
             <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
-            <p class="project-authors">Robert J. Spenceley, Michaela Rice, & Deana Davalos</p>
+            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <p class="project-authors">
+                Robert J. Spenceley, 
+                Michaela Rice 
+                (<a href="[Michaela Rice LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Michaela Rice Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
+                & Deana Davalos 
+                (<a href="[Deana Davalos LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
+                <a href="[Deana Davalos Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+            </p>
             <div class="project-abstract">
                 <p>Prospective memory (PM) involves setting intentions and remembering to complete tasks, a process essential for college students to manage daily responsibilities. Executive functioning supports these abilities through planning, monitoring, and managing attention, and prior research suggests the two are closely linked. Using the Dysexecutive Questionnaire (DEX), this study examined which components of executive functioning predict PM performance across five factors: inhibition, interference management, intentionality, planning, and social regulation.</p>
                 <p>Results from seventy-nine participants showed that greater inhibition impairment was associated with lower PM accuracy, while other factors were unrelated. These findings suggest that inhibition plays a key role in PM, supporting the PAM model and emphasizing the importance of self-monitoring and attentional control in remembering intended actions.</p>
