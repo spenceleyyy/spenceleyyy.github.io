@@ -442,9 +442,9 @@
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
-                <!-- FIX 1: Changed link from #projects to projects.html -->
+                <!-- FUNCTIONAL FIX: Changed link from #projects to projects.html -->
                 <li><a href="projects.html">Projects</a></li>
-                <!-- FIX 2: Removed erroneous closing quote and extra text -->
+                <!-- FUNCTIONAL FIX: Removed erroneous closing quote and extra text -->
                 <li><a href="misc.html">Misc</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
@@ -512,7 +512,7 @@
                     <div class="project-content">
                         <h3>Physical Human-Robot Interaction</h3>
                         <p>This project focused on understanding how human biomechanics and neural responses change when physically collaborating with a UR10e robotic arm, especially when the robot's reliability is varied. Experiments were conducted using a breadth of bioinstrumentation, including EEG, fNIRS, eye-tracking, AMTI Force Plates, EMG, and ECG. I utilized methods and software such as Lab Streaming Layer (LSL), Python, and MATLAB to streamline data collection and perform detailed data analysis across these methodologies.</p>
-                        <!-- Also updated the project card link for consistency -->
+                        <!-- FUNCTIONAL FIX: Link to projects.html -->
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
@@ -522,7 +522,7 @@
                     <div class="project-content">
                         <h3>Neurodynamics of taskwork and teamwork in multihuman-robot teams</h3>
                         <p>This research investigates the **neurodynamics** of taskwork and teamwork in Search and Rescue (SAR) teams as they transition between multi-human and multi-human-robot configurations. Using **EEG and EEG hyperscanning** (interbrain synchrony), the study analyzed how the team's neural patterns changed when a human navigator was replaced by a virtual robot navigator. The project's goal was to show that multi-human robot teaming is a fundamentally distinct team construct that alters both taskwork and teamwork, regardless of the robot’s capabilities.</p>
-                        <!-- Also updated the project card link for consistency -->
+                        <!-- FUNCTIONAL FIX: Link to projects.html -->
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
@@ -532,7 +532,7 @@
                     <div class="project-content">
                         <h3>Comfort Survey Development</h3>
                         <p>I am currently developing and validating a new scale designed for use in real-world working settings. This scale will be used to accurately assess how comfortable workers are with the presence and activity of robots in their immediate environment.</p>
-                        <!-- Also updated the project card link for consistency -->
+                        <!-- FUNCTIONAL FIX: Link to projects.html -->
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
@@ -662,12 +662,9 @@
             
             // Animate loaded brain model
             if (loadedBrainModel) {
-                // Rotate based on scroll position
-                loadedBrainModel.rotation.y = brainScrollRotation * 0.0008; // Slower rotation
-                // Add a subtle sine wave tilt
-                loadedBrainModel.rotation.x = Math.sin(Date.now() * 0.0001) * 0.1; // Gentle, time-based tilt
-                // Add continuous slow rotation when scrolling stops
-                loadedBrainModel.rotation.y += 0.0005;
+                // Aesthetic Revert: Reverting to the original scroll-dependent rotation logic
+                loadedBrainModel.rotation.y = brainScrollRotation * 0.5; 
+                loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
             }
             
             brainRenderer.render(brainScene, brainCamera);
@@ -713,7 +710,8 @@
         
         // Handle scroll for hero background rotation and contact visibility
         window.addEventListener('scroll', () => {
-            // brainScrollRotation = window.scrollY * 0.0008; // Removed for continuous rotation
+            // Aesthetic Revert: Reinstating the scroll calculation for rotation
+            brainScrollRotation = window.scrollY * 0.0008;
             
             const contactSection = document.getElementById('contact');
             if (contactSection) {
