@@ -120,12 +120,22 @@
             overflow: hidden;
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            cursor: pointer; /* Indicate clickability for fullscreen */
+            transition: transform 0.3s;
         }
-        
+        .poster-container:hover {
+            transform: scale(1.005);
+        }
+
+        /* NEW: Scaling down the poster image, making it contained within the max height */
         .poster-image {
             width: 100%;
             height: auto;
+            max-height: 600px; /* Reduced max height for desktop view */
+            object-fit: contain;
             display: block;
+            margin: 0 auto;
+            transition: opacity 0.3s;
         }
         
         /* Special layout for FIPRED project with side-by-side images */
@@ -158,32 +168,41 @@
             line-height: 1.2;
         }
         
+        /* Updated styling for authors section */
         .project-authors {
             font-size: 1.125rem;
-            color: var(--color-primary);
+            color: var(--color-text-body); /* Subtle color for author list */
             margin-bottom: 2rem;
             font-weight: 400;
             line-height: 1.6;
         }
-
-        /* NEW STYLE: For co-author links */
-        .project-authors a {
-            color: var(--color-text-body);
-            text-decoration: none;
-            transition: color 0.3s;
+        /* Style for individual author names */
+        .project-authors .author-name {
+            color: var(--color-primary); /* Highlight author names */
             font-weight: 500;
-            margin: 0 0.5rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            white-space: nowrap; /* Keep links together on one line */
-            display: inline-block;
         }
-        .project-authors a:hover {
+        /* Style for the icons/links */
+        .author-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin: 0 0.1rem;
+            color: var(--color-text-body); /* Icon base color */
+            transition: color 0.3s, background 0.3s;
+            border-radius: 5px;
+        }
+        .author-icon-link:hover {
             color: var(--color-primary);
             background: rgba(232, 144, 190, 0.1);
         }
-        
+        .author-icon-link svg {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+        }
+
         .project-abstract {
             font-size: 1.125rem;
             color: var(--color-text-body);
@@ -221,6 +240,56 @@
             font-style: italic;
             line-height: 1.6;
         }
+
+        /* --- FULLSCREEN MODAL STYLES --- */
+        #fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #fullscreen-modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+        #modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            background-color: var(--color-white); 
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(232, 144, 190, 0.5);
+        }
+        #modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+        }
+        #modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        #modal-close:hover {
+            opacity: 1;
+            color: var(--color-primary);
+        }
         
         /* --- FOOTER --- */
         footer {
@@ -242,10 +311,7 @@
                 font-size: 1.75rem;
             }
             .project-authors {
-                font-size: 1.125rem; /* Keep authors text size readable */
-            }
-            .project-authors a {
-                margin: 0.25rem 0.5rem;
+                font-size: 1.125rem;
             }
             .project-abstract {
                 font-size: 1rem;
@@ -260,6 +326,9 @@
             }
             .project-citation {
                 font-size: 0.85rem;
+            }
+            .poster-image {
+                max-height: 400px;
             }
         }
     </style>
@@ -288,21 +357,30 @@
 
     <!-- PROJECT 1 - NEWEST: EEG Theta Power (Mixed Human-Robot Teams) -->
     <div class="project-section">
-        <div class="poster-container">
+        <!-- Added data-src for JS to pull into modal -->
+        <div class="poster-container" data-src="/Website docs/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf">
             <!-- FIX 1: Updated image source path -->
             <img src="/Website docs/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image">
         </div>
         <div class="project-details">
             <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
-            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <!-- FIX 2: Added icon placeholders for co-authors -->
             <p class="project-authors">
-                Robert J. Spenceley, 
-                Aakash Yadav 
-                (<a href="[Aakash Yadav LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Aakash Yadav Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
-                & Ranjana Mehta 
-                (<a href="[Ranjana Mehta LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Ranjana Mehta Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+                <span class="author-name">Robert J. Spenceley</span>, 
+                <span class="author-name">Aakash Yadav</span> 
+                <a href="[Aakash Yadav LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Aakash Yadav Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>, 
+                & <span class="author-name">Ranjana Mehta</span> 
+                <a href="[Ranjana Mehta LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Ranjana Mehta Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>
             </p>
             <div class="project-abstract">
                 <p>Beyond traditional, dyadic human-robot interaction, embedding robots into multi-human teams, such as search and rescue (SAR), requires an understanding of fundamental aspects of team composition and dynamics. While considerable work has examined how robot agents influence both taskwork and teamwork, few studies have focused on identifying which factor best explains differences in team outputs. This research investigates the neurodynamics of taskwork and teamwork as SAR teams transition between multi-human (mH) and multi-human-robot (mHR) configurations.</p>
@@ -319,26 +397,36 @@
     <!-- PROJECT 2 - MIDDLE: FIPRED (Wildfire Predictor) -->
     <div class="project-section">
         <div class="dual-image-container">
-            <div class="poster-container">
+            <!-- Added data-src for JS to pull into modal -->
+            <div class="poster-container" data-src="/Website docs/FIPRED.pdf">
                 <!-- FIX 1: Updated image source path -->
                 <img src="/Website docs/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image">
             </div>
-            <div class="poster-container">
+            <!-- Added data-src for JS to pull into modal -->
+            <div class="poster-container" data-src="/Website docs/HFES-Proceedings-Cover.jpg">
                 <!-- FIX 1: Updated image source path -->
                 <img src="/Website docs/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image">
             </div>
         </div>
         <div class="project-details">
             <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
-            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <!-- FIX 2: Added icon placeholders for co-authors -->
             <p class="project-authors">
-                Robert J. Spenceley, 
-                Christopher D. Wickens 
-                (<a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
-                & Bianca de Toledo Piza 
-                (<a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+                <span class="author-name">Robert J. Spenceley</span>, 
+                <span class="author-name">Christopher D. Wickens</span> 
+                <a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>, 
+                & <span class="author-name">Bianca de Toledo Piza</span> 
+                <a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>
             </p>
             <div class="project-abstract">
                 <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
@@ -353,21 +441,30 @@
 
     <!-- PROJECT 3 - OLDEST: Prospective Memory -->
     <div class="project-section">
-        <div class="poster-container">
+        <!-- Added data-src for JS to pull into modal -->
+        <div class="poster-container" data-src="/Website docs/REAL RMPA FINAL 2.pdf">
             <!-- FIX 1: Updated image source path -->
             <img src="/Website docs/REAL RMPA FINAL 2.pdf" alt="Prospective Memory Research Poster" class="poster-image">
         </div>
         <div class="project-details">
             <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
-            <!-- FIX 2: Added placeholder hyperlinks for co-authors -->
+            <!-- FIX 2: Added icon placeholders for co-authors -->
             <p class="project-authors">
-                Robert J. Spenceley, 
-                Michaela Rice 
-                (<a href="[Michaela Rice LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Michaela Rice Google Scholar Placeholder]" target="_blank">Google Scholar</a>), 
-                & Deana Davalos 
-                (<a href="[Deana Davalos LinkedIn Placeholder]" target="_blank">LinkedIn</a>, 
-                <a href="[Deana Davalos Google Scholar Placeholder]" target="_blank">Google Scholar</a>)
+                <span class="author-name">Robert J. Spenceley</span>, 
+                <span class="author-name">Michaela Rice</span>
+                <a href="[Michaela Rice LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Michaela Rice Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>, 
+                & <span class="author-name">Deana Davalos</span>
+                <a href="[Deana Davalos LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="[Deana Davalos Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos Google Scholar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </a>
             </p>
             <div class="project-abstract">
                 <p>Prospective memory (PM) involves setting intentions and remembering to complete tasks, a process essential for college students to manage daily responsibilities. Executive functioning supports these abilities through planning, monitoring, and managing attention, and prior research suggests the two are closely linked. Using the Dysexecutive Questionnaire (DEX), this study examined which components of executive functioning predict PM performance across five factors: inhibition, interference management, intentionality, planning, and social regulation.</p>
@@ -382,5 +479,61 @@
     <footer>
         <p>&copy; 2025 RS. Settle for nothing short of greatness.</p>
     </footer>
+
+    <!-- Fullscreen Modal Structure -->
+    <div id="fullscreen-modal">
+        <span id="modal-close">&times;</span>
+        <div id="modal-content">
+            <img id="modal-image" src="" alt="Full Screen Poster">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('fullscreen-modal');
+            const modalImage = document.getElementById('modal-image');
+            const closeModal = document.getElementById('modal-close');
+            const posterContainers = document.querySelectorAll('.poster-container');
+
+            // 1. Handle opening the modal when a poster is clicked
+            posterContainers.forEach(container => {
+                container.addEventListener('click', (e) => {
+                    const imgSrc = container.getAttribute('data-src');
+                    if (imgSrc) {
+                        modalImage.src = imgSrc;
+                        modal.classList.add('visible');
+                        document.body.style.overflow = 'hidden'; // Prevent scrolling background
+                    }
+                });
+            });
+
+            // 2. Handle closing the modal
+            const close = () => {
+                modal.classList.remove('visible');
+                // Use a short delay before setting display:none to allow transition to finish
+                setTimeout(() => {
+                    modalImage.src = ''; // Clear image source
+                    document.body.style.overflow = ''; // Restore scrolling
+                }, 300); 
+            }
+            
+            // Close on 'x' click
+            closeModal.addEventListener('click', close);
+
+            // Close when clicking outside the image (on the modal background)
+            modal.addEventListener('click', (e) => {
+                if (e.target.id === 'fullscreen-modal') {
+                    close();
+                }
+            });
+
+            // Close on Escape key press
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('visible')) {
+                    close();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
