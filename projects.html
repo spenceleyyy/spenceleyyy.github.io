@@ -101,7 +101,7 @@
             transition: width 0.3s ease; 
         }
         
-        /* 2. Color and Underline for Active Page (always full width) */
+        /* 2. Color and Underline for Active Page (permanently highlighted) */
         .nav-links .active a { 
             color: var(--color-primary);
         }
@@ -109,13 +109,15 @@
             width: 100%; 
         }
         
-        /* 3. Color and Underline ONLY on Hover/Focus (overrides active state color with itself, maintaining consistency) */
-        .nav-links a:hover,
-        .nav-links a:focus { 
+        /* 3. Color and Underline ONLY on Hover/Focus (only when mouse is over the link) */
+        /* Ensure the effect ONLY runs on hover and doesn't interfere with the permanent active state */
+        .nav-links li:not(.active) a:hover,
+        .nav-links li:not(.active) a:focus { 
             color: var(--color-primary);
         }
-        .nav-links a:hover::after,
-        .nav-links a:focus::after { 
+        
+        .nav-links li:not(.active) a:hover::after,
+        .nav-links li:not(.active) a:focus::after { 
             width: 100%; 
         }
         /* --- END CORRECTED HOVER STYLES --- */
@@ -153,41 +155,30 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
             cursor: pointer; /* Indicate clickability for fullscreen */
             transition: transform 0.3s;
-            /* Added position relative for placeholder text */
             position: relative; 
         }
         .poster-container:hover {
             transform: scale(1.005);
         }
 
-        /* NEW: Placeholder Style */
-        .image-placeholder {
-            width: 100%;
-            height: 400px; /* Fixed height for consistency */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--color-background-secondary);
-            text-align: center;
-            padding: 2rem;
-            color: var(--color-text-body);
-        }
-        .image-placeholder-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-        .image-placeholder-filename {
-            font-size: 0.9rem;
-            font-style: italic;
-            word-break: break-all;
-        }
-
-        /* Hide the actual image elements that are failing, or constrain them heavily */
+        /* Removed placeholder CSS and relying on image loading/error fallback */
+        
+        /* Image styles for display and fallback */
         .poster-image {
-            display: none; /* Temporarily hide until user corrects image hosting */
+            width: 100%;
+            height: auto;
+            max-height: 600px; 
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            transition: opacity 0.3s;
+            /* Fallback style if image fails to load */
+            background: var(--color-background-secondary); 
+            min-height: 200px;
+            font-size: 1rem;
+            color: var(--color-text-body);
+            text-align: center;
+            line-height: 200px;
         }
         
         /* Special layout for FIPRED project with side-by-side images */
@@ -387,9 +378,6 @@
             .project-citation {
                 font-size: 0.85rem;
             }
-            .image-placeholder {
-                height: 300px;
-            }
         }
     </style>
 </head>
@@ -418,14 +406,11 @@
 
     <!-- PROJECT 1 - NEWEST: EEG Theta Power (Mixed Human-Robot Teams) -->
     <div class="project-section">
-        <!-- Reverted src to original value to preserve filename for troubleshooting, but hid img and added placeholder -->
+        <!-- Path is strictly URL-encoded for reliability -->
         <div class="poster-container" data-src="/Website%20docs/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf">
-            <div class="image-placeholder">
-                <div class="image-placeholder-title">EEG Theta Power Poster</div>
-                <div class="image-placeholder-filename">/Website docs/EEG Theta Power Varies across Roles in Mixed Human-Robot Teams.pdf</div>
-                <p style="margin-top: 1rem; font-size: 0.9rem;">Click to enlarge (Image failed to load in browser)</p>
-            </div>
-            <img src="/Website%20docs/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image">
+            <img src="/Website%20docs/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image" 
+                 onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: EEG Theta Power Poster';"
+            >
         </div>
         <div class="project-details">
             <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
@@ -463,21 +448,15 @@
         <div class="dual-image-container">
             <!-- FIPRED Poster (2/3 width) -->
             <div class="poster-container" data-src="/Website%20docs/FIPRED.pdf">
-                <div class="image-placeholder">
-                    <div class="image-placeholder-title">FIPRED Research Poster</div>
-                    <div class="image-placeholder-filename">/Website docs/FIPRED.pdf</div>
-                    <p style="margin-top: 1rem; font-size: 0.9rem;">Click to enlarge (Image failed to load in browser)</p>
-                </div>
-                <img src="/Website%20docs/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image">
+                <img src="/Website%20docs/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image"
+                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: FIPRED Research Poster';"
+                >
             </div>
             <!-- HFES Cover (1/3 width) -->
             <div class="poster-container" data-src="/Website%20docs/HFES-Proceedings-Cover.jpg">
-                <div class="image-placeholder">
-                    <div class="image-placeholder-title">HFES Proceedings Cover</div>
-                    <div class="image-placeholder-filename">/Website docs/HFES-Proceedings-Cover.jpg</div>
-                    <p style="margin-top: 1rem; font-size: 0.9rem;">Click to enlarge (Image failed to load in browser)</p>
-                </div>
-                <img src="/Website%20docs/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image">
+                <img src="/Website%20docs/HFES-Proceedings-Cover.jpg" alt="HFES Proceedings Journal Cover" class="poster-image"
+                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: HFES Proceedings Cover';"
+                >
             </div>
         </div>
         <div class="project-details">
@@ -513,12 +492,9 @@
     <!-- PROJECT 3 - OLDEST: Prospective Memory -->
     <div class="project-section">
         <div class="poster-container" data-src="/Website%20docs/REAL%20RMPA%20FINAL%202.pdf">
-            <div class="image-placeholder">
-                <div class="image-placeholder-title">Prospective Memory Poster</div>
-                <div class="image-placeholder-filename">/Website docs/REAL RMPA FINAL 2.pdf</div>
-                <p style="margin-top: 1rem; font-size: 0.9rem;">Click to enlarge (Image failed to load in browser)</p>
-            </div>
-            <img src="/Website%20docs/REAL%20RMPA%20FINAL%202.pdf" alt="Prospective Memory Research Poster" class="poster-image">
+            <img src="/Website%20docs/REAL%20RMPA%20FINAL%202.pdf" alt="Prospective Memory Research Poster" class="poster-image"
+                 onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Prospective Memory Poster';"
+            >
         </div>
         <div class="project-details">
             <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
