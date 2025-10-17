@@ -433,8 +433,7 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
-                
-<img src="/RSlogoUPDATED.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
+                <img src="/RSlogoUPDATED.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
                 <!-- Name is now inline with the logo -->
                 <span class="full-name">Robert J. Spenceley</span>
             </a>
@@ -726,4 +725,5 @@
             brainCamera.updateProjectionMatrix();
             brainRenderer.setSize(window.innerWidth, window.innerHeight);
             
-            contactCamera.aspect =
+            contactCamera.aspect = window.innerWidth / window.innerHeight;
+            contactCamera
