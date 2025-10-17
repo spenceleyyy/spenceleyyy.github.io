@@ -662,7 +662,7 @@
             
             // Animate loaded brain model
             if (loadedBrainModel) {
-                // Aesthetic Revert: Reverting to the original scroll-dependent rotation logic
+                // RESTORED ORIGINAL AESTHETIC LOGIC
                 loadedBrainModel.rotation.y = brainScrollRotation * 0.5; 
                 loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
             }
@@ -710,7 +710,7 @@
         
         // Handle scroll for hero background rotation and contact visibility
         window.addEventListener('scroll', () => {
-            // Aesthetic Revert: Reinstating the scroll calculation for rotation
+            // RESTORED ORIGINAL SCROLL CALCULATION
             brainScrollRotation = window.scrollY * 0.0008;
             
             const contactSection = document.getElementById('contact');
