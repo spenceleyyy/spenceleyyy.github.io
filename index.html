@@ -441,8 +441,8 @@
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="misc.html">Misc">Misc</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="misc.html">Misc</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -517,7 +517,7 @@
                     <div class="project-image">NEURAL</div>
                     <div class="project-content">
                         <h3>Neurodynamics of taskwork and teamwork in multihuman-robot teams</h3>
-                        <p>This research investigates the **neurodynamics** of taskwork and teamwork in Search and Rescue (SAR) teams as they transition between multi-human and multi-human-robot configurations. Using **EEG and EEG hyperscanning** (interbrain synchrony), the study analyzed how the team's neural patterns changed when a human navigator was replaced by a virtual robot navigator. The project's goal was to show that multi-human robot teaming is a fundamentally distinct team construct that alters both taskwork and teamwork, regardless of the robot’s capabilities.</p>
+                        <p>This research investigates the **neurodynamics** of taskwork and teamwork in Search and Rescue (SAR) teams as they transition between multi-human and multi-human-robot configurations. Using **EEG and EEG hyperscanning** (interbrain synchrony), the study analyzed how the team's neural patterns changed when a human navigator was replaced by a virtual robot navigator. The project's goal was to show that multi-human robot teaming is a fundamentally distinct team construct that alters both taskwork and teamwork, regardless of the robot's capabilities.</p>
                         <a href="#" class="project-link">View Project →</a>
                     </div>
                 </div>
@@ -726,39 +726,4 @@
             brainCamera.updateProjectionMatrix();
             brainRenderer.setSize(window.innerWidth, window.innerHeight);
             
-            contactCamera.aspect = window.innerWidth / window.innerHeight;
-            contactCamera.updateProjectionMatrix();
-            contactRenderer.setSize(window.innerWidth, window.innerHeight);
-        });
-        
-        // Smooth scroll for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                if (this.getAttribute('href') !== '#') { 
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            });
-        });
-
-        // ====================================================================
-        // FIX: ROBUST SCROLL-TO-TOP IMPLEMENTATION
-        // This forces the scroll to the top regardless of browser history or dynamic element loading.
-        // ====================================================================
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Scroll immediately after the document structure is loaded
-            window.scrollTo(0, 0);
-            
-            // Add a slight timeout to combat issues related to dynamic element loading/reflow
-            setTimeout(() => {
-                window.scrollTo(0, 0);
-            }, 10);
-        });
-    </script>
+            contactCamera.aspect =
