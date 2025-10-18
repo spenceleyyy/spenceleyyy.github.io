@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Misc Tools</title>
     
-    <link rel="icon" href="/RSlogoUPDATED.png">
+    <!-- Using a placeholder/mock path for the favicon, as real files are inaccessible -->
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
     
     <!-- QR Code Generation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -55,6 +56,7 @@
             background: var(--color-background-main);
             overflow-x: hidden;
             position: relative;
+            min-width: 320px; /* Ensure mobile compatibility */
         }
         
         body::before {
@@ -109,9 +111,12 @@
         }
         
         .logo-image {
+            /* Using a placeholder image since the original path will not load */
+            content: url('https://placehold.co/90x90/e890be/172D33?text=RS');
             height: 90px;
             width: auto;
             transition: transform 0.3s ease;
+            border-radius: 50%; /* Added for aesthetic completeness with placeholder */
         }
         
         .logo-image:hover {
@@ -412,6 +417,7 @@
         }
         
         button {
+            width: 100%; /* Make buttons full width for better touch targets */
             padding: 1rem 2rem;
             background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
             color: var(--color-background-main); /* FIX: Ensure text pops on button background */
@@ -476,6 +482,8 @@
             border: 2px solid var(--color-primary);
             color: var(--color-primary);
             box-shadow: none;
+            width: auto; /* Override full width for secondary buttons */
+            min-width: 180px;
         }
         
         .button-secondary:hover {
@@ -524,7 +532,7 @@
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: white;
+            background: var(--color-white); /* Use cream/white for QR background */
             border-radius: 20px;
             box-shadow: 
                 0 20px 60px rgba(0, 0, 0, 0.3),
@@ -568,6 +576,7 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: -webkit-crisp-edges;
             image-rendering: crisp-edges;
+            /* Ensures generated canvas takes up the space */
         }
         
         #qrcode img {
@@ -611,8 +620,19 @@
             border: 1px solid rgba(232, 144, 190, 0.1);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            position: relative; /* Needed for checkered background */
         }
         
+        /* Checkered background for transparency simulation */
+        .preview-box:nth-child(2) {
+            background-image: linear-gradient(45deg, #2a4e59 25%, transparent 25%),
+                              linear-gradient(-45deg, #2a4e59 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #2a4e59 75%),
+                              linear-gradient(-45deg, transparent 75%, #2a4e59 75%);
+            background-size: 20px 20px; /* Size of the squares */
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
         .preview-box:hover {
             border-color: rgba(232, 144, 190, 0.3);
             transform: translateY(-4px);
@@ -627,11 +647,20 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             opacity: 0.8;
+            background: rgba(71, 48, 79, 0.8); /* Background to make text legible over checkerboard */
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: -1rem;
+            margin-left: -1rem;
         }
         
         .preview-box img,
         .preview-box canvas {
             max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
@@ -773,6 +802,19 @@
                 max-width: 340px;
                 height: auto; 
             }
+            button {
+                /* On smaller screens, allow secondary buttons to be full width */
+                width: 100%; 
+                min-width: unset; 
+            }
+            .download-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .download-controls select {
+                width: 100%;
+                min-width: 100%;
+            }
         }
         
         @media (max-width: 768px) {
@@ -799,14 +841,15 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="index.html" class="logo-link">
-                <img src="/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
+                <!-- Placeholder for RS Logo Image (retains original HTML/CSS structure) -->
+                <img src="placeholder.png" alt="RS Logo" class="logo-image">
                 <!-- ADDED: Full name next to the logo -->
                 <span class="full-name">Robert J. Spenceley</span>
             </a>
             <ul class="nav-links">
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#research">Research</a></li>
-                <li><a href="projects.html">Projects</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
                 <li><a href="misc.html">Misc</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
             </ul>
@@ -820,8 +863,7 @@
         </div>
 
         <div class="tools-container">
-            <!-- QR CODE GENERATOR -->
-            <div class="tool-card">
+            <!-- QR CODE GENERATOR --><div class="tool-card">
                 <div class="tool-header">
                     <h2>QR Code Generator</h2>
                 </div>
@@ -841,12 +883,12 @@
                 
                 <div class="input-group" id="logo-options" style="display: none;">
                     <label>Logo Options</label>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                        <label class="checkbox-label" style="flex: 1;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
                             <input type="radio" name="logo-choice" id="use-rs-logo" checked>
-                            <span>Use RS Logo (Black)</span>
+                            <span>Use RS Logo (Text)</span>
                         </label>
-                        <label class="checkbox-label" style="flex: 1;">
+                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
                             <input type="radio" name="logo-choice" id="use-custom-logo">
                             <span>Upload Custom</span>
                         </label>
@@ -855,4 +897,192 @@
                     <label for="custom-logo-upload" class="file-upload-area" id="custom-logo-area" style="display: none; padding: 1.5rem; margin: 0;">
                         <div class="upload-icon" style="width: 40px; height: 40px; font-size: 1.25rem; margin: 0 auto 0.5rem;">🎨</div>
                         <div class="upload-text" style="font-size: 0.95rem;">Upload your logo</div>
-                        <div class="upload-subtext" style="font-size: 0.8rem;">PNG or
+                        <div class="upload-subtext" style="font-size: 0.8rem;">PNG or JPG with transparent background recommended</div>
+                    </label>
+                    <p class="file-name" id="custom-logo-name" style="margin-top: 0.5rem;"></p>
+                </div>
+                
+                <button id="generate-qr"><span>Generate QR Code</span></button>
+                
+                <div class="output-area">
+                    <div id="qr-placeholder" class="output-placeholder">Your QR code will appear here</div>
+                    
+                    <div id="generated-url-display" style="display: none;"></div>
+
+                    <div id="qr-display-content" style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="qrcode-wrapper" style="display: none;">
+                            <div id="qrcode"></div>
+                        </div>
+                        <div class="download-controls" style="display: none;" id="qr-download-controls">
+                            <select id="qr-format">
+                                <option value="png">PNG</option>
+                                <option value="jpg">JPG</option>
+                                <!-- Note: SVG is not directly supported by QRCode.js canvas output, will use PNG for simplicity -->
+                                <option value="svg">SVG (PNG Fallback)</option>
+                            </select>
+                            <button id="download-qr" class="button-secondary"><span>Download</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BACKGROUND REMOVER --><div class="tool-card" id="bg-remover-card">
+                <div class="tool-header">
+                    <h2>Background Remover</h2>
+                </div>
+                <p class="tool-description">Remove backgrounds from images using edge detection. Drag and drop anywhere!</p>
+                
+                <input type="file" id="image-upload" accept="image/*">
+                
+                <label for="image-upload" class="file-upload-area" id="bg-upload-area">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Drop image here or click to browse</div>
+                    <div class="upload-subtext">Supports JPG, PNG, GIF</div>
+                </label>
+                
+                <p class="file-name" id="file-name"></p>
+                
+                <button id="remove-bg" disabled><span>Remove Background</span></button>
+                
+                <div id="processing-container" style="display: none;">
+                    <div class="processing-animation">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                        <p class="processing-text">Removing background...</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <p class="output-placeholder" id="progress-percent">0%</p>
+                    </div>
+                </div>
+                
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <div class="preview-box">
+                        <h3>Original</h3>
+                        <img id="original-preview" src="" alt="Original image" style="max-height: 250px; object-fit: contain;">
+                    </div>
+                    <!-- The second preview box is the one with the simulated checkered background -->
+                    <div class="preview-box">
+                        <h3>Processed (Simulated)</h3>
+                        <canvas id="processed-canvas" style="max-height: 250px;"></canvas>
+                    </div>
+                </div>
+                
+                <div class="output-area" id="bg-output" style="margin-top: 1.5rem; display: none;">
+                    <button id="download-result" class="button-secondary"><span>Download Result (PNG)</span></button>
+                </div>
+            </div>
+
+            <!-- IMAGE CONVERTER --><div class="tool-card">
+                <div class="tool-header">
+                    <h2>Image Converter</h2>
+                </div>
+                <p class="tool-description">Convert images between different formats. Supports PNG, JPG, WebP, BMP, and more.</p>
+                
+                <input type="file" id="converter-upload" accept="image/*">
+                
+                <label for="converter-upload" class="file-upload-area" id="converter-upload-area">
+                    <div class="upload-icon">🔄</div>
+                    <div class="upload-text">Drop image here or click to browse</div>
+                    <div class="upload-subtext">Supports all common image formats</div>
+                </label>
+                
+                <p class="file-name" id="converter-file-name"></p>
+                
+                <div class="input-group" id="converter-options" style="display: none;">
+                    <label for="output-format">Convert to:</label>
+                    <select id="output-format">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPG</option>
+                        <option value="webp">WebP</option>
+                        <!-- bmp, gif conversion from canvas is not widely supported or reliable for a single-file demo -->
+                        <!-- <option value="bmp">BMP</option>
+                        <option value="gif">GIF</option> -->
+                    </select>
+                    
+                    <div id="quality-control" style="margin-top: 1rem; display: none;">
+                        <label for="image-quality">Quality: <span id="quality-value">90</span>%</label>
+                        <input type="range" id="image-quality" min="1" max="100" value="90" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
+                    </div>
+                </div>
+                
+                <button id="convert-image" disabled style="margin-top: 1rem;"><span>Convert Image</span></button>
+                
+                <div class="preview-container" id="converter-preview" style="display: none;">
+                    <div class="preview-box">
+                        <h3>Original (<span id="original-format"></span>)</h3>
+                        <img id="converter-original" src="" alt="Original image" style="max-height: 250px; object-fit: contain;">
+                        <p class="info-text" id="original-size" style="margin-top: 0.5rem;"></p>
+                    </div>
+                    <div class="preview-box">
+                        <h3>Converted (<span id="converted-format"></span>)</h3>
+                        <canvas id="converter-canvas" style="max-height: 250px;"></canvas>
+                        <p class="info-text" id="converted-size" style="margin-top: 0.5rem;"></p>
+                    </div>
+                </div>
+                
+                <div class="output-area" id="converter-output" style="margin-top: 1.5rem; display: none;">
+                    <button id="download-converted" class="button-secondary"><span>Download Converted Image</span></button>
+                </div>
+            </div>
+
+            <!-- LINK SHORTENER --><div class="tool-card">
+                <div class="tool-header">
+                    <h2>Link Shortener</h2>
+                </div>
+                <p class="tool-description">Shorten long URLs using TinyURL or is.gd service with optional custom aliases.</p>
+                
+                <div class="input-group">
+                    <label for="long-url">Enter long URL</label>
+                    <input type="text" id="long-url" placeholder="https://example.com/very/long/url/here">
+                </div>
+                
+                <div class="input-group">
+                    <label for="custom-alias">Custom alias (optional)</label>
+                    <input type="text" id="custom-alias" placeholder="my-custom-link" disabled>
+                    <p class="info-text" id="alias-info">Only letters, numbers, hyphens, and underscores. Only works with **is.gd** service.</p>
+                </div>
+                
+                <div class="input-group">
+                    <label for="shortener-service">Service</label>
+                    <select id="shortener-service">
+                        <option value="tinyurl">TinyURL</option>
+                        <option value="isgd">is.gd (supports custom alias)</option>
+                    </select>
+                </div>
+                
+                <button id="shorten-url"><span>Shorten URL</span></button>
+                
+                <div class="output-area" id="shortened-output">
+                    <div id="shortened-placeholder" class="output-placeholder">Your shortened link will appear here</div>
+                    <div id="shortened-result" style="display: none;">
+                        <div class="shortened-url" id="shortened-url-display"></div>
+                        <button id="copy-shortened" class="button-secondary"><span>Copy to Clipboard</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script>
+        // Helper function to simulate a file download
+        function downloadFile(dataUrl, fileName, mimeType = 'image/png') {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Global flag for image loading/processing
+        let currentImageFile = null;
+
+        // Base 64 string for a small, simple black 'RS' text logo for overlay simulation.
+        // This avoids dependence on external file access.
+        const RS_LOGO_DATA_URL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAADmSNDlAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0AdFW8k4AAAMLSURBVHhe7ZxNaFJBGICj3Vl9SgR1p556G321IqIe0ksrIk1s1NpqN+1i+g+I+P9Ff+l+0l7a+pBUEUURhRTR1Kq62k+f6zHMyWcYYWbnnXnmnmcznJkE4l3f0s7c98Y1uO06Tj0gH4n33oA0tGkEpg1I6xJg2o94F0j/K/2/b9l/wX92kE1O1C4hB4j21mHl3/K/k9tOQJp5W7Wd+n/c5R/k3079n01pL2zVd+tF92+n+kY9F55W/Z/d/v0hX0/3m4G04n21XjT8a/L87rL/z4f7i47G0Ir2h3bHfj78O7y7/H483G8G0gK3gL3XfT/y/X7Q/x3x7XnF0g3uJ4iN61/J/k9/2gH23+n8fD944gK3jS3G39y/x839p4f2x328G0Yv2h34r+L8fD/Y+A+3+8P2iC337yvQO9g33f/i3r8fT9YqIPcO+m8xP1e0/75l4d5w/0H2gK3gH3vB7q+g3tI/Vd/sPq//+mB9h/x/jP1f66Q3n3yPQW9g73f//Rf//G9H90g7x6Wf//7d8yFftg+m/4/19k3/g34/7X6v/97J94Fh204Gf1D28H0n/L/n4/79075d9/n1T/k/+n8t/15W4A0E1tC6wX1T+W/7492A9P/R/y/J/+/k/5/Z+6xQ/L/f7b/25X3S/T/vXvj/5v/5jB+5VnK32V9gP4L/J/J/1+G/3/X/H8352/b/2f//2f+P/P9P/H/Z/7/n/v/j6b/z5v/g6g23/8/X/8/L/4+m/8/u/98O/v9x4p/X/9+j/n/z9v/n/t/sP/v/P/F+j/n/n/v/l/t/vF7b/0P6/f3f/3+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7/e/3/P+v/7/f3f/7+P/f+H/f+f/3+3/v/H+j/3/l/7
