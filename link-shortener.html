@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | Link Shortener</title>
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tool-styles.css">
+    <style>
+        .shortened-url {
+            background: rgba(23, 45, 51, 0.8);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            border: 2px solid rgba(232, 144, 190, 0.3);
+            margin-bottom: 1.5rem;
+            color: var(--color-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            word-break: break-all;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            animation: scaleIn 0.4s ease;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="https://placehold.co/90x90/e890be/172D33?text=RS" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Link Shortener</h1>
+            <p class="page-subtitle">Create short, shareable links</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <p class="tool-description">Shorten long URLs using TinyURL or is.gd service. Create custom aliases with is.gd for memorable links.</p>
+                
+                <div class="input-group">
+                    <label for="long-url">Enter long URL</label>
+                    <input type="text" id="long-url" placeholder="https://example.com/very/long/url/here">
+                </div>
+                
+                <div class="input-group">
+                    <label for="shortener-service">Service</label>
+                    <select id="shortener-service">
+                        <option value="tinyurl">TinyURL</option>
+                        <option value="isgd">is.gd (supports custom alias)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group" id="alias-group" style="display: none;">
+                    <label for="custom-alias">Custom alias (optional)</label>
+                    <input type="text" id="custom-alias" placeholder="my-custom-link">
+                    <p class="info-text">Only letters, numbers, hyphens, and underscores allowed</p>
+                </div>
+                
+                <button id="shorten-url"><span>Shorten URL</span></button>
+                
+                <div class="output-area" id="shortened-output">
+                    <div id="shortened-placeholder" class="output-placeholder">Your shortened link will appear here</div>
+                    <div id="shortened-result" style="display: none; width: 100%;">
+                        <div class="shortened-url" id="shortened-url-display"></div>
+                        <button id="copy-shortened" class="button-secondary"><span>Copy to Clipboard</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="link-shortener.js"></script>
+</body>
+</html>

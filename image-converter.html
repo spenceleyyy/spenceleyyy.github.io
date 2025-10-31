@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | Image Converter</title>
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tool-styles.css">
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="https://placehold.co/90x90/e890be/172D33?text=RS" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Image Converter</h1>
+            <p class="page-subtitle">Convert images between different formats</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <p class="tool-description">Convert images between PNG, JPG, and WebP formats. Adjust quality settings for optimal file size.</p>
+                
+                <input type="file" id="converter-upload" accept="image/*">
+                
+                <label for="converter-upload" class="file-upload-area" id="converter-upload-area">
+                    <div class="upload-icon">🔄</div>
+                    <div class="upload-text">Drop image here or click to browse</div>
+                    <div class="upload-subtext">Supports all common image formats</div>
+                </label>
+                
+                <p class="file-name" id="converter-file-name"></p>
+                
+                <div class="input-group" id="converter-options" style="display: none;">
+                    <label for="output-format">Convert to:</label>
+                    <select id="output-format">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPG</option>
+                        <option value="webp">WebP</option>
+                    </select>
+                    
+                    <div id="quality-control" style="margin-top: 1rem; display: none;">
+                        <label for="image-quality">Quality: <span id="quality-value">90</span>%</label>
+                        <input type="range" id="image-quality" min="1" max="100" value="90" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
+                    </div>
+                </div>
+                
+                <button id="convert-image" disabled style="margin-top: 1rem;"><span>Convert Image</span></button>
+                
+                <div class="preview-container" id="converter-preview" style="display: none;">
+                    <div class="preview-box">
+                        <h3>Original (<span id="original-format"></span>)</h3>
+                        <img id="converter-original" src="" alt="Original image" style="max-height: 250px; object-fit: contain;">
+                        <p class="info-text" id="original-size"></p>
+                    </div>
+                    <div class="preview-box">
+                        <h3>Converted (<span id="converted-format"></span>)</h3>
+                        <canvas id="converter-canvas" style="max-height: 250px;"></canvas>
+                        <p class="info-text" id="converted-size"></p>
+                    </div>
+                </div>
+                
+                <div class="output-area" id="converter-output" style="margin-top: 1.5rem; display: none;">
+                    <button id="download-converted" class="button-secondary"><span>Download Converted Image</span></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="image-converter.js"></script>
+</body>
+</html>

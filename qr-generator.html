@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | QR Code Generator</title>
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tool-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="https://placehold.co/90x90/e890be/172D33?text=RS" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>QR Code Generator</h1>
+            <p class="page-subtitle">Create custom QR codes from any text or URL</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-card">
+                <p class="tool-description">Generate high-quality QR codes for websites, text, or contact information. Customize with your logo for brand recognition.</p>
+                
+                <div class="input-group">
+                    <label for="qr-input">Enter text or URL</label>
+                    <textarea id="qr-input" placeholder="https://example.com or any text..."></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-logo">
+                        <span>Include logo in center</span>
+                    </label>
+                </div>
+                
+                <div class="input-group" id="logo-options" style="display: none;">
+                    <label>Logo Options</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
+                            <input type="radio" name="logo-choice" id="use-rs-logo" checked>
+                            <span>Use RS Logo (Text)</span>
+                        </label>
+                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
+                            <input type="radio" name="logo-choice" id="use-custom-logo">
+                            <span>Upload Custom</span>
+                        </label>
+                    </div>
+                    <input type="file" id="custom-logo-upload" accept="image/*">
+                    <label for="custom-logo-upload" class="file-upload-area" id="custom-logo-area" style="display: none; padding: 1.5rem; margin: 0;">
+                        <div class="upload-icon" style="width: 40px; height: 40px; font-size: 1.25rem; margin: 0 auto 0.5rem;">🎨</div>
+                        <div class="upload-text" style="font-size: 0.95rem;">Upload your logo</div>
+                        <div class="upload-subtext" style="font-size: 0.8rem;">PNG or JPG recommended</div>
+                    </label>
+                    <p class="file-name" id="custom-logo-name"></p>
+                </div>
+                
+                <button id="generate-qr"><span>Generate QR Code</span></button>
+                
+                <div class="output-area">
+                    <div id="qr-placeholder" class="output-placeholder">Your QR code will appear here</div>
+                    
+                    <div id="qr-display-content" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                        <div id="qrcode-wrapper" style="display: none; padding: 2rem; background: var(--color-white); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: scaleIn 0.4s ease;">
+                            <div id="qrcode"></div>
+                        </div>
+                        <div style="display: none; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;" id="qr-download-controls">
+                            <select id="qr-format" style="width: 120px; min-width: 120px; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                <option value="png">PNG</option>
+                                <option value="jpg">JPG</option>
+                            </select>
+                            <button id="download-qr" class="button-secondary"><span>Download</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="qr-generator.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | Background Remover</title>
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tool-styles.css">
+    <style>
+        /* Checkered background for transparency */
+        .preview-box.transparent-bg {
+            background-image: 
+                linear-gradient(45deg, #2a4e59 25%, transparent 25%),
+                linear-gradient(-45deg, #2a4e59 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #2a4e59 75%),
+                linear-gradient(-45deg, transparent 75%, #2a4e59 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        
+        .preview-box h3 {
+            background: rgba(71, 48, 79, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin: -1rem 0 1rem -1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="https://placehold.co/90x90/e890be/172D33?text=RS" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Background Remover</h1>
+            <p class="page-subtitle">Remove backgrounds from images using edge detection</p>
+        </div>
+
+        <div class="tool-container">
+            <div class="tool-card" id="bg-remover-card">
+                <p class="tool-description">Upload an image and automatically remove its background. Works best with images that have clear contrast between subject and background.</p>
+                
+                <input type="file" id="image-upload" accept="image/*">
+                
+                <label for="image-upload" class="file-upload-area" id="bg-upload-area">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Drop image here or click to browse</div>
+                    <div class="upload-subtext">Supports JPG, PNG, GIF</div>
+                </label>
+                
+                <p class="file-name" id="file-name"></p>
+                
+                <button id="remove-bg" disabled><span>Remove Background</span></button>
+                
+                <div id="processing-container" style="display: none;">
+                    <div class="processing-animation">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                        <p class="processing-text">Removing background...</p>
+                    </div>
+                </div>
+                
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <div class="preview-box">
+                        <h3>Original</h3>
+                        <img id="original-preview" src="" alt="Original image">
+                    </div>
+                    <div class="preview-box transparent-bg">
+                        <h3>Processed</h3>
+                        <canvas id="processed-canvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="output-area" id="bg-output" style="margin-top: 1.5rem; display: none;">
+                    <button id="download-result" class="button-secondary"><span>Download Result (PNG)</span></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="bg-remover.js"></script>
+</body>
+</html>
