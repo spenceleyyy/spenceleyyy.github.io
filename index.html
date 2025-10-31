@@ -5,47 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Neuroscience & Engineering</title>
     
-    <!-- Logo must be in the repository root -->
     <link rel="icon" href="/logos/RSlogoUPDATED.png"> 
     
-    <!-- Three.js and GLTFLoader CDNs are here -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 
-    
-    <!-- FIX #1: SWITCHING TO FINAL ROBUST CDN PATH TO BYPASS SCRIPT BLOCKING ERRORS -->
     <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
 
-    <!-- Google Font for Cursive Name -->
     <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet"> 
 
-    
     <style>
         :root {
-            /* Branding Colors - Based on your IMG_3400.jpg palette */
-            
-            /* Primary Accent: Bright Pink/Rose (Used for buttons and links) */
             --color-primary: #e890be; 
-            
-            /* --- DARK THEME UI COLORS --- */
-            
-            /* Main Background: Deep Navy/Teal (Darkest color for the body) */
             --color-background-main: #172D33; 
-            
-            /* Secondary Background: Deep Plum/Indigo (Used for contrast sections like Contact/Footer) */
             --color-background-secondary: #47304F; 
-
-            /* Main Text: Switched to Cream/Off-White (#FFFFED) */
             --color-text-dark: #FFFFED;       
-            
-            /* Subtle Text/Paragraphs: Light/Desaturated Purple (Unchanged) */
             --color-text-body: #A294A6;       
-            
-            /* Accent: Deepest Purple (Used for specific details or shadows) */
             --color-text-light: #641E4F;       
-            
-            /* Pure white replacement (Cards, etc.) - Switched to Cream */
             --color-white: #FFFBEB;           
-
-            /* Typography */
             --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
         }
         
@@ -58,14 +33,11 @@
         body {
             font-family: var(--font-display);
             line-height: 1.6;
-            /* Text color is now light */
             color: var(--color-text-dark);
-            /* Background is now dark charcoal */
             background: var(--color-background-main);
             overflow-x: hidden;
         }
         
-        /* --- ANIMATION KEYFRAMES (COPIED FROM misc.html) --- */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -76,9 +48,7 @@
                 transform: translateY(0);
             }
         }
-
         
-        /* --- BACKGROUND CONTAINERS --- */
         .brain-background {
             position: fixed;
             top: 50%;
@@ -112,12 +82,11 @@
             position: fixed;
             top: 0;
             width: 100%;
-            /* ADJUSTED FOR DARK THEME: Darker semi-transparent background */
-            background: rgba(23, 45, 51, 0.85); /* Uses a semi-transparent version of main background */
+            background: rgba(23, 45, 51, 0.85);
             backdrop-filter: saturate(180%) blur(20px);
             padding: 1.2rem 5%;
             z-index: 1000;
-            border-bottom: 0.5px solid rgba(255,255,255,0.1); /* Lighter border */
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
         }
         .nav-content {
             max-width: 1200px;
@@ -128,48 +97,45 @@
         }
         .logo-link {
             display: flex;
-            /* CHANGE: Switched to row to place name right of logo */
             flex-direction: row; 
-            /* CHANGE: Center items vertically */
             align-items: center;
             text-decoration: none;
             line-height: 1; 
-            gap: 0.75rem; /* Added gap for spacing between logo and name */
+            gap: 0.75rem;
         }
         .logo-image {
             height: 55px; 
             width: auto;
             transition: opacity 0.3s;
         }
-        /* Style for the full name below the logo */
         .full-name {
-            /* Now uses the imported cursive font */
             font-family: 'Style Script', cursive; 
             font-size: 1.5rem;
             font-weight: 400; 
             color: var(--color-text-dark);
-            margin-top: 0; /* Removed top margin */
+            margin-top: 0;
             letter-spacing: 0.5px;
         }
         .nav-links {
             display: flex;
             gap: 3rem;
             list-style: none;
+            align-items: center;
         }
         .nav-links a {
-            color: var(--color-text-dark); /* Now cream */
+            color: var(--color-text-dark);
             text-decoration: none;
-            /* REMOVED opacity transition to use sliding underline */
             transition: color 0.3s; 
             font-size: 0.875rem;
             font-weight: 400;
-            position: relative; /* Needed for ::after positioning */
+            position: relative;
+            display: block;
+            padding: 0.5rem 0;
         }
         
-        /* --- ADDED/UPDATED HOVER STYLES FROM misc.html --- */
         .nav-links a:hover,
         .nav-links a:focus {
-            color: var(--color-primary); /* Highlight color on hover */
+            color: var(--color-primary);
         }
 
         .nav-links a::after {
@@ -177,17 +143,69 @@
             position: absolute;
             bottom: -4px;
             left: 0;
-            width: 0; /* Starts hidden */
+            width: 0;
             height: 2px;
             background: var(--color-primary);
-            transition: width 0.3s ease; /* Animation for the underline */
+            transition: width 0.3s ease;
         }
         
         .nav-links a:hover::after,
         .nav-links a:focus::after {
-            width: 100%; /* Expands on hover */
+            width: 100%;
         }
-        /* ------------------------------------------------ */
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(23, 45, 51, 0.95);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(232, 144, 190, 0.2);
+            border-radius: 12px;
+            padding: 0.5rem 0;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transform: translateX(-50%) translateY(-10px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .dropdown-menu li {
+            list-style: none;
+        }
+
+        .dropdown-menu a {
+            padding: 0.75rem 1.5rem;
+            display: block;
+            white-space: nowrap;
+            transition: background 0.2s ease;
+        }
+
+        .dropdown-menu a::after {
+            display: none;
+        }
+
+        .dropdown-menu a:hover {
+            background: rgba(232, 144, 190, 0.1);
+        }
         
         /* --- SECTIONS & TYPOGRAPHY --- */
         section {
@@ -209,9 +227,8 @@
             font-weight: 600;
             letter-spacing: -3px;
             margin-bottom: 1.5rem;
-            color: var(--color-text-dark); /* Now cream */
+            color: var(--color-text-dark);
             line-height: 1.05;
-            /* ADDED: Fade-in animation */
             animation: fadeInUp 0.8s ease;
         }
         h2 {
@@ -219,17 +236,16 @@
             font-weight: 600;
             letter-spacing: -2px;
             margin-bottom: 2rem;
-            color: var(--color-text-dark); /* Now cream */
+            color: var(--color-text-dark);
             line-height: 1.1;
         }
         .subtitle {
             font-size: 1.75rem;
             font-weight: 400;
-            color: var(--color-text-body); /* Subtle light gray/purple */
+            color: var(--color-text-body);
             margin-bottom: 3rem;
             line-height: 1.4;
         }
-        /* Style for the link inside the subtitle */
         .subtitle a {
             color: var(--color-primary);
             text-decoration: none;
@@ -241,7 +257,7 @@
 
         .hero-text {
             font-size: 1.25rem;
-            color: var(--color-text-body); /* Subtle light gray/purple */
+            color: var(--color-text-body);
             line-height: 1.6;
             max-width: 700px;
             margin: 0 auto 3rem;
@@ -252,7 +268,7 @@
             display: inline-block;
             padding: 0.875rem 2rem;
             background: var(--color-primary);
-            color: var(--color-background-main); /* Pop color on top of bright pink */
+            color: var(--color-background-main);
             text-decoration: none;
             border-radius: 980px;
             font-size: 1.0625rem;
@@ -261,7 +277,7 @@
             letter-spacing: -0.2px;
         }
         .cta-button:hover {
-            background: #e0609d; /* Slightly lighter pink */
+            background: #e0609d;
         }
         .secondary-button {
             display: inline-block;
@@ -279,7 +295,7 @@
         }
         .secondary-button:hover {
             background: var(--color-primary);
-            color: var(--color-background-main); /* Pop color on hover */
+            color: var(--color-background-main);
         }
         
         /* --- CARDS & GRIDS --- */
@@ -292,10 +308,9 @@
         }
         .feature-card {
             padding: 2.5rem;
-            /* Background is now dark, not white */
             background: var(--color-background-main);
             border-radius: 18px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4); /* Darker shadow for depth */
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -306,20 +321,18 @@
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-            color: var(--color-primary); /* Use pink accent on icons */
-            /* Add this class to a card to use a background image for creative visual integration */
-            /* background-repeat: no-repeat; background-position: center; background-size: contain; */
+            color: var(--color-primary);
         }
         .feature-card h3 {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.75rem;
-            color: var(--color-text-dark); /* Now cream */
+            color: var(--color-text-dark);
             letter-spacing: -0.5px;
         }
         .feature-card p {
             font-size: 1rem;
-            color: var(--color-text-body); /* Now subtle light gray */
+            color: var(--color-text-body);
             line-height: 1.5;
         }
         .projects-grid {
@@ -330,7 +343,6 @@
             text-align: left;
         }
         .project-card {
-            /* Background is now dark, not white */
             background: var(--color-background-main);
             border-radius: 18px;
             overflow: hidden;
@@ -346,12 +358,10 @@
         .project-image {
             width: 100%;
             height: 240px;
-            /* Using a vertical gradient with the palette's deep colors */
             background: linear-gradient(180deg, #641E4F 0%, #172D33 100%); 
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Changed to fit placeholder text */
             font-size: 2.5rem;
             font-weight: 600;
             color: var(--color-text-dark);
@@ -363,11 +373,11 @@
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: var(--color-text-dark); /* Now cream */
+            color: var(--color-text-dark);
             letter-spacing: -0.5px;
         }
         .project-content p {
-            color: var(--color-text-body); /* Now subtle light gray */
+            color: var(--color-text-body);
             margin-bottom: 1.5rem;
             font-size: 1rem;
             line-height: 1.5;
@@ -385,7 +395,6 @@
         
         /* --- CONTACT & FOOTER --- */
         .contact-section {
-            /* Uses pure black secondary background for deep contrast */
             background: var(--color-background-secondary);
             position: relative;
             overflow: hidden;
@@ -399,7 +408,6 @@
         }
         .contact-link {
             padding: 0.875rem 2rem;
-            /* Use accent color for button background */
             background: var(--color-primary);
             color: var(--color-background-main); 
             text-decoration: none;
@@ -456,17 +464,28 @@
     <nav aria-label="Main Navigation">
         <div class="nav-content">
             <a href="#hero" class="logo-link">
-                
-<img src="/logos/RSlogoUPDATED.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
-                <!-- Name is now inline with the logo -->
+                <img src="/logos/RSlogoUPDATED.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
                 <span class="full-name">Robert J. Spenceley</span>
             </a>
             <ul class="nav-links">
-                <!-- I'll use a class 'active' to highlight the current/home link -->
                 <li><a href="#about">About</a></li>
                 <li><a href="#research">Research</a></li>
                 <li><a href="projects.html">Projects</a></li>
-                <li><a href="misc.html">Misc</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Resources ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+                    </ul>
+                </li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -485,10 +504,8 @@
         <div class="content-wrapper">
             <h2>Understanding how humans interact with advanced systems.</h2>
             <p class="hero-text">I'm passionate about the intersection of neuroscience and engineering, focusing on how humans naturally interact with automated systems. My work explores cognitive ergonomics, neural interfaces, and designing technology that seamlessly integrates with human capabilities.</p>
-                                        <div class="feature-grid">
+            <div class="feature-grid">
                 <div class="feature-card">
-                    <!-- Placeholder for the icon. Consider using a simple SVG or CSS art here. -->
-                    <!-- To creatively integrate the EEG/fNIRS cap image, apply a background-image property to this 'feature-card' or 'feature-icon' div in the CSS -->
                     <div class="feature-icon" style="font-style: normal;">N</div>
                     <h3>Neuroscience</h3>
                     <p>I use EEG and fNIRS to explore the neurodynamics of teaming, trust, error detection & more.</p>
@@ -528,32 +545,26 @@
             <h2>Featured projects.</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <!-- Updated placeholder to HRI -->
                     <div class="project-image">HRI</div>
                     <div class="project-content">
                         <h3>Physical Human-Robot Interaction</h3>
                         <p>This project focused on understanding how human biomechanics and neural responses change when physically collaborating with a UR10e robotic arm, especially when the robot's reliability is varied. Experiments were conducted using a breadth of bioinstrumentation, including EEG, fNIRS, eye-tracking, AMTI Force Plates, EMG, and ECG. I utilized methods and software such as Lab Streaming Layer (LSL), Python, and MATLAB to streamline data collection and perform detailed data analysis across these methodologies.</p>
-                        <!-- FUNCTIONAL FIX: Link to projects.html -->
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
                 <div class="project-card">
-                    <!-- Updated placeholder to NEURAL (Correction from user) -->
                     <div class="project-image">NEURAL</div>
                     <div class="project-content">
                         <h3>Neurodynamics of taskwork and teamwork in multihuman-robot teams</h3>
-                        <p>This research investigates the **neurodynamics** of taskwork and teamwork in Search and Rescue (SAR) teams as they transition between multi-human and multi-human-robot configurations. Using **EEG and EEG hyperscanning** (interbrain synchrony), the study analyzed how the team's neural patterns changed when a human navigator was replaced by a virtual robot navigator. The project's goal was to show that multi-human robot teaming is a fundamentally distinct team construct that alters both taskwork and teamwork, regardless of the robot’s capabilities.</p>
-                        <!-- FUNCTIONAL FIX: Link to projects.html -->
+                        <p>This research investigates the **neurodynamics** of taskwork and teamwork in Search and Rescue (SAR) teams as they transition between multi-human and multi-human-robot configurations. Using **EEG and EEG hyperscanning** (interbrain synchrony), the study analyzed how the team's neural patterns changed when a human navigator was replaced by a virtual robot navigator. The project's goal was to show that multi-human robot teaming is a fundamentally distinct team construct that alters both taskwork and teamwork, regardless of the robot's capabilities.</p>
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
                 <div class="project-card">
-                    <!-- Updated placeholder to SURVEY -->
                     <div class="project-image">SURVEY</div>
                     <div class="project-content">
                         <h3>Comfort Survey Development</h3>
                         <p>I am currently developing and validating a new scale designed for use in real-world working settings. This scale will be used to accurately assess how comfortable workers are with the presence and activity of robots in their immediate environment.</p>
-                        <!-- FUNCTIONAL FIX: Link to projects.html -->
                         <a href="projects.html" class="project-link">View Project →</a>
                     </div>
                 </div>
@@ -566,11 +577,8 @@
             <h2>Let's connect.</h2>
             <p class="hero-text">Interested in collaboration or have questions about my work?</p>
             <div class="contact-links">
-                <!-- Updated Email -->
                 <a href="mailto:spenceley@wisc.edu" class="contact-link" target="_blank">Email</a>
-                <!-- Updated LinkedIn -->
                 <a href="https://www.linkedin.com/in/spenceleyy" class="contact-link" target="_blank">LinkedIn</a>
-                <!-- GitHub link removed -->
             </div>
         </div>
     </section>
@@ -580,11 +588,9 @@
     </footer>
 
     <script>
-        
         // --- 1. BRAIN BACKGROUND (Loads GLB file) ---
         const brainContainer = document.getElementById('brain-container');
         const brainScene = new THREE.Scene();
-        // Camera position is moved closer to the model (0.1 to 100)
         const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100); 
         const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
@@ -595,7 +601,6 @@
         const brainGroup = new THREE.Group();
         brainScene.add(brainGroup);
 
-        // Lighting for brain (Boosted intensity for visibility)
         const brainAmbient = new THREE.AmbientLight(0xffffff, 1.2); 
         brainScene.add(brainAmbient);
 
@@ -603,101 +608,75 @@
         brainLight1.position.set(5, 5, 5);
         brainScene.add(brainLight1);
 
-        // Camera position moved significantly further back
-        brainCamera.position.z = 10; // CAMERA Z POSITION
+        brainCamera.position.z = 10;
         let brainScrollRotation = 0;
         let loadedBrainModel; 
         
-        // MATERIAL FOR VISIBILITY FIX (Light Gray Wireframe)
         const visibleMaterial = new THREE.MeshBasicMaterial({
-            color: 0xA294A6, // Set to subtle light purple/gray from new palette
-            wireframe: true, // Display the structure clearly
+            color: 0xA294A6,
+            wireframe: true,
             transparent: true,
-            opacity: 0.85 // Increased opacity for prominence
+            opacity: 0.85
         });
 
-        // **Implementation of the delayed/retried loader initialization**
         function initGLTFLoader() {
-            // This checks if the external script loaded and defined the object
             if (typeof THREE.GLTFLoader === 'undefined') {
-                // If it fails after 10 retries, stop to avoid resource consumption.
                 if (initGLTFLoader.attempts > 10) {
-                    // Stop retrying. The issue is external/network blocking.
                     return; 
                 }
                 
                 initGLTFLoader.attempts = (initGLTFLoader.attempts || 0) + 1;
-                // Keep retrying
                 setTimeout(initGLTFLoader, 100);
                 return;
             }
 
-            // Loader is now defined! Start loading the model.
             const loader = new THREE.GLTFLoader();
 
-            // 3D MODEL PATH FIX: /uploads-files-2145984-brain.glb
             loader.load(
                 '/models/uploads-files-2145984-brain.glb',
                 function (gltf) {
                     loadedBrainModel = gltf.scene;
                     
-                    // 💡 Apply the new visible material
                     loadedBrainModel.traverse((child) => {
                         if (child.isMesh) {
                             child.material = visibleMaterial;
                         }
                     });
                     
-                    // DRAMATICALLY INCREASED SCALE (The fix!)
-                    loadedBrainModel.scale.set(8, 8, 8); // SCALE SETTING
+                    loadedBrainModel.scale.set(8, 8, 8);
                     loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
-                    
-                    // Center the model in the scene
                     loadedBrainModel.position.set(0, 0, 0);
 
                     brainGroup.add(loadedBrainModel);
-                    
-                    // Start animation loop only after the model is loaded and visible
                     animate(); 
                 },
-                // Optional: called while loading is progressing
-                function (xhr) {
-                    // console.log('Brain Model: ' + (xhr.loaded / xhr.total * 100).toFixed(0) + '% loaded');
-                },
-                // Optional: called when loading has errors
+                function (xhr) {},
                 function (error) {
                     console.error('An error occurred loading the GLB model:', error);
                 }
             );
         }
 
-        // Delay the start of the initialization until the window is fully loaded.
         window.onload = function() {
-            // Start the retrying initialization sequence
             initGLTFLoader();
         };
         
-        // We still need the main animation loop defined.
         function animate() {
             requestAnimationFrame(animate);
             
-            // Animate loaded brain model
             if (loadedBrainModel) {
-                // RESTORED ORIGINAL AESTHETIC LOGIC
                 loadedBrainModel.rotation.y = brainScrollRotation * 0.5; 
                 loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
             }
             
             brainRenderer.render(brainScene, brainCamera);
             
-            // Animate contact sphere
             sphereGroup.rotation.y += 0.005;
             sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
             contactRenderer.render(contactScene, contactCamera);
         }
 
         // --- 2. CONTACT PAGE 3D SPHERE ---
-
         const contactContainer = document.getElementById('contact-3d');
         const contactScene = new THREE.Scene();
         const contactCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -709,7 +688,6 @@
 
         const sphereGroup = new THREE.Group();
 
-        // Simple Icosahedron for an abstract, technical look
         const contactGeometry = new THREE.IcosahedronGeometry(3, 1);
         const contactMaterial = new THREE.MeshPhongMaterial({
             color: 0x0071e3, 
@@ -726,18 +704,13 @@
 
         contactCamera.position.z = 8;
 
-
-        // --- 3. EVENT HANDLERS (Moved outside window.onload for immediate attachment) ---
-        
-        // Handle scroll for hero background rotation and contact visibility
+        // --- 3. EVENT HANDLERS ---
         window.addEventListener('scroll', () => {
-            // RESTORED ORIGINAL SCROLL CALCULATION
             brainScrollRotation = window.scrollY * 0.0008;
             
             const contactSection = document.getElementById('contact');
             if (contactSection) {
                 const rect = contactSection.getBoundingClientRect();
-                // Check if the section is at least partially in the viewport
                 const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
                 
                 if (isVisible) {
@@ -748,7 +721,6 @@
             }
         });
         
-        // Handle resize
         window.addEventListener('resize', () => {
             brainCamera.aspect = window.innerWidth / window.innerHeight;
             brainCamera.updateProjectionMatrix();
@@ -759,10 +731,8 @@
             contactRenderer.setSize(window.innerWidth, window.innerHeight);
         });
         
-        // Smooth scroll for navigation links (Only for internal links, which now excludes Projects/Misc)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                // Only prevent default if it's an internal link
                 if (this.getAttribute('href').startsWith('#') && this.getAttribute('href') !== '#') { 
                     e.preventDefault();
                     const target = document.querySelector(this.getAttribute('href'));
@@ -776,16 +746,8 @@
             });
         });
 
-        // ====================================================================
-        // FIX: ROBUST SCROLL-TO-TOP IMPLEMENTATION
-        // This forces the scroll to the top regardless of browser history or dynamic element loading.
-        // ====================================================================
-
         document.addEventListener('DOMContentLoaded', () => {
-            // Scroll immediately after the document structure is loaded
             window.scrollTo(0, 0);
-            
-            // Add a slight timeout to combat issues related to dynamic element loading/reflow
             setTimeout(() => {
                 window.scrollTo(0, 0);
             }, 10);
