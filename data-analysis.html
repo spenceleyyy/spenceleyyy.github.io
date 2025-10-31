@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RS | Interactive Data Analysis</title>
+    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="resource-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/r.min.js"></script>
+</head>
+<body>
+    <nav aria-label="Main Navigation">
+        <div class="nav-content">
+            <a href="index.html" class="logo-link">
+                <img src="https://placehold.co/90x90/e890be/172D33?text=RS" alt="RS Logo" class="logo-image">
+                <span class="full-name">Robert J. Spenceley</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#research">Research</a></li>
+                <li><a href="index.html#projects">Projects</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Misc ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="qr-generator.html">QR Code Generator</a></li>
+                        <li><a href="bg-remover.html">Background Remover</a></li>
+                        <li><a href="image-converter.html">Image Converter</a></li>
+                        <li><a href="link-shortener.html">Link Shortener</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Resources ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+                    </ul>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>Interactive Data Analysis</h1>
+            <p class="page-subtitle">Animated visualizations with R and ggplot2</p>
+        </div>
+
+        <div class="content-container">
+            <!-- Section 1: Plot on LEFT, Code on RIGHT -->
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Cumulative Pokémon by Primary Type</h3>
+                        <p class="plot-description">An animated bar chart race showing how Pokémon types accumulate across generations</p>
+                        <div class="plot-wrapper">
+                            <!-- Replace this src with your actual GitHub-hosted GIF/HTML -->
+                            <img src="pokemon-animation.gif" alt="Pokémon Type Animation" class="plot-image">
+                            <!-- OR embed interactive HTML -->
+                            <!-- <iframe src="pokemon-animation.html" class="plot-iframe"></iframe> -->
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">gganimate</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon">📊</span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-1" class="language-r">p <- ggplot(ranked, aes(x = rank, y = Cum, fill = Type1, group = Type1)) +
+  geom_col(width = 0.80, color = NA) +
+  # left-aligned type names with matching colors
+  geom_text(aes(y = -left_inset,
+                label = ifelse(Cum > 0, type_label, ""),
+                colour = Type1),
+            hjust = 1, vjust = 0.5, size = 4.6, fontface = "bold",
+            lineheight = 0.9, check_overlap = TRUE) +
+  # right value labels
+  geom_text(aes(y = Cum + right_inset,
+                label = ifelse(Cum > 0, value_label, ""),
+                colour = Type1),
+            hjust = 0, vjust = 0.5, size = 4, fontface = "bold",
+            check_overlap = TRUE) +
+  scale_fill_manual(values = pokemon_colors, drop = FALSE) +
+  scale_colour_manual(values = pokemon_colors, drop = FALSE) +
+  coord_flip(clip = "off") +
+  scale_x_reverse() +
+  scale_y_continuous(
+    limits = c(-left_inset, max_cum * 1.12),
+    labels = comma,
+    expand = c(0, 0)
+  ) +
+  labs(
+    title = "Cumulative Pokémon by Primary Type",
+    subtitle = "All types • Up to Generation {closest_state}",
+    x = NULL, y = NULL,
+    caption = "Counts accumulate across generations"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#e9eef2"),
+    plot.background  = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white",  color = NA),
+    plot.title = element_text(face = "bold", size = 22),
+    plot.subtitle = element_text(size = 14, colour = "#555555"),
+    plot.caption = element_text(size = 10, colour = "#777777"),
+    plot.margin = margin(16, 36, 16, 96)
+  ) +
+  transition_states(Generation, transition_length = 4, state_length = 1) +
+  view_follow(fixed_y = TRUE) +
+  ease_aes("cubic-in-out")
+
+# --- Animate inline (HTML) ---
+print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code></pre>
+                </div>
+            </section>
+
+            <!-- Add more sections here in alternating layout -->
+            <!-- Next section would use layout-right class -->
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script src="data-analysis.js"></script>
+</body>
+</html>
