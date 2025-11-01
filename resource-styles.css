@@ -255,6 +255,14 @@ main {
     display: block;
     border-radius: 8px;
 }
+.plot-video {
+    width: 100%;
+    max-width: 600px; /* Adjust this value to make it smaller/larger */
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Centers the video */
+    border-radius: 8px;
+}
 
 .plot-iframe {
     width: 100%;
