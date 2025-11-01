@@ -344,11 +344,40 @@ main {
 }
 
 /* Code Block */
+/* Code Block */
 pre {
     margin: 0;
     padding: 2rem;
     overflow-x: auto;
+    overflow-y: auto;
     background: #1e1e1e !important;
+    max-height: 600px; /* Adjust this to control how tall the code block is */
+}
+
+/* Hide scrollbar by default, show on hover */
+pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: rgba(232, 144, 190, 0.3);
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+pre:hover::-webkit-scrollbar-thumb {
+    opacity: 1;
+    background: rgba(232, 144, 190, 0.5);
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
 }
 
 code {
