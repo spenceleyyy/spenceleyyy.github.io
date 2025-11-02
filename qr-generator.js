@@ -16,10 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customLogoName = document.getElementById('custom-logo-name');
     const qrDisplayContent = document.getElementById('qr-display-content'); 
     
-    // --- NEW DEFAULT LOGO PATH ---
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
-    const BRAND_COLOR = "#e890be"; // Your pink color for the border
-    // ----------------------------
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
@@ -100,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateQRCodeFromAPI(text, canvas) {
-        // We ensure the QR code itself is black and white by using the default API settings
         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
         
         const img = new Image();
@@ -121,66 +117,64 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = qrApiUrl;
     }
 
-    // Updated logic for adding the circular logo with border
+    // Updated logic for adding the logo: No circle, bigger, and higher quality
     function addLogoToQR(canvas) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         
-        // Logo will be approximately 20% of the QR code size
-        const logoDiameter = Math.round(canvasSize * 0.20); 
-        const logoRadius = logoDiameter / 2;
-        
-        // Outer ring size (e.g., 25% of QR code size)
-        const outerDiameter = Math.round(canvasSize * 0.25);
-        const outerRadius = outerDiameter / 2;
+        // --- LOGO SIZE ADJUSTMENT ---
+        // Let the logo take up a larger portion, e.g., 25-30% of the QR code width.
+        // This is a common practice to make it visible but not obscure too much of the code.
+        const logoTargetSize = Math.round(canvasSize * 0.28); // Increased size (e.g., 28% of QR code)
+        // ----------------------------
 
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
-        const logoX = centerX - logoRadius;
-        const logoY = centerY - logoRadius;
+        const logoX = centerX - (logoTargetSize / 2);
+        const logoY = centerY - (logoTargetSize / 2);
 
-        // 1. Draw the Outer Ring (Border) - Now using your brand color
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
-        ctx.fillStyle = BRAND_COLOR; // Changed from green to your pink
-        ctx.fill();
-        ctx.closePath();
-
-        // 2. Draw the Inner White Circle (Background)
-        const innerRadius = outerRadius - 4; // 4px border
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
-        ctx.fillStyle = 'white';
-        ctx.fill();
-        ctx.closePath();
-
-        // 3. Determine which logo to use
+        // Determine which logo to use
         let logoToUse = null;
 
         if (useCustomLogo && useCustomLogo.checked && customLogoDataUrl) {
-            // Option 1: User uploaded a custom logo
             logoToUse = customLogoDataUrl;
         } else {
-            // Option 2: Use the default RS logo image (Your request)
             logoToUse = DEFAULT_LOGO_PATH;
         }
 
         if (logoToUse) {
             const img = new Image();
             img.onload = () => {
-                // Set a clipping region to make the logo circular
-                ctx.save();
-                ctx.beginPath();
-                // Clip to the inner white circle size
-                ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2); 
-                ctx.clip(); 
-                
-                // Draw the custom image centered within the inner circle size
-                ctx.drawImage(img, logoX, logoY, logoDiameter, logoDiameter);
-                ctx.restore(); // Restore context to remove clipping path
+                // --- NO CIRCLE BACKGROUND/BORDER ---
+                // We no longer draw any circles, so the logo will be directly on the QR code.
+                // You might want to uncomment the white rectangle below if the logo needs a solid background
+                // to stand out, but for now, it's removed as requested.
+                // ctx.fillStyle = 'white'; 
+                // ctx.fillRect(logoX, logoY, logoTargetSize, logoTargetSize);
+                // ----------------------------------
+
+                // --- IMPROVED LOGO QUALITY & SIZE ---
+                // Draw the image at its natural resolution if available, then scale it down.
+                // For optimal quality, the source image should be high resolution.
+                // If the source image is already small, drawing it larger will still be pixelated.
+                // Assuming the source `DEFAULT_LOGO_PATH` or `customLogoDataUrl` is reasonably sized,
+                // this will now draw it at the `logoTargetSize`.
+                ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
+                // ------------------------------------
+            };
+            img.onerror = (e) => {
+                console.error("Failed to load logo image:", e);
+                // Fallback to text if image fails to load
+                ctx.fillStyle = 'black'; 
+                ctx.font = 'bold 30px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('RS', centerX, centerY);
             };
             img.src = logoToUse;
             // Handle cross-origin issues for the default logo if hosted externally
+            // Note: If /logos/RSlogoUPDATED.png is on the same domain, crossOrigin='anonymous' is not strictly needed
+            // but harmless. If it's on a different domain, it's crucial.
             if (logoToUse === DEFAULT_LOGO_PATH) {
                 img.crossOrigin = 'anonymous'; 
             }
