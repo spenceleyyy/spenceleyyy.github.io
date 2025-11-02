@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     
-    // --- CANVAS RESOLUTION SETTING ---
-    const QR_SIZE = 600; // Increased to 600x600 for better quality
-    // ---------------------------------
+    const QR_SIZE = 600; 
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
@@ -77,9 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            console.log('Generating QR code for:', text);
-
-            // Clear previous QR code
+            // Clear previous QR code and its children (divs or canvas from library)
             qrcodeDiv.innerHTML = '';
             
             // Show QR code and controls
@@ -88,55 +84,56 @@ document.addEventListener('DOMContentLoaded', () => {
             if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
             if (qrDownloadControls) qrDownloadControls.style.display = 'flex';
 
-            // Create canvas for QR code
-            const canvas = document.createElement('canvas');
-            canvas.width = QR_SIZE;
-            canvas.height = QR_SIZE;
-            
-            // IMPORTANT: Set a smaller display size in CSS for the wrapper to fit on the screen
-            // The actual drawing resolution is 600x600, but we display it smaller.
+            // IMPORTANT: Set display size for the container
             qrcodeDiv.style.width = '300px'; 
             qrcodeDiv.style.height = '300px'; 
             
-            qrcodeDiv.appendChild(canvas);
-            currentQRCanvas = canvas;
-
-            // Generate QR code using API
-            generateQRCodeFromAPI(text, canvas);
+            // Generate QR code using the new library function
+            generateQRCodeWithLibrary(text);
         });
     }
-
-    function generateQRCodeFromAPI(text, canvas) {
-        // Use the new QR_SIZE variable in the API call
-        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${QR_SIZE}x${QR_SIZE}&data=${encodeURIComponent(text)}`;
+    
+    // --- NEW GENERATION FUNCTION USING QRCODE.JS ---
+    function generateQRCodeWithLibrary(text) {
+        // Use the imported library to generate the QR code
+        const qr = new QRCode(qrcodeDiv, {
+            text: text,
+            width: QR_SIZE,
+            height: QR_SIZE,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H // High error correction level for logos
+        });
         
-        const img = new Image();
-        img.crossOrigin = 'anonymous'; 
-        img.onload = () => {
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, QR_SIZE, QR_SIZE);
+        // The library draws into a <table> or <canvas>. We need a slight delay
+        // to ensure the canvas exists before we try to modify it.
+        setTimeout(() => {
+            // Find the generated canvas element
+            const canvas = qrcodeDiv.querySelector('canvas');
             
-            // Overlay logo if requested
-            if (includeLogoCheckbox && includeLogoCheckbox.checked) {
-                addLogoToQR(canvas);
+            if (canvas) {
+                currentQRCanvas = canvas;
+                
+                // Overlay logo if requested
+                if (includeLogoCheckbox && includeLogoCheckbox.checked) {
+                    addLogoToQR(canvas);
+                }
+            } else {
+                console.error("QR Code library did not create a canvas element.");
             }
-        };
-        img.onerror = () => {
-            alert('Failed to generate QR code. Please try again.');
-            console.error('QR code generation failed');
-        };
-        img.src = qrApiUrl;
+        }, 100);
     }
+    // ------------------------------------------------
 
-    // Updated logic: Create a circular cutout and place the logo in the center
+    // This function remains largely the same, but now it modifies the canvas
+    // created by the library, which is better quality than the image API.
     function addLogoToQR(canvas) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         
-        // --- LOGO SIZE ADJUSTMENT (Increased to 35% for maximum size) ---
-        const logoTargetSize = Math.round(canvasSize * 0.35); // Maxing out the size
+        // LOGO SIZE ADJUSTMENT (35% for maximum size)
+        const logoTargetSize = Math.round(canvasSize * 0.35); 
         const logoRadius = logoTargetSize / 2;
-        // -----------------------------------------------------------------
 
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
@@ -165,22 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (logoToUse) {
             const img = new Image();
             img.onload = () => {
-                // Drawing onto the 600x600 canvas ensures high clarity
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
             };
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
                 // Fallback to text if image fails to load
                 ctx.fillStyle = 'black'; 
-                ctx.font = 'bold 30px Arial';
+                ctx.font = `bold ${logoTargetSize / 4}px Arial`; // Scale font size
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('RS', centerX, centerY);
             };
             img.src = logoToUse;
-            if (logoToUse === DEFAULT_LOGO_PATH) {
-                img.crossOrigin = 'anonymous'; 
-            }
         }
     }
 
@@ -196,14 +189,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
             
             try {
-                // toDataURL will use the full 600x600 resolution for the download!
+                // toDataURL works reliably with a canvas generated on the same domain
                 const dataUrl = currentQRCanvas.toDataURL(mimeType);
                 const link = document.createElement('a');
                 link.download = `qrcode.${format}`;
                 link.href = dataUrl;
                 link.click();
             } catch (e) {
-                alert("Download failed. This is likely due to CORS policy on the generated QR code image (the image is from a different domain).");
+                alert("Download failed. A security or loading error occurred.");
                 console.error("Download error:", e);
             }
         });
