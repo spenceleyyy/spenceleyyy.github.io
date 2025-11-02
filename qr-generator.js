@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     
+    // --- CANVAS RESOLUTION SETTING ---
+    const QR_SIZE = 600; // Increased to 600x600 for better quality
+    // ---------------------------------
+    
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
 
@@ -86,8 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Create canvas for QR code
             const canvas = document.createElement('canvas');
-            canvas.width = 300;
-            canvas.height = 300;
+            canvas.width = QR_SIZE;
+            canvas.height = QR_SIZE;
+            
+            // IMPORTANT: Set a smaller display size in CSS for the wrapper to fit on the screen
+            // The actual drawing resolution is 600x600, but we display it smaller.
+            qrcodeDiv.style.width = '300px'; 
+            qrcodeDiv.style.height = '300px'; 
+            
             qrcodeDiv.appendChild(canvas);
             currentQRCanvas = canvas;
 
@@ -97,14 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateQRCodeFromAPI(text, canvas) {
-        // API call remains the same for black and white code
-        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
+        // Use the new QR_SIZE variable in the API call
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${QR_SIZE}x${QR_SIZE}&data=${encodeURIComponent(text)}`;
         
         const img = new Image();
         img.crossOrigin = 'anonymous'; 
         img.onload = () => {
             const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, 300, 300);
+            ctx.drawImage(img, 0, 0, QR_SIZE, QR_SIZE);
             
             // Overlay logo if requested
             if (includeLogoCheckbox && includeLogoCheckbox.checked) {
@@ -123,10 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         
-        // --- LOGO SIZE ADJUSTMENT (30% for high visibility) ---
-        const logoTargetSize = Math.round(canvasSize * 0.30); 
+        // --- LOGO SIZE ADJUSTMENT (Increased to 35% for maximum size) ---
+        const logoTargetSize = Math.round(canvasSize * 0.35); // Maxing out the size
         const logoRadius = logoTargetSize / 2;
-        // -------------------------------------------------------
+        // -----------------------------------------------------------------
 
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
@@ -134,14 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoY = centerY - logoRadius;
         
         // 1. Create the circular cutout (White Hole) ⚪
-        // This erases the QR code dots in the center.
-        ctx.save(); // Save the current state of the canvas context
+        ctx.save(); 
         ctx.beginPath();
         ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
         ctx.fillStyle = 'white'; 
-        ctx.fill(); // Fill the area with white to create the hole
+        ctx.fill(); 
         ctx.closePath();
-        ctx.restore(); // Restore the context
+        ctx.restore(); 
 
         // 2. Determine which logo to use
         let logoToUse = null;
@@ -156,10 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (logoToUse) {
             const img = new Image();
             img.onload = () => {
-                // To ensure the logo is perfectly centered and occupies the whole white circle, 
-                // we draw it directly onto the cleared area.
-                // NOTE: If your logo is not square or has transparent edges, it will draw outside the circle's bounding box.
-                // For a truly circular logo, you'd use a clipping path again, but this often degrades image quality.
+                // Drawing onto the 600x600 canvas ensures high clarity
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
             };
             img.onerror = (e) => {
@@ -190,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
             
             try {
+                // toDataURL will use the full 600x600 resolution for the download!
                 const dataUrl = currentQRCanvas.toDataURL(mimeType);
                 const link = document.createElement('a');
                 link.download = `qrcode.${format}`;
