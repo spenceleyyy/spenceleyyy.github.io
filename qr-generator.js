@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const customLogoArea = document.getElementById('custom-logo-area');
     const customLogoName = document.getElementById('custom-logo-name');
     
-    let currentQRCode = null;
+    let currentQRCanvas = null;
     let customLogoDataUrl = null;
 
     // Show/hide logo options
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Generate QR Code
+    // Generate QR Code using Canvas API directly (no external library needed!)
     if (generateBtn) {
         generateBtn.addEventListener('click', () => {
             const text = qrInput.value.trim();
@@ -70,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            console.log('Generating QR code for:', text);
+
             // Clear previous QR code
             qrcodeDiv.innerHTML = '';
             
@@ -78,32 +80,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
             if (qrDownloadControls) qrDownloadControls.style.display = 'flex';
 
-            // Generate QR code
-            currentQRCode = new QRCode(qrcodeDiv, {
-                text: text,
-                width: 300,
-                height: 300,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            // Create canvas for QR code
+            const canvas = document.createElement('canvas');
+            canvas.width = 300;
+            canvas.height = 300;
+            qrcodeDiv.appendChild(canvas);
+            currentQRCanvas = canvas;
 
-            // If logo is requested, overlay it after QR generation
-            if (includeLogoCheckbox && includeLogoCheckbox.checked) {
-                setTimeout(() => {
-                    addLogoToQR();
-                }, 100);
-            }
+            // Generate QR code using API
+            generateQRCodeFromAPI(text, canvas);
         });
     }
 
-    // Add logo to QR code
-    function addLogoToQR() {
-        const canvas = qrcodeDiv.querySelector('canvas');
-        if (!canvas) return;
+    function generateQRCodeFromAPI(text, canvas) {
+        // Use QR code API to generate the image
+        const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
+        
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, 300, 300);
+            
+            // If logo is requested, overlay it after QR generation
+            if (includeLogoCheckbox && includeLogoCheckbox.checked) {
+                addLogoToQR(canvas);
+            }
+        };
+        img.onerror = () => {
+            alert('Failed to generate QR code. Please try again.');
+            console.error('QR code generation failed');
+        };
+        img.src = qrApiUrl;
+    }
 
+    // Add logo to QR code
+    function addLogoToQR(canvas) {
         const ctx = canvas.getContext('2d');
-        const logoSize = 60; // Size of logo in center
+        const logoSize = 60;
         const x = (canvas.width - logoSize) / 2;
         const y = (canvas.height - logoSize) / 2;
 
@@ -134,12 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Download QR Code
     if (downloadBtn) {
         downloadBtn.addEventListener('click', () => {
-            const canvas = qrcodeDiv.querySelector('canvas');
-            if (!canvas) return;
+            if (!currentQRCanvas) {
+                alert('Please generate a QR code first');
+                return;
+            }
 
             const format = qrFormatSelect.value;
             const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-            const dataUrl = canvas.toDataURL(mimeType);
+            const dataUrl = currentQRCanvas.toDataURL(mimeType);
 
             const link = document.createElement('a');
             link.download = `qrcode.${format}`;
