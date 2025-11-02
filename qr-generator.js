@@ -97,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateQRCodeFromAPI(text, canvas) {
+        // API call remains the same for black and white code
         const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(text)}`;
         
         const img = new Image();
@@ -117,23 +118,32 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = qrApiUrl;
     }
 
-    // Updated logic for adding the logo: No circle, bigger, and higher quality
+    // Updated logic: Create a circular cutout and place the logo in the center
     function addLogoToQR(canvas) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         
-        // --- LOGO SIZE ADJUSTMENT ---
-        // Let the logo take up a larger portion, e.g., 25-30% of the QR code width.
-        // This is a common practice to make it visible but not obscure too much of the code.
-        const logoTargetSize = Math.round(canvasSize * 0.28); // Increased size (e.g., 28% of QR code)
-        // ----------------------------
+        // --- LOGO SIZE ADJUSTMENT (30% for high visibility) ---
+        const logoTargetSize = Math.round(canvasSize * 0.30); 
+        const logoRadius = logoTargetSize / 2;
+        // -------------------------------------------------------
 
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
-        const logoX = centerX - (logoTargetSize / 2);
-        const logoY = centerY - (logoTargetSize / 2);
+        const logoX = centerX - logoRadius;
+        const logoY = centerY - logoRadius;
+        
+        // 1. Create the circular cutout (White Hole) ⚪
+        // This erases the QR code dots in the center.
+        ctx.save(); // Save the current state of the canvas context
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'white'; 
+        ctx.fill(); // Fill the area with white to create the hole
+        ctx.closePath();
+        ctx.restore(); // Restore the context
 
-        // Determine which logo to use
+        // 2. Determine which logo to use
         let logoToUse = null;
 
         if (useCustomLogo && useCustomLogo.checked && customLogoDataUrl) {
@@ -142,25 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
             logoToUse = DEFAULT_LOGO_PATH;
         }
 
+        // 3. Draw the Logo Image inside the cutout
         if (logoToUse) {
             const img = new Image();
             img.onload = () => {
-                // --- NO CIRCLE BACKGROUND/BORDER ---
-                // We no longer draw any circles, so the logo will be directly on the QR code.
-                // You might want to uncomment the white rectangle below if the logo needs a solid background
-                // to stand out, but for now, it's removed as requested.
-                // ctx.fillStyle = 'white'; 
-                // ctx.fillRect(logoX, logoY, logoTargetSize, logoTargetSize);
-                // ----------------------------------
-
-                // --- IMPROVED LOGO QUALITY & SIZE ---
-                // Draw the image at its natural resolution if available, then scale it down.
-                // For optimal quality, the source image should be high resolution.
-                // If the source image is already small, drawing it larger will still be pixelated.
-                // Assuming the source `DEFAULT_LOGO_PATH` or `customLogoDataUrl` is reasonably sized,
-                // this will now draw it at the `logoTargetSize`.
+                // To ensure the logo is perfectly centered and occupies the whole white circle, 
+                // we draw it directly onto the cleared area.
+                // NOTE: If your logo is not square or has transparent edges, it will draw outside the circle's bounding box.
+                // For a truly circular logo, you'd use a clipping path again, but this often degrades image quality.
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
-                // ------------------------------------
             };
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
@@ -172,9 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fillText('RS', centerX, centerY);
             };
             img.src = logoToUse;
-            // Handle cross-origin issues for the default logo if hosted externally
-            // Note: If /logos/RSlogoUPDATED.png is on the same domain, crossOrigin='anonymous' is not strictly needed
-            // but harmless. If it's on a different domain, it's crucial.
             if (logoToUse === DEFAULT_LOGO_PATH) {
                 img.crossOrigin = 'anonymous'; 
             }
