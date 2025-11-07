@@ -137,6 +137,126 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                 </div>
             </section>
 
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Interactive MPG Scatterplot</h3>
+                        <p class="plot-description">Explore fuel efficiency with hoverable tooltips for each vehicle.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="mpg_hover.html"
+                                    class="plot-video"
+                                    title="Interactive MPG scatterplot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+</code></pre>
+<pre><code id="code-2" class="language-r"># Hover Plot - Makes the names column
+mtcars.df = mtcars
+mtcars.df$name = rownames(mtcars.df)
+
+# Make the hover plot
+mpg.plot = ggplot(mtcars.df, aes(x = disp, y = mpg)) +
+  geom_point_interactive(aes(tooltip = name), size = 2) +
+  labs(title = "Hover to Reveal Name",
+       x = "Miles Per Gallon",
+       y = "Disp") +
+  theme_bw()
+
+girafe(
+  code = print(mpg.plot),
+  width_svg = 7, height_svg = 4,
+  options = list(
+    opts_sizing(rescale = TRUE)
+  )
+)
+</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Annotated Point Plot</h3>
+                        <p class="plot-description">An interactive annotated point plot with hover-enabled tooltips.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="p1n1_points_annotated.html"
+                                    class="plot-video"
+                                    title="Annotated interactive point plot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-3" class="language-r"># Hover Plot - Makes the names column
+```{r}
+mtcars.df = mtcars
+
+mtcars.df$name = rownames(mtcars.df)
+```
+
+# Make the hover plot
+```{r}
+mpg.plot = ggplot(mtcars.df, aes(x = disp, y = mpg)) +
+  geom_point_interactive(aes(tooltip = name), size = 2) +
+  labs(title = "Hover to Reveal Name",
+       x = "Miles Per Gallon",
+       y = "Disp")+
+  theme_bw()
+
+girafe(
+  code = print(mpg.plot),
+  width_svg = 7, height_svg = 4,
+  options = list(
+    opts_sizing(rescale = TRUE)
+  )
+)
+```
+</code></pre>
+                </div>
+            </section>
+
             <!-- Add more sections here in alternating layout -->
             <!-- Next section would use layout-right class -->
             
