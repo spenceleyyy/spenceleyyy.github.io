@@ -265,9 +265,11 @@ main {
 }
 
 .plot-iframe {
-    width: calc(100% + 4rem);  /* extend to cover .plot-wrapper horizontal padding */
-    margin-left: -2rem;        /* cancel left padding so content aligns with card edge */
-    height: 650px;
+    width: calc(100% + 4rem);
+    margin-left: -2rem;
+    height: 500px; /* reduced height to fit better inside its box */
+    transform: scale(0.9);
+    transform-origin: top left;
     border: none;
     border-radius: 8px;
 }
