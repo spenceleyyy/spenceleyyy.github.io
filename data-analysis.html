@@ -137,21 +137,19 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                 </div>
             </section>
 
-            <section class="analysis-section layout-right" style="display: flex;">
-                <div class="visual-panel" style="flex: 2;">
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
                     <div class="plot-container">
                         <h3>Interactive MPG Scatterplot</h3>
                         <p class="plot-description">Explore fuel efficiency with hoverable tooltips for each vehicle.</p>
-                        <div class="plot-wrapper">
-                            <div style="overflow: hidden; width: 100%; height: 520px;">
+                            <div class="plot-wrapper">
                                 <iframe src="/Interactive Data Plots/mpg_hover.html"
-                                        class="plot-video"
-                                        title="Interactive MPG scatterplot"
-                                        loading="lazy"
-                                        style="width: 200%; height: 700px; border: none; transform: scale(0.75); transform-origin: top left;">
+                                    class="plot-iframe"
+                                    title="Interactive MPG scatterplot"
+                                    loading="lazy"
+                                    scrolling="no">
                                 </iframe>
                             </div>
-                        </div>
                         <div class="plot-footer">
                             <span class="badge">R</span>
                             <span class="badge">ggplot2</span>
