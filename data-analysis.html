@@ -146,7 +146,8 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                             <iframe src="/Interactive Data Plots/mpg_hover.html"
                                     class="plot-video"
                                     title="Interactive MPG scatterplot"
-                                    loading="lazy">
+                                    loading="lazy"
+                                    style="width: 100%; aspect-ratio: 16 / 9; border: none;">
                             </iframe>
                         </div>
                         <div class="plot-footer">
@@ -157,7 +158,7 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                     </div>
                 </div>
 
-                <div class="code-panel">
+                <div class="code-panel" style="flex: 0.85;">
                     <div class="code-header">
                         <div class="code-title">
                             <span class="code-icon"></span>
@@ -204,7 +205,8 @@ girafe(
                             <iframe src="/Interactive Data Plots/p1n1_points_annotated.html"
                                     class="plot-video"
                                     title="Annotated interactive point plot"
-                                    loading="lazy">
+                                    loading="lazy"
+                                    style="width: 100%; aspect-ratio: 16 / 9; border: none;">
                             </iframe>
                         </div>
                         <div class="plot-footer">
@@ -215,7 +217,7 @@ girafe(
                     </div>
                 </div>
 
-                <div class="code-panel">
+                <div class="code-panel" style="flex: 0.85;">
                     <div class="code-header">
                         <div class="code-title">
                             <span class="code-icon"></span>
@@ -230,14 +232,12 @@ girafe(
                         </button>
                     </div>
                     <pre><code id="code-3" class="language-r"># Hover Plot - Makes the names column
-```{r}
 mtcars.df = mtcars
 
 mtcars.df$name = rownames(mtcars.df)
-```
 
 # Make the hover plot
-```{r}
+
 mpg.plot = ggplot(mtcars.df, aes(x = disp, y = mpg)) +
   geom_point_interactive(aes(tooltip = name), size = 2) +
   labs(title = "Hover to Reveal Name",
@@ -252,7 +252,7 @@ girafe(
     opts_sizing(rescale = TRUE)
   )
 )
-```
+
 </code></pre>
                 </div>
             </section>
