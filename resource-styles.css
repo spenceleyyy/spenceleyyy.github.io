@@ -266,7 +266,7 @@ main {
 
 .plot-iframe {
     width: 100%;
-    height: 550px; /* adjusted height for full visibility */
+    height: 700px;
     transform: none; /* remove scaling to show the full plot */
     border: none;
     border-radius: 8px;
