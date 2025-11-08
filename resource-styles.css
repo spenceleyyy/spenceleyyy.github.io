@@ -266,7 +266,9 @@ main {
 
 .plot-iframe {
     width: 100%;
-    height: 600px;  /* tall enough for the full interactive widget */
+    height: 500px; /* reduced height */
+    transform: scale(0.7);
+    transform-origin: top left;
     border: none;
     border-radius: 8px;
 }
