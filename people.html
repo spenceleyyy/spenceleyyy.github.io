@@ -9,145 +9,127 @@
     <link rel="stylesheet" href="people-styles.css">
 </head>
 <body>
-    <div class="people-backdrop" aria-hidden="true">
-        <button id="project-marquee" class="backdrop-text" type="button">
-            Collaborators
-        </button>
-    </div>
     <!-- Navigation loaded by JavaScript -->
 
     <main>
         <div class="page-header">
-            <h1>Collaborators & Team</h1>
+            <p class="kicker">Friends of the lab</p>
+            <h1>People who keep the work alive.</h1>
             <p class="page-subtitle">
-                Friends, mentors, students, and co-authors who make the work possible. The list keeps growing,
-                so this layout is built to scale gracefully as new collaborators join.
+                Each section fades into the next with a bold project marker. Scroll slowly, let the color wash change,
+                and tap any project name to jump directly to the deep dive.
             </p>
-            <div class="people-stats">
-                <div class="stat-card">
-                    <h3>30+</h3>
-                    <p>Active collaborators</p>
-                </div>
-                <div class="stat-card">
-                    <h3>12</h3>
-                    <p>Institutions represented</p>
-                </div>
-                <div class="stat-card">
-                    <h3>∞</h3>
-                    <p>Ideas in motion</p>
-                </div>
-            </div>
         </div>
 
-        <section class="people-stream">
-            <article class="person-panel" data-project="Neurotrust" data-link="projects.html#project-neurotrust" data-accent="#e890be" data-bg="#172D33">
-                <div class="person-meta">
-                    <img src="/logos/RSlogoUPDATED.png" alt="Dr. Jane Doe" class="person-avatar">
-                    <div>
-                        <span class="person-role">Principal Investigator</span>
-                        <h3 class="person-name">Dr. Jane Doe</h3>
-                        <p class="person-affiliation">UW–Madison Neuroergonomics Lab</p>
+        <section class="people-timeline">
+            <div class="collab-block" data-project="Neurotrust" data-link="projects.html#project-neurotrust" data-accent="#ff6fb7" data-bg="#111c2e">
+                <button class="project-marker" type="button">Neurotrust</button>
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Dr. Jane Doe" class="person-avatar">
+                        <div>
+                            <span class="person-role">Principal Investigator</span>
+                            <h3 class="person-name">Dr. Jane Doe</h3>
+                            <p class="person-affiliation">UW–Madison Neuroergonomics Lab</p>
+                        </div>
                     </div>
-                </div>
-                <p class="person-summary">
-                    Leads the lab’s cognitive neuroscience efforts, focusing on trust calibration and neuroadaptive
-                    interfaces for high-stakes human-robot teams.
-                </p>
-                <ul class="person-tags">
-                    <li>Neuroergonomics</li>
-                    <li>EEG</li>
-                    <li>Trust</li>
-                </ul>
-                <div class="person-links">
-                    <span>Featured work</span>
-                    <div class="icon-row">
+                    <p class="person-summary">
+                        Leads the lab’s cognitive neuroscience efforts, focusing on trust calibration and neuroadaptive
+                        interfaces for high-stakes human-robot teams.
+                    </p>
+                    <ul class="person-tags">
+                        <li>Neuroergonomics</li>
+                        <li>EEG</li>
+                        <li>Trust</li>
+                    </ul>
+                    <div class="person-links">
                         <a href="projects.html#project-neurotrust" class="icon-link">Project</a>
                         <a href="https://linkedin.com" target="_blank" class="icon-link">LinkedIn</a>
                         <a href="https://scholar.google.com" target="_blank" class="icon-link">Scholar</a>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
 
-            <article class="person-panel" data-project="Mixed Reality SAR" data-link="projects.html#project-sar" data-accent="#9bd5ff" data-bg="#0e1c24">
-                <div class="person-meta">
-                    <img src="/logos/RSlogoUPDATED.png" alt="Aakash Yadav" class="person-avatar">
-                    <div>
-                        <span class="person-role">PhD Collaborator</span>
-                        <h3 class="person-name">Aakash Yadav</h3>
-                        <p class="person-affiliation">Human Factors & Robotics</p>
+            <div class="collab-block" data-project="Mixed Reality SAR" data-link="projects.html#project-sar" data-accent="#5ac7ff" data-bg="#051f26">
+                <button class="project-marker" type="button">Mixed Reality SAR</button>
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Aakash Yadav" class="person-avatar">
+                        <div>
+                            <span class="person-role">PhD Collaborator</span>
+                            <h3 class="person-name">Aakash Yadav</h3>
+                            <p class="person-affiliation">Human Factors & Robotics</p>
+                        </div>
                     </div>
-                </div>
-                <p class="person-summary">
-                    Designs multi-modal experiments that map cognitive workload and automation performance in mixed
-                    human-robot search and rescue teams.
-                </p>
-                <ul class="person-tags">
-                    <li>HRI</li>
-                    <li>Mixed Reality</li>
-                    <li>Automation</li>
-                </ul>
-                <div class="person-links">
-                    <span>Poster & demos</span>
-                    <div class="icon-row">
+                    <p class="person-summary">
+                        Designs multi-modal experiments that map cognitive workload and automation performance in mixed
+                        human-robot search and rescue teams.
+                    </p>
+                    <ul class="person-tags">
+                        <li>HRI</li>
+                        <li>Mixed Reality</li>
+                        <li>Automation</li>
+                    </ul>
+                    <div class="person-links">
                         <a href="projects.html#project-sar" class="icon-link">Poster</a>
                         <a href="https://linkedin.com" target="_blank" class="icon-link">LinkedIn</a>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
 
-            <article class="person-panel" data-project="NeuroErgo Lab" data-link="projects.html#project-leadership" data-accent="#ffb347" data-bg="#1f1a33">
-                <div class="person-meta">
-                    <img src="/logos/RSlogoUPDATED.png" alt="Dr. Ranjana Mehta" class="person-avatar">
-                    <div>
-                        <span class="person-role">Advisor</span>
-                        <h3 class="person-name">Dr. Ranjana Mehta</h3>
-                        <p class="person-affiliation">NeuroErgo Lab Director</p>
+            <div class="collab-block" data-project="NeuroErgo Lab" data-link="projects.html#project-leadership" data-accent="#ffe066" data-bg="#261c10">
+                <button class="project-marker" type="button">NeuroErgo Lab</button>
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Dr. Ranjana Mehta" class="person-avatar">
+                        <div>
+                            <span class="person-role">Advisor</span>
+                            <h3 class="person-name">Dr. Ranjana Mehta</h3>
+                            <p class="person-affiliation">NeuroErgo Lab Director</p>
+                        </div>
                     </div>
-                </div>
-                <p class="person-summary">
-                    Guides the program’s direction around neuroadaptive teaming, resilience metrics, and
-                    high-dimensional data storytelling.
-                </p>
-                <ul class="person-tags">
-                    <li>fNIRS</li>
-                    <li>Team Neuroscience</li>
-                    <li>Leadership</li>
-                </ul>
-                <div class="person-links">
-                    <span>Latest publication</span>
-                    <div class="icon-row">
+                    <p class="person-summary">
+                        Guides the program’s direction around neuroadaptive teaming, resilience metrics, and
+                        high-dimensional data storytelling.
+                    </p>
+                    <ul class="person-tags">
+                        <li>fNIRS</li>
+                        <li>Team Science</li>
+                        <li>Leadership</li>
+                    </ul>
+                    <div class="person-links">
                         <a href="projects.html#project-leadership" class="icon-link">Publication</a>
                         <a href="https://scholar.google.com" target="_blank" class="icon-link">Scholar</a>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
 
-            <article class="person-panel" data-project="XR Prototyping" data-link="projects.html#project-xr" data-accent="#c792ea" data-bg="#1b0f25">
-                <div class="person-meta">
-                    <img src="/logos/RSlogoUPDATED.png" alt="Jordan Kim" class="person-avatar">
-                    <div>
-                        <span class="person-role">Student Researcher</span>
-                        <h3 class="person-name">Jordan Kim</h3>
-                        <p class="person-affiliation">Biomechanics & Wearables</p>
+            <div class="collab-block" data-project="XR Prototyping" data-link="projects.html#project-xr" data-accent="#c792ea" data-bg="#200a2c">
+                <button class="project-marker" type="button">XR Prototyping</button>
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Jordan Kim" class="person-avatar">
+                        <div>
+                            <span class="person-role">Student Researcher</span>
+                            <h3 class="person-name">Jordan Kim</h3>
+                            <p class="person-affiliation">Biomechanics & Wearables</p>
+                        </div>
                     </div>
-                </div>
-                <p class="person-summary">
-                    Builds rapid prototypes for XR-based training, sensor fusion, and new metrics for agency in
-                    distributed human-robot teams.
-                </p>
-                <ul class="person-tags">
-                    <li>XR</li>
-                    <li>Sensor Fusion</li>
-                    <li>Data Viz</li>
-                </ul>
-                <div class="person-links">
-                    <span>Interactive demo</span>
-                    <div class="icon-row">
+                    <p class="person-summary">
+                        Builds rapid prototypes for XR-based training, sensor fusion, and new metrics for agency in
+                        distributed human-robot teams.
+                    </p>
+                    <ul class="person-tags">
+                        <li>XR</li>
+                        <li>Sensor Fusion</li>
+                        <li>Data Viz</li>
+                    </ul>
+                    <div class="person-links">
                         <a href="projects.html#project-xr" class="icon-link">Demo</a>
                         <a href="https://linkedin.com" target="_blank" class="icon-link">LinkedIn</a>
                     </div>
-                </div>
-            </article>
+                </article>
+            </div>
         </section>
     </main>
 
@@ -157,45 +139,41 @@
     <script src="navigation.js"></script>
     <script type="module">
         document.addEventListener('DOMContentLoaded', () => {
-            const marquee = document.getElementById('project-marquee');
-            const panels = document.querySelectorAll('.person-panel');
+            const blocks = document.querySelectorAll('.collab-block');
             const root = document.documentElement;
-            let currentLink = null;
 
-            const activatePanel = (panel) => {
-                panels.forEach(p => p.classList.toggle('is-active', p === panel));
+            const activateBlock = (block) => {
+                blocks.forEach(b => b.classList.toggle('is-active', b === block));
 
-                const project = panel.dataset.project || panel.querySelector('.person-name')?.textContent || 'Project';
-                const accent = panel.dataset.accent || getComputedStyle(root).getPropertyValue('--color-primary');
-                const bg = panel.dataset.bg || getComputedStyle(root).getPropertyValue('--color-background-main');
-                const link = panel.dataset.link || '#';
-
-                marquee.textContent = project;
-                marquee.dataset.link = link;
-                currentLink = link;
+                const accent = block.dataset.accent || getComputedStyle(root).getPropertyValue('--color-primary');
+                const surface = block.dataset.bg || getComputedStyle(root).getPropertyValue('--color-background-main');
 
                 root.style.setProperty('--dynamic-accent', accent);
-                root.style.setProperty('--dynamic-surface', bg);
+                root.style.setProperty('--dynamic-surface', surface);
             };
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        activatePanel(entry.target);
+                        activateBlock(entry.target);
                     }
                 });
-            }, { threshold: 0.6 });
+            }, { threshold: 0.5 });
 
-            panels.forEach(panel => observer.observe(panel));
-
-            if (panels.length) {
-                activatePanel(panels[0]);
-            }
-
-            marquee.addEventListener('click', () => {
-                if (!currentLink) return;
-                window.location.href = currentLink;
+            blocks.forEach(block => {
+                observer.observe(block);
+                const marker = block.querySelector('.project-marker');
+                if (marker) {
+                    marker.addEventListener('click', () => {
+                        const link = block.dataset.link;
+                        if (link) window.location.href = link;
+                    });
+                }
             });
+
+            if (blocks.length) {
+                activateBlock(blocks[0]);
+            }
         });
     </script>
 </body>

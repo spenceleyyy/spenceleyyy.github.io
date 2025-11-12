@@ -19,9 +19,11 @@ body {
     font-family: var(--font-display);
     line-height: 1.6;
     color: var(--color-text-dark);
-    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 60%), linear-gradient(135deg, var(--dynamic-surface), #0b161a);
+    background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.08), transparent 45%),
+                radial-gradient(circle at 80% 0%, rgba(255,255,255,0.05), transparent 50%),
+                linear-gradient(140deg, var(--dynamic-surface), #05070b 80%);
     overflow-x: hidden;
-    transition: background 0.6s ease, color 0.4s ease;
+    transition: background 0.8s ease, color 0.4s ease;
 }
 
 /* Navigation styles (same as your other files) */
@@ -161,44 +163,11 @@ nav {
     background: rgba(232, 144, 190, 0.1);
 }
 
-/* Main Content */
-.people-backdrop {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 0;
-    pointer-events: none;
-}
-
-.backdrop-text {
-    font-family: 'SF Pro Display', var(--font-display);
-    font-size: clamp(3rem, 10vw, 12rem);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
-    padding: 1rem 2rem;
-    border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(23, 45, 51, 0.45);
-    backdrop-filter: blur(40px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-    pointer-events: auto;
-    cursor: pointer;
-    transition: transform 0.5s ease, border-color 0.3s ease;
-}
-
-.backdrop-text:hover {
-    transform: scale(1.02);
-    border-color: rgba(255,255,255,0.35);
-}
-
 main {
     position: relative;
     z-index: 2;
     padding-top: 160px;
-    padding-bottom: 140px;
+    padding-bottom: 160px;
     min-height: 100vh;
 }
 
@@ -209,10 +178,18 @@ main {
     margin: 0 auto;
 }
 
+.kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 1.5rem;
+}
+
 .page-header h1 {
-    font-size: 4rem;
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
     font-weight: 600;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     margin-bottom: 1rem;
     color: var(--color-text-dark);
 }
@@ -231,52 +208,96 @@ main {
 }
 
 .stat-card {
-    background: rgba(23, 45, 51, 0.7);
-    border: 1px solid rgba(232, 144, 190, 0.15);
-    border-radius: 18px;
-    padding: 1rem 1.5rem;
+    background: rgba(15, 18, 26, 0.7);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 0.85rem 1.5rem;
     min-width: 160px;
-    text-align: left;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: rgba(255,255,255,0.8);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
 }
 
 .stat-card h3 {
-    margin-bottom: 0.25rem;
-    font-size: 2rem;
+    margin-bottom: 0.2rem;
+    font-size: 1.8rem;
     color: var(--color-primary);
 }
 
 .stat-card p {
-    font-size: 0.9rem;
-    color: var(--color-text-body);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
 }
 
-.people-stream {
-    max-width: 1100px;
-    margin: 4rem auto 0;
-    padding: 0 5%;
+.people-timeline {
+    max-width: 1200px;
+    margin: 5rem auto 0;
+    padding: 0 6%;
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 6rem;
+}
+
+.collab-block {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.collab-block::before {
+    content: '';
+    position: absolute;
+    left: calc(50% - 1px);
+    top: -3rem;
+    bottom: -3rem;
+    width: 2px;
+    background: rgba(255,255,255,0.08);
+    z-index: 0;
+}
+
+.collab-block:first-child::before {
+    top: 0;
+}
+
+.collab-block:last-child::before {
+    bottom: 1rem;
+}
+
+.collab-block.is-active .project-marker {
+    color: var(--dynamic-accent);
+    border-color: rgba(255,255,255,0.4);
+    transform: scale(1.02);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+}
+
+.project-marker {
+    position: sticky;
+    top: 18vh;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(8, 12, 18, 0.6);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px;
+    color: rgba(255,255,255,0.75);
+    padding: 1.5rem 2rem;
+    backdrop-filter: blur(20px);
+    cursor: pointer;
+    z-index: 2;
+    transition: color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
 }
 
 .person-panel {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 32px;
-    padding: 2.5rem;
+    background: rgba(6, 10, 16, 0.75);
+    border-radius: 28px;
+    padding: 2.25rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(22px);
     box-shadow: 0 35px 80px rgba(0, 0, 0, 0.45);
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    min-height: 60vh;
-    transition: border-color 0.4s ease, transform 0.4s ease;
-}
-
-.person-panel.is-active {
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-10px);
+    gap: 1.25rem;
+    z-index: 1;
 }
 
 .person-meta {
@@ -342,21 +363,8 @@ main {
 
 .person-links {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: auto;
-}
-
-.person-links span {
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.65);
-}
-
-.icon-row {
-    display: flex;
     gap: 0.75rem;
+    margin-top: auto;
     flex-wrap: wrap;
 }
 
@@ -364,7 +372,7 @@ main {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.45rem 1.2rem;
+    padding: 0.45rem 1.4rem;
     border-radius: 999px;
     border: 1px solid rgba(232, 144, 190, 0.4);
     text-decoration: none;
@@ -409,7 +417,12 @@ footer {
         border-radius: 14px;
     }
     
-    .people-stream {
-        gap: 2.5rem;
+    .project-marker {
+        top: 10vh;
+        letter-spacing: 0.1em;
+    }
+    
+    .person-panel {
+        padding: 1.75rem;
     }
 }
