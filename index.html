@@ -461,54 +461,6 @@
     <div id="brain-container" class="brain-background"></div>
     <div id="contact-3d" class="contact-3d-background"></div>
 
-    <div id="site-nav" aria-label="Main Navigation"></div>
-    <script>
-(async function () {
-  const container = document.getElementById('site-nav');
-  if (!container) return;
-
-  const candidates = [
-    '/navigation.html',
-    '/nav.html',
-    '/partials/navigation.html',
-    '/includes/navigation.html',
-    '/_includes/navigation.html'
-  ];
-
-  let loaded = false;
-  for (const path of candidates) {
-    try {
-      const res = await fetch(path, { cache: 'no-cache' });
-      if (res.ok) {
-        const html = await res.text();
-        container.outerHTML = html;
-
-        // Attach smooth-scroll to any anchors that may have been injected
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-          anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (href && href.startsWith('#') && href !== '#') {
-              e.preventDefault();
-              const target = document.querySelector(href);
-              if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }
-            }
-          });
-        });
-        loaded = true;
-        break;
-      }
-    } catch (e) {
-      // try next candidate
-    }
-  }
-  if (!loaded) {
-    console.error('Navigation file not found. Checked:', candidates.join(', '));
-  }
-})();
-    </script>
-
     <section id="hero">
         <div class="content-wrapper">
             <h1>Bridging minds and machines.</h1>
@@ -605,6 +557,7 @@
         <p>&copy; 2025 RS. To do things no one else has, you must do things no one else will.</p>
     </footer>
 
+    <script src="navigation.js"></script>
     <script>
         // --- 1. BRAIN BACKGROUND (Loads GLB file) ---
         const brainContainer = document.getElementById('brain-container');

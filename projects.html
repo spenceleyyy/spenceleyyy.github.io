@@ -382,22 +382,7 @@
     </style>
 </head>
 <body>
-    <nav aria-label="Main Navigation">
-        <div class="nav-content">
-            <a href="index.html" class="logo-link">
-                <img src="/logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
-                <span class="full-name">Robert J. Spenceley</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="index.html#about">About</a></li>
-                <li><a href="index.html#research">Research</a></li>
-                <!-- ADDED CLASS: 'active' to highlight the current page -->
-                <li class="active"><a href="projects.html">Projects</a></li>
-                <li><a href="misc.html">Misc</a></li>
-                <li><a href="index.html#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Navigation injected via navigation.js -->
 
     <div class="page-header">
         <h1>Research Projects</h1>
@@ -536,6 +521,7 @@
         </div>
     </div>
 
+    <script src="navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('fullscreen-modal');
