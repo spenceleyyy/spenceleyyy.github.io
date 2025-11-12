@@ -71,6 +71,44 @@
                         <a href="https://www.linkedin.com/in/evan-rees-03a878344" target="_blank" class="icon-link">LinkedIn</a>
                     </div>
                 </article>
+
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Ania — pHRI placeholder" class="person-avatar">
+                        <div>
+                            <span class="person-role">Incoming Researcher · pHRI</span>
+                            <h3 class="person-name">Ania</h3>
+                            <p class="person-affiliation">Trust + Autonomy (details coming soon)</p>
+                        </div>
+                    </div>
+                    <p class="person-summary">
+                        Placeholder bio: Ania is joining the pHRI initiative and is currently finalizing her focus areas. Check back shortly for a full write-up, publications, and collaboration details.
+                    </p>
+                    <ul class="person-tags">
+                        <li>pHRI</li>
+                        <li>Systems</li>
+                        <li>Coming Soon</li>
+                    </ul>
+                </article>
+
+                <article class="person-panel">
+                    <div class="person-meta">
+                        <img src="/logos/RSlogoUPDATED.png" alt="Olivia — pHRI placeholder" class="person-avatar">
+                        <div>
+                            <span class="person-role">Research Assistant · pHRI</span>
+                            <h3 class="person-name">Olivia</h3>
+                            <p class="person-affiliation">Human Factors (details coming soon)</p>
+                        </div>
+                    </div>
+                    <p class="person-summary">
+                        Placeholder bio: Olivia is spinning up co-creation protocols for upcoming robotic teammate studies. Her full bio, interests, and links will land here soon.
+                    </p>
+                    <ul class="person-tags">
+                        <li>Human Factors</li>
+                        <li>Experimentation</li>
+                        <li>Coming Soon</li>
+                    </ul>
+                </article>
             </div>
 
             <div class="collab-block" data-project="Comfort Systems" data-link="projects.html#project-comfort" data-accent="#6ee7d9" data-bg="#021d18">
@@ -250,15 +288,65 @@
         document.addEventListener('DOMContentLoaded', () => {
             const blocks = document.querySelectorAll('.collab-block');
             const root = document.documentElement;
+            const computed = getComputedStyle(root);
+            const defaultAccent = (computed.getPropertyValue('--color-primary') || '#e890be').trim();
+            const defaultSurface = (computed.getPropertyValue('--color-background-main') || '#172D33').trim();
 
-            const activateBlock = (block) => {
-                blocks.forEach(b => b.classList.toggle('is-active', b === block));
+            const toRgb = (color) => {
+                if (!color) return { r: 255, g: 255, b: 255 };
+                if (typeof color !== 'string') return color;
+                const value = color.trim();
+                if (value.startsWith('#')) {
+                    let hex = value.slice(1);
+                    if (hex.length === 3) {
+                        hex = hex.split('').map(char => char + char).join('');
+                    }
+                    const num = parseInt(hex, 16);
+                    if (Number.isNaN(num)) return { r: 255, g: 255, b: 255 };
+                    return {
+                        r: (num >> 16) & 255,
+                        g: (num >> 8) & 255,
+                        b: num & 255,
+                    };
+                }
+                const match = value.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                if (match) {
+                    return {
+                        r: Number(match[1]),
+                        g: Number(match[2]),
+                        b: Number(match[3]),
+                    };
+                }
+                return { r: 255, g: 255, b: 255 };
+            };
 
-                const accent = block.dataset.accent || getComputedStyle(root).getPropertyValue('--color-primary');
-                const surface = block.dataset.bg || getComputedStyle(root).getPropertyValue('--color-background-main');
+            const toRgbaString = (color, alpha = 1) => {
+                const { r, g, b } = toRgb(color);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            };
 
+            const mixColors = (first, second, amount = 0.5) => {
+                const base = toRgb(first);
+                const overlay = toRgb(second);
+                const weight = Math.min(Math.max(amount, 0), 1);
+                const r = Math.round(base.r + (overlay.r - base.r) * weight);
+                const g = Math.round(base.g + (overlay.g - base.g) * weight);
+                const b = Math.round(base.b + (overlay.b - base.b) * weight);
+                return `rgb(${r}, ${g}, ${b})`;
+            };
+
+            const setGlobalPalette = (accent, surface) => {
                 root.style.setProperty('--dynamic-accent', accent);
                 root.style.setProperty('--dynamic-surface', surface);
+                root.style.setProperty('--dynamic-accent-soft', toRgbaString(accent, 0.4));
+                root.style.setProperty('--dynamic-surface-strong', mixColors(surface, accent, 0.25));
+            };
+
+            const activateBlock = (block) => {
+                blocks.forEach(collab => collab.classList.toggle('is-active', collab === block));
+                const accent = (block.dataset.accent || defaultAccent).trim();
+                const surface = (block.dataset.bg || defaultSurface).trim();
+                setGlobalPalette(accent, surface);
             };
 
             const observer = new IntersectionObserver((entries) => {
@@ -270,7 +358,16 @@
             }, { threshold: 0.5 });
 
             blocks.forEach(block => {
+                const accent = (block.dataset.accent || defaultAccent).trim();
+                const surface = (block.dataset.bg || defaultSurface).trim();
+                const blended = mixColors(surface, accent, 0.55);
+
+                block.style.setProperty('--block-accent', accent);
+                block.style.setProperty('--block-surface', surface);
+                block.style.setProperty('--block-gradient', `linear-gradient(135deg, ${surface}, ${blended})`);
+
                 observer.observe(block);
+
                 const marker = block.querySelector('.project-title');
                 if (marker) {
                     marker.addEventListener('click', () => {

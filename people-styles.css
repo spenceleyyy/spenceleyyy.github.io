@@ -7,6 +7,8 @@
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     --dynamic-accent: #e890be;
     --dynamic-surface: #172D33;
+    --dynamic-accent-soft: rgba(232, 144, 190, 0.35);
+    --dynamic-surface-strong: #1f3b42;
 }
 
 * {
@@ -19,9 +21,10 @@ body {
     font-family: var(--font-display);
     line-height: 1.6;
     color: var(--color-text-dark);
-    background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.08), transparent 45%),
-                radial-gradient(circle at 80% 0%, rgba(255,255,255,0.05), transparent 50%),
-                linear-gradient(140deg, var(--dynamic-surface), #05070b 80%);
+    background:
+        radial-gradient(circle at 14% 16%, var(--dynamic-accent-soft), transparent 55%),
+        radial-gradient(circle at 78% -10%, rgba(255,255,255,0.06), transparent 52%),
+        linear-gradient(140deg, var(--dynamic-surface), var(--dynamic-surface-strong) 85%);
     overflow-x: hidden;
     transition: background 0.8s ease, color 0.4s ease;
 }
@@ -232,32 +235,45 @@ main {
 .people-timeline {
     max-width: 1200px;
     margin: 5rem auto 0;
-    padding: 0 6%;
+    padding: 0 6% 6rem;
     display: flex;
     flex-direction: column;
-    gap: 6rem;
+    gap: 7rem;
 }
 
 .collab-block {
     position: relative;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
+    padding: 3.5rem 3rem;
+    border-radius: 48px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background-color: var(--block-surface, rgba(12, 14, 23, 0.9));
+    background-image: var(--block-gradient, linear-gradient(135deg, rgba(255,255,255,0.04), rgba(0,0,0,0.25)));
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.45);
+    transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+
+.collab-block.is-active {
+    box-shadow: 0 70px 180px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.05);
 }
 
 .collab-block::before {
     content: '';
     position: absolute;
-    left: calc(50% - 1px);
-    top: -3rem;
-    bottom: -3rem;
+    left: 50%;
+    top: 2rem;
+    bottom: 2rem;
     width: 2px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-50%);
     z-index: 0;
+    pointer-events: none;
 }
 
 .collab-block:first-child::before {
-    top: 0;
+    top: 1rem;
 }
 
 .collab-block:last-child::before {
@@ -265,8 +281,9 @@ main {
 }
 
 .collab-block.is-active .project-title span {
-    text-shadow: 0 0 35px rgba(255,255,255,0.8), 0 10px 60px rgba(0,0,0,0.6);
-    transform: scale(1.01);
+    text-shadow: 0 10px 45px rgba(0,0,0,0.65), 0 8px 40px var(--block-accent, rgba(255,255,255,0.35));
+    opacity: 1;
+    transform: scale(1.015);
 }
 
 .project-title {
@@ -279,7 +296,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.65rem;
     padding: 2rem 0;
     cursor: pointer;
     z-index: 1;
@@ -288,25 +305,27 @@ main {
 .project-title span {
     font-size: clamp(4rem, 22vw, 18rem);
     font-weight: 600;
-    letter-spacing: 0.2em;
+    letter-spacing: clamp(0.08em, 1.2vw, 0.18em);
     text-transform: uppercase;
     display: block;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(255,255,255,0.55);
-    background-image: linear-gradient(120deg, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
+    -webkit-text-stroke: 1.5px rgba(255,255,255,0.45);
+    background-image: linear-gradient(125deg, rgba(255,255,255,0.95), var(--block-accent, rgba(255,255,255,0.5)));
     -webkit-background-clip: text;
     background-clip: text;
     text-align: center;
     line-height: 0.9;
-    transition: transform 0.5s ease, text-shadow 0.5s ease;
+    opacity: 0.85;
+    transition: transform 0.5s ease, text-shadow 0.5s ease, opacity 0.4s ease;
 }
 
 .person-panel {
-    background: rgba(6, 10, 16, 0.75);
-    border-radius: 28px;
-    padding: 2.25rem;
+    background: rgba(6, 10, 16, 0.55);
+    backdrop-filter: blur(18px);
+    border-radius: 32px;
+    padding: 2.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 35px 80px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -333,7 +352,7 @@ main {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--dynamic-accent);
+    color: var(--block-accent, var(--dynamic-accent));
 }
 
 .person-name {
