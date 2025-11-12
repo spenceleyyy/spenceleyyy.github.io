@@ -461,35 +461,53 @@
     <div id="brain-container" class="brain-background"></div>
     <div id="contact-3d" class="contact-3d-background"></div>
 
-    <nav aria-label="Main Navigation">
-        <div class="nav-content">
-            <a href="#hero" class="logo-link">
-                <img src="/logos/RSlogoUPDATED.png" alt="RS Logo - Cursive Initials and Brain" class="logo-image">
-                <span class="full-name">Robert J. Spenceley</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#about">About</a></li>
-                <li><a href="#research">Research</a></li>
-                <li><a href="projects.html">Projects</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle">Misc ▾</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="qr-generator.html">QR Code Generator</a></li>
-                        <li><a href="bg-remover.html">Background Remover</a></li>
-                        <li><a href="image-converter.html">Image Converter</a></li>
-                        <li><a href="link-shortener.html">Link Shortener</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle">Resources ▾</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
-                    </ul>
-                </li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <div id="site-nav" aria-label="Main Navigation"></div>
+    <script>
+(async function () {
+  const container = document.getElementById('site-nav');
+  if (!container) return;
+
+  const candidates = [
+    '/navigation.html',
+    '/nav.html',
+    '/partials/navigation.html',
+    '/includes/navigation.html',
+    '/_includes/navigation.html'
+  ];
+
+  let loaded = false;
+  for (const path of candidates) {
+    try {
+      const res = await fetch(path, { cache: 'no-cache' });
+      if (res.ok) {
+        const html = await res.text();
+        container.outerHTML = html;
+
+        // Attach smooth-scroll to any anchors that may have been injected
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href && href.startsWith('#') && href !== '#') {
+              e.preventDefault();
+              const target = document.querySelector(href);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          });
+        });
+        loaded = true;
+        break;
+      }
+    } catch (e) {
+      // try next candidate
+    }
+  }
+  if (!loaded) {
+    console.error('Navigation file not found. Checked:', candidates.join(', '));
+  }
+})();
+    </script>
 
     <section id="hero">
         <div class="content-wrapper">
