@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Reinitialize dropdown functionality after loading
             initializeDropdowns();
+            highlightActiveNavLink();
         })
         .catch(error => console.error('Error loading navigation:', error));
 });
@@ -25,6 +26,29 @@ function initializeDropdowns() {
             toggle.addEventListener('click', (e) => {
                 e.preventDefault();
             });
+        }
+    });
+}
+
+// Highlight the active nav link based on current page
+function highlightActiveNavLink() {
+    const path = window.location.pathname.split('/').pop();
+    const currentPath = path === '' ? 'index.html' : path;
+    
+    document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+    
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href || href === '#' || href.includes('#')) {
+            return;
+        }
+        
+        const linkPath = href.split('/').pop();
+        if (linkPath === currentPath) {
+            const parent = link.closest('li');
+            if (parent) {
+                parent.classList.add('active');
+            }
         }
     });
 }
