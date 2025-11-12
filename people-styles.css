@@ -276,8 +276,10 @@ main {
     border: none;
     background: transparent;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
     padding: 2rem 0;
     cursor: pointer;
     z-index: 1;
@@ -288,7 +290,7 @@ main {
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    white-space: nowrap;
+    display: block;
     color: transparent;
     -webkit-text-stroke: 1px rgba(255,255,255,0.55);
     background-image: linear-gradient(120deg, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
