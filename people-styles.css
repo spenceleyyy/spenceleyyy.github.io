@@ -264,28 +264,39 @@ main {
     bottom: 1rem;
 }
 
-.collab-block.is-active .project-marker {
-    color: var(--dynamic-accent);
-    border-color: rgba(255,255,255,0.4);
-    transform: scale(1.02);
-    box-shadow: 0 25px 60px rgba(0,0,0,0.45);
+.collab-block.is-active .project-title span {
+    text-shadow: 0 0 35px rgba(255,255,255,0.8), 0 10px 60px rgba(0,0,0,0.6);
+    transform: scale(1.01);
 }
 
-.project-marker {
+.project-title {
     position: sticky;
-    top: 18vh;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    background: rgba(8, 12, 18, 0.6);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 28px;
-    color: rgba(255,255,255,0.75);
-    padding: 1.5rem 2rem;
-    backdrop-filter: blur(20px);
+    top: 0;
+    min-height: 100vh;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
     cursor: pointer;
-    z-index: 2;
-    transition: color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
+    z-index: 1;
+}
+
+.project-title span {
+    font-size: clamp(4rem, 22vw, 18rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.55);
+    background-image: linear-gradient(120deg, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-align: center;
+    line-height: 0.9;
+    transition: transform 0.5s ease, text-shadow 0.5s ease;
 }
 
 .person-panel {
@@ -417,9 +428,12 @@ footer {
         border-radius: 14px;
     }
     
-    .project-marker {
+    .project-title {
         top: 10vh;
-        letter-spacing: 0.1em;
+    }
+    
+    .project-title span {
+        letter-spacing: 0.12em;
     }
     
     .person-panel {

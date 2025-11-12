@@ -23,7 +23,9 @@
 
         <section class="people-timeline">
             <div class="collab-block" data-project="Neurotrust" data-link="projects.html#project-neurotrust" data-accent="#ff6fb7" data-bg="#111c2e">
-                <button class="project-marker" type="button">Neurotrust</button>
+                <button class="project-title" type="button">
+                    <span>Neurotrust</span>
+                </button>
                 <article class="person-panel">
                     <div class="person-meta">
                         <img src="/logos/RSlogoUPDATED.png" alt="Dr. Jane Doe" class="person-avatar">
@@ -51,7 +53,9 @@
             </div>
 
             <div class="collab-block" data-project="Mixed Reality SAR" data-link="projects.html#project-sar" data-accent="#5ac7ff" data-bg="#051f26">
-                <button class="project-marker" type="button">Mixed Reality SAR</button>
+                <button class="project-title" type="button">
+                    <span>Mixed Reality SAR</span>
+                </button>
                 <article class="person-panel">
                     <div class="person-meta">
                         <img src="/logos/RSlogoUPDATED.png" alt="Aakash Yadav" class="person-avatar">
@@ -78,7 +82,9 @@
             </div>
 
             <div class="collab-block" data-project="NeuroErgo Lab" data-link="projects.html#project-leadership" data-accent="#ffe066" data-bg="#261c10">
-                <button class="project-marker" type="button">NeuroErgo Lab</button>
+                <button class="project-title" type="button">
+                    <span>NeuroErgo Lab</span>
+                </button>
                 <article class="person-panel">
                     <div class="person-meta">
                         <img src="/logos/RSlogoUPDATED.png" alt="Dr. Ranjana Mehta" class="person-avatar">
@@ -105,7 +111,9 @@
             </div>
 
             <div class="collab-block" data-project="XR Prototyping" data-link="projects.html#project-xr" data-accent="#c792ea" data-bg="#200a2c">
-                <button class="project-marker" type="button">XR Prototyping</button>
+                <button class="project-title" type="button">
+                    <span>XR Prototyping</span>
+                </button>
                 <article class="person-panel">
                     <div class="person-meta">
                         <img src="/logos/RSlogoUPDATED.png" alt="Jordan Kim" class="person-avatar">
@@ -162,7 +170,7 @@
 
             blocks.forEach(block => {
                 observer.observe(block);
-                const marker = block.querySelector('.project-marker');
+                const marker = block.querySelector('.project-title');
                 if (marker) {
                     marker.addEventListener('click', () => {
                         const link = block.dataset.link;
