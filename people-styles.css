@@ -305,12 +305,12 @@ main {
 .project-title span {
     font-size: clamp(4rem, 22vw, 18rem);
     font-weight: 600;
-    letter-spacing: clamp(0.08em, 1.2vw, 0.18em);
-    text-transform: uppercase;
+    letter-spacing: clamp(0.04em, 0.9vw, 0.12em);
+    text-transform: none;
     display: block;
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba(255,255,255,0.45);
-    background-image: linear-gradient(125deg, rgba(255,255,255,0.95), var(--block-accent, rgba(255,255,255,0.5)));
+    -webkit-text-stroke: 1.25px rgba(255,255,255,0.55);
+    background-image: linear-gradient(125deg, rgba(255,255,255,0.98), var(--block-accent, rgba(255,255,255,0.5)));
     -webkit-background-clip: text;
     background-clip: text;
     text-align: center;
