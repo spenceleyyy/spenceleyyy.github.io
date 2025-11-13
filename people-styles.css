@@ -326,7 +326,8 @@ main {
     letter-spacing: clamp(0.12em, 1.8vw, 0.38em);
     text-transform: uppercase;
     display: block;
-    width: min(85vw, 520px);
+    width: 100%;
+    max-width: min(85vw, 520px);
     margin: 0 auto;
     word-break: break-word;
     overflow-wrap: anywhere;
