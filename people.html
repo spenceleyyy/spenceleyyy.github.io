@@ -313,11 +313,55 @@
                 return `rgb(${r}, ${g}, ${b})`;
             };
 
-            const setGlobalPalette = (accent, surface) => {
+            const getCurrentVar = (name, fallback = '') => {
+                const inline = root.style.getPropertyValue(name);
+                if (inline) return inline.trim();
+                const styles = getComputedStyle(root);
+                const value = styles.getPropertyValue(name);
+                return (value || fallback).trim();
+            };
+
+            const updateGlobalPaletteVars = (accent, surface) => {
                 root.style.setProperty('--dynamic-accent', accent);
                 root.style.setProperty('--dynamic-surface', surface);
                 root.style.setProperty('--dynamic-accent-soft', toRgbaString(accent, 0.4));
                 root.style.setProperty('--dynamic-surface-strong', mixColors(surface, accent, 0.25));
+            };
+
+            let paletteAnimationFrame = null;
+            let paletteInitialized = false;
+
+            const animateGlobalPalette = (accent, surface, duration = 900, immediate = false) => {
+                if (paletteAnimationFrame) {
+                    cancelAnimationFrame(paletteAnimationFrame);
+                    paletteAnimationFrame = null;
+                }
+
+                if (immediate) {
+                    updateGlobalPaletteVars(accent, surface);
+                    return;
+                }
+
+                const startAccent = getCurrentVar('--dynamic-accent', defaultAccent);
+                const startSurface = getCurrentVar('--dynamic-surface', defaultSurface);
+                const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+                let startTime = null;
+
+                const step = (timestamp) => {
+                    if (startTime === null) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    const eased = easeOutCubic(progress);
+                    const currentAccent = mixColors(startAccent, accent, eased);
+                    const currentSurface = mixColors(startSurface, surface, eased);
+                    updateGlobalPaletteVars(currentAccent, currentSurface);
+                    if (progress < 1) {
+                        paletteAnimationFrame = requestAnimationFrame(step);
+                    } else {
+                        paletteAnimationFrame = null;
+                    }
+                };
+
+                paletteAnimationFrame = requestAnimationFrame(step);
             };
 
             const applyBlockPalette = (block) => {
@@ -336,7 +380,8 @@
                 blocks.forEach(collab => collab.classList.toggle('is-active', collab === block));
                 const accent = (block.dataset.accent || defaultAccent).trim();
                 const surface = (block.dataset.bg || defaultSurface).trim();
-                setGlobalPalette(accent, surface);
+                animateGlobalPalette(accent, surface, 900, !paletteInitialized);
+                paletteInitialized = true;
             };
 
             const findBlockInView = () => {
