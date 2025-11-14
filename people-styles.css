@@ -368,14 +368,13 @@ main {
 }
 
 .project-full-name {
-    margin-top: auto;
+    margin-top: clamp(0.75rem, 1.3vw, 1.5rem);
     text-transform: uppercase;
     letter-spacing: 0.4em;
     font-size: 0.8rem;
     color: rgba(255,255,255,0.7);
     text-align: center;
     width: 100%;
-    padding-top: 1.5rem;
 }
 
 .person-panel {
