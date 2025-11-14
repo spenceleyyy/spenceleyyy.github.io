@@ -9,6 +9,10 @@
     --dynamic-surface: #172D33;
     --dynamic-accent-soft: rgba(232, 144, 190, 0.35);
     --dynamic-surface-strong: #1f3b42;
+    --role-color-pi: #5ac7ff;
+    --role-color-phd: #c792ea;
+    --role-color-undergrad-collection: #ff9f68;
+    --role-color-undergrad-analysis: #ff6fb7;
 }
 
 * {
@@ -355,6 +359,7 @@ main {
 }
 
 .person-panel {
+    --person-accent: var(--block-accent, var(--color-primary));
     background: rgba(6, 10, 16, 0.55);
     backdrop-filter: blur(18px);
     border-radius: 32px;
@@ -367,6 +372,23 @@ main {
     z-index: 1;
     margin-inline: calc(-1 * var(--block-pad-inline, 3rem));
     width: calc(100% + (var(--block-pad-inline, 3rem) * 2));
+    position: relative;
+}
+
+.person-panel[data-person-track="pi"] {
+    --person-accent: var(--role-color-pi);
+}
+
+.person-panel[data-person-track="phd"] {
+    --person-accent: var(--role-color-phd);
+}
+
+.person-panel[data-person-track="undergrad-collection"] {
+    --person-accent: var(--role-color-undergrad-collection);
+}
+
+.person-panel[data-person-track="undergrad-analysis"] {
+    --person-accent: var(--role-color-undergrad-analysis);
 }
 
 .person-meta {
@@ -389,7 +411,7 @@ main {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--block-accent, var(--dynamic-accent));
+    color: var(--person-accent, var(--dynamic-accent));
 }
 
 .person-name {
