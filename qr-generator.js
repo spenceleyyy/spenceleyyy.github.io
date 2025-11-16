@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrDownloads = document.getElementById('qr-download-controls');
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
+    const playToggle = document.getElementById('play-toggle');
+    const gameArea = document.getElementById('game-area');
+    const gameCanvas = document.getElementById('brickbreak-canvas');
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
@@ -271,6 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initSquishyCircles();
+    initBrickBreak();
     function initSquishyCircles() {
         const canvas = document.getElementById('squishy-canvas');
         if (!canvas || motionReduced) return;
@@ -415,5 +419,264 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.addEventListener('scroll', refreshObstacles, { passive: true });
         animate();
+    }
+
+    function initBrickBreak() {
+        if (!playToggle || !gameArea || !gameCanvas) return;
+        let instance = null;
+
+        const stopGame = () => {
+            gameArea.classList.remove('active');
+            playToggle.textContent = 'Play Brick Break';
+            instance?.stop();
+        };
+
+        const startGame = () => {
+            gameArea.classList.add('active');
+            playToggle.textContent = 'Stop Game';
+            if (!instance) {
+                instance = new BrickBreakGame(gameCanvas);
+            }
+            instance.start();
+        };
+
+        playToggle.addEventListener('click', () => {
+            if (gameArea.classList.contains('active')) {
+                stopGame();
+            } else {
+                startGame();
+            }
+        });
+    }
+
+    class BrickBreakGame {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.running = false;
+            this.colors = ['#111111', '#e890be', '#c77dff', '#ffb4a2', '#9a8c98'];
+            this.gravity = 0.12;
+            this.maxBalls = 5;
+            this.balls = [];
+            this.bricks = [];
+            this.spawnTimer = 0;
+            this.paddleWidth = 120;
+            this.paddleHeight = 14;
+            this.paddleX = 0;
+            this.paddleY = 0;
+            this.frameId = null;
+
+            this.animate = this.animate.bind(this);
+            this.handlePointer = this.handlePointer.bind(this);
+            this.handleResize = this.handleResize.bind(this);
+        }
+
+        start() {
+            if (this.running) return;
+            this.running = true;
+            this.resize();
+            this.reset();
+            this.attachEvents();
+            this.frameId = requestAnimationFrame(this.animate);
+        }
+
+        stop() {
+            if (!this.running) return;
+            cancelAnimationFrame(this.frameId);
+            this.detachEvents();
+            this.running = false;
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+
+        attachEvents() {
+            this.canvas.addEventListener('pointermove', this.handlePointer);
+            this.canvas.addEventListener('touchmove', this.handlePointer, { passive: true });
+            window.addEventListener('resize', this.handleResize);
+        }
+
+        detachEvents() {
+            this.canvas.removeEventListener('pointermove', this.handlePointer);
+            this.canvas.removeEventListener('touchmove', this.handlePointer);
+            window.removeEventListener('resize', this.handleResize);
+        }
+
+        handlePointer(event) {
+            const rect = this.canvas.getBoundingClientRect();
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const x = clientX - rect.left;
+            this.paddleX = x - this.paddleWidth / 2;
+            this.paddleX = Math.max(0, Math.min(this.paddleX, this.canvas.width - this.paddleWidth));
+        }
+
+        handleResize() {
+            this.resize();
+            this.createBricks();
+        }
+
+        resize() {
+            const parent = this.canvas.parentElement;
+            if (!parent) return;
+            const parentWidth = parent.clientWidth || this.canvas.width || 600;
+            const parentHeight = parent.clientHeight || 440;
+            this.canvas.width = parentWidth;
+            this.canvas.height = Math.min(520, Math.max(320, parentHeight - 16));
+            this.paddleWidth = Math.max(90, this.canvas.width * 0.18);
+            this.paddleY = this.canvas.height - 36;
+            this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
+        }
+
+        reset() {
+            this.balls = [];
+            for (let i = 0; i < 3; i += 1) {
+                this.balls.push(this.spawnBall());
+            }
+            this.createBricks();
+        }
+
+        spawnBall() {
+            const radius = 10 + Math.random() * 8;
+            return {
+                x: Math.random() * this.canvas.width,
+                y: -radius,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: 1 + Math.random() * 1.5,
+                radius,
+                color: this.colors[Math.floor(Math.random() * this.colors.length)],
+            };
+        }
+
+        createBricks() {
+            const rows = 3;
+            const cols = Math.min(6, Math.max(4, Math.floor(this.canvas.width / 120)));
+            const padding = 10;
+            const offsetTop = 36;
+            const offsetLeft = 20;
+            const brickWidth = (this.canvas.width - offsetLeft * 2 - (cols - 1) * padding) / cols;
+            const brickHeight = 22;
+            this.bricks = [];
+
+            for (let r = 0; r < rows; r += 1) {
+                for (let c = 0; c < cols; c += 1) {
+                    this.bricks.push({
+                        x: offsetLeft + c * (brickWidth + padding),
+                        y: offsetTop + r * (brickHeight + padding),
+                        width: brickWidth,
+                        height: brickHeight,
+                        alive: true,
+                        color: this.colors[(r + c) % this.colors.length],
+                    });
+                }
+            }
+        }
+
+        updateBalls() {
+            if (!this.running) return;
+
+            if (this.balls.length < this.maxBalls && this.spawnTimer <= 0) {
+                this.balls.push(this.spawnBall());
+                this.spawnTimer = 100;
+            } else {
+                this.spawnTimer -= 1;
+            }
+
+            this.balls.forEach((ball, index) => {
+                ball.vy += this.gravity;
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                if (ball.x - ball.radius <= 0) {
+                    ball.x = ball.radius;
+                    ball.vx = Math.abs(ball.vx) * 0.9;
+                } else if (ball.x + ball.radius >= this.canvas.width) {
+                    ball.x = this.canvas.width - ball.radius;
+                    ball.vx = -Math.abs(ball.vx) * 0.9;
+                }
+
+                if (ball.y - ball.radius <= 0) {
+                    ball.y = ball.radius;
+                    ball.vy = Math.abs(ball.vy);
+                }
+
+                if (
+                    ball.y + ball.radius >= this.paddleY &&
+                    ball.y - ball.radius <= this.paddleY + this.paddleHeight &&
+                    ball.x >= this.paddleX &&
+                    ball.x <= this.paddleX + this.paddleWidth &&
+                    ball.vy > 0
+                ) {
+                    ball.y = this.paddleY - ball.radius;
+                    ball.vy = -Math.abs(ball.vy) * 0.95;
+                    const offset = (ball.x - (this.paddleX + this.paddleWidth / 2)) / (this.paddleWidth / 2);
+                    ball.vx += offset * 1.1;
+                }
+
+                this.bricks.forEach((brick) => {
+                    if (!brick.alive) return;
+                    if (
+                        ball.x + ball.radius > brick.x &&
+                        ball.x - ball.radius < brick.x + brick.width &&
+                        ball.y + ball.radius > brick.y &&
+                        ball.y - ball.radius < brick.y + brick.height
+                    ) {
+                        brick.alive = false;
+                        const overlapTop = Math.abs(ball.y + ball.radius - brick.y);
+                        const overlapBottom = Math.abs(brick.y + brick.height - (ball.y - ball.radius));
+                        const overlapLeft = Math.abs(ball.x + ball.radius - brick.x);
+                        const overlapRight = Math.abs(brick.x + brick.width - (ball.x - ball.radius));
+                        const minOverlap = Math.min(overlapTop, overlapBottom, overlapLeft, overlapRight);
+
+                        if (minOverlap === overlapTop || minOverlap === overlapBottom) {
+                            ball.vy *= -1;
+                        } else {
+                            ball.vx *= -1;
+                        }
+                    }
+                });
+
+                if (ball.y - ball.radius > this.canvas.height + 60) {
+                    this.balls[index] = this.spawnBall();
+                }
+            });
+        }
+
+        drawScene() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            this.drawBricks();
+            this.drawPaddle();
+            this.drawBalls();
+        }
+
+        drawBricks() {
+            this.bricks.forEach((brick) => {
+                if (!brick.alive) return;
+                this.ctx.fillStyle = brick.color;
+                this.ctx.globalAlpha = 0.9;
+                this.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                this.ctx.globalAlpha = 1;
+            });
+        }
+
+        drawPaddle() {
+            this.ctx.fillStyle = '#111111';
+            this.ctx.fillRect(this.paddleX, this.paddleY, this.paddleWidth, this.paddleHeight);
+        }
+
+        drawBalls() {
+            this.balls.forEach((ball) => {
+                this.ctx.beginPath();
+                this.ctx.fillStyle = ball.color;
+                this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                this.ctx.fill();
+            });
+        }
+
+        animate() {
+            if (!this.running) return;
+            this.updateBalls();
+            this.drawScene();
+            this.frameId = requestAnimationFrame(this.animate);
+        }
     }
 });
