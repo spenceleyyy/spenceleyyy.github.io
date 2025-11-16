@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrDownloads = document.getElementById('qr-download-controls');
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
+    const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionReduced = motionMediaQuery.matches;
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     
@@ -253,8 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (revealSections.length) {
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReducedMotion) {
+        if (motionReduced) {
             revealSections.forEach((section) => section.classList.add('visible'));
         } else {
             const observer = new IntersectionObserver((entries, obs) => {
@@ -267,5 +268,152 @@ document.addEventListener('DOMContentLoaded', () => {
             }, { threshold: 0.25, rootMargin: '0px 0px -10% 0px' });
             revealSections.forEach((section) => observer.observe(section));
         }
+    }
+
+    initSquishyCircles();
+    function initSquishyCircles() {
+        const canvas = document.getElementById('squishy-canvas');
+        if (!canvas || motionReduced) return;
+
+        const ctx = canvas.getContext('2d');
+        const circles = [];
+        const colors = ['rgba(17,17,17,0.25)', 'rgba(232,144,190,0.35)', 'rgba(199,125,255,0.35)', 'rgba(154,140,152,0.3)'];
+        const maxCircles = 12;
+        const gravity = 0.05;
+        const damping = 0.75;
+        const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let obstacles = [];
+
+        const resizeCanvas = () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        };
+
+        const refreshObstacles = () => {
+            obstacles = obstacleSelectors
+                .map((selector) => Array.from(document.querySelectorAll(selector)))
+                .flat()
+                .filter(Boolean)
+                .map((el) => {
+                    const rect = el.getBoundingClientRect();
+                    return {
+                        left: rect.left,
+                        right: rect.right,
+                        top: rect.top,
+                        bottom: rect.bottom,
+                    };
+                });
+        };
+
+        const spawnCircle = () => {
+            const radius = 12 + Math.random() * 18;
+            return {
+                x: Math.random() * width,
+                y: -radius,
+                r: radius,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: Math.random() * 1,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                prevY: -radius,
+            };
+        };
+
+        const ensureCircles = () => {
+            if (circles.length < maxCircles) {
+                circles.push(spawnCircle());
+            }
+        };
+
+        const updateCircle = (circle) => {
+            circle.prevY = circle.y;
+            circle.vy += gravity;
+            circle.x += circle.vx;
+            circle.y += circle.vy;
+
+            // Bounce off screen edges
+            if (circle.x - circle.r <= 0) {
+                circle.x = circle.r;
+                circle.vx *= -damping;
+            } else if (circle.x + circle.r >= width) {
+                circle.x = width - circle.r;
+                circle.vx *= -damping;
+            }
+
+            // Collisions with obstacles
+            const circleBottom = circle.y + circle.r;
+            const circleTop = circle.y - circle.r;
+            const circleLeft = circle.x - circle.r;
+            const circleRight = circle.x + circle.r;
+
+            for (const obstacle of obstacles) {
+                if (
+                    circleRight > obstacle.left &&
+                    circleLeft < obstacle.right &&
+                    circleBottom > obstacle.top &&
+                    circleTop < obstacle.bottom
+                ) {
+                    const overlapTop = circleBottom - obstacle.top;
+                    const overlapBottom = obstacle.bottom - circleTop;
+                    const overlapLeft = circleRight - obstacle.left;
+                    const overlapRight = obstacle.right - circleLeft;
+                    const minOverlap = Math.min(overlapTop, overlapBottom, overlapLeft, overlapRight);
+
+                    if (minOverlap === overlapTop) {
+                        circle.y = obstacle.top - circle.r;
+                        circle.vy = -Math.abs(circle.vy) * damping;
+                    } else if (minOverlap === overlapBottom) {
+                        circle.y = obstacle.bottom + circle.r;
+                        circle.vy = Math.abs(circle.vy) * damping;
+                    } else if (minOverlap === overlapLeft) {
+                        circle.x = obstacle.left - circle.r;
+                        circle.vx = -Math.abs(circle.vx) * damping;
+                    } else {
+                        circle.x = obstacle.right + circle.r;
+                        circle.vx = Math.abs(circle.vx) * damping;
+                    }
+
+                    circle.vx += (Math.random() - 0.5) * 0.15;
+                }
+            }
+
+            // Remove if far below viewport
+            if (circle.y - circle.r > height + 200) {
+                const index = circles.indexOf(circle);
+                if (index > -1) {
+                    circles.splice(index, 1);
+                }
+            }
+        };
+
+        const drawCircle = (circle) => {
+            ctx.beginPath();
+            ctx.fillStyle = circle.color;
+            ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+            ctx.fill();
+        };
+
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            refreshObstacles();
+            ensureCircles();
+            circles.forEach((circle) => {
+                updateCircle(circle);
+                drawCircle(circle);
+            });
+            requestAnimationFrame(animate);
+        };
+
+        resizeCanvas();
+        refreshObstacles();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            refreshObstacles();
+        });
+        window.addEventListener('scroll', refreshObstacles, { passive: true });
+        animate();
     }
 });
