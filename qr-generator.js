@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderQRCode(lastPayload);
         }
     }
+});
 
     // Show/hide logo options
     if (includeLogoCheckbox) {
@@ -279,9 +280,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const circles = [];
         const colors = ['rgba(17,17,17,0.25)', 'rgba(232,144,190,0.35)', 'rgba(199,125,255,0.35)', 'rgba(154,140,152,0.3)'];
+        const channelBlueprints = [
+            { start: 0.2, width: 0.12 },
+            { start: 0.62, width: 0.12 },
+        ];
+        let channels = [];
         const maxCircles = 20;
         const gravity = 0.05;
         const damping = 0.75;
+        const slowSpawnInterval = 220;
+        let slowSpawnTicker = 0;
         const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -290,11 +298,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let bricks = [];
         const paddle = { width: 160, height: 16, x: 0, y: 0 };
 
+        const updateChannels = () => {
+            channels = channelBlueprints.map(({ start, width: ratio }) => ({
+                min: start * width,
+                max: (start + ratio) * width,
+            }));
+        };
+
         const resizeCanvas = () => {
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
+            updateChannels();
             updatePaddleMetrics();
             if (gameActive) {
                 createBricks();
@@ -327,17 +343,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         };
 
-        const spawnCircle = () => {
+        const spawnCircle = (forceSlow = false) => {
             const radius = 12 + Math.random() * 18;
+            const useChannel = channels.length && (forceSlow || Math.random() < 0.65);
+            const channel = useChannel ? channels[Math.floor(Math.random() * channels.length)] : null;
+            const x = channel ? channel.min + Math.random() * (channel.max - channel.min) : Math.random() * width;
+            const slow = forceSlow || Math.random() < 0.35;
             return {
-                x: Math.random() * width,
-                y: -radius,
+                x,
+                y: -radius - Math.random() * 120,
                 r: radius,
-                vx: (Math.random() - 0.5) * 0.7,
-                vy: Math.random() * 1.2,
+                vx: (Math.random() - 0.5) * (slow ? 0.4 : 0.8),
+                vy: slow ? 0.15 + Math.random() * 0.3 : 0.6 + Math.random() * 1.1,
                 color: colors[Math.floor(Math.random() * colors.length)],
                 squish: 0,
                 squishAxis: 'y',
+                gravityFactor: slow ? 0.45 : 1,
             };
         };
 
@@ -347,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const padding = 10;
             const offsetTop = 80;
             const offsetLeft = 30;
-            const brickWidth = (width - offsetLeft * 2 - (cols - 1) * padding);
+            const brickWidth = width - offsetLeft * 2 - (cols - 1) * padding;
             const actualWidth = brickWidth / cols;
             bricks = [];
             for (let r = 0; r < rows; r += 1) {
@@ -368,15 +389,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (circles.length < maxCircles) {
                 circles.push(spawnCircle());
             }
+            slowSpawnTicker += 1;
+            if (slowSpawnTicker >= slowSpawnInterval) {
+                circles.push(spawnCircle(true));
+                slowSpawnTicker = 0;
+            }
         };
 
         const updateCircle = (circle) => {
             circle.prevY = circle.y;
-            circle.vy += gravity;
+            circle.vy += gravity * circle.gravityFactor;
             circle.x += circle.vx;
             circle.y += circle.vy;
 
-            // Bounce off screen edges
             if (circle.x - circle.r <= 0) {
                 circle.x = circle.r;
                 circle.vx *= -damping;
@@ -389,11 +414,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.squishAxis = 'x';
             }
 
-            // Collisions with obstacles
             const circleBottom = circle.y + circle.r;
             const circleTop = circle.y - circle.r;
             const circleLeft = circle.x - circle.r;
             const circleRight = circle.x + circle.r;
+            const isInsideChannel = channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max);
 
             if (circle.y - circle.r <= 0) {
                 circle.y = circle.r;
@@ -403,6 +428,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             for (const obstacle of obstacles) {
+                if (isInsideChannel && obstacle.top > 80) {
+                    continue;
+                }
                 if (
                     circleRight > obstacle.left &&
                     circleLeft < obstacle.right &&
@@ -442,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (gameActive) {
-                // Paddle collision
                 if (
                     circleBottom >= paddle.y &&
                     circleTop <= paddle.y + paddle.height &&
@@ -458,7 +485,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     circle.squishAxis = 'y';
                 }
 
-                // Bricks collision
                 for (const brick of bricks) {
                     if (!brick.alive) continue;
                     if (
@@ -508,8 +534,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.squish = Math.max(0, circle.squish - 0.02);
             }
 
-            // Remove if far below viewport
-            if (circle.y - circle.r > height + 200) {
+            const fallLimit = height + 400;
+            if (circle.y - circle.r > fallLimit) {
                 const index = circles.indexOf(circle);
                 if (index > -1) {
                     circles.splice(index, 1);
@@ -546,31 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
         };
 
-        const animate = () => {
-            ctx.clearRect(0, 0, width, height);
-            refreshObstacles();
-            ensureCircles();
-            circles.forEach((circle) => {
-                updateCircle(circle);
-                drawCircle(circle);
-            });
-            if (gameActive) {
-                drawBricks();
-                drawPaddle();
-            }
-            requestAnimationFrame(animate);
-        };
-
-        resizeCanvas();
-        refreshObstacles();
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            refreshObstacles();
-        });
-        window.addEventListener('scroll', refreshObstacles, { passive: true });
-        animate();
-    }
-});
         const setPaddlePosition = (clientX) => {
             const rect = canvas.getBoundingClientRect();
             const relativeX = clientX - rect.left;
@@ -619,3 +620,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        const animate = () => {
+            ctx.clearRect(0, 0, width, height);
+            refreshObstacles();
+            ensureCircles();
+            circles.forEach((circle) => {
+                updateCircle(circle);
+                drawCircle(circle);
+            });
+            if (gameActive) {
+                drawBricks();
+                drawPaddle();
+            }
+            requestAnimationFrame(animate);
+        };
+
+        resizeCanvas();
+        refreshObstacles();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            refreshObstacles();
+        });
+        window.addEventListener('scroll', refreshObstacles, { passive: true });
+        animate();
+    }

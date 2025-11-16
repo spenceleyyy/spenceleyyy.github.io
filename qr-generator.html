@@ -60,6 +60,28 @@
             mix-blend-mode: multiply;
         }
 
+        .dot-channel {
+            position: fixed;
+            top: -12vh;
+            bottom: -12vh;
+            width: 13vw;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.22;
+            background: linear-gradient(180deg, rgba(232,144,190,0.25), rgba(255,255,255,0));
+            filter: blur(1px);
+            transform: skewY(-6deg);
+        }
+
+        .channel-left {
+            left: 14vw;
+        }
+
+        .channel-right {
+            left: 60vw;
+            background: linear-gradient(180deg, rgba(199,125,255,0.25), rgba(255,255,255,0));
+        }
+
         nav {
             position: sticky;
             top: 0;
@@ -648,6 +670,8 @@
     <!-- Navigation injected via navigation.js -->
 
     <canvas id="squishy-canvas" aria-hidden="true"></canvas>
+    <div class="dot-channel channel-left" aria-hidden="true"></div>
+    <div class="dot-channel channel-right" aria-hidden="true"></div>
 
     <main class="qr-lab">
         <section class="hero reveal" id="hero">
