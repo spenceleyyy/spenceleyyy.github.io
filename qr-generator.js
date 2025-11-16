@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderQRCode(lastPayload);
         }
     }
-});
 
     // Show/hide logo options
     if (includeLogoCheckbox) {
@@ -78,8 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     customLogoDataUrl = event.target.result;
                 };
                 reader.readAsDataURL(file);
-            }
-        });
+    }
+});
     }
 
     // Generate QR Code using Canvas API directly
