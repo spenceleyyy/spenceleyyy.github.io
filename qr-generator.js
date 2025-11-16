@@ -645,3 +645,4 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('scroll', refreshObstacles, { passive: true });
         animate();
     }
+});
