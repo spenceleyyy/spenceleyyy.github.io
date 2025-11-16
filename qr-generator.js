@@ -292,11 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
         const navElement = document.querySelector('nav');
         const detailsSection = document.querySelector('.details');
+        const navRect = navElement ? navElement.getBoundingClientRect() : null;
+        const detailsRect = detailsSection ? detailsSection.getBoundingClientRect() : null;
+        const navBottom = navRect ? navRect.bottom : 80;
+        const brickAnchorTop = detailsRect ? detailsRect.bottom + 40 : navBottom + 220;
         let width = window.innerWidth;
         let height = window.innerHeight;
         let obstacles = [];
-        let navBottom = navElement ? navElement.offsetHeight : 80;
-        let liveBricksTop = detailsSection ? detailsSection.getBoundingClientRect().bottom + 40 : navBottom + 220;
         let lockedBricksTop = null;
         let gameActive = false;
         let bricks = [];
@@ -309,23 +311,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }));
         };
 
-        const updateLayoutMetrics = () => {
-            if (navElement) {
-                navBottom = navElement.offsetHeight;
-            }
-            if (!lockedBricksTop && detailsSection) {
-                const rect = detailsSection.getBoundingClientRect();
-                liveBricksTop = rect.bottom + 40;
-            }
-        };
-
         const resizeCanvas = () => {
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
             updateChannels();
-            updateLayoutMetrics();
             updatePaddleMetrics();
             if (gameActive) {
                 createBricks();
@@ -384,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const padding = 10;
             const brickHeight = 22;
             const totalBrickHeight = rows * (brickHeight + padding);
-            const anchorTop = lockedBricksTop ?? liveBricksTop;
+            const anchorTop = lockedBricksTop ?? brickAnchorTop;
             const baseTop = anchorTop;
             const offsetLeft = 30;
             const brickWidth = width - offsetLeft * 2 - (cols - 1) * padding;
@@ -625,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gameActive) return;
             gameActive = true;
             if (!lockedBricksTop) {
-                lockedBricksTop = liveBricksTop;
+                lockedBricksTop = brickAnchorTop;
             }
             createBricks();
             if (playToggle) {
