@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
     const playToggle = document.getElementById('play-toggle');
-    const playToggle = document.getElementById('play-toggle');
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
@@ -570,122 +569,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.addEventListener('scroll', refreshObstacles, { passive: true });
         animate();
-    }
-
-                    });
-                }
-            }
-        }
-
-        updateBalls() {
-            if (!this.running) return;
-
-            if (this.balls.length < this.maxBalls && this.spawnTimer <= 0) {
-                this.balls.push(this.spawnBall());
-                this.spawnTimer = 100;
-            } else {
-                this.spawnTimer -= 1;
-            }
-
-            this.balls.forEach((ball, index) => {
-                ball.vy += this.gravity;
-                ball.x += ball.vx;
-                ball.y += ball.vy;
-
-                if (ball.x - ball.radius <= 0) {
-                    ball.x = ball.radius;
-                    ball.vx = Math.abs(ball.vx) * 0.9;
-                } else if (ball.x + ball.radius >= this.canvas.width) {
-                    ball.x = this.canvas.width - ball.radius;
-                    ball.vx = -Math.abs(ball.vx) * 0.9;
-                }
-
-                if (ball.y - ball.radius <= 0) {
-                    ball.y = ball.radius;
-                    ball.vy = Math.abs(ball.vy);
-                }
-
-                if (
-                    ball.y + ball.radius >= this.paddleY &&
-                    ball.y - ball.radius <= this.paddleY + this.paddleHeight &&
-                    ball.x >= this.paddleX &&
-                    ball.x <= this.paddleX + this.paddleWidth &&
-                    ball.vy > 0
-                ) {
-                    ball.y = this.paddleY - ball.radius;
-                    ball.vy = -Math.abs(ball.vy) * 0.95;
-                    const offset = (ball.x - (this.paddleX + this.paddleWidth / 2)) / (this.paddleWidth / 2);
-                    ball.vx += offset * 1.1;
-                }
-
-                this.bricks.forEach((brick) => {
-                    if (!brick.alive) return;
-                    if (
-                        ball.x + ball.radius > brick.x &&
-                        ball.x - ball.radius < brick.x + brick.width &&
-                        ball.y + ball.radius > brick.y &&
-                        ball.y - ball.radius < brick.y + brick.height
-                    ) {
-                        brick.alive = false;
-                        const overlapTop = Math.abs(ball.y + ball.radius - brick.y);
-                        const overlapBottom = Math.abs(brick.y + brick.height - (ball.y - ball.radius));
-                        const overlapLeft = Math.abs(ball.x + ball.radius - brick.x);
-                        const overlapRight = Math.abs(brick.x + brick.width - (ball.x - ball.radius));
-                        const minOverlap = Math.min(overlapTop, overlapBottom, overlapLeft, overlapRight);
-
-                        if (minOverlap === overlapTop || minOverlap === overlapBottom) {
-                            ball.vy *= -1;
-                        } else {
-                            ball.vx *= -1;
-                        }
-                    }
-                });
-
-                if (ball.y - ball.radius > this.canvas.height + 60) {
-                    this.balls[index] = this.spawnBall();
-                }
-            });
-        }
-
-        drawScene() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.drawBricks();
-            this.drawPaddle();
-            this.drawBalls();
-        }
-
-        drawBricks() {
-            this.bricks.forEach((brick) => {
-                if (!brick.alive) return;
-                this.ctx.fillStyle = brick.color;
-                this.ctx.globalAlpha = 0.9;
-                this.ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
-                this.ctx.globalAlpha = 1;
-            });
-        }
-
-        drawPaddle() {
-            this.ctx.fillStyle = '#111111';
-            this.ctx.fillRect(this.paddleX, this.paddleY, this.paddleWidth, this.paddleHeight);
-        }
-
-        drawBalls() {
-            this.balls.forEach((ball) => {
-                this.ctx.beginPath();
-                this.ctx.fillStyle = ball.color;
-                this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-                this.ctx.fill();
-            });
-        }
-
-        animate() {
-            if (!this.running) return;
-            this.updateBalls();
-            this.drawScene();
-            this.frameId = requestAnimationFrame(this.animate);
-        }
     }
 });
         const setPaddlePosition = (clientX) => {
