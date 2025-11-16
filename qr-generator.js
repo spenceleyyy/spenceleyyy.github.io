@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const qrcodeDiv = document.getElementById('qrcode');
     const qrcodeWrapper = document.getElementById('qrcode-wrapper');
     const qrPlaceholder = document.getElementById('qr-placeholder');
-    const qrDownloadControls = document.getElementById('qr-download-controls');
     const qrFormatSelect = document.getElementById('qr-format');
     const includeLogoCheckbox = document.getElementById('include-logo');
     const logoOptions = document.getElementById('logo-options');
@@ -15,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const customLogoArea = document.getElementById('custom-logo-area');
     const customLogoName = document.getElementById('custom-logo-name');
     const qrDisplayContent = document.getElementById('qr-display-content'); 
+    const qrDownloads = document.getElementById('qr-download-controls');
+    const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
+    const revealSections = document.querySelectorAll('.reveal');
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     
@@ -29,7 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (logoOptions) {
                 logoOptions.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
             }
+            if (!includeLogoCheckbox.checked && customLogoName) {
+                customLogoName.style.display = 'none';
+                customLogoName.textContent = '';
+            }
         });
+        // Initialize on load
+        if (logoOptions) {
+            logoOptions.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
+        }
     }
 
     // Handle logo choice
@@ -45,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customLogoArea.style.display = 'block';
             }
         });
+        customLogoArea.style.display = useCustomLogo.checked ? 'block' : 'none';
     }
 
     // Handle custom logo upload
@@ -54,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (file) {
                 if (customLogoName) {
                     customLogoName.textContent = file.name;
+                    customLogoName.style.display = 'block';
                 }
                 
                 const reader = new FileReader();
@@ -82,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (qrPlaceholder) qrPlaceholder.style.display = 'none';
             if (qrDisplayContent) qrDisplayContent.style.display = 'flex'; 
             if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
-            if (qrDownloadControls) qrDownloadControls.style.display = 'flex';
+            if (qrDownloads) qrDownloads.style.display = 'flex';
 
             // IMPORTANT: Set display size for the container
             qrcodeDiv.style.width = '300px'; 
@@ -118,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (includeLogoCheckbox && includeLogoCheckbox.checked) {
                     addLogoToQR(canvas);
                 }
+                playAssemblyAnimation();
             } else {
                 console.error("QR Code library did not create a canvas element.");
             }
@@ -200,5 +213,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Download error:", e);
             }
         });
+    }
+
+    function playAssemblyAnimation() {
+        if (!qrcodeWrapper) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'qr-assembly-overlay';
+        const tiles = 36;
+        for (let i = 0; i < tiles; i += 1) {
+            const cell = document.createElement('span');
+            const delay = (i * 18) + Math.random() * 60;
+            const tx = `${(Math.random() * 80 - 40).toFixed(1)}px`;
+            const ty = `${(Math.random() * 80 - 40).toFixed(1)}px`;
+            cell.style.setProperty('--delay', `${delay}ms`);
+            cell.style.setProperty('--tx', tx);
+            cell.style.setProperty('--ty', ty);
+            overlay.appendChild(cell);
+        }
+        qrcodeWrapper.appendChild(overlay);
+        const cleanup = () => overlay.remove();
+        overlay.addEventListener('animationend', cleanup);
+        setTimeout(cleanup, 1600);
+    }
+
+    if (heroScrollBtn) {
+        heroScrollBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            const targetId = heroScrollBtn.dataset.scrollTarget;
+            const section = document.getElementById(targetId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    }
+
+    if (revealSections.length) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            revealSections.forEach((section) => section.classList.add('visible'));
+        } else {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.25, rootMargin: '0px 0px -10% 0px' });
+            revealSections.forEach((section) => observer.observe(section));
+        }
     }
 });

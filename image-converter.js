@@ -22,6 +22,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let originalFile = null;
     let convertedDataUrl = null;
 
+    const assignFileToInput = (inputEl, file) => {
+        if (!inputEl || !file || typeof DataTransfer === 'undefined') return;
+        try {
+            const transfer = new DataTransfer();
+            transfer.items.add(file);
+            inputEl.files = transfer.files;
+        } catch (error) {
+            console.warn('Unable to sync dropped file with input element.', error);
+        }
+    };
+
+    const setupDropZone = (dropTarget, inputEl) => {
+        if (!dropTarget || !inputEl) return;
+        const card = dropTarget.closest('.tool-card');
+        const toggleActive = (isActive) => {
+            dropTarget.classList.toggle('drag-active', isActive);
+            if (card) {
+                card.classList.toggle('drag-active', isActive);
+            }
+        };
+
+        ['dragenter', 'dragover'].forEach((eventName) => {
+            dropTarget.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                toggleActive(true);
+            });
+        });
+
+        ['dragleave', 'dragend'].forEach((eventName) => {
+            dropTarget.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                toggleActive(false);
+            });
+        });
+
+        dropTarget.addEventListener('drop', (event) => {
+            event.preventDefault();
+            toggleActive(false);
+
+            const file = event.dataTransfer?.files?.[0];
+            if (file) {
+                assignFileToInput(inputEl, file);
+                handleImageUpload(file);
+            }
+        });
+    };
+
     // File upload
     if (converterUpload) {
         converterUpload.addEventListener('change', (e) => {
@@ -31,6 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    setupDropZone(converterUploadArea, converterUpload);
 
     function handleImageUpload(file) {
         originalFile = file;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Background Remover</title>
-    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link rel="icon" href="logos/RSlogoUPDATED.png">
     <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="tool-styles.css">
     <style>
@@ -50,6 +50,12 @@
                 </label>
                 
                 <p class="file-name" id="file-name"></p>
+                
+                <div class="input-group" id="bg-controls" style="display: none;">
+                    <label for="bg-sensitivity">Background sensitivity: <span id="bg-sensitivity-value">65</span>%</label>
+                    <input type="range" id="bg-sensitivity" min="25" max="90" value="65" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
+                    <p class="info-text">Lower sensitivity keeps more of the original background. Increase it for stronger removal.</p>
+                </div>
                 
                 <button id="remove-bg" disabled><span>Remove Background</span></button>
                 

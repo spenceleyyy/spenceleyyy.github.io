@@ -5,76 +5,575 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | QR Code Generator</title>
     <link rel="icon" href="/logos/RSlogoUPDATED.png">
-    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="tool-styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <style>
+        :root {
+            --ink: #050505;
+            --charcoal: #111111;
+            --smoke: #f8f8f5;
+            --muted: #979797;
+            --accent: #e890be;
+            --panel: #0f0f0f;
+            --divider: rgba(255, 255, 255, 0.08);
+            --noise: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.04), transparent 45%),
+                     radial-gradient(circle at 65% 10%, rgba(255,255,255,0.04), transparent 40%),
+                     radial-gradient(circle at 85% 45%, rgba(255,255,255,0.03), transparent 35%),
+                     repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0 14px, transparent 14px 28px);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--ink);
+            color: var(--smoke);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: var(--noise);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            padding: 10vh 6vw 6vh;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .qr-lab section {
+            margin-bottom: 6rem;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .eyebrow {
+            font-size: 0.85rem;
+            letter-spacing: 0.35em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .occluded {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            line-height: 1;
+            letter-spacing: -0.05em;
+            margin: 0 0 1.5rem;
+            position: relative;
+        }
+
+        .occluded::after {
+            content: '';
+            position: absolute;
+            inset: -0.15em;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(0,0,0,0.85) 0%, transparent 60%),
+                radial-gradient(circle at 65% 55%, rgba(0,0,0,0.8) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0,0,0,0.9) 0%, transparent 50%),
+                repeating-linear-gradient(125deg, rgba(0,0,0,0.7) 0 14px, transparent 14px 28px);
+            mix-blend-mode: multiply;
+            opacity: 0.65;
+            pointer-events: none;
+            filter: blur(1px);
+        }
+
+        .hero .lede {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            max-width: 520px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-button {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.5);
+            color: var(--smoke);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            padding: 1rem 2.5rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            transition: transform 0.4s ease, border-color 0.4s ease;
+        }
+
+        .hero-button:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .hero-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            border: 1px solid var(--divider);
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 50px 120px rgba(0, 0, 0, 0.45);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-panel::before {
+            content: '';
+            position: absolute;
+            inset: 20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 60%);
+            filter: blur(35px);
+            pointer-events: none;
+        }
+
+        .panel-eyebrow {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            color: rgba(255,255,255,0.55);
+        }
+
+        .panel-metric {
+            font-size: 3.5rem;
+            margin: 1rem 0 0.5rem;
+            letter-spacing: -0.06em;
+        }
+
+        .panel-note {
+            color: rgba(255,255,255,0.65);
+        }
+
+        .composer {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            align-items: flex-start;
+        }
+
+        .panel {
+            background: var(--panel);
+            border-radius: 32px;
+            padding: clamp(2rem, 3vw, 3rem);
+            border: 1px solid var(--divider);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel h2 {
+            font-size: 1.1rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            margin: 0 0 1.5rem;
+            position: relative;
+        }
+
+        .panel h2::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(0,0,0,0.9) 0%, transparent 55%),
+                radial-gradient(circle at 70% 60%, rgba(0,0,0,0.85) 0%, transparent 45%);
+            mix-blend-mode: multiply;
+            opacity: 0.55;
+        }
+
+        label {
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.75rem;
+        }
+
+        textarea,
+        input[type="text"],
+        select {
+            width: 100%;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 18px;
+            padding: 1rem 1.25rem;
+            color: var(--smoke);
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        textarea:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(232,144,190,0.4);
+        }
+
+        textarea {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        .checkbox-label,
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .checkbox-label:hover,
+        .radio-label:hover {
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            accent-color: var(--smoke);
+            width: 18px;
+            height: 18px;
+        }
+
+        .logo-options {
+            margin-top: 1.25rem;
+            display: none;
+        }
+
+        .logo-choice {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #custom-logo-upload {
+            display: none;
+        }
+
+        #custom-logo-area {
+            display: none;
+            border-style: dashed;
+            text-align: center;
+        }
+
+        #custom-logo-name {
+            display: none;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.65);
+            margin-top: 0.5rem;
+        }
+
+        .primary-button {
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            padding: 1.1rem 2rem;
+            font-size: 1rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            background: linear-gradient(120deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+            color: var(--ink);
+            cursor: pointer;
+            transition: transform 0.35s ease;
+            margin-top: 2rem;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+        }
+
+        .qr-stage {
+            border-radius: 28px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            border: 1px solid var(--divider);
+            padding: 2rem;
+        }
+
+        .qr-shell {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+            min-height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qr-placeholder {
+            color: rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        #qr-display-content {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        #qrcode-wrapper {
+            width: min(320px, 100%);
+            height: min(320px, 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #qrcode canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .qr-assembly-overlay {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .qr-assembly-overlay span {
+            background: #050505;
+            animation: tileAssemble 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation-delay: var(--delay, 0ms);
+            transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1.15);
+            opacity: 0.9;
+        }
+
+        @keyframes tileAssemble {
+            0% {
+                opacity: 0.85;
+                transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(1.15);
+            }
+            70% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: translate3d(0,0,0) scale(0);
+            }
+        }
+
+        .qr-downloads {
+            display: none;
+            gap: 0.85rem;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .secondary-button {
+            background: transparent;
+            border: 1px solid rgba(0,0,0,0.25);
+            padding: 0.9rem 2rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            border-color: rgba(0,0,0,0.6);
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .detail-card {
+            padding: 2rem;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--divider);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+        }
+
+        .detail-card h3 {
+            margin: 0 0 0.5rem;
+            letter-spacing: 0.2em;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+        }
+
+        .detail-card p {
+            margin: 0;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 0.9s ease, transform 1s cubic-bezier(0.4, 0, 0, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            padding: 4rem 6vw;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            border-top: 1px solid var(--divider);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 8vh 1.5rem 4vh;
+            }
+
+            .hero-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .panel {
+                padding: 1.75rem;
+            }
+
+            .panel h2 {
+                letter-spacing: 0.2em;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation injected via navigation.js -->
 
-    <main>
-        <div class="page-header">
-            <h1>QR Code Generator</h1>
-            <p class="page-subtitle">Create custom QR codes from any text or URL</p>
-        </div>
-
-        <div class="tool-container">
-            <div class="tool-card">
-                <p class="tool-description">Generate high-quality QR codes for websites, text, or contact information. Customize with your logo for brand recognition.</p>
-                
-                <div class="input-group">
-                    <label for="qr-input">Enter text or URL</label>
-                    <textarea id="qr-input" placeholder="https://example.com or any text..."></textarea>
+    <main class="qr-lab">
+        <section class="hero reveal" id="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">RS SIGNAL STUDIO</p>
+                <h1 class="occluded">Monochrome Precision Codes</h1>
+                <p class="lede">A premium, high-contrast workspace that turns your links and data into iconic QR marks. Minimal, cinematic, and obsessively precise.</p>
+                <div class="hero-actions">
+                    <button class="hero-button" data-scroll-target="generator">Start Generating</button>
+                    <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; letter-spacing: 0.25em; text-transform: uppercase;">High fidelity • Logo ready • Instant exports</span>
                 </div>
-                
+            </div>
+            <div class="hero-panel">
+                <p class="panel-eyebrow">Precision Mode</p>
+                <p class="panel-metric occluded" style="font-size: 2.7rem; margin-bottom: 0;">01 / 24</p>
+                <p class="panel-note">Each QR pattern draws with an assembling animation, revealing the code through motion — subtle brand color accents highlight interactions only when needed.</p>
+            </div>
+        </section>
+
+        <section class="composer reveal" id="generator">
+            <div class="panel">
+                <h2>Compose</h2>
                 <div class="input-group">
+                    <label for="qr-input">Payload</label>
+                    <textarea id="qr-input" placeholder="https://studio.rs/work or any text..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Brand mark</label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="include-logo">
-                        <span>Include logo in center</span>
+                        <span>Embed logo in center</span>
                     </label>
                 </div>
-                
-                <div class="input-group" id="logo-options" style="display: none;">
-                    <label>Logo Options</label>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
+
+                <div class="logo-options" id="logo-options">
+                    <label>Source</label>
+                    <div class="logo-choice">
+                        <label class="radio-label">
                             <input type="radio" name="logo-choice" id="use-rs-logo" checked>
-                            <span>Use RS Logo (Text)</span>
+                            <span>Use RS Logotype</span>
                         </label>
-                        <label class="checkbox-label" style="flex: 1; min-width: 150px;">
+                        <label class="radio-label">
                             <input type="radio" name="logo-choice" id="use-custom-logo">
-                            <span>Upload Custom</span>
+                            <span>Upload custom mark</span>
                         </label>
                     </div>
                     <input type="file" id="custom-logo-upload" accept="image/*">
-                    <label for="custom-logo-upload" class="file-upload-area" id="custom-logo-area" style="display: none; padding: 1.5rem; margin: 0;">
-                        <div class="upload-icon" style="width: 40px; height: 40px; font-size: 1.25rem; margin: 0 auto 0.5rem;">🎨</div>
-                        <div class="upload-text" style="font-size: 0.95rem;">Upload your logo</div>
-                        <div class="upload-subtext" style="font-size: 0.8rem;">PNG or JPG recommended</div>
+                    <label for="custom-logo-upload" class="checkbox-label" id="custom-logo-area">
+                        <div style="font-size: 0.9rem; letter-spacing: 0.1em;">Drag & drop transparent PNG, SVG, or JPG</div>
                     </label>
                     <p class="file-name" id="custom-logo-name"></p>
                 </div>
-                
-                <button id="generate-qr"><span>Generate QR Code</span></button>
-                
-                <div class="output-area">
-                    <div id="qr-placeholder" class="output-placeholder">Your QR code will appear here</div>
-                    
-                    <div id="qr-display-content" style="display: none; flex-direction: column; align-items: center; width: 100%;">
-                        <div id="qrcode-wrapper" style="display: none; padding: 2rem; background: var(--color-white); border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: scaleIn 0.4s ease;">
-                            <div id="qrcode"></div>
-                        </div>
-                        <div style="display: none; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;" id="qr-download-controls">
-                            <select id="qr-format" style="width: 120px; min-width: 120px; padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                <option value="png">PNG</option>
-                                <option value="jpg">JPG</option>
-                            </select>
-                            <button id="download-qr" class="button-secondary"><span>Download</span></button>
+
+                <button id="generate-qr" class="primary-button"><span>Generate Code</span></button>
+            </div>
+
+            <div class="panel">
+                <h2>Preview</h2>
+                <div class="qr-stage" id="qr-stage">
+                    <div class="qr-shell">
+                        <div id="qr-placeholder">Awaiting payload</div>
+                        <div id="qr-display-content">
+                            <div id="qrcode-wrapper">
+                                <div id="qrcode"></div>
+                            </div>
+                            <div class="qr-downloads" id="qr-download-controls">
+                                <select id="qr-format">
+                                    <option value="png">PNG</option>
+                                    <option value="jpg">JPG</option>
+                                </select>
+                                <button id="download-qr" class="secondary-button"><span>Download</span></button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <section class="details reveal">
+            <div class="detail-card">
+                <h3>Logo safe</h3>
+                <p>High error correction ensures your emblem remains crisp without sacrificing scan reliability.</p>
+            </div>
+            <div class="detail-card">
+                <h3>Studio controls</h3>
+                <p>Switch between built-in branding and bespoke uploads to align every campaign.</p>
+            </div>
+            <div class="detail-card">
+                <h3>Instant export</h3>
+                <p>Grab PNG or JPG renders in one click. SVG fallback is handled by the misc toolset when needed.</p>
+            </div>
+        </section>
     </main>
 
     <footer>

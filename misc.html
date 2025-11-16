@@ -6,7 +6,7 @@
     <title>RS | Misc Tools</title>
     
     <!-- Using a placeholder/mock path for the favicon, as real files are inaccessible -->
-    <link rel="icon" href="https://placehold.co/16x16/e890be/172D33?text=R">
+    <link rel="icon" href="logos/RSlogoUPDATED.png">
     
     <!-- QR Code Generation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -926,6 +926,12 @@
                 
                 <p class="file-name" id="file-name"></p>
                 
+                <div class="input-group" id="bg-controls" style="display: none;">
+                    <label for="bg-sensitivity">Background sensitivity: <span id="bg-sensitivity-value">65</span>%</label>
+                    <input type="range" id="bg-sensitivity" min="25" max="90" value="65" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
+                    <p class="info-text">Lower values preserve more of the background. Increase to aggressively remove lighter areas.</p>
+                </div>
+                
                 <button id="remove-bg" disabled><span>Remove Background</span></button>
                 
                 <div id="processing-container" style="display: none;">
@@ -1302,8 +1308,18 @@
             const bgOutput = $('bg-output');
             const downloadResultBtn = $('download-result');
             const bgRemoverCard = $('bg-remover-card');
+            const bgControls = $('bg-controls');
+            const bgSensitivity = $('bg-sensitivity');
+            const bgSensitivityValue = $('bg-sensitivity-value');
 
             let uploadedImage = null;
+
+            const updateSensitivityDisplay = () => {
+                if (bgSensitivity && bgSensitivityValue) {
+                    bgSensitivityValue.textContent = bgSensitivity.value;
+                }
+            };
+            updateSensitivityDisplay();
 
             const updateProgress = (value) => {
                 if (progressBar) {
@@ -1312,6 +1328,108 @@
                 if (progressPercent) {
                     progressPercent.textContent = `${value}%`;
                 }
+            };
+
+            const estimateBackgroundColor = (imageData) => {
+                const { data, width, height } = imageData;
+                const maxX = Math.max(0, width - 1);
+                const maxY = Math.max(0, height - 1);
+                const samplePoints = [
+                    [0, 0],
+                    [maxX, 0],
+                    [0, maxY],
+                    [maxX, maxY],
+                    [Math.floor(width / 2), 0],
+                    [0, Math.floor(height / 2)],
+                    [maxX, Math.floor(height / 2)],
+                    [Math.floor(width / 2), maxY],
+                ];
+                let totalR = 0;
+                let totalG = 0;
+                let totalB = 0;
+                let count = 0;
+                samplePoints.forEach(([x, y]) => {
+                    const clampedX = Math.min(Math.max(x, 0), maxX);
+                    const clampedY = Math.min(Math.max(y, 0), maxY);
+                    const index = (clampedY * width + clampedX) * 4;
+                    totalR += data[index];
+                    totalG += data[index + 1];
+                    totalB += data[index + 2];
+                    count += 1;
+                });
+                return {
+                    r: totalR / count || 255,
+                    g: totalG / count || 255,
+                    b: totalB / count || 255,
+                };
+            };
+
+            const featherAlpha = (data, width, height) => {
+                const alpha = new Uint8ClampedArray(width * height);
+                for (let i = 0, p = 0; i < data.length; i += 4, p += 1) {
+                    alpha[p] = data[i + 3];
+                }
+                const blurred = new Uint8ClampedArray(alpha.length);
+                for (let y = 0; y < height; y += 1) {
+                    for (let x = 0; x < width; x += 1) {
+                        let total = 0;
+                        let samples = 0;
+                        for (let dy = -1; dy <= 1; dy += 1) {
+                            const ny = y + dy;
+                            if (ny < 0 || ny >= height) continue;
+                            for (let dx = -1; dx <= 1; dx += 1) {
+                                const nx = x + dx;
+                                if (nx < 0 || nx >= width) continue;
+                                total += alpha[ny * width + nx];
+                                samples += 1;
+                            }
+                        }
+                        blurred[y * width + x] = total / samples;
+                    }
+                }
+                for (let i = 0, p = 0; i < data.length; i += 4, p += 1) {
+                    data[i + 3] = Math.round((alpha[p] + blurred[p]) / 2);
+                }
+            };
+
+            const applySmartMask = () => {
+                if (!processedCanvas || !uploadedImage) return;
+                const ctx = processedCanvas.getContext('2d');
+                processedCanvas.width = uploadedImage.width;
+                processedCanvas.height = uploadedImage.height;
+                ctx.drawImage(uploadedImage, 0, 0);
+
+                const imageData = ctx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+                const sensitivityValue = bgSensitivity ? Number(bgSensitivity.value) : 65;
+                const backgroundColor = estimateBackgroundColor(imageData);
+                const { data, width, height } = imageData;
+                const clampedSensitivity = Math.min(Math.max(sensitivityValue, 25), 95);
+                const baseThreshold = 25 + (clampedSensitivity / 100) * 110;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    const diff = Math.sqrt(
+                        (r - backgroundColor.r) ** 2 +
+                        (g - backgroundColor.g) ** 2 +
+                        (b - backgroundColor.b) ** 2
+                    );
+                    const brightness = (r + g + b) / 3 / 255;
+                    const adaptiveThreshold = baseThreshold * (1 - 0.25 * brightness);
+                    const hardCutoff = adaptiveThreshold * 0.55;
+                    const softCutoff = adaptiveThreshold;
+
+                    if (diff <= hardCutoff) {
+                        data[i + 3] = 0;
+                    } else if (diff < softCutoff) {
+                        const ratio = (diff - hardCutoff) / (softCutoff - hardCutoff);
+                        data[i + 3] = Math.round(ratio * data[i + 3]);
+                    }
+                }
+
+                featherAlpha(data, width, height);
+                ctx.putImageData(imageData, 0, 0);
             };
 
             const handleBgFile = (file) => {
@@ -1324,6 +1442,10 @@
                     fileNameLabel.textContent = file.name;
                     fileNameLabel.style.display = 'block';
                 }
+                if (bgControls) {
+                    bgControls.style.display = 'block';
+                }
+                updateSensitivityDisplay();
                 removeBgBtn.disabled = false;
 
                 const reader = new FileReader();
@@ -1347,32 +1469,18 @@
             setupDropZone(bgRemoverCard, imageUpload, handleBgFile);
             setupDropZone(bgUploadArea, imageUpload, handleBgFile);
 
-            const removeBackground = () => {
-                if (!processedCanvas || !uploadedImage) return;
-                const ctx = processedCanvas.getContext('2d');
-                processedCanvas.width = uploadedImage.width;
-                processedCanvas.height = uploadedImage.height;
-                ctx.drawImage(uploadedImage, 0, 0);
+            const processBackground = ({ skipAnimation = false } = {}) => {
+                if (!uploadedImage) return;
 
-                const imageData = ctx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
-                const data = imageData.data;
+                const finalize = () => {
+                    applySmartMask();
+                    processingContainer.style.display = 'none';
+                    previewContainer.style.display = 'grid';
+                    bgOutput.style.display = 'block';
+                };
 
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-                    const brightness = (r + g + b) / 3;
-                    if (brightness > 220) {
-                        data[i + 3] = 0;
-                    }
-                }
-
-                ctx.putImageData(imageData, 0, 0);
-            };
-
-            removeBgBtn?.addEventListener('click', () => {
-                if (!uploadedImage) {
-                    alert('Upload an image before processing.');
+                if (skipAnimation) {
+                    finalize();
                     return;
                 }
 
@@ -1390,11 +1498,23 @@
                 setTimeout(() => {
                     clearInterval(interval);
                     updateProgress(100);
-                    removeBackground();
-                    processingContainer.style.display = 'none';
-                    previewContainer.style.display = 'grid';
-                    bgOutput.style.display = 'block';
+                    finalize();
                 }, 1600);
+            };
+
+            removeBgBtn?.addEventListener('click', () => {
+                if (!uploadedImage) {
+                    alert('Upload an image before processing.');
+                    return;
+                }
+                processBackground();
+            });
+
+            bgSensitivity?.addEventListener('input', () => {
+                updateSensitivityDisplay();
+                if (uploadedImage && previewContainer?.style.display === 'grid') {
+                    processBackground({ skipAnimation: true });
+                }
             });
 
             downloadResultBtn?.addEventListener('click', () => {
