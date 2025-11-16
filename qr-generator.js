@@ -678,7 +678,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeCanvas();
             refreshObstacles();
         });
-        window.addEventListener('scroll', refreshObstacles, { passive: true });
         animate();
     }
 });
