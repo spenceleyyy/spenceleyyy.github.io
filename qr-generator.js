@@ -18,8 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
     const playToggle = document.getElementById('play-toggle');
-    const gameArea = document.getElementById('game-area');
-    const gameCanvas = document.getElementById('brickbreak-canvas');
+    const playToggle = document.getElementById('play-toggle');
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
@@ -274,7 +273,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     initSquishyCircles();
-    initBrickBreak();
     function initSquishyCircles() {
         const canvas = document.getElementById('squishy-canvas');
         if (!canvas || motionReduced) return;
@@ -282,19 +280,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const circles = [];
         const colors = ['rgba(17,17,17,0.25)', 'rgba(232,144,190,0.35)', 'rgba(199,125,255,0.35)', 'rgba(154,140,152,0.3)'];
-        const maxCircles = 12;
+        const maxCircles = 20;
         const gravity = 0.05;
         const damping = 0.75;
         const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
         let width = window.innerWidth;
         let height = window.innerHeight;
         let obstacles = [];
+        let gameActive = false;
+        let bricks = [];
+        const paddle = { width: 160, height: 16, x: 0, y: 0 };
 
         const resizeCanvas = () => {
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
+            updatePaddleMetrics();
+            if (gameActive) {
+                createBricks();
+            }
+        };
+
+        const updatePaddleMetrics = () => {
+            paddle.width = Math.max(110, width * 0.18);
+            paddle.height = 16;
+            paddle.y = height - 70;
+            if (!Number.isFinite(paddle.x) || paddle.x === 0) {
+                paddle.x = (width - paddle.width) / 2;
+            }
+            paddle.x = Math.max(0, Math.min(paddle.x, width - paddle.width));
         };
 
         const refreshObstacles = () => {
@@ -319,11 +334,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: Math.random() * width,
                 y: -radius,
                 r: radius,
-                vx: (Math.random() - 0.5) * 0.6,
-                vy: Math.random() * 1,
+                vx: (Math.random() - 0.5) * 0.7,
+                vy: Math.random() * 1.2,
                 color: colors[Math.floor(Math.random() * colors.length)],
-                prevY: -radius,
+                squish: 0,
+                squishAxis: 'y',
             };
+        };
+
+        const createBricks = () => {
+            const rows = 3;
+            const cols = Math.min(6, Math.max(4, Math.floor(width / 140)));
+            const padding = 10;
+            const offsetTop = 80;
+            const offsetLeft = 30;
+            const brickWidth = (width - offsetLeft * 2 - (cols - 1) * padding);
+            const actualWidth = brickWidth / cols;
+            bricks = [];
+            for (let r = 0; r < rows; r += 1) {
+                for (let c = 0; c < cols; c += 1) {
+                    bricks.push({
+                        x: offsetLeft + c * (actualWidth + padding),
+                        y: offsetTop + r * (22 + padding),
+                        width: actualWidth,
+                        height: 22,
+                        alive: true,
+                        color: colors[(r + c) % colors.length],
+                    });
+                }
+            }
         };
 
         const ensureCircles = () => {
@@ -342,9 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (circle.x - circle.r <= 0) {
                 circle.x = circle.r;
                 circle.vx *= -damping;
+                circle.squish = 0.3;
+                circle.squishAxis = 'x';
             } else if (circle.x + circle.r >= width) {
                 circle.x = width - circle.r;
                 circle.vx *= -damping;
+                circle.squish = 0.3;
+                circle.squishAxis = 'x';
             }
 
             // Collisions with obstacles
@@ -352,6 +395,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleTop = circle.y - circle.r;
             const circleLeft = circle.x - circle.r;
             const circleRight = circle.x + circle.r;
+
+            if (circle.y - circle.r <= 0) {
+                circle.y = circle.r;
+                circle.vy = Math.abs(circle.vy) * damping;
+                circle.squish = 0.35;
+                circle.squishAxis = 'y';
+            }
 
             for (const obstacle of obstacles) {
                 if (
@@ -369,19 +419,94 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (minOverlap === overlapTop) {
                         circle.y = obstacle.top - circle.r;
                         circle.vy = -Math.abs(circle.vy) * damping;
+                        circle.squish = 0.45;
+                        circle.squishAxis = 'y';
                     } else if (minOverlap === overlapBottom) {
                         circle.y = obstacle.bottom + circle.r;
                         circle.vy = Math.abs(circle.vy) * damping;
+                        circle.squish = 0.35;
+                        circle.squishAxis = 'y';
                     } else if (minOverlap === overlapLeft) {
                         circle.x = obstacle.left - circle.r;
                         circle.vx = -Math.abs(circle.vx) * damping;
+                        circle.squish = 0.35;
+                        circle.squishAxis = 'x';
                     } else {
                         circle.x = obstacle.right + circle.r;
                         circle.vx = Math.abs(circle.vx) * damping;
+                        circle.squish = 0.35;
+                        circle.squishAxis = 'x';
                     }
 
                     circle.vx += (Math.random() - 0.5) * 0.15;
                 }
+            }
+
+            if (gameActive) {
+                // Paddle collision
+                if (
+                    circleBottom >= paddle.y &&
+                    circleTop <= paddle.y + paddle.height &&
+                    circle.x >= paddle.x &&
+                    circle.x <= paddle.x + paddle.width &&
+                    circle.vy > 0
+                ) {
+                    circle.y = paddle.y - circle.r;
+                    circle.vy = -Math.abs(circle.vy) * 0.9;
+                    const offset = (circle.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+                    circle.vx += offset * 0.8;
+                    circle.squish = 0.4;
+                    circle.squishAxis = 'y';
+                }
+
+                // Bricks collision
+                for (const brick of bricks) {
+                    if (!brick.alive) continue;
+                    if (
+                        circleRight > brick.x &&
+                        circleLeft < brick.x + brick.width &&
+                        circleBottom > brick.y &&
+                        circleTop < brick.y + brick.height
+                    ) {
+                        brick.alive = false;
+                        const overlapTop = circleBottom - brick.y;
+                        const overlapBottom = brick.y + brick.height - circleTop;
+                        const overlapLeft = circleRight - brick.x;
+                        const overlapRight = brick.x + brick.width - circleLeft;
+                        const minOverlap = Math.min(overlapTop, overlapBottom, overlapLeft, overlapRight);
+
+                        if (minOverlap === overlapTop) {
+                            circle.y = brick.y - circle.r;
+                            circle.vy = -Math.abs(circle.vy) * damping;
+                            circle.squish = 0.35;
+                            circle.squishAxis = 'y';
+                        } else if (minOverlap === overlapBottom) {
+                            circle.y = brick.y + brick.height + circle.r;
+                            circle.vy = Math.abs(circle.vy) * damping;
+                            circle.squish = 0.35;
+                            circle.squishAxis = 'y';
+                        } else if (minOverlap === overlapLeft) {
+                            circle.x = brick.x - circle.r;
+                            circle.vx = -Math.abs(circle.vx) * damping;
+                            circle.squish = 0.35;
+                            circle.squishAxis = 'x';
+                        } else {
+                            circle.x = brick.x + brick.width + circle.r;
+                            circle.vx = Math.abs(circle.vx) * damping;
+                            circle.squish = 0.35;
+                            circle.squishAxis = 'x';
+                        }
+                        break;
+                    }
+                }
+
+                if (bricks.length && bricks.every((brick) => !brick.alive)) {
+                    createBricks();
+                }
+            }
+
+            if (circle.squish > 0) {
+                circle.squish = Math.max(0, circle.squish - 0.02);
             }
 
             // Remove if far below viewport
@@ -394,10 +519,32 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const drawCircle = (circle) => {
+            ctx.save();
+            ctx.translate(circle.x, circle.y);
+            const squishFactor = circle.squish;
+            const scaleX = circle.squishAxis === 'x' ? 1 + squishFactor : 1 - squishFactor * 0.8;
+            const scaleY = circle.squishAxis === 'y' ? 1 + squishFactor : 1 - squishFactor * 0.8;
+            ctx.scale(scaleX, scaleY);
             ctx.beginPath();
             ctx.fillStyle = circle.color;
-            ctx.arc(circle.x, circle.y, circle.r, 0, Math.PI * 2);
+            ctx.arc(0, 0, circle.r, 0, Math.PI * 2);
             ctx.fill();
+            ctx.restore();
+        };
+
+        const drawBricks = () => {
+            bricks.forEach((brick) => {
+                if (!brick.alive) return;
+                ctx.fillStyle = brick.color;
+                ctx.globalAlpha = 0.85;
+                ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                ctx.globalAlpha = 1;
+            });
+        };
+
+        const drawPaddle = () => {
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
         };
 
         const animate = () => {
@@ -408,6 +555,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateCircle(circle);
                 drawCircle(circle);
             });
+            if (gameActive) {
+                drawBricks();
+                drawPaddle();
+            }
             requestAnimationFrame(animate);
         };
 
@@ -421,149 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
-    function initBrickBreak() {
-        if (!playToggle || !gameArea || !gameCanvas) return;
-        let instance = null;
-
-        const stopGame = () => {
-            gameArea.classList.remove('active');
-            playToggle.textContent = 'Play Brick Break';
-            instance?.stop();
-        };
-
-        const startGame = () => {
-            gameArea.classList.add('active');
-            playToggle.textContent = 'Stop Game';
-            if (!instance) {
-                instance = new BrickBreakGame(gameCanvas);
-            }
-            instance.start();
-        };
-
-        playToggle.addEventListener('click', () => {
-            if (gameArea.classList.contains('active')) {
-                stopGame();
-            } else {
-                startGame();
-            }
-        });
-    }
-
-    class BrickBreakGame {
-        constructor(canvas) {
-            this.canvas = canvas;
-            this.ctx = canvas.getContext('2d');
-            this.running = false;
-            this.colors = ['#111111', '#e890be', '#c77dff', '#ffb4a2', '#9a8c98'];
-            this.gravity = 0.12;
-            this.maxBalls = 5;
-            this.balls = [];
-            this.bricks = [];
-            this.spawnTimer = 0;
-            this.paddleWidth = 120;
-            this.paddleHeight = 14;
-            this.paddleX = 0;
-            this.paddleY = 0;
-            this.frameId = null;
-
-            this.animate = this.animate.bind(this);
-            this.handlePointer = this.handlePointer.bind(this);
-            this.handleResize = this.handleResize.bind(this);
-        }
-
-        start() {
-            if (this.running) return;
-            this.running = true;
-            this.resize();
-            this.reset();
-            this.attachEvents();
-            this.frameId = requestAnimationFrame(this.animate);
-        }
-
-        stop() {
-            if (!this.running) return;
-            cancelAnimationFrame(this.frameId);
-            this.detachEvents();
-            this.running = false;
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-
-        attachEvents() {
-            this.canvas.addEventListener('pointermove', this.handlePointer);
-            this.canvas.addEventListener('touchmove', this.handlePointer, { passive: true });
-            window.addEventListener('resize', this.handleResize);
-        }
-
-        detachEvents() {
-            this.canvas.removeEventListener('pointermove', this.handlePointer);
-            this.canvas.removeEventListener('touchmove', this.handlePointer);
-            window.removeEventListener('resize', this.handleResize);
-        }
-
-        handlePointer(event) {
-            const rect = this.canvas.getBoundingClientRect();
-            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-            const x = clientX - rect.left;
-            this.paddleX = x - this.paddleWidth / 2;
-            this.paddleX = Math.max(0, Math.min(this.paddleX, this.canvas.width - this.paddleWidth));
-        }
-
-        handleResize() {
-            this.resize();
-            this.createBricks();
-        }
-
-        resize() {
-            const parent = this.canvas.parentElement;
-            if (!parent) return;
-            const parentWidth = parent.clientWidth || this.canvas.width || 600;
-            const parentHeight = parent.clientHeight || 440;
-            this.canvas.width = parentWidth;
-            this.canvas.height = Math.min(520, Math.max(320, parentHeight - 16));
-            this.paddleWidth = Math.max(90, this.canvas.width * 0.18);
-            this.paddleY = this.canvas.height - 36;
-            this.paddleX = (this.canvas.width - this.paddleWidth) / 2;
-        }
-
-        reset() {
-            this.balls = [];
-            for (let i = 0; i < 3; i += 1) {
-                this.balls.push(this.spawnBall());
-            }
-            this.createBricks();
-        }
-
-        spawnBall() {
-            const radius = 10 + Math.random() * 8;
-            return {
-                x: Math.random() * this.canvas.width,
-                y: -radius,
-                vx: (Math.random() - 0.5) * 1.5,
-                vy: 1 + Math.random() * 1.5,
-                radius,
-                color: this.colors[Math.floor(Math.random() * this.colors.length)],
-            };
-        }
-
-        createBricks() {
-            const rows = 3;
-            const cols = Math.min(6, Math.max(4, Math.floor(this.canvas.width / 120)));
-            const padding = 10;
-            const offsetTop = 36;
-            const offsetLeft = 20;
-            const brickWidth = (this.canvas.width - offsetLeft * 2 - (cols - 1) * padding) / cols;
-            const brickHeight = 22;
-            this.bricks = [];
-
-            for (let r = 0; r < rows; r += 1) {
-                for (let c = 0; c < cols; c += 1) {
-                    this.bricks.push({
-                        x: offsetLeft + c * (brickWidth + padding),
-                        y: offsetTop + r * (brickHeight + padding),
-                        width: brickWidth,
-                        height: brickHeight,
-                        alive: true,
-                        color: this.colors[(r + c) % this.colors.length],
                     });
                 }
             }
@@ -680,3 +688,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+        const setPaddlePosition = (clientX) => {
+            const rect = canvas.getBoundingClientRect();
+            const relativeX = clientX - rect.left;
+            paddle.x = Math.max(0, Math.min(relativeX - paddle.width / 2, width - paddle.width));
+        };
+
+        const handlePointer = (event) => {
+            if (!gameActive) return;
+            if (event.touches && event.touches.length) {
+                setPaddlePosition(event.touches[0].clientX);
+            } else {
+                setPaddlePosition(event.clientX);
+            }
+        };
+
+        window.addEventListener('pointermove', handlePointer, { passive: true });
+        window.addEventListener('touchmove', handlePointer, { passive: true });
+
+        const startPlayMode = () => {
+            if (gameActive) return;
+            gameActive = true;
+            createBricks();
+            updatePaddleMetrics();
+            if (playToggle) {
+                playToggle.classList.add('active');
+                playToggle.textContent = 'Stop Brick Break';
+            }
+        };
+
+        const stopPlayMode = () => {
+            if (!gameActive) return;
+            gameActive = false;
+            bricks = [];
+            if (playToggle) {
+                playToggle.classList.remove('active');
+                playToggle.textContent = 'Play Brick Break';
+            }
+        };
+
+        if (playToggle) {
+            playToggle.addEventListener('click', () => {
+                if (gameActive) {
+                    stopPlayMode();
+                } else {
+                    startPlayMode();
+                }
+            });
+        }
