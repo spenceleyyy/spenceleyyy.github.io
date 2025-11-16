@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
     
-    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
+    const DEFAULT_LOGO_PATH = "logos/RSlogoUPDATED.png";
     
     const QR_SIZE = 600; 
     
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show/hide logo options
     if (includeLogoCheckbox) {
-        includeLogoCheckbox.addEventListener('change', () => {
+        const toggleLogoOptions = () => {
             if (logoOptions) {
                 logoOptions.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
             }
@@ -35,27 +35,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 customLogoName.style.display = 'none';
                 customLogoName.textContent = '';
             }
-        });
-        // Initialize on load
-        if (logoOptions) {
-            logoOptions.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
-        }
+        };
+        includeLogoCheckbox.addEventListener('change', toggleLogoOptions);
+        toggleLogoOptions();
     }
 
     // Handle logo choice
     if (useRsLogo && useCustomLogo && customLogoArea) {
-        useRsLogo.addEventListener('change', () => {
-            if (useRsLogo.checked) {
-                customLogoArea.style.display = 'none';
-            }
-        });
-        
-        useCustomLogo.addEventListener('change', () => {
-            if (useCustomLogo.checked) {
-                customLogoArea.style.display = 'block';
-            }
-        });
-        customLogoArea.style.display = useCustomLogo.checked ? 'block' : 'none';
+        const toggleCustomArea = () => {
+            customLogoArea.style.display = useCustomLogo.checked ? 'block' : 'none';
+        };
+        useRsLogo.addEventListener('change', toggleCustomArea);
+        useCustomLogo.addEventListener('change', toggleCustomArea);
+        toggleCustomArea();
     }
 
     // Handle custom logo upload
@@ -96,9 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
             if (qrDownloads) qrDownloads.style.display = 'flex';
 
-            // IMPORTANT: Set display size for the container
-            qrcodeDiv.style.width = '300px'; 
-            qrcodeDiv.style.height = '300px'; 
+            // Resize container
+            qrcodeDiv.style.width = '100%';
+            qrcodeDiv.style.height = '100%';
+            qrcodeDiv.style.maxWidth = '100%';
+            qrcodeDiv.style.maxHeight = '100%';
             
             // Generate QR code using the new library function
             generateQRCodeWithLibrary(text);
@@ -230,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.style.setProperty('--ty', ty);
             overlay.appendChild(cell);
         }
+        // Remove previous overlays
+        qrcodeWrapper.querySelectorAll('.qr-assembly-overlay').forEach((node) => node.remove());
         qrcodeWrapper.appendChild(overlay);
         const cleanup = () => overlay.remove();
         overlay.addEventListener('animationend', cleanup);
