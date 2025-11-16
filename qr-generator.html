@@ -59,6 +59,98 @@
             margin-bottom: 6rem;
         }
 
+        nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(5, 5, 5, 0.92);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            z-index: 6;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 6vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+        }
+
+        .logo-image {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .full-name {
+            font-size: 0.95rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.4rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links li.active a {
+            color: var(--smoke);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            list-style: none;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            background: rgba(5,5,5,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .dropdown-menu li + li {
+            margin-top: 0.35rem;
+        }
+
+        .dropdown-menu a {
+            color: rgba(255,255,255,0.75);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
         .hero {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -485,18 +577,18 @@
     <main class="qr-lab">
         <section class="hero reveal" id="hero">
             <div class="hero-copy">
-                <p class="eyebrow">RS SIGNAL STUDIO</p>
-                <h1 class="occluded">Monochrome Precision Codes</h1>
-                <p class="lede">A premium, high-contrast workspace that turns your links and data into iconic QR marks. Minimal, cinematic, and obsessively precise.</p>
+                <p class="eyebrow">RS Tools</p>
+                <h1 class="occluded">QR Code Generator</h1>
+                <p class="lede">Create monochrome QR codes for URLs or text with optional logo placement.</p>
                 <div class="hero-actions">
-                    <button class="hero-button" data-scroll-target="generator">Start Generating</button>
-                    <span style="color: rgba(255,255,255,0.5); font-size: 0.85rem; letter-spacing: 0.25em; text-transform: uppercase;">High fidelity • Logo ready • Instant exports</span>
+                    <button class="hero-button" data-scroll-target="generator">Open Generator</button>
+                    <span style="color: rgba(255,255,255,0.55); font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;">PNG · JPG · Logo overlay</span>
                 </div>
             </div>
             <div class="hero-panel">
-                <p class="panel-eyebrow">Precision Mode</p>
-                <p class="panel-metric occluded" style="font-size: 2.7rem; margin-bottom: 0;">01 / 24</p>
-                <p class="panel-note">Each QR pattern draws with an assembling animation, revealing the code through motion — subtle brand color accents highlight interactions only when needed.</p>
+                <p class="panel-eyebrow">Current Task</p>
+                <p class="panel-metric occluded" style="font-size: 2.7rem; margin-bottom: 0;">QR / 01</p>
+                <p class="panel-note">Enter content, pick a logo option if needed, then render and download.</p>
             </div>
         </section>
 
@@ -563,15 +655,15 @@
         <section class="details reveal">
             <div class="detail-card">
                 <h3>Logo safe</h3>
-                <p>High error correction ensures your emblem remains crisp without sacrificing scan reliability.</p>
+                <p>High error correction keeps the code scannable even with a centered logo.</p>
             </div>
             <div class="detail-card">
                 <h3>Studio controls</h3>
-                <p>Switch between built-in branding and bespoke uploads to align every campaign.</p>
+                <p>Switch between the default RS mark or upload a transparent PNG/JPG.</p>
             </div>
             <div class="detail-card">
                 <h3>Instant export</h3>
-                <p>Grab PNG or JPG renders in one click. SVG fallback is handled by the misc toolset when needed.</p>
+                <p>Download the generated QR as PNG or JPG immediately after rendering.</p>
             </div>
         </section>
     </main>
