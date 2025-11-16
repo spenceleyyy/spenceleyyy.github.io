@@ -289,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const damping = 0.75;
         const slowSpawnInterval = 220;
         let slowSpawnTicker = 0;
+        const brickPlayOffset = 480;
         const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -350,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const slow = forceSlow || Math.random() < 0.35;
             return {
                 x,
-                y: -radius - Math.random() * 120,
+                y: (-radius) - Math.random() * 20,
                 r: radius,
                 vx: (Math.random() - 0.5) * (slow ? 0.4 : 0.8),
                 vy: slow ? 0.15 + Math.random() * 0.3 : 0.6 + Math.random() * 1.1,
@@ -358,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 squish: 0,
                 squishAxis: 'y',
                 gravityFactor: slow ? 0.45 : 1,
+                activated: false,
             };
         };
 
@@ -365,7 +367,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const rows = 3;
             const cols = Math.min(6, Math.max(4, Math.floor(width / 140)));
             const padding = 10;
-            const offsetTop = 80;
+            const brickHeight = 22;
+            const totalBrickHeight = rows * (brickHeight + padding);
+            const baseTop = Math.max(140, Math.min(paddle.y - totalBrickHeight - 60, height - totalBrickHeight - 140));
             const offsetLeft = 30;
             const brickWidth = width - offsetLeft * 2 - (cols - 1) * padding;
             const actualWidth = brickWidth / cols;
@@ -374,9 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let c = 0; c < cols; c += 1) {
                     bricks.push({
                         x: offsetLeft + c * (actualWidth + padding),
-                        y: offsetTop + r * (22 + padding),
+                        y: baseTop + r * (brickHeight + padding),
                         width: actualWidth,
-                        height: 22,
+                        height: brickHeight,
                         alive: true,
                         color: colors[(r + c) % colors.length],
                     });
@@ -424,6 +428,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 circle.vy = Math.abs(circle.vy) * damping;
                 circle.squish = 0.35;
                 circle.squishAxis = 'y';
+                if (channels.length) {
+                    let attempt = 0;
+                    while (attempt < 3 && !channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max)) {
+                        const newChannel = channels[Math.floor(Math.random() * channels.length)];
+                        circle.x = newChannel.min + Math.random() * (newChannel.max - newChannel.min);
+                        attempt += 1;
+                    }
+                }
             }
 
             for (const obstacle of obstacles) {
@@ -469,6 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (gameActive) {
+                const brickTopLimit = paddle.y + 40;
                 if (
                     circleBottom >= paddle.y &&
                     circleTop <= paddle.y + paddle.height &&
@@ -482,11 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     circle.vx += offset * 0.8;
                     circle.squish = 0.4;
                     circle.squishAxis = 'y';
+                    circle.activated = true;
                 }
 
                 for (const brick of bricks) {
-                    if (!brick.alive) continue;
+                    if (!brick.alive || !circle.activated) continue;
                     if (
+                        circleBottom >= brick.y &&
+                        brick.y >= brickTopLimit &&
                         circleRight > brick.x &&
                         circleLeft < brick.x + brick.width &&
                         circleBottom > brick.y &&
@@ -561,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!brick.alive) return;
                 ctx.fillStyle = brick.color;
                 ctx.globalAlpha = 0.85;
-                ctx.fillRect(brick.x, brick.y, brick.width, brick.height);
+                ctx.fillRect(brick.x, brick.y + brickPlayOffset, brick.width, brick.height);
                 ctx.globalAlpha = 1;
             });
         };
@@ -592,8 +608,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const startPlayMode = () => {
             if (gameActive) return;
             gameActive = true;
-            createBricks();
             updatePaddleMetrics();
+            createBricks();
             if (playToggle) {
                 playToggle.classList.add('active');
                 playToggle.textContent = 'Stop Brick Break';
