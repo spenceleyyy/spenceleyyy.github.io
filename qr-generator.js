@@ -18,12 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
     
-    const DEFAULT_LOGO_PATH = "logos/RSlogoUPDATED.png";
+    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     
     const QR_SIZE = 600; 
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
+    let lastPayload = '';
+    let resizeTimeoutId = null;
+
+    function rerenderIfNeeded() {
+        if (lastPayload) {
+            renderQRCode(lastPayload);
+        }
+    }
 
     // Show/hide logo options
     if (includeLogoCheckbox) {
@@ -35,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 customLogoName.style.display = 'none';
                 customLogoName.textContent = '';
             }
+            rerenderIfNeeded();
         };
         includeLogoCheckbox.addEventListener('change', toggleLogoOptions);
         toggleLogoOptions();
@@ -70,6 +79,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Generate QR Code using Canvas API directly
+    const getTargetSize = () => {
+        if (!qrcodeWrapper) return QR_SIZE;
+        const wrapperWidth = qrcodeWrapper.clientWidth || QR_SIZE;
+        return Math.min(wrapperWidth, 560);
+    };
+
+    function renderQRCode(text) {
+        if (qrPlaceholder) qrPlaceholder.style.display = 'none';
+        if (qrDisplayContent) qrDisplayContent.style.display = 'flex'; 
+        if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
+        if (qrDownloads) qrDownloads.style.display = 'flex';
+
+        const targetSize = getTargetSize();
+        lastPayload = text;
+        qrcodeDiv.innerHTML = '';
+        qrcodeDiv.style.width = `${targetSize}px`;
+        qrcodeDiv.style.height = `${targetSize}px`;
+
+        new QRCode(qrcodeDiv, {
+            text,
+            width: targetSize,
+            height: targetSize,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H,
+        });
+
+        setTimeout(() => {
+            const canvas = qrcodeDiv.querySelector('canvas');
+            if (canvas) {
+                currentQRCanvas = canvas;
+                if (includeLogoCheckbox && includeLogoCheckbox.checked) {
+                    addLogoToQR(canvas);
+                }
+                playAssemblyAnimation();
+            } else {
+                console.error('QR Code library did not create a canvas element.');
+            }
+        }, 50);
+    }
+
     if (generateBtn) {
         generateBtn.addEventListener('click', () => {
             const text = qrInput.value.trim();
@@ -79,59 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Clear previous QR code and its children (divs or canvas from library)
-            qrcodeDiv.innerHTML = '';
-            
-            // Show QR code and controls
-            if (qrPlaceholder) qrPlaceholder.style.display = 'none';
-            if (qrDisplayContent) qrDisplayContent.style.display = 'flex'; 
-            if (qrcodeWrapper) qrcodeWrapper.style.display = 'flex';
-            if (qrDownloads) qrDownloads.style.display = 'flex';
-
-            // Resize container
-            qrcodeDiv.style.width = '100%';
-            qrcodeDiv.style.height = '100%';
-            qrcodeDiv.style.maxWidth = '100%';
-            qrcodeDiv.style.maxHeight = '100%';
-            
-            // Generate QR code using the new library function
-            generateQRCodeWithLibrary(text);
+            renderQRCode(text);
         });
     }
     
-    // --- NEW GENERATION FUNCTION USING QRCODE.JS ---
-    function generateQRCodeWithLibrary(text) {
-        // Use the imported library to generate the QR code
-        const qr = new QRCode(qrcodeDiv, {
-            text: text,
-            width: QR_SIZE,
-            height: QR_SIZE,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H // High error correction level for logos
-        });
-        
-        // The library draws into a <table> or <canvas>. We need a slight delay
-        // to ensure the canvas exists before we try to modify it.
-        setTimeout(() => {
-            // Find the generated canvas element
-            const canvas = qrcodeDiv.querySelector('canvas');
-            
-            if (canvas) {
-                currentQRCanvas = canvas;
-                
-                // Overlay logo if requested
-                if (includeLogoCheckbox && includeLogoCheckbox.checked) {
-                    addLogoToQR(canvas);
-                }
-                playAssemblyAnimation();
-            } else {
-                console.error("QR Code library did not create a canvas element.");
-            }
-        }, 100);
-    }
-    // ------------------------------------------------
-
     // This function remains largely the same, but now it modifies the canvas
     // created by the library, which is better quality than the image API.
     function addLogoToQR(canvas) {
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Draw the Logo Image inside the cutout
         if (logoToUse) {
             const img = new Image();
+            img.crossOrigin = 'anonymous';
             img.onload = () => {
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
             };
@@ -224,13 +226,20 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.style.setProperty('--ty', ty);
             overlay.appendChild(cell);
         }
-        // Remove previous overlays
         qrcodeWrapper.querySelectorAll('.qr-assembly-overlay').forEach((node) => node.remove());
         qrcodeWrapper.appendChild(overlay);
         const cleanup = () => overlay.remove();
         overlay.addEventListener('animationend', cleanup);
         setTimeout(cleanup, 1600);
     }
+
+    window.addEventListener('resize', () => {
+        if (!lastPayload) return;
+        clearTimeout(resizeTimeoutId);
+        resizeTimeoutId = setTimeout(() => {
+            rerenderIfNeeded();
+        }, 200);
+    });
 
     if (heroScrollBtn) {
         heroScrollBtn.addEventListener('click', (event) => {
