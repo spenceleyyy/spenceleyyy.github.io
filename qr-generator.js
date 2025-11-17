@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
-    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
+    const DEFAULT_LOGO_PATH = "logos/RSlogoUPDATED.png";
     const QR_SIZE = 600; 
     
     let currentQRCanvas = null;
@@ -148,12 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoX = centerX - logoRadius;
         const logoY = centerY - logoRadius;
         
-        // Create the circular cutout
+        // Create the circular cutout and subtle ring for contrast
         ctx.save(); 
         ctx.beginPath();
         ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
         ctx.fillStyle = 'white'; 
         ctx.fill(); 
+        ctx.closePath();
+        ctx.restore();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, logoRadius + Math.max(3, logoTargetSize * 0.04), 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+        ctx.lineWidth = Math.max(3, logoTargetSize * 0.05);
+        ctx.stroke();
         ctx.closePath();
         ctx.restore(); 
 
