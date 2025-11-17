@@ -308,7 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateNavBottom = () => {
             if (navElement) {
-                navBottom = navElement.getBoundingClientRect().bottom;
+                const rect = navElement.getBoundingClientRect();
+                navBottom = rect.bottom;
+            } else {
+                navBottom = 0;
             }
         };
 
@@ -363,16 +366,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const spawnCircle = (forceSlow = false) => {
+            // Update nav position before spawning
+            updateNavBottom();
+            
             const radius = 12 + Math.random() * 18;
             const useChannel = channels.length && (forceSlow || Math.random() < 0.65);
             const channel = useChannel ? channels[Math.floor(Math.random() * channels.length)] : null;
             const x = channel ? channel.min + Math.random() * (channel.max - channel.min) : Math.random() * width;
             const slow = forceSlow || Math.random() < 0.35;
             
-            // Spawn at the very top of the canvas (fixed position below nav)
+            // Spawn at the very top of the viewport (just below nav bar)
+            const spawnY = navBottom + radius + 5;
+            
             return {
                 x,
-                y: navBottom + 5, // Spawn just below the nav bar
+                y: spawnY,
                 r: radius,
                 vx: (Math.random() - 0.5) * (slow ? 0.4 : 0.8),
                 vy: slow ? 0.15 + Math.random() * 0.3 : 0.6 + Math.random() * 1.1,
