@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Draw the Logo Image inside the cutout
         if (logoToUse) {
             const img = new Image();
+            img.crossOrigin = 'anonymous';
             img.onload = () => {
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
             };
