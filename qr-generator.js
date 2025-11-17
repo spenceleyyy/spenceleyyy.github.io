@@ -295,18 +295,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!navEl) return 80;
             return navEl.getBoundingClientRect().bottom;
         };
-        const getDetailsAnchorDocY = () => {
-            const detailsSection = document.querySelector('.details');
-            if (detailsSection) {
-                return detailsSection.offsetTop + detailsSection.offsetHeight + 40;
-            }
-            return window.scrollY + getNavBaseline() + 220;
-        };
 
         const BRICK_VIEWPORT_RATIO = 0.58;
         let navBaseline = getNavBaseline();
-        let baseBrickDocY = getDetailsAnchorDocY();
-        let lockedBrickDocTop = null;
+        let baseBrickViewportTop = window.innerHeight * BRICK_VIEWPORT_RATIO;
+        let lockedBrickViewportTop = null;
         let width = window.innerWidth;
         let height = window.innerHeight;
         let obstacles = [];
@@ -328,8 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.height = height;
             updateChannels();
             navBaseline = getNavBaseline();
-            if (lockedBrickDocTop === null) {
-                baseBrickDocY = getDetailsAnchorDocY();
+            if (lockedBrickViewportTop === null) {
+                baseBrickViewportTop = window.innerHeight * BRICK_VIEWPORT_RATIO;
             }
             updatePaddleMetrics();
             if (gameActive) {
@@ -385,10 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         };
 
-        const computeBrickViewportTop = () => {
-            const docY = lockedBrickDocTop ?? baseBrickDocY;
-            return docY - window.scrollY;
-        };
+        const computeBrickViewportTop = () => lockedBrickViewportTop ?? baseBrickViewportTop;
 
         const createBricks = () => {
             const rows = 3;
@@ -639,8 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const startPlayMode = () => {
             if (gameActive) return;
             gameActive = true;
-            if (lockedBrickDocTop === null) {
-                lockedBrickDocTop = getDetailsAnchorDocY();
+            if (lockedBrickViewportTop === null) {
+                lockedBrickViewportTop = baseBrickViewportTop;
             }
             createBricks();
             if (playToggle) {
@@ -653,7 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!gameActive) return;
             gameActive = false;
             bricks = [];
-            lockedBrickDocTop = null;
+            lockedBrickViewportTop = null;
+            baseBrickViewportTop = window.innerHeight * BRICK_VIEWPORT_RATIO;
             baseBrickDocY = getDetailsAnchorDocY();
             if (playToggle) {
                 playToggle.classList.remove('active');
