@@ -428,6 +428,27 @@
             font-size: 0.875rem;
             border-top: 0.5px solid rgba(255,255,255,0.1);
         }
+        @media (max-width: 1100px) {
+            nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .nav-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.25rem;
+            }
+
+            section {
+                padding: 7rem 5%;
+            }
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 3rem;
@@ -448,11 +469,64 @@
                 height: 500px;
             }
             section {
-                padding: 6rem 5%;
+                padding: 5.5rem 1.5rem;
             }
             .secondary-button {
                 margin-left: 0;
                 margin-top: 1rem; 
+            }
+
+            nav {
+                position: sticky;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 0.85rem 1.25rem;
+            }
+
+            .nav-links a {
+                padding: 0.25rem 0;
+            }
+
+            .dropdown-menu {
+                position: static;
+                transform: none;
+                width: 100%;
+                margin-top: 0.5rem;
+                box-shadow: none;
+                border-left: none;
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 540px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                flex-direction: column;
             }
         }
     </style>

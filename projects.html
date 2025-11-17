@@ -409,6 +409,27 @@
             margin-top: 6rem;
         }
         
+        @media (max-width: 1100px) {
+            nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .nav-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.25rem;
+            }
+
+            .project-section {
+                padding: 3rem 1.5rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .page-header h1 {
                 font-size: 2.5rem;
@@ -424,9 +445,6 @@
                 font-size: 1rem;
                 text-align: left;
             }
-            .nav-links {
-                gap: 1.5rem;
-            }
             .dual-image-container {
                 /* On mobile, revert to single column layout */
                 grid-template-columns: 1fr;
@@ -434,6 +452,44 @@
             }
             .project-citation {
                 font-size: 0.85rem;
+            }
+
+            nav {
+                position: sticky;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .dropdown-menu {
+                position: static;
+                transform: none;
+                width: 100%;
+                margin-top: 0;
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .page-header {
+                padding: 6rem 1.25rem 3rem;
+            }
+
+            .project-title {
+                font-size: 1.5rem;
+            }
+
+            .project-authors {
+                font-size: 1rem;
             }
         }
     </style>

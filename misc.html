@@ -794,6 +794,21 @@
         }
         
         @media (max-width: 1024px) {
+            nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .nav-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.25rem;
+            }
+
             .tools-container {
                 grid-template-columns: 1fr;
             }
@@ -822,17 +837,51 @@
                 font-size: 3rem;
             }
             
-            .nav-links {
-                gap: 1.5rem;
-                font-size: 0.8rem;
-            }
-            
             .preview-container {
                 grid-template-columns: 1fr;
             }
             
             .tool-card {
                 padding: 2rem;
+            }
+
+            nav {
+                position: sticky;
+            }
+
+            .nav-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .dropdown-menu {
+                position: static;
+                transform: none;
+                width: 100%;
+                margin-top: 0;
+                box-shadow: none;
+            }
+
+            main {
+                padding-top: 110px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .tool-card {
+                padding: 1.5rem;
+            }
+
+            .btn,
+            button {
+                width: 100%;
             }
         }
     </style>
