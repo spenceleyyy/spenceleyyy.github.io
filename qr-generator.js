@@ -273,6 +273,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('squishy-canvas');
         if (!canvas || motionReduced) return;
 
+        // Wait a bit for nav to load if needed
+        const startAnimation = () => {
+            const navCheck = document.querySelector('nav');
+            if (!navCheck) {
+                // Nav not loaded yet, wait and try again
+                setTimeout(startAnimation, 100);
+                return;
+            }
+            runSquishyCircles();
+        };
+
+        startAnimation();
+    }
+
+    function runSquishyCircles() {
+        const canvas = document.getElementById('squishy-canvas');
         const ctx = canvas.getContext('2d');
         const circles = [];
         const colors = ['rgba(17,17,17,0.25)', 'rgba(232,144,190,0.35)', 'rgba(199,125,255,0.35)', 'rgba(154,140,152,0.3)'];
@@ -292,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let width = window.innerWidth;
         let height = window.innerHeight;
         let obstacles = [];
-        let navBottom = navElement ? navElement.getBoundingClientRect().bottom : 0;
+        let navBottom = 0; // Will be calculated properly
         let gameActive = false;
         let bricks = [];
         let lockedBricksY = null; // Store canvas Y position
@@ -452,17 +468,23 @@ document.addEventListener('DOMContentLoaded', () => {
             circle.x += circle.vx;
             circle.y += circle.vy;
 
-            // Wall collisions
+            // Wall collisions - only squish if moving fast enough
             if (circle.x - circle.r <= 0) {
                 circle.x = circle.r;
+                const impactSpeed = Math.abs(circle.vx);
                 circle.vx *= -damping;
-                circle.squish = 0.3;
-                circle.squishAxis = 'x';
+                if (impactSpeed > 1.5) {
+                    circle.squish = Math.min(0.4, impactSpeed * 0.1);
+                    circle.squishAxis = 'x';
+                }
             } else if (circle.x + circle.r >= width) {
                 circle.x = width - circle.r;
+                const impactSpeed = Math.abs(circle.vx);
                 circle.vx *= -damping;
-                circle.squish = 0.3;
-                circle.squishAxis = 'x';
+                if (impactSpeed > 1.5) {
+                    circle.squish = Math.min(0.4, impactSpeed * 0.1);
+                    circle.squishAxis = 'x';
+                }
             }
 
             const circleBottom = circle.y + circle.r;
@@ -471,12 +493,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleRight = circle.x + circle.r;
             const isInsideChannel = channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max);
 
-            // Nav collision - keep dots from going above the nav
+            // Nav collision - keep dots from going above the nav, only squish on impact
             if (circle.y - circle.r <= navBottom) {
                 circle.y = navBottom + circle.r;
+                const impactSpeed = Math.abs(circle.vy);
                 circle.vy = Math.abs(circle.vy) * damping;
-                circle.squish = 0.35;
-                circle.squishAxis = 'y';
+                if (impactSpeed > 2) {
+                    circle.squish = Math.min(0.45, impactSpeed * 0.12);
+                    circle.squishAxis = 'y';
+                }
                 if (channels.length) {
                     let attempt = 0;
                     while (attempt < 3 && !channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max)) {
@@ -487,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Obstacle collisions - with bypass capability
+            // Obstacle collisions - with bypass capability and impact-based squishing
             for (const obstacle of obstacles) {
                 // If circle is set to bypass obstacles and is in a channel, skip most obstacles
                 const shouldBypass = circle.bypassObstacles && isInsideChannel && obstacle.top > navBottom + 60;
@@ -509,24 +534,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (minOverlap === overlapTop) {
                         circle.y = obstacle.top - circle.r;
+                        const impactSpeed = Math.abs(circle.vy);
                         circle.vy = -Math.abs(circle.vy) * damping;
-                        circle.squish = 0.45;
-                        circle.squishAxis = 'y';
+                        if (impactSpeed > 2.5) {
+                            circle.squish = Math.min(0.5, impactSpeed * 0.13);
+                            circle.squishAxis = 'y';
+                        }
                     } else if (minOverlap === overlapBottom) {
                         circle.y = obstacle.bottom + circle.r;
+                        const impactSpeed = Math.abs(circle.vy);
                         circle.vy = Math.abs(circle.vy) * damping;
-                        circle.squish = 0.35;
-                        circle.squishAxis = 'y';
+                        if (impactSpeed > 2) {
+                            circle.squish = Math.min(0.4, impactSpeed * 0.1);
+                            circle.squishAxis = 'y';
+                        }
                     } else if (minOverlap === overlapLeft) {
                         circle.x = obstacle.left - circle.r;
+                        const impactSpeed = Math.abs(circle.vx);
                         circle.vx = -Math.abs(circle.vx) * damping;
-                        circle.squish = 0.35;
-                        circle.squishAxis = 'x';
+                        if (impactSpeed > 1.8) {
+                            circle.squish = Math.min(0.4, impactSpeed * 0.12);
+                            circle.squishAxis = 'x';
+                        }
                     } else {
                         circle.x = obstacle.right + circle.r;
+                        const impactSpeed = Math.abs(circle.vx);
                         circle.vx = Math.abs(circle.vx) * damping;
-                        circle.squish = 0.35;
-                        circle.squishAxis = 'x';
+                        if (impactSpeed > 1.8) {
+                            circle.squish = Math.min(0.4, impactSpeed * 0.12);
+                            circle.squishAxis = 'x';
+                        }
                     }
 
                     circle.vx += (Math.random() - 0.5) * 0.15;
@@ -544,13 +581,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     circle.vy > 0
                 ) {
                     circle.y = paddle.y - circle.r;
+                    const impactSpeed = Math.abs(circle.vy);
                     // Speed amplifier: multiply velocity by 1.15 on each paddle hit
                     circle.vy = -Math.abs(circle.vy) * 0.9 * 1.15;
                     circle.vx *= 1.15; // Also amplify horizontal velocity
                     const offset = (circle.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
                     circle.vx += offset * 0.8;
-                    circle.squish = 0.4;
-                    circle.squishAxis = 'y';
+                    if (impactSpeed > 1.5) {
+                        circle.squish = Math.min(0.5, impactSpeed * 0.15);
+                        circle.squishAxis = 'y';
+                    }
                     circle.activated = true;
                 }
 
@@ -573,24 +613,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (minOverlap === overlapTop) {
                             circle.y = brick.y - circle.r;
+                            const impactSpeed = Math.abs(circle.vy);
                             circle.vy = -Math.abs(circle.vy) * damping;
-                            circle.squish = 0.35;
-                            circle.squishAxis = 'y';
+                            if (impactSpeed > 2) {
+                                circle.squish = Math.min(0.45, impactSpeed * 0.12);
+                                circle.squishAxis = 'y';
+                            }
                         } else if (minOverlap === overlapBottom) {
                             circle.y = brick.y + brick.height + circle.r;
+                            const impactSpeed = Math.abs(circle.vy);
                             circle.vy = Math.abs(circle.vy) * damping;
-                            circle.squish = 0.35;
-                            circle.squishAxis = 'y';
+                            if (impactSpeed > 2) {
+                                circle.squish = Math.min(0.45, impactSpeed * 0.12);
+                                circle.squishAxis = 'y';
+                            }
                         } else if (minOverlap === overlapLeft) {
                             circle.x = brick.x - circle.r;
+                            const impactSpeed = Math.abs(circle.vx);
                             circle.vx = -Math.abs(circle.vx) * damping;
-                            circle.squish = 0.35;
-                            circle.squishAxis = 'x';
+                            if (impactSpeed > 1.5) {
+                                circle.squish = Math.min(0.4, impactSpeed * 0.12);
+                                circle.squishAxis = 'x';
+                            }
                         } else {
                             circle.x = brick.x + brick.width + circle.r;
+                            const impactSpeed = Math.abs(circle.vx);
                             circle.vx = Math.abs(circle.vx) * damping;
-                            circle.squish = 0.35;
-                            circle.squishAxis = 'x';
+                            if (impactSpeed > 1.5) {
+                                circle.squish = Math.min(0.4, impactSpeed * 0.12);
+                                circle.squishAxis = 'x';
+                            }
                         }
                         break;
                     }
@@ -731,6 +783,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resizeCanvas();
         refreshObstacles();
+        updateNavBottom(); // Initialize navBottom
         window.addEventListener('resize', () => {
             resizeCanvas();
             refreshObstacles();
