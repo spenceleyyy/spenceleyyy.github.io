@@ -3,161 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentorship Nexus - SVG Animation</title>
+    <title>Mentorship Nexus</title>
+    <link rel="icon" href="/logos/RSlogoUPDATED.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- 1. GLOBAL SETUP & NON-SCROLLING --- */
+        :root {
+            --bg-dark: #060714;
+            --bg-city: #0f1126;
+            --neon-blue: #6ff7ff;
+            --neon-pink: #ff54d9;
+            --neon-yellow: #ffe761;
+            --soft-purple: #403c7c;
+        }
+
         html, body {
             height: 100%;
             margin: 0;
-            padding: 0;
-            overflow: hidden; /* Prevents all scrolling */
-            background-color: #0d0d1a; /* Dark city background */
+            overflow: hidden;
             font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 20%, rgba(110, 78, 255, 0.3), transparent 45%), var(--bg-dark);
+            color: #ffffff;
         }
 
-        /* --- 2. SVG CONTAINER (Full Viewport) --- */
-        .scene-container {
+        .scene-wrapper {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
         }
 
-        /* Set the SVG to fill the container */
         svg {
             width: 100%;
             height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            display: block;
         }
 
-        /* --- 3. ANIMATED STYLES & KEYFRAMES --- */
-
-        /* General element colors */
-        .neon-blue { fill: #20304a; stroke: #88FFFF; stroke-width: 1; }
-        .neon-pink { fill: #4a2030; stroke: #FF88FF; stroke-width: 1; }
-        .neon-yellow { fill: #4a4a20; stroke: #FFFF88; stroke-width: 1; }
-        .mentorship-fill { fill: #222; }
-        .mentorship-face { fill: #FFFF88; }
-        .city-fill { fill: #1a1a2a; stroke: #101018; stroke-width: 2; }
-        .glow { filter: drop-shadow(0 0 5px #88FFFF); }
-
-        /* Apply subtle animations to the specific groups */
-        #brain-float {
-            animation: pulse 2s infinite alternate ease-in-out;
-            transform-origin: 50% 50%;
+        /* Animations */
+        @keyframes float-slow {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-12px); }
         }
-        #robot-screen, #people-talk {
-            animation: float-vertical 3s infinite alternate ease-in-out;
-        }
-        #robot-industrial {
-            animation: float-horizontal 4s infinite alternate ease-in-out;
+
+        @keyframes float-fast {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-6px); }
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.95; }
-            100% { transform: scale(1.02); opacity: 1; }
-        }
-        @keyframes float-vertical {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-5px); }
-        }
-        @keyframes float-horizontal {
-            0% { transform: translateX(0px); }
-            100% { transform: translateX(5px); }
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
         }
 
-        /* --- 4. INTERACTIVE HOTSPOTS (Invisible) --- */
-        .hotspot {
-            position: absolute;
-            background-color: rgba(255, 255, 0, 0.0); /* Keep transparent */
-            cursor: pointer;
-            z-index: 10;
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(25px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(25px) rotate(-360deg); }
         }
 
-        /* Example Hotspot Placement (Adjust these coordinates relative to the SVG) */
-        #hotspot-brain-area { top: 18%; left: 60%; width: 18%; height: 18%; }
-        #hotspot-robot-screen-interaction { top: 35%; left: 18%; width: 12%; height: 22%; }
-        /* Add more hotspots as needed... */
+        .float-slow { animation: float-slow 4s ease-in-out infinite alternate; }
+        .float-fast { animation: float-fast 2.7s ease-in-out infinite alternate; }
+        .pulse { animation: pulse 3.5s ease-in-out infinite alternate; }
+        .orbit { animation: orbit 6s linear infinite; transform-origin: center; }
 
         /* Navigation */
-        .top-right-nav {
+        .nav {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 20;
+            top: 24px;
+            right: 32px;
             display: flex;
-            gap: 20px;
-        }
-        .top-right-nav a {
-            color: #f5f5ff;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1em;
-            padding: 5px 10px;
+            gap: 28px;
+            z-index: 5;
         }
 
+        .nav a {
+            color: #f8f9ff;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+        }
+
+        .nav a:hover { color: var(--neon-pink); }
+
+        /* Hotspots */
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            z-index: 4;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Example placement for interactive areas */
+        #hotspot-brain { top: 26%; left: 62%; width: 12%; height: 16%; }
+        #hotspot-robots { top: 48%; left: 36%; width: 18%; height: 18%; }
+        #hotspot-drones { top: 15%; right: 15%; width: 14%; height: 18%; }
+        #hotspot-labs { top: 55%; left: 10%; width: 16%; height: 20%; }
     </style>
 </head>
 <body>
-    <div class="scene-container">
-        
-        <svg viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg">
-            
-            <g id="city-background">
-                <polygon points="0,650 700,500 1400,650 1400,800 0,800" class="city-fill" />
-                <g transform="translate(80, 200)" opacity="0.35">
-                    <rect x="0" y="350" width="140" height="200" class="city-fill" />
-                    <rect x="160" y="280" width="140" height="270" class="city-fill" />
-                    <rect x="340" y="320" width="140" height="230" class="city-fill" />
-                </g>
-                <g transform="translate(1000, 180)" opacity="0.4">
-                    <rect x="0" y="320" width="140" height="260" class="city-fill" />
-                    <rect x="160" y="260" width="140" height="300" class="city-fill" />
-                </g>
-            </g>
-
-            <g id="mentorship-text" transform="translate(270, 220)">
-                <rect x="0" y="0" width="860" height="160" rx="28" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)"/>
-                <text x="430" y="110" font-size="140" fill="#fff37c" text-anchor="middle" style="font-weight:700; letter-spacing:0.12em;">
-                    MENTORSHIP
-                </text>
-            </g>
-
-            <g id="brain-float" transform="translate(900, 160)">
-                <circle cx="0" cy="0" r="100" class="neon-pink glow" opacity="0.1" />
-                <path d="M-30,-50 C-10,-80 50,-80 50,-50 C50,50 -50,50 -30,-50 Z" class="neon-pink" stroke-width="5" fill="none" />
-                <path d="M-10,-20 L-10,30 M20,-30 L20,20" class="neon-pink" stroke-width="3" />
-            </g>
-
-            <g id="robot-screen" transform="translate(220, 320)">
-                <rect x="0" y="0" width="30" height="80" class="neon-blue" />
-                <circle cx="15" cy="15" r="15" class="neon-blue" />
-            </g>
-
-            <g id="people-talk" transform="translate(620, 420)">
-                <rect x="0" y="0" width="20" height="60" fill="#AAAAAA" />
-                <rect x="30" y="0" width="20" height="60" fill="#555555" />
-            </g>
-
-            <g id="robot-industrial" transform="translate(1040, 520)">
-                <rect x="0" y="0" width="40" height="20" class="neon-yellow" />
-                <line x1="20" y1="20" x2="20" y2="40" stroke="#FFFF88" stroke-width="3" />
-            </g>
-
-        </svg>
-
-        <a href="#brain-details" class="hotspot" id="hotspot-brain-area" title="Explore Brain Data"></a>
-        <a href="#robot-tech" class="hotspot" id="hotspot-robot-screen-interaction" title="Learn about Robotics"></a>
-
-        <nav class="top-right-nav">
+    <div class="scene-wrapper">
+        <nav class="nav">
             <a href="#home">HOME</a>
             <a href="#projects">PROJECTS</a>
             <a href="#team">TEAM</a>
         </nav>
-        
+
+        <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometric mentorship city">
+            <defs>
+                <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#0b0e26"/>
+                    <stop offset="100%" stop-color="#05040f"/>
+                </linearGradient>
+                <linearGradient id="walkwayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#1b1b2e"/>
+                    <stop offset="100%" stop-color="#111122"/>
+                </linearGradient>
+                <linearGradient id="letterSide" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ff63e2"/>
+                    <stop offset="100%" stop-color="#7c35a6"/>
+                </linearGradient>
+                <linearGradient id="letterTop" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#fef47c"/>
+                    <stop offset="100%" stop-color="#ffd31f"/>
+                </linearGradient>
+            </defs>
+
+            <!-- Sky -->
+            <rect x="0" y="0" width="1600" height="900" fill="url(#skyGradient)"/>
+
+            <!-- Background skyline -->
+            <g opacity="0.45">
+                <rect x="150" y="150" width="120" height="360" fill="#131735"/>
+                <rect x="310" y="180" width="140" height="330" fill="#151a3f"/>
+                <rect x="500" y="120" width="160" height="390" fill="#181f4b"/>
+                <rect x="980" y="130" width="160" height="380" fill="#161d43"/>
+                <rect x="1180" y="180" width="150" height="330" fill="#131735"/>
+            </g>
+
+            <!-- Pulsing windows -->
+            <g fill="#1ad5ff" opacity="0.8">
+                <rect x="180" y="260" width="20" height="80" class="float-fast"/>
+                <rect x="350" y="260" width="20" height="70" class="float-fast" style="animation-delay:0.2s"/>
+                <rect x="530" y="220" width="20" height="90" class="float-fast" style="animation-delay:0.4s"/>
+                <rect x="1010" y="220" width="20" height="90" class="float-fast" style="animation-delay:0.6s"/>
+                <rect x="1215" y="250" width="20" height="80" class="float-fast" style="animation-delay:0.8s"/>
+            </g>
+
+            <!-- Walkway -->
+            <polygon points="50,780 650,580 1540,760 1540,900 50,900" fill="url(#walkwayGradient)" opacity="0.95"/>
+
+            <!-- MENTORSHIP letters -->
+            <g transform="translate(150, 360)">
+                <!-- base shadows -->
+                <g fill="#050505" opacity="0.55">
+                    <polygon points="0,160 0,230 120,230 120,160"/>
+                    <polygon points="140,160 140,230 240,230 240,160"/>
+                    <polygon points="260,160 260,230 360,230 360,160"/>
+                    <polygon points="380,160 380,230 480,230 480,160"/>
+                    <polygon points="500,160 500,230 600,230 600,160"/>
+                    <polygon points="620,160 620,230 720,230 720,160"/>
+                    <polygon points="740,160 740,230 840,230 840,160"/>
+                    <polygon points="860,160 860,230 960,230 960,160"/>
+                    <polygon points="980,160 980,230 1080,230 1080,160"/>
+                </g>
+
+                <!-- Letters -->
+                <g stroke="#1b1024" stroke-width="6">
+                    <!-- We'll use rectangles to simulate extruded letters -->
+                    <g>
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(120)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(240)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(360)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(480)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(600)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(720)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(840)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y="-20" width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                    <g transform="translate(960)">
+                        <rect x="0" y="0" width="100" height="160" fill="url(#letterSide)"/>
+                        <rect x="0" y=-20 width="100" height="40" fill="url(#letterTop)"/>
+                    </g>
+                </g>
+
+                <text x="540" y="120" font-size="160" text-anchor="middle" fill="#fff37c" font-weight="700" letter-spacing="16px">
+                    MENTORSHIP
+                </text>
+            </g>
+
+            <!-- Digital brain hub -->
+            <g transform="translate(1030, 270)">
+                <circle r="130" fill="rgba(111,247,255,0.07)" stroke="#1c2538" stroke-width="6"/>
+                <circle r="110" fill="none" stroke="#5cf3ff" stroke-width="3" stroke-dasharray="20 12"/>
+                <circle r="65" fill="rgba(111,247,255,0.12)" class="pulse"/>
+                <path d="M-40,-30 Q-20,-80 20,-58 60,-36 44,12 28,60 -12,56 -58,50 -34,8 Z" fill="none" stroke="#afffff" stroke-width="4"/>
+                <circle cx="0" cy="0" r="8" fill="#fff37c"/>
+            </g>
+
+            <!-- Drones -->
+            <g transform="translate(1270, 180)" class="float-fast">
+                <circle r="32" fill="rgba(111,247,255,0.25)" stroke="#6ff7ff" stroke-width="2"/>
+                <line x1="-50" y1="0" x2="50" y2="0" stroke="#6ff7ff"/>
+                <line x1="0" y1="-50" x2="0" y2="50" stroke="#6ff7ff"/>
+                <circle cx="-55" cy="-55" r="18" fill="rgba(255,84,217,0.25)" stroke="#ff54d9"/>
+                <circle cx="55" cy="-55" r="18" fill="rgba(255,84,217,0.25)" stroke="#ff54d9"/>
+                <circle cx="-55" cy="55" r="18" fill="rgba(255,84,217,0.25)" stroke="#ff54d9"/>
+                <circle cx="55" cy="55" r="18" fill="rgba(255,84,217,0.25)" stroke="#ff54d9"/>
+            </g>
+
+            <!-- Drone orbit -->
+            <g transform="translate(1220, 240)">
+                <circle cx="0" cy="0" r="12" fill="#ff54d9" class="orbit"/>
+                <circle cx="0" cy="0" r="35" stroke="rgba(255,84,217,0.4)" fill="none" stroke-dasharray="6 10"/>
+            </g>
+
+            <!-- Robot cluster -->
+            <g transform="translate(600, 580)" fill="#fefefe" stroke="#101b30" stroke-width="3">
+                <g class="float-fast">
+                    <rect x="-30" y="-60" width="60" height="70" rx="20"/>
+                    <circle cx="0" cy="-80" r="30"/>
+                    <rect x="-15" y="10" width="30" height="60"/>
+                </g>
+                <g transform="translate(110, 30)" class="float-fast" style="animation-delay:0.6s">
+                    <rect x="-30" y="-60" width="60" height="70" rx="20"/>
+                    <circle cx="0" cy="-80" r="30"/>
+                    <rect x="-15" y="10" width="30" height="60"/>
+                </g>
+            </g>
+
+            <!-- People and pods -->
+            <g transform="translate(300, 640)" fill="#f7f7ff">
+                <g class="float-slow">
+                    <rect x="-16" y="-60" width="32" height="60" rx="12"/>
+                    <circle cx="0" cy="-80" r="20"/>
+                </g>
+                <g transform="translate(80, 0)" class="float-slow" style="animation-delay:0.5s">
+                    <rect x="-16" y="-60" width="32" height="60" rx="12"/>
+                    <circle cx="0" cy="-80" r="20"/>
+                </g>
+            </g>
+
+            <g transform="translate(240, 700)" class="float-fast">
+                <ellipse cx="0" cy="20" rx="90" ry="30" fill="rgba(111,247,255,0.35)"/>
+                <rect x="-60" y="-20" width="120" height="40" rx="20" fill="#192339"/>
+                <circle cx="-40" cy="-20" r="18" fill="#fff"/>
+                <circle cx="40" cy="-20" r="18" fill="#fff"/>
+            </g>
+        </svg>
+
+        <!-- Hotspots to wire later -->
+        <a class="hotspot" id="hotspot-brain" href="#brain-module" title="Brain Analytics Hub"></a>
+        <a class="hotspot" id="hotspot-robots" href="#ai-mentors" title="AI Mentors"></a>
+        <a class="hotspot" id="hotspot-drones" href="#drone-network" title="Drone Network"></a>
+        <a class="hotspot" id="hotspot-labs" href="#lab-pods" title="Lab Pods"></a>
     </div>
 </body>
 </html>
