@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Mentorship</title>
     <link rel="icon" href="/logos/RSlogoUPDATED.png">
-    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="mentorship-styles.css">
 </head>
 <body>
@@ -332,7 +332,28 @@
             const panelCategory = document.getElementById('panel-category');
             const panelBody = document.getElementById('panel-body');
             const boardButtons = document.querySelectorAll('.lab-board');
+            const labScene = document.querySelector('.lab-scene');
             let activeId = 'overview';
+
+            const applyEnvironment = () => {
+                if (!labScene) return;
+                const now = new Date();
+                const hour = now.getHours();
+                const daySeed = now.getDate() + now.getMonth();
+
+                let theme = 'day';
+                if (hour < 6) theme = 'night';
+                else if (hour < 11) theme = 'morning';
+                else if (hour < 17) theme = 'day';
+                else if (hour < 21) theme = 'evening';
+                else theme = 'night';
+
+                const weatherOptions = ['clear', 'cloudy', 'rain', 'storm'];
+                const weather = weatherOptions[(daySeed + hour) % weatherOptions.length];
+
+                labScene.dataset.theme = theme;
+                labScene.dataset.weather = weather;
+            };
 
             const setActiveBoard = (id) => {
                 const board = mentoringBoards.find(item => item.id === id);
@@ -359,6 +380,8 @@
             });
 
             setActiveBoard(activeId);
+            applyEnvironment();
+            setInterval(applyEnvironment, 15 * 60 * 1000);
         });
     </script>
 </body>
