@@ -295,8 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let width = window.innerWidth;
         let height = window.innerHeight;
         let obstacles = [];
-        let navBottom = navElement ? navElement.offsetHeight : 80;
-        let liveBricksTop = detailsSection ? detailsSection.getBoundingClientRect().bottom + 40 : navBottom + 220;
+        let navBottom = navElement ? navElement.getBoundingClientRect().bottom : 0;
+        let liveBricksTop = detailsSection ? detailsSection.getBoundingClientRect().bottom : navBottom + 200;
         let lockedBricksTop = null;
         let gameActive = false;
         let bricks = [];
@@ -311,11 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const updateLayoutMetrics = () => {
             if (navElement) {
-                navBottom = navElement.offsetHeight;
+                navBottom = navElement.getBoundingClientRect().bottom;
             }
             if (!lockedBricksTop && detailsSection) {
                 const rect = detailsSection.getBoundingClientRect();
-                liveBricksTop = rect.bottom + 40;
+                liveBricksTop = rect.bottom;
             }
         };
 
@@ -343,6 +343,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const refreshObstacles = () => {
+            if (!lockedBricksTop) {
+                updateLayoutMetrics();
+            }
             obstacles = obstacleSelectors
                 .map((selector) => Array.from(document.querySelectorAll(selector)))
                 .flat()
@@ -385,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const brickHeight = 22;
             const totalBrickHeight = rows * (brickHeight + padding);
             const anchorTop = lockedBricksTop ?? liveBricksTop;
-            const baseTop = anchorTop;
+            const baseTop = Math.max(navBottom + 120, anchorTop);
             const offsetLeft = 30;
             const brickWidth = width - offsetLeft * 2 - (cols - 1) * padding;
             const actualWidth = brickWidth / cols;
@@ -624,9 +627,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const startPlayMode = () => {
             if (gameActive) return;
             gameActive = true;
-            if (!lockedBricksTop) {
-                lockedBricksTop = liveBricksTop;
+            if (detailsSection) {
+                const rect = detailsSection.getBoundingClientRect();
+                lockedBricksTop = rect.bottom;
+            } else {
+                lockedBricksTop = navBottom + 200;
             }
+            updateLayoutMetrics();
             createBricks();
             if (playToggle) {
                 playToggle.classList.add('active');
@@ -639,6 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameActive = false;
             bricks = [];
             lockedBricksTop = null;
+            updatePaddleMetrics();
             if (playToggle) {
                 playToggle.classList.remove('active');
                 playToggle.textContent = 'Play Brick Break';
