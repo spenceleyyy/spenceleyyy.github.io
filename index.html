@@ -634,6 +634,24 @@
         const brainGroup = new THREE.Group();
         brainScene.add(brainGroup);
 
+        const updateBrainScale = () => {
+            const width = window.innerWidth;
+            let scale = 0.9;
+            let cameraZ = 10;
+
+            if (width <= 480) {
+                scale = 0.6;
+                cameraZ = 13;
+            } else if (width <= 768) {
+                scale = 0.75;
+                cameraZ = 11.5;
+            }
+
+            brainGroup.scale.set(scale, scale, scale);
+            brainCamera.position.z = cameraZ;
+        };
+        updateBrainScale();
+
         const brainAmbient = new THREE.AmbientLight(0xffffff, 1.2); 
         brainScene.add(brainAmbient);
 
@@ -681,6 +699,7 @@
                     loadedBrainModel.position.set(0, 0, 0);
 
                     brainGroup.add(loadedBrainModel);
+                    updateBrainScale();
                     animate(); 
                 },
                 function (xhr) {},
@@ -758,6 +777,7 @@
             brainCamera.aspect = window.innerWidth / window.innerHeight;
             brainCamera.updateProjectionMatrix();
             brainRenderer.setSize(window.innerWidth, window.innerHeight);
+            updateBrainScale();
             
             contactCamera.aspect = window.innerWidth / window.innerHeight;
             contactCamera.updateProjectionMatrix();
