@@ -1,72 +1,75 @@
 :root {
-    --hotspot-bg: rgba(255, 255, 255, 0.85);
-    --hotspot-text: #ff5cae;
-    --grid-color: rgba(255, 255, 255, 0.2);
+    --nav-text: #ffffff;
+    --hotspot-highlight: rgba(255, 0, 0, 0.5);
 }
 
-html,
-body {
+/* --- GLOBAL RESET & NON-SCROLLING SETUP --- */
+html, body {
     height: 100%;
     margin: 0;
-}
-
-/* Full-screen, non-scrolling surface */
-body {
-    overflow: hidden; /* Prevent the page from scrolling */
+    padding: 0;
+    overflow: hidden; /* Prevents any scrolling */
     font-family: 'Poppins', sans-serif;
-    background: #f4f5ff;
+    background: #000;
 }
 
-.page-shell {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    background: url('digital-china-scene.jpg') center/cover no-repeat fixed;
+/* --- FULL-SCREEN BACKGROUND IMAGE CONTAINER --- */
+.scene-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('mentorship-city-scene.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    position: relative; /* Enables absolute hotspot positioning */
 }
 
-/* Optional helper grid to align hotspots – remove when final */
-.page-shell::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(transparent 95%, var(--grid-color) 95%),
-        linear-gradient(90deg, transparent 95%, var(--grid-color) 95%);
-    background-size: 120px 120px;
-    opacity: 0.1;
-    pointer-events: none;
-}
-
-/* Hotspot styling */
+/* --- INTERACTIVE HOTSPOTS & NAVIGATION --- */
 .hotspot {
-    position: absolute;            /* Absolute to place directly over the art */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.45rem 0.95rem;
-    border-radius: 999px;
+    position: absolute;
+    display: inline-block;
+    background-color: var(--hotspot-highlight); /* visible placeholder */
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10;
     text-decoration: none;
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
+    color: transparent;
+}
+
+/* Navigation text styling */
+.nav-link {
+    background-color: transparent;
+    color: var(--nav-text);
     font-weight: 600;
-    color: var(--hotspot-text);
-    background: var(--hotspot-bg); /* Visible placeholder for precise alignment */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 5px 10px;
+    letter-spacing: 0.15em;
 }
 
-.hotspot:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+/* --- Hotspot placement (adjust as needed) --- */
+#nav-home { top: 30px; right: 250px; width: 70px; height: 24px; }
+#nav-projects { top: 30px; right: 150px; width: 90px; height: 24px; }
+#nav-team { top: 30px; right: 60px; width: 70px; height: 24px; }
+
+#hotspot-brain {
+    top: 15%;
+    left: 20%;
+    width: 250px;
+    height: 200px;
 }
 
-/* Navigation hotspots (top-right) */
-.nav-home  { top: 6%; right: 17%; }
-.nav-cases { top: 6%; right: 10%; }
-.nav-about { top: 6%; right: 3%;  }
+#hotspot-vertical-board {
+    top: 30%;
+    left: 5%;
+    width: 110px;
+    height: 300px;
+}
 
-/* Scene interaction hotspots */
-.human-left  { top: 58%; left: 16%; }
-.robot       { top: 40%; left: 59%; }
-.word-digital{ top: 32%; left: 29%; }
-.word-china  { top: 68%; left: 45%; }
+#hotspot-robot-zone {
+    top: 40%;
+    right: 15%;
+    width: 220px;
+    height: 200px;
+}
