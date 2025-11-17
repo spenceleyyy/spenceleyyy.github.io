@@ -100,53 +100,62 @@ document.addEventListener('DOMContentLoaded', () => {
         qrcodeDiv.style.width = `${targetSize}px`;
         qrcodeDiv.style.height = `${targetSize}px`;
 
-        new QRCode(qrcodeDiv, {
-            text,
-            width: targetSize,
-            height: targetSize,
-            colorDark: '#000000',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H,
-        });
-
-        const finalizeCanvas = (canvas) => {
+        try {
+            const canvas = buildQRCodeCanvas(text, targetSize);
+            qrcodeDiv.appendChild(canvas);
             currentQRCanvas = canvas;
             if (includeLogoCheckbox && includeLogoCheckbox.checked) {
                 addLogoToQR(canvas);
             }
             playAssemblyAnimation();
-        };
+        } catch (error) {
+            console.error('Failed to draw QR code canvas:', error);
+        }
+    }
 
-        setTimeout(() => {
-            let canvas = qrcodeDiv.querySelector('canvas');
-            if (canvas) {
-                finalizeCanvas(canvas);
-                return;
+    function buildQRCodeCanvas(text, size) {
+        const tempContainer = document.createElement('div');
+        const generator = new QRCode(tempContainer, {
+            text: '',
+            width: size,
+            height: size,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H,
+        });
+        generator.clear();
+        generator.makeCode(text);
+
+        const qrMatrix = generator._oQRCode;
+        if (!qrMatrix) {
+            throw new Error('QR matrix unavailable');
+        }
+
+        const moduleCount = qrMatrix.moduleCount || qrMatrix.getModuleCount?.();
+        if (!moduleCount) {
+            throw new Error('QR module count undefined');
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
+        const tile = size / moduleCount;
+        for (let row = 0; row < moduleCount; row += 1) {
+            for (let col = 0; col < moduleCount; col += 1) {
+                ctx.fillStyle = qrMatrix.isDark(row, col) ? '#000000' : '#ffffff';
+                const x = Math.round(col * tile);
+                const y = Math.round(row * tile);
+                const w = Math.ceil((col + 1) * tile) - Math.round(col * tile);
+                const h = Math.ceil((row + 1) * tile) - Math.round(row * tile);
+                ctx.fillRect(x, y, w, h);
             }
+        }
 
-            const img = qrcodeDiv.querySelector('img');
-            if (img) {
-                const fallbackCanvas = document.createElement('canvas');
-                fallbackCanvas.width = targetSize;
-                fallbackCanvas.height = targetSize;
-                const ctx = fallbackCanvas.getContext('2d');
-
-                const bufferImg = new Image();
-                bufferImg.onload = () => {
-                    ctx.drawImage(bufferImg, 0, 0, targetSize, targetSize);
-                    qrcodeDiv.innerHTML = '';
-                    qrcodeDiv.appendChild(fallbackCanvas);
-                    finalizeCanvas(fallbackCanvas);
-                };
-                bufferImg.onerror = () => {
-                    console.error('Failed to convert QR image into canvas for logo overlay.');
-                };
-                bufferImg.src = img.src;
-                return;
-            }
-
-            console.error('QR Code library did not create a drawable output.');
-        }, 80);
+        return canvas;
     }
 
     if (generateBtn) {
