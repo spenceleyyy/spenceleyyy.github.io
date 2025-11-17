@@ -78,8 +78,8 @@
         }
 
         /* Example Hotspot Placement (Adjust these coordinates relative to the SVG) */
-        #hotspot-brain-area { top: 20%; left: 45%; width: 20%; height: 20%; }
-        #hotspot-robot-screen-interaction { top: 30%; left: 15%; width: 15%; height: 25%; }
+        #hotspot-brain-area { top: 18%; left: 60%; width: 18%; height: 18%; }
+        #hotspot-robot-screen-interaction { top: 35%; left: 18%; width: 12%; height: 22%; }
         /* Add more hotspots as needed... */
 
         /* Navigation */
@@ -92,7 +92,7 @@
             gap: 20px;
         }
         .top-right-nav a {
-            color: #E0E0FF;
+            color: #f5f5ff;
             text-decoration: none;
             font-weight: bold;
             font-size: 1.1em;
@@ -104,39 +104,45 @@
 <body>
     <div class="scene-container">
         
-        <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg">
             
             <g id="city-background">
-                <polygon points="0,550 500,400 1000,550 1000,700 0,700" class="city-fill" />
-                <g transform="translate(100, 100)">
-                    <rect x="0" y="450" width="100" height="100" class="city-fill" />
-                    <rect x="100" y="400" width="100" height="150" class="city-fill" />
+                <polygon points="0,650 700,500 1400,650 1400,800 0,800" class="city-fill" />
+                <g transform="translate(80, 200)" opacity="0.35">
+                    <rect x="0" y="350" width="140" height="200" class="city-fill" />
+                    <rect x="160" y="280" width="140" height="270" class="city-fill" />
+                    <rect x="340" y="320" width="140" height="230" class="city-fill" />
+                </g>
+                <g transform="translate(1000, 180)" opacity="0.4">
+                    <rect x="0" y="320" width="140" height="260" class="city-fill" />
+                    <rect x="160" y="260" width="140" height="300" class="city-fill" />
                 </g>
             </g>
 
-            <g id="mentorship-text" transform="translate(100, 200)">
-                <path d="M10,20 L10,120 L110,120 L110,20 L10,20 M120,20 L120,120 L220,120 L220,20 L120,20" class="mentorship-fill" />
-                <path d="M10,20 L50,10 L150,10 L110,20 L10,20" class="mentorship-face" />
-                <text x="10" y="90" font-size="80" fill="#FFFF88" style="font-weight: bold;">MENTORSHIP</text>
+            <g id="mentorship-text" transform="translate(270, 220)">
+                <rect x="0" y="0" width="860" height="160" rx="28" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)"/>
+                <text x="430" y="110" font-size="140" fill="#fff37c" text-anchor="middle" style="font-weight:700; letter-spacing:0.12em;">
+                    MENTORSHIP
+                </text>
             </g>
 
-            <g id="brain-float" transform="translate(500, 100)">
+            <g id="brain-float" transform="translate(900, 160)">
                 <circle cx="0" cy="0" r="100" class="neon-pink glow" opacity="0.1" />
                 <path d="M-30,-50 C-10,-80 50,-80 50,-50 C50,50 -50,50 -30,-50 Z" class="neon-pink" stroke-width="5" fill="none" />
                 <path d="M-10,-20 L-10,30 M20,-30 L20,20" class="neon-pink" stroke-width="3" />
             </g>
 
-            <g id="robot-screen" transform="translate(150, 250)">
+            <g id="robot-screen" transform="translate(220, 320)">
                 <rect x="0" y="0" width="30" height="80" class="neon-blue" />
                 <circle cx="15" cy="15" r="15" class="neon-blue" />
             </g>
 
-            <g id="people-talk" transform="translate(400, 300)">
+            <g id="people-talk" transform="translate(620, 420)">
                 <rect x="0" y="0" width="20" height="60" fill="#AAAAAA" />
                 <rect x="30" y="0" width="20" height="60" fill="#555555" />
             </g>
 
-            <g id="robot-industrial" transform="translate(650, 450)">
+            <g id="robot-industrial" transform="translate(1040, 520)">
                 <rect x="0" y="0" width="40" height="20" class="neon-yellow" />
                 <line x1="20" y1="20" x2="20" y2="40" stroke="#FFFF88" stroke-width="3" />
             </g>
