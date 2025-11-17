@@ -290,19 +290,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const slowSpawnInterval = 220;
         let slowSpawnTicker = 0;
         const obstacleSelectors = ['nav', '.hero-panel', '.panel', '.detail-card', '.qr-shell'];
-        const navElement = document.querySelector('nav');
-        const navHeight = navElement ? navElement.offsetHeight : 80;
-        const BRICK_VIEWPORT_RATIO = 0.58;
-        let baseBrickDocY = (() => {
+        const getNavBaseline = () => {
+            const navEl = document.querySelector('nav');
+            if (!navEl) return 80;
+            return navEl.getBoundingClientRect().bottom;
+        };
+        const getDetailsAnchorDocY = () => {
             const detailsSection = document.querySelector('.details');
             if (detailsSection) {
-                const rect = detailsSection.getBoundingClientRect();
-                return rect.bottom + window.scrollY + 40;
+                return detailsSection.offsetTop + detailsSection.offsetHeight + 40;
             }
-            return window.scrollY + navHeight + 220;
-        })();
-        let navBaseline = navHeight;
-        let brickAnchorTop = window.innerHeight * BRICK_VIEWPORT_RATIO;
+            return window.scrollY + getNavBaseline() + 220;
+        };
+
+        const BRICK_VIEWPORT_RATIO = 0.58;
+        let navBaseline = getNavBaseline();
+        let baseBrickDocY = getDetailsAnchorDocY();
         let lockedBrickDocTop = null;
         let width = window.innerWidth;
         let height = window.innerHeight;
@@ -324,8 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = width;
             canvas.height = height;
             updateChannels();
+            navBaseline = getNavBaseline();
             if (lockedBrickDocTop === null) {
-                baseBrickDocY = window.scrollY + window.innerHeight * BRICK_VIEWPORT_RATIO;
+                baseBrickDocY = getDetailsAnchorDocY();
             }
             updatePaddleMetrics();
             if (gameActive) {
@@ -636,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gameActive) return;
             gameActive = true;
             if (lockedBrickDocTop === null) {
-                lockedBrickDocTop = baseBrickDocY;
+                lockedBrickDocTop = getDetailsAnchorDocY();
             }
             createBricks();
             if (playToggle) {
@@ -650,6 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameActive = false;
             bricks = [];
             lockedBrickDocTop = null;
+            baseBrickDocY = getDetailsAnchorDocY();
             if (playToggle) {
                 playToggle.classList.remove('active');
                 playToggle.textContent = 'Play Brick Break';
