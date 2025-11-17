@@ -465,9 +465,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleRight = circle.x + circle.r;
             const isInsideChannel = channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max);
 
-            // Nav collision
-            if (circle.y - circle.r <= navBottom) {
-                circle.y = navBottom + circle.r;
+            // Nav collision - account for scroll position
+            const currentNavBottom = navBottom + window.scrollY - window.scrollY;
+            if (circle.y - circle.r <= currentNavBottom) {
+                circle.y = currentNavBottom + circle.r;
                 circle.vy = Math.abs(circle.vy) * damping;
                 circle.squish = 0.35;
                 circle.squishAxis = 'y';
@@ -529,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Game mode collisions
             if (gameActive) {
-                // Paddle collision
+                // Paddle collision with speed boost
                 if (
                     circleBottom >= paddle.y &&
                     circleTop <= paddle.y + paddle.height &&
@@ -538,7 +539,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     circle.vy > 0
                 ) {
                     circle.y = paddle.y - circle.r;
-                    circle.vy = -Math.abs(circle.vy) * 0.9;
+                    // Speed amplifier: multiply velocity by 1.15 on each paddle hit
+                    circle.vy = -Math.abs(circle.vy) * 0.9 * 1.15;
+                    circle.vx *= 1.15; // Also amplify horizontal velocity
                     const offset = (circle.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
                     circle.vx += offset * 0.8;
                     circle.squish = 0.4;
