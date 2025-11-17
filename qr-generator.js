@@ -369,12 +369,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const x = channel ? channel.min + Math.random() * (channel.max - channel.min) : Math.random() * width;
             const slow = forceSlow || Math.random() < 0.35;
             
-            // Spawn at absolute top position (accounting for scroll)
-            const spawnY = navBottom + window.scrollY - radius - Math.random() * 10;
-            
+            // Spawn at the very top of the canvas (fixed position below nav)
             return {
                 x,
-                y: spawnY - window.scrollY, // Convert to canvas coordinates
+                y: navBottom + 5, // Spawn just below the nav bar
                 r: radius,
                 vx: (Math.random() - 0.5) * (slow ? 0.4 : 0.8),
                 vy: slow ? 0.15 + Math.random() * 0.3 : 0.6 + Math.random() * 1.1,
@@ -465,10 +463,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleRight = circle.x + circle.r;
             const isInsideChannel = channels.some((channel) => circle.x >= channel.min && circle.x <= channel.max);
 
-            // Nav collision - account for scroll position
-            const currentNavBottom = navBottom + window.scrollY - window.scrollY;
-            if (circle.y - circle.r <= currentNavBottom) {
-                circle.y = currentNavBottom + circle.r;
+            // Nav collision - keep dots from going above the nav
+            if (circle.y - circle.r <= navBottom) {
+                circle.y = navBottom + circle.r;
                 circle.vy = Math.abs(circle.vy) * damping;
                 circle.squish = 0.35;
                 circle.squishAxis = 'y';
