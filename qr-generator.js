@@ -452,12 +452,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const ensureCircles = () => {
-            if (circles.length < maxCircles) {
+            // Reduce spawn rate by 50% when game is not active
+            const targetMax = gameActive ? maxCircles : Math.floor(maxCircles / 2);
+            const spawnInterval = gameActive ? slowSpawnInterval : slowSpawnInterval * 2;
+            
+            if (circles.length < targetMax) {
                 circles.push(spawnCircle());
             }
             slowSpawnTicker += 1;
-            if (slowSpawnTicker >= slowSpawnInterval) {
-                circles.push(spawnCircle(true));
+            if (slowSpawnTicker >= spawnInterval) {
+                if (circles.length < targetMax) {
+                    circles.push(spawnCircle(true));
+                }
                 slowSpawnTicker = 0;
             }
         };
