@@ -335,9 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const padding = 10;
                 const brickHeight = 22;
                 const totalBrickHeight = rows * (brickHeight + padding);
-                // Position paddle relative to brick position accounting for scroll
+                // Position paddle much further down - about 250px below bricks
                 const currentBrickY = lockedBricksY - window.scrollY;
-                paddle.y = currentBrickY + totalBrickHeight + 60;
+                paddle.y = currentBrickY + totalBrickHeight + 250;
             }
             if (!Number.isFinite(paddle.x) || paddle.x === 0) {
                 paddle.x = (width - paddle.width) / 2;
@@ -368,9 +368,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const channel = useChannel ? channels[Math.floor(Math.random() * channels.length)] : null;
             const x = channel ? channel.min + Math.random() * (channel.max - channel.min) : Math.random() * width;
             const slow = forceSlow || Math.random() < 0.35;
+            
+            // Spawn at absolute top position (accounting for scroll)
+            const spawnY = navBottom + window.scrollY - radius - Math.random() * 10;
+            
             return {
                 x,
-                y: navBottom - radius - Math.random() * 10,
+                y: spawnY - window.scrollY, // Convert to canvas coordinates
                 r: radius,
                 vx: (Math.random() - 0.5) * (slow ? 0.4 : 0.8),
                 vy: slow ? 0.15 + Math.random() * 0.3 : 0.6 + Math.random() * 1.1,
@@ -379,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 squishAxis: 'y',
                 gravityFactor: slow ? 0.45 : 1,
                 activated: false,
-                bypassObstacles: Math.random() < 0.3, // 30% chance to bypass obstacles
+                bypassObstacles: Math.random() < 0.7, // 70% chance to bypass obstacles
             };
         };
 
@@ -701,9 +705,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     brick.y = currentBrickY + row * (brickHeight + padding);
                 });
                 
-                // Update paddle position based on current brick position
+                // Update paddle position based on current brick position - 250px below
                 const totalBrickHeight = rows * (brickHeight + padding);
-                paddle.y = currentBrickY + totalBrickHeight + 60;
+                paddle.y = currentBrickY + totalBrickHeight + 250;
             }
             
             circles.forEach((circle) => {
