@@ -49,27 +49,27 @@ html, body {
 }
 
 /* --- Hotspot placement (adjust as needed) --- */
-#nav-home { top: 30px; right: 250px; width: 70px; height: 24px; }
-#nav-projects { top: 30px; right: 150px; width: 90px; height: 24px; }
-#nav-team { top: 30px; right: 60px; width: 70px; height: 24px; }
+#nav-home { top: 32px; right: 240px; width: 80px; height: 26px; }
+#nav-projects { top: 32px; right: 140px; width: 110px; height: 26px; }
+#nav-team { top: 32px; right: 50px; width: 70px; height: 26px; }
 
 #hotspot-brain {
-    top: 15%;
-    left: 20%;
-    width: 250px;
-    height: 200px;
+    top: 18%;
+    left: 54%;
+    width: 240px;
+    height: 190px;
 }
 
 #hotspot-vertical-board {
     top: 30%;
-    left: 5%;
-    width: 110px;
-    height: 300px;
+    left: 8%;
+    width: 120px;
+    height: 260px;
 }
 
 #hotspot-robot-zone {
-    top: 40%;
-    right: 15%;
-    width: 220px;
-    height: 200px;
+    top: 44%;
+    right: 18%;
+    width: 240px;
+    height: 220px;
 }
