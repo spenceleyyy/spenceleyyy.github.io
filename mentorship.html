@@ -3,22 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RS | Mentorship Nexus</title>
-<link rel="icon" href="/logos/RSlogoUPDATED.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="mentorship-styles.css">
+    <title>Mentorship Nexus - SVG Animation</title>
+    <style>
+        /* --- 1. GLOBAL SETUP & NON-SCROLLING --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents all scrolling */
+            background-color: #0d0d1a; /* Dark city background */
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* --- 2. SVG CONTAINER (Full Viewport) --- */
+        .scene-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Set the SVG to fill the container */
+        svg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* --- 3. ANIMATED STYLES & KEYFRAMES --- */
+
+        /* General element colors */
+        .neon-blue { fill: #20304a; stroke: #88FFFF; stroke-width: 1; }
+        .neon-pink { fill: #4a2030; stroke: #FF88FF; stroke-width: 1; }
+        .neon-yellow { fill: #4a4a20; stroke: #FFFF88; stroke-width: 1; }
+        .mentorship-fill { fill: #222; }
+        .mentorship-face { fill: #FFFF88; }
+        .city-fill { fill: #1a1a2a; stroke: #101018; stroke-width: 2; }
+        .glow { filter: drop-shadow(0 0 5px #88FFFF); }
+
+        /* Apply subtle animations to the specific groups */
+        #brain-float {
+            animation: pulse 2s infinite alternate ease-in-out;
+            transform-origin: 50% 50%;
+        }
+        #robot-screen, #people-talk {
+            animation: float-vertical 3s infinite alternate ease-in-out;
+        }
+        #robot-industrial {
+            animation: float-horizontal 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.95; }
+            100% { transform: scale(1.02); opacity: 1; }
+        }
+        @keyframes float-vertical {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-5px); }
+        }
+        @keyframes float-horizontal {
+            0% { transform: translateX(0px); }
+            100% { transform: translateX(5px); }
+        }
+
+        /* --- 4. INTERACTIVE HOTSPOTS (Invisible) --- */
+        .hotspot {
+            position: absolute;
+            background-color: rgba(255, 255, 0, 0.0); /* Keep transparent */
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Example Hotspot Placement (Adjust these coordinates relative to the SVG) */
+        #hotspot-brain-area { top: 20%; left: 45%; width: 20%; height: 20%; }
+        #hotspot-robot-screen-interaction { top: 30%; left: 15%; width: 15%; height: 25%; }
+        /* Add more hotspots as needed... */
+
+        /* Navigation */
+        .top-right-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            gap: 20px;
+        }
+        .top-right-nav a {
+            color: #E0E0FF;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 5px 10px;
+        }
+
+    </style>
 </head>
 <body>
-    <div class="scene-container" aria-label="Mentorship nexus scene">
-        <!-- Navigation hotspots -->
-        <a href="#home" class="hotspot nav-link" id="nav-home">HOME</a>
-        <a href="#projects" class="hotspot nav-link" id="nav-projects">PROJECTS</a>
-        <a href="#team" class="hotspot nav-link" id="nav-team">TEAM</a>
+    <div class="scene-container">
+        
+        <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+            
+            <g id="city-background">
+                <polygon points="0,550 500,400 1000,550 1000,700 0,700" class="city-fill" />
+                <g transform="translate(100, 100)">
+                    <rect x="0" y="450" width="100" height="100" class="city-fill" />
+                    <rect x="100" y="400" width="100" height="150" class="city-fill" />
+                </g>
+            </g>
 
-        <!-- Content hotspots -->
-        <a href="#brain-info" class="hotspot" id="hotspot-brain" title="Click for Neuroscience Insights"></a>
-        <a href="#city-planning" class="hotspot" id="hotspot-vertical-board" title="Click for City Planning"></a>
-        <a href="#robotics-research" class="hotspot" id="hotspot-robot-zone" title="Click for Robotics"></a>
+            <g id="mentorship-text" transform="translate(100, 200)">
+                <path d="M10,20 L10,120 L110,120 L110,20 L10,20 M120,20 L120,120 L220,120 L220,20 L120,20" class="mentorship-fill" />
+                <path d="M10,20 L50,10 L150,10 L110,20 L10,20" class="mentorship-face" />
+                <text x="10" y="90" font-size="80" fill="#FFFF88" style="font-weight: bold;">MENTORSHIP</text>
+            </g>
+
+            <g id="brain-float" transform="translate(500, 100)">
+                <circle cx="0" cy="0" r="100" class="neon-pink glow" opacity="0.1" />
+                <path d="M-30,-50 C-10,-80 50,-80 50,-50 C50,50 -50,50 -30,-50 Z" class="neon-pink" stroke-width="5" fill="none" />
+                <path d="M-10,-20 L-10,30 M20,-30 L20,20" class="neon-pink" stroke-width="3" />
+            </g>
+
+            <g id="robot-screen" transform="translate(150, 250)">
+                <rect x="0" y="0" width="30" height="80" class="neon-blue" />
+                <circle cx="15" cy="15" r="15" class="neon-blue" />
+            </g>
+
+            <g id="people-talk" transform="translate(400, 300)">
+                <rect x="0" y="0" width="20" height="60" fill="#AAAAAA" />
+                <rect x="30" y="0" width="20" height="60" fill="#555555" />
+            </g>
+
+            <g id="robot-industrial" transform="translate(650, 450)">
+                <rect x="0" y="0" width="40" height="20" class="neon-yellow" />
+                <line x1="20" y1="20" x2="20" y2="40" stroke="#FFFF88" stroke-width="3" />
+            </g>
+
+        </svg>
+
+        <a href="#brain-details" class="hotspot" id="hotspot-brain-area" title="Explore Brain Data"></a>
+        <a href="#robot-tech" class="hotspot" id="hotspot-robot-screen-interaction" title="Learn about Robotics"></a>
+
+        <nav class="top-right-nav">
+            <a href="#home">HOME</a>
+            <a href="#projects">PROJECTS</a>
+            <a href="#team">TEAM</a>
+        </nav>
+        
     </div>
 </body>
 </html>
