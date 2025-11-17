@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
-    const DEFAULT_LOGO_PATH = "logos/RSlogoUPDATED.png";
+    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     const QR_SIZE = 600; 
     
     let currentQRCanvas = null;
@@ -167,24 +167,18 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore(); 
 
         // Determine which logo to use
-        let logoToUse = null;
-
-        if (useCustomLogo && useCustomLogo.checked && customLogoDataUrl) {
-            logoToUse = customLogoDataUrl;
-        } else {
-            logoToUse = DEFAULT_LOGO_PATH;
-        }
+        const logoToUse = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
+            ? customLogoDataUrl
+            : DEFAULT_LOGO_PATH;
 
         // Draw the Logo Image inside the cutout
         if (logoToUse) {
             const img = new Image();
-            img.crossOrigin = 'anonymous';
             img.onload = () => {
                 ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
             };
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
-                // Fallback to text if image fails to load
                 ctx.fillStyle = 'black'; 
                 ctx.font = `bold ${logoTargetSize / 4}px Arial`;
                 ctx.textAlign = 'center';
