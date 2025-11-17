@@ -109,18 +109,44 @@ document.addEventListener('DOMContentLoaded', () => {
             correctLevel: QRCode.CorrectLevel.H,
         });
 
-        setTimeout(() => {
-            const canvas = qrcodeDiv.querySelector('canvas');
-            if (canvas) {
-                currentQRCanvas = canvas;
-                if (includeLogoCheckbox && includeLogoCheckbox.checked) {
-                    addLogoToQR(canvas);
-                }
-                playAssemblyAnimation();
-            } else {
-                console.error('QR Code library did not create a canvas element.');
+        const finalizeCanvas = (canvas) => {
+            currentQRCanvas = canvas;
+            if (includeLogoCheckbox && includeLogoCheckbox.checked) {
+                addLogoToQR(canvas);
             }
-        }, 50);
+            playAssemblyAnimation();
+        };
+
+        setTimeout(() => {
+            let canvas = qrcodeDiv.querySelector('canvas');
+            if (canvas) {
+                finalizeCanvas(canvas);
+                return;
+            }
+
+            const img = qrcodeDiv.querySelector('img');
+            if (img) {
+                const fallbackCanvas = document.createElement('canvas');
+                fallbackCanvas.width = targetSize;
+                fallbackCanvas.height = targetSize;
+                const ctx = fallbackCanvas.getContext('2d');
+
+                const bufferImg = new Image();
+                bufferImg.onload = () => {
+                    ctx.drawImage(bufferImg, 0, 0, targetSize, targetSize);
+                    qrcodeDiv.innerHTML = '';
+                    qrcodeDiv.appendChild(fallbackCanvas);
+                    finalizeCanvas(fallbackCanvas);
+                };
+                bufferImg.onerror = () => {
+                    console.error('Failed to convert QR image into canvas for logo overlay.');
+                };
+                bufferImg.src = img.src;
+                return;
+            }
+
+            console.error('QR Code library did not create a drawable output.');
+        }, 80);
     }
 
     if (generateBtn) {
