@@ -295,7 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let navBottom = navElement ? navElement.getBoundingClientRect().bottom : 0;
         let gameActive = false;
         let bricks = [];
-        let lockedBricksY = null; // Store Y position instead of top
+        let lockedBricksY = null; // Store canvas Y position
+        let initialScrollY = 0; // Track scroll position when game starts
         const paddle = { width: 160, height: 16, x: 0, y: 0 };
 
         const updateChannels = () => {
@@ -334,7 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const padding = 10;
                 const brickHeight = 22;
                 const totalBrickHeight = rows * (brickHeight + padding);
-                paddle.y = lockedBricksY + totalBrickHeight + 60;
+                // Position paddle relative to brick position accounting for scroll
+                const currentBrickY = lockedBricksY - window.scrollY;
+                paddle.y = currentBrickY + totalBrickHeight + 60;
             }
             if (!Number.isFinite(paddle.x) || paddle.x === 0) {
                 paddle.x = (width - paddle.width) / 2;
@@ -386,13 +389,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const padding = 10;
             const brickHeight = 22;
             
-            // Lock the Y position when bricks are first created
+            // Lock the Y position in canvas coordinates when bricks are first created
             if (lockedBricksY === null) {
+                initialScrollY = window.scrollY;
                 if (detailsSection) {
                     const rect = detailsSection.getBoundingClientRect();
-                    lockedBricksY = Math.max(navBottom + 120, rect.bottom);
+                    // Convert viewport position to canvas position
+                    lockedBricksY = Math.max(navBottom + 120, rect.bottom + window.scrollY);
                 } else {
-                    lockedBricksY = navBottom + 200;
+                    lockedBricksY = navBottom + window.scrollY + 200;
                 }
             }
             
@@ -400,12 +405,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const brickWidth = width - offsetLeft * 2 - (cols - 1) * padding;
             const actualWidth = brickWidth / cols;
             
+            // Calculate current brick Y position accounting for scroll
+            const currentBrickY = lockedBricksY - window.scrollY;
+            
             bricks = [];
             for (let r = 0; r < rows; r += 1) {
                 for (let c = 0; c < cols; c += 1) {
                     bricks.push({
                         x: offsetLeft + c * (actualWidth + padding),
-                        y: lockedBricksY + r * (brickHeight + padding),
+                        y: currentBrickY + r * (brickHeight + padding),
                         width: actualWidth,
                         height: brickHeight,
                         alive: true,
@@ -680,6 +688,24 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.clearRect(0, 0, width, height);
             refreshObstacles();
             ensureCircles();
+            
+            // Update brick positions if game is active and scrolling
+            if (gameActive && lockedBricksY !== null && bricks.length > 0) {
+                const currentBrickY = lockedBricksY - window.scrollY;
+                const rows = 3;
+                const padding = 10;
+                const brickHeight = 22;
+                
+                bricks.forEach((brick, index) => {
+                    const row = Math.floor(index / Math.min(6, Math.max(4, Math.floor(width / 140))));
+                    brick.y = currentBrickY + row * (brickHeight + padding);
+                });
+                
+                // Update paddle position based on current brick position
+                const totalBrickHeight = rows * (brickHeight + padding);
+                paddle.y = currentBrickY + totalBrickHeight + 60;
+            }
+            
             circles.forEach((circle) => {
                 updateCircle(circle);
                 drawCircle(circle);
