@@ -634,6 +634,13 @@
         const brainGroup = new THREE.Group();
         brainScene.add(brainGroup);
 
+        const centerBrainModel = (model) => {
+            const box = new THREE.Box3().setFromObject(model);
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            model.position.sub(center);
+        };
+
         const updateBrainScale = () => {
             const width = window.innerWidth;
             let scale = 0.9;
@@ -699,6 +706,7 @@
                     loadedBrainModel.position.set(0, 0, 0);
 
                     brainGroup.add(loadedBrainModel);
+                    centerBrainModel(loadedBrainModel);
                     updateBrainScale();
                     animate(); 
                 },
