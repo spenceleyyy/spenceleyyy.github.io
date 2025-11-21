@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastTime = performance.now();
             this.offsetX = 0;
             this.offsetY = 0;
-            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 10.5, y: 17.5, dir: { x: 0, y: -1 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resetRound() {
-            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 10.5, y: 17.5, dir: { x: 0, y: -1 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -145,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const nextX = x + dir.x * 0.4;
-            const nextY = y + dir.y * 0.4;
+            const nextX = x + dir.x * 0.35;
+            const nextY = y + dir.y * 0.35;
             return !this.isWall(nextX, nextY);
         }
 
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { pacman } = this;
             const cx = Math.round(pacman.x);
             const cy = Math.round(pacman.y);
-            const aligned = Math.abs(pacman.x - cx) < 0.2 && Math.abs(pacman.y - cy) < 0.2;
+            const aligned = Math.abs(pacman.x - cx) < 0.3 && Math.abs(pacman.y - cy) < 0.3;
             if (!aligned) return;
             if (this.canMove(cx, cy, pacman.pending)) {
                 pacman.dir = { ...pacman.pending };
@@ -177,11 +177,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.isWall(nextX, nextY)) {
                 pacman.x = nextX;
                 pacman.y = nextY;
-                // Snap to corridor center to avoid drift.
+                // Snap to corridor center (half-tiles) to avoid drift.
                 if (pacman.dir.x !== 0) {
-                    pacman.y = Math.round(pacman.y);
+                    pacman.y = Math.round(pacman.y * 2) / 2;
                 } else if (pacman.dir.y !== 0) {
-                    pacman.x = Math.round(pacman.x);
+                    pacman.x = Math.round(pacman.x * 2) / 2;
                 }
             }
             this.wrapPosition(pacman);
