@@ -26,23 +26,23 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hardcoded, evenly spaced maze to guarantee clear paths.
             this.map = [
                 '####################',
-                '#oooo....##....oooo#',
-                '#.####.#.##.#.####.#',
-                '#.#..#.#.##.#.#..#.#',
-                '#.####.#.##.#.####.#',
-                '#..................#',
-                '#.####.######.####.#',
-                '#......#....#......#',
-                '#.####.#.##.#.####.#',
-                '#o....#......#....o#',
-                '#.####.#.##.#.####.#',
-                '#......#....#......#',
-                '#.####.######.####.#',
-                '#..................#',
-                '#.####.#.##.#.####.#',
-                '#.#..#.#.##.#.#..#.#',
-                '#.####.#.##.#.####.#',
-                '#oooo....##....oooo#',
+                '#oooooooo..oooooooo#',
+                '#o####o##..##o####o#',
+                '#o#..#o#....#o#..#o#',
+                '#o####o#....#o####o#',
+                '#oooooooo..oooooooo#',
+                '#o####o######o####o#',
+                '#o....o#....#o....o#',
+                '#o####o#....#o####o#',
+                '#oooooo......oooooo#',
+                '#o####o######o####o#',
+                '#o....o#....#o....o#',
+                '#o####o#....#o####o#',
+                '#oooooooo..oooooooo#',
+                '#o####o##..##o####o#',
+                '#o#..#o#....#o#..#o#',
+                '#o####o#....#o####o#',
+                '#oooooooo..oooooooo#',
                 '####################'
             ];
 
@@ -145,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const nextX = x + dir.x * 0.45;
-            const nextY = y + dir.y * 0.45;
+            const nextX = x + dir.x * 0.4;
+            const nextY = y + dir.y * 0.4;
             return !this.isWall(nextX, nextY);
         }
 
@@ -177,6 +177,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.isWall(nextX, nextY)) {
                 pacman.x = nextX;
                 pacman.y = nextY;
+                // Snap to corridor center to avoid drift.
+                if (pacman.dir.x !== 0) {
+                    pacman.y = Math.round(pacman.y);
+                } else if (pacman.dir.y !== 0) {
+                    pacman.x = Math.round(pacman.x);
+                }
             }
             this.wrapPosition(pacman);
             this.eatPellets();
