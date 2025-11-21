@@ -400,6 +400,13 @@ document.addEventListener('DOMContentLoaded', () => {
         pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
     });
 
+    const toggleCardBtn = document.getElementById('toggle-card');
+    const removerCard = document.getElementById('bg-remover-card');
+    toggleCardBtn?.addEventListener('click', () => {
+        const collapsed = removerCard.classList.toggle('collapsed');
+        toggleCardBtn.querySelector('span').textContent = collapsed ? 'Expand' : 'Minimize';
+    });
+
     const updateSensitivityDisplay = () => {
         if (bgSensitivity && bgSensitivityValue) {
             bgSensitivityValue.textContent = bgSensitivity.value;

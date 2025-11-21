@@ -89,22 +89,110 @@
             pointer-events: none;
         }
 
+        .pacman-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            text-align: center;
+            z-index: 1;
+            pointer-events: none;
+            color: #f7f7f7;
+        }
+
+        .pacman-overlay .game-controls {
+            display: flex;
+            gap: 0.75rem;
+            pointer-events: auto;
+        }
+
+        .pacman-title {
+            font-size: 3.5rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--color-primary), #9ad7ff, #f7c948);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(232, 144, 190, 0.35);
+        }
+
+        .pacman-subtitle {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 1.1rem;
+        }
+
+        .btn-game {
+            padding: 0.85rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-primary { border-color: rgba(232, 144, 190, 0.5); }
+        .btn-secondary { border-color: rgba(154, 215, 255, 0.5); }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(232, 144, 190, 0.25);
+            pointer-events: none;
+        }
+
         #bg-remover-card {
             backdrop-filter: blur(14px);
         }
 
-        .floating-game-btn {
-            position: fixed;
-            right: 1.5rem;
-            bottom: 1.5rem;
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .small-toggle {
             width: auto;
-            min-width: 160px;
-            padding: 0.85rem 1.2rem;
-            z-index: 3;
-            background: linear-gradient(135deg, rgba(232, 144, 190, 0.95), rgba(71, 48, 79, 0.9));
-            color: #0c0c0c;
-            border: 1px solid rgba(232, 144, 190, 0.6);
-            opacity: 0.92;
+            padding: 0.5rem 0.9rem;
+            border-radius: 10px;
+        }
+
+        .tool-card.collapsed .tool-card-content {
+            display: none;
+        }
+
+        .tool-card.collapsed {
+            padding: 1.4rem;
+        }
+
+        @media (max-width: 768px) {
+            .pacman-overlay {
+                justify-content: flex-end;
+                padding-bottom: 10vh;
+            }
+            .pacman-title {
+                font-size: 2.4rem;
+            }
+            .game-controls {
+                flex-direction: column;
+            }
+            .card-header {
+                flex-direction: column;
+            }
+            .small-toggle {
+                align-self: flex-start;
+            }
         }
     </style>
 </head>
@@ -113,6 +201,15 @@
 
     <div id="pacman-backdrop">
         <canvas id="pacman-canvas"></canvas>
+        <div class="pacman-overlay">
+            <h1 class="pacman-title">Background Remover</h1>
+            <p class="pacman-subtitle">Play Pac-Man while you process images</p>
+            <div class="game-controls">
+                <button class="btn-game btn-primary" id="pacman-start"><span>Start Pac-Man</span></button>
+                <button class="btn-game btn-secondary" onclick="document.getElementById('bg-remover-card').scrollIntoView({behavior:'smooth'})"><span>Open Tool</span></button>
+            </div>
+            <div class="instructions">Use Arrow Keys or WASD to control Pac-Man</div>
+        </div>
     </div>
 
     <main>
@@ -123,48 +220,52 @@
 
         <div class="tool-container">
             <div class="tool-card" id="bg-remover-card">
-                <p class="tool-description">Upload an image and automatically remove its background. This pass runs a color-space aware matting pass, edge boosting, and a gentle feather for the cleanest possible cutout.</p>
-                
-                <input type="file" id="image-upload" accept="image/*">
-                
-                <label for="image-upload" class="file-upload-area" id="bg-upload-area">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Drop image here or click to browse</div>
-                    <div class="upload-subtext">Supports JPG, PNG, GIF</div>
-                </label>
-                
-                <p class="file-name" id="file-name"></p>
-                
-                <div class="input-group" id="bg-controls" style="display: none;">
-                    <label for="bg-sensitivity">Background sensitivity: <span id="bg-sensitivity-value">65</span>%</label>
-                    <input type="range" id="bg-sensitivity" min="25" max="90" value="65" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
-                    <p class="info-text">Lower sensitivity keeps more of the original background. Increase it for stronger removal.</p>
+                <div class="card-header">
+                    <p class="tool-description">Upload an image and automatically remove its background. This pass runs a color-space aware matting pass, edge boosting, and a gentle feather for the cleanest possible cutout.</p>
+                    <button id="toggle-card" class="button-secondary small-toggle"><span>Minimize</span></button>
                 </div>
-                
-                <button id="remove-bg" disabled><span>Remove Background</span></button>
-                
-                <div id="processing-container" style="display: none;">
-                    <div class="processing-animation">
-                        <div class="spinner-container">
-                            <div class="spinner"></div>
+                <div class="tool-card-content">
+                    <input type="file" id="image-upload" accept="image/*">
+                    
+                    <label for="image-upload" class="file-upload-area" id="bg-upload-area">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Drop image here or click to browse</div>
+                        <div class="upload-subtext">Supports JPG, PNG, GIF</div>
+                    </label>
+                    
+                    <p class="file-name" id="file-name"></p>
+                    
+                    <div class="input-group" id="bg-controls" style="display: none;">
+                        <label for="bg-sensitivity">Background sensitivity: <span id="bg-sensitivity-value">65</span>%</label>
+                        <input type="range" id="bg-sensitivity" min="25" max="90" value="65" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
+                        <p class="info-text">Lower sensitivity keeps more of the original background. Increase it for stronger removal.</p>
+                    </div>
+                    
+                    <button id="remove-bg" disabled><span>Remove Background</span></button>
+                    
+                    <div id="processing-container" style="display: none;">
+                        <div class="processing-animation">
+                            <div class="spinner-container">
+                                <div class="spinner"></div>
+                            </div>
+                            <p class="processing-text">Removing background...</p>
                         </div>
-                        <p class="processing-text">Removing background...</p>
                     </div>
-                </div>
-                
-                <div class="preview-container" id="preview-container" style="display: none;">
-                    <div class="preview-box">
-                        <h3>Original</h3>
-                        <img id="original-preview" src="" alt="Original image">
+                    
+                    <div class="preview-container" id="preview-container" style="display: none;">
+                        <div class="preview-box">
+                            <h3>Original</h3>
+                            <img id="original-preview" src="" alt="Original image">
+                        </div>
+                        <div class="preview-box transparent-bg">
+                            <h3>Processed</h3>
+                            <canvas id="processed-canvas"></canvas>
+                        </div>
                     </div>
-                    <div class="preview-box transparent-bg">
-                        <h3>Processed</h3>
-                        <canvas id="processed-canvas"></canvas>
+                    
+                    <div class="output-area" id="bg-output" style="margin-top: 1.5rem; display: none;">
+                        <button id="download-result" class="button-secondary"><span>Download Result (PNG)</span></button>
                     </div>
-                </div>
-                
-                <div class="output-area" id="bg-output" style="margin-top: 1.5rem; display: none;">
-                    <button id="download-result" class="button-secondary"><span>Download Result (PNG)</span></button>
                 </div>
             </div>
         </div>
