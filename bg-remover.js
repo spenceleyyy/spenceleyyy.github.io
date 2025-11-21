@@ -94,16 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         bindControls() {
-            window.addEventListener('keydown', (e) => {
+            const handleKeys = (e) => {
                 const key = e.key.toLowerCase();
                 if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(key)) {
                     e.preventDefault();
+                    if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
+                    if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
+                    if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
+                    if (key === 'arrowright' || key === 'd') this.pacman.pending = { x: 1, y: 0 };
                 }
-                if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
-                if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
-                if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
-                if (key === 'arrowright' || key === 'd') this.pacman.pending = { x: 1, y: 0 };
-            });
+            };
+            window.addEventListener('keydown', handleKeys, { passive: false });
+            document.addEventListener('keydown', handleKeys, { passive: false });
         }
 
         resize() {
@@ -117,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = window.innerHeight;
             const mapWidth = cols * this.tileSize;
             const mapHeight = rows * this.tileSize;
-            this.offsetX = (this.canvas.width - mapWidth) / 2;
-            this.offsetY = (this.canvas.height - mapHeight) / 2;
+            this.offsetX = Math.min(0, (this.canvas.width - mapWidth) / 2);
+            this.offsetY = Math.min(0, (this.canvas.height - mapHeight) / 2);
         }
 
         seedPellets() {
