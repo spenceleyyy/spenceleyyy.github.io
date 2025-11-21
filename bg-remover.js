@@ -272,10 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            ctx.strokeStyle = 'rgba(232, 144, 190, 0.85)';
-            ctx.shadowColor = 'rgba(232, 144, 190, 0.65)';
-            ctx.shadowBlur = 18;
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgba(232, 144, 190, 1)';
+            ctx.shadowColor = 'rgba(232, 144, 190, 0.9)';
+            ctx.shadowBlur = 22;
+            ctx.lineWidth = 4.5;
 
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pelletGlow.addColorStop(0, 'rgba(255, 255, 255, 1)');
                 pelletGlow.addColorStop(0.35, 'rgba(232, 144, 190, 0.9)');
                 pelletGlow.addColorStop(1, 'rgba(232, 144, 190, 0)');
-                ctx.fillStyle = pelletGlow;
+                    ctx.fillStyle = pelletGlow;
                 ctx.beginPath();
                 ctx.arc(px, py, tileSize * 0.12, 0, Math.PI * 2);
                 ctx.fill();
