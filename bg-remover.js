@@ -266,16 +266,16 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.save();
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             const bgGrad = ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
-            bgGrad.addColorStop(0, '#050608');
-            bgGrad.addColorStop(0.5, '#0c0c14');
-            bgGrad.addColorStop(1, '#050608');
+            bgGrad.addColorStop(0, '#0b0b11');
+            bgGrad.addColorStop(0.5, '#11111b');
+            bgGrad.addColorStop(1, '#0b0b11');
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            ctx.strokeStyle = 'rgba(232, 144, 190, 0.6)';
-            ctx.shadowColor = 'rgba(232, 144, 190, 0.45)';
-            ctx.shadowBlur = 12;
-            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = 'rgba(232, 144, 190, 0.85)';
+            ctx.shadowColor = 'rgba(232, 144, 190, 0.65)';
+            ctx.shadowBlur = 18;
+            ctx.lineWidth = 4;
 
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
@@ -291,9 +291,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [x, y] = key.split(',').map(Number);
                 const px = this.offsetX + x * tileSize + tileSize / 2;
                 const py = this.offsetY + y * tileSize + tileSize / 2;
-                const pelletGlow = ctx.createRadialGradient(px, py, 0, px, py, tileSize * 0.6);
-                pelletGlow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-                pelletGlow.addColorStop(0.4, 'rgba(232, 144, 190, 0.7)');
+                const pelletGlow = ctx.createRadialGradient(px, py, 0, px, py, tileSize * 0.8);
+                pelletGlow.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                pelletGlow.addColorStop(0.35, 'rgba(232, 144, 190, 0.9)');
                 pelletGlow.addColorStop(1, 'rgba(232, 144, 190, 0)');
                 ctx.fillStyle = pelletGlow;
                 ctx.beginPath();
@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fill();
             });
 
-            ctx.fillStyle = 'rgba(232, 144, 190, 0.9)';
+            ctx.fillStyle = 'rgba(232, 144, 190, 0.95)';
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
                     if (cell === 'o') {
