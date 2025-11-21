@@ -123,8 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = window.innerHeight;
             const mapWidth = cols * this.tileSize;
             const mapHeight = rows * this.tileSize;
-            this.offsetX = Math.min(0, (this.canvas.width - mapWidth) / 2);
-            this.offsetY = Math.min(0, (this.canvas.height - mapHeight) / 2);
+            this.offsetX = Math.max(0, (this.canvas.width - mapWidth) / 2);
+            this.offsetY = Math.max(0, (this.canvas.height - mapHeight) / 2);
         }
 
         seedPellets() {
