@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const pacmanCanvas = document.getElementById('pacman-canvas');
+    const pacmanStartBtn = document.getElementById('pacman-start');
     const imageUpload = document.getElementById('image-upload');
     const bgUploadArea = document.getElementById('bg-upload-area');
     const fileName = document.getElementById('file-name');
@@ -55,11 +56,39 @@ document.addEventListener('DOMContentLoaded', () => {
             ];
             this.pellets = new Set();
             this.powerTimer = 0;
+            this.running = false;
+            this.frame = null;
             this.resize();
             this.seedPellets();
             this.bindControls();
-            requestAnimationFrame((t) => this.loop(t));
+            this.renderStatic();
             window.addEventListener('resize', () => this.resize());
+        }
+
+        start() {
+            this.resetRound();
+            this.running = true;
+            this.lastTime = performance.now();
+            if (this.frame) cancelAnimationFrame(this.frame);
+            this.frame = requestAnimationFrame((t) => this.loop(t));
+        }
+
+        resetRound() {
+            this.pacman = { x: 9.5, y: 14.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.ghosts = [
+                { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
+                { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
+                { x: 8.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#ffce76', mode: 'chase' },
+                { x: 9.5, y: 9.5, dir: { x: 0, y: 1 }, color: '#73ffa0', mode: 'chase' }
+            ];
+            this.powerTimer = 0;
+            this.seedPellets();
+            this.renderStatic();
+        }
+
+        renderStatic() {
+            this.drawBoard();
+            this.drawEntities(performance.now());
         }
 
         bindControls() {
@@ -213,11 +242,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const { ctx, tileSize } = this;
             ctx.save();
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            ctx.fillStyle = '#040404';
+            const bgGrad = ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+            bgGrad.addColorStop(0, '#050608');
+            bgGrad.addColorStop(0.5, '#0c0c14');
+            bgGrad.addColorStop(1, '#050608');
+            ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            ctx.strokeStyle = 'rgba(232, 144, 190, 0.4)';
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'rgba(232, 144, 190, 0.6)';
+            ctx.shadowColor = 'rgba(232, 144, 190, 0.45)';
+            ctx.shadowBlur = 12;
+            ctx.lineWidth = 3.5;
 
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
@@ -233,13 +268,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const [x, y] = key.split(',').map(Number);
                 const px = x * tileSize + tileSize / 2;
                 const py = y * tileSize + tileSize / 2;
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                const pelletGlow = ctx.createRadialGradient(px, py, 0, px, py, tileSize * 0.6);
+                pelletGlow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                pelletGlow.addColorStop(0.4, 'rgba(232, 144, 190, 0.7)');
+                pelletGlow.addColorStop(1, 'rgba(232, 144, 190, 0)');
+                ctx.fillStyle = pelletGlow;
                 ctx.beginPath();
                 ctx.arc(px, py, tileSize * 0.12, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            ctx.fillStyle = 'rgba(232, 144, 190, 0.8)';
+            ctx.fillStyle = 'rgba(232, 144, 190, 0.9)';
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
                     if (cell === 'o') {
@@ -264,7 +303,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.translate(pacX, pacY);
             const angle = Math.atan2(this.pacman.dir.y, this.pacman.dir.x);
             ctx.rotate(angle);
-            ctx.fillStyle = '#f7c948';
+            const pacGrad = ctx.createRadialGradient(0, 0, tileSize * 0.15, 0, 0, tileSize * 0.55);
+            pacGrad.addColorStop(0, '#ffe06a');
+            pacGrad.addColorStop(1, '#f7c948');
+            ctx.fillStyle = pacGrad;
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.arc(0, 0, tileSize * 0.45, mouth * Math.PI, (2 - mouth) * Math.PI);
@@ -275,7 +317,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gx = ghost.x * tileSize + tileSize / 2;
                 const gy = ghost.y * tileSize + tileSize / 2;
                 ctx.save();
-                ctx.fillStyle = this.powerTimer > 0 ? '#4bb2ff' : ghost.color;
+                const baseColor = this.powerTimer > 0 ? '#4bb2ff' : ghost.color;
+                const bodyGrad = ctx.createLinearGradient(gx, gy - tileSize * 0.4, gx, gy + tileSize * 0.5);
+                bodyGrad.addColorStop(0, baseColor);
+                bodyGrad.addColorStop(1, '#0d0d15');
+                ctx.fillStyle = bodyGrad;
+                ctx.shadowColor = baseColor;
+                ctx.shadowBlur = 12;
                 ctx.beginPath();
                 ctx.arc(gx, gy - tileSize * 0.1, tileSize * 0.38, Math.PI, 0);
                 ctx.lineTo(gx + tileSize * 0.38, gy + tileSize * 0.35);
@@ -297,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         loop(timestamp) {
-            if (!this.ctx) return;
+            if (!this.ctx || !this.running) return;
             const dt = Math.min(0.05, (timestamp - this.lastTime) / 1000);
             this.lastTime = timestamp;
             if (this.powerTimer > 0) this.powerTimer = Math.max(0, this.powerTimer - dt);
@@ -307,13 +355,20 @@ document.addEventListener('DOMContentLoaded', () => {
             this.handleCollisions();
             this.drawBoard();
             this.drawEntities(timestamp);
-            requestAnimationFrame((t) => this.loop(t));
+            this.frame = requestAnimationFrame((t) => this.loop(t));
         }
     }
 
+    let pacmanGame = null;
     if (pacmanCanvas) {
-        new PacmanGame(pacmanCanvas);
+        pacmanGame = new PacmanGame(pacmanCanvas);
     }
+
+    pacmanStartBtn?.addEventListener('click', () => {
+        if (!pacmanGame) return;
+        pacmanGame.start();
+        pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
+    });
 
     const updateSensitivityDisplay = () => {
         if (bgSensitivity && bgSensitivityValue) {
