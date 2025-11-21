@@ -6,6 +6,13 @@
     --color-text-body: #A294A6;
     --color-white: #FFFBEB;
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    --nav-hover-1: #e890be;
+    --nav-hover-2: #9ad7ff;
+    --nav-hover-3: #73ffa0;
+    --nav-hover-4: #f7c948;
+    --nav-hover-5: #ff9f80;
+    --nav-hover-6: #c77dff;
+    --nav-hover-7: #8be4c5;
 }
 
 * {
@@ -102,6 +109,70 @@ nav {
 .nav-links a:hover::after,
 .nav-links a:focus::after {
     width: 100%;
+}
+
+/* Per-tab hover colors pulled from brand palette */
+.nav-links > li:nth-child(1) > a:hover,
+.nav-links > li:nth-child(1) > a:focus {
+    color: var(--nav-hover-1);
+}
+.nav-links > li:nth-child(1) > a:hover::after,
+.nav-links > li:nth-child(1) > a:focus::after {
+    background: var(--nav-hover-1);
+}
+
+.nav-links > li:nth-child(2) > a:hover,
+.nav-links > li:nth-child(2) > a:focus {
+    color: var(--nav-hover-2);
+}
+.nav-links > li:nth-child(2) > a:hover::after,
+.nav-links > li:nth-child(2) > a:focus::after {
+    background: var(--nav-hover-2);
+}
+
+.nav-links > li:nth-child(3) > a:hover,
+.nav-links > li:nth-child(3) > a:focus {
+    color: var(--nav-hover-3);
+}
+.nav-links > li:nth-child(3) > a:hover::after,
+.nav-links > li:nth-child(3) > a:focus::after {
+    background: var(--nav-hover-3);
+}
+
+.nav-links > li:nth-child(4) > a:hover,
+.nav-links > li:nth-child(4) > a:focus {
+    color: var(--nav-hover-4);
+}
+.nav-links > li:nth-child(4) > a:hover::after,
+.nav-links > li:nth-child(4) > a:focus::after {
+    background: var(--nav-hover-4);
+}
+
+.nav-links > li:nth-child(5) > a:hover,
+.nav-links > li:nth-child(5) > a:focus {
+    color: var(--nav-hover-5);
+}
+.nav-links > li:nth-child(5) > a:hover::after,
+.nav-links > li:nth-child(5) > a:focus::after {
+    background: var(--nav-hover-5);
+}
+
+.nav-links > li:nth-child(6) > a:hover,
+.nav-links > li:nth-child(6) > a:focus {
+    color: var(--nav-hover-6);
+}
+.nav-links > li:nth-child(6) > a:hover::after,
+.nav-links > li:nth-child(6) > a:focus::after {
+    background: var(--nav-hover-6);
+}
+
+.nav-links > li:nth-child(7) > a:hover,
+.nav-links > li:nth-child(7) > a:focus {
+    color: var(--nav-hover-7);
+}
+.nav-links > li:nth-child(7) > a:hover::after,
+.nav-links > li:nth-child(7) > a:focus::after {
+    background: var(--nav-hover-7);
 }
 
 /* Dropdown Menu */

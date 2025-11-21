@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastTime = performance.now();
             this.offsetX = 0;
             this.offsetY = 0;
-            this.pacman = { x: 10.5, y: 17.5, dir: { x: 0, y: -1 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resetRound() {
-            this.pacman = { x: 10.5, y: 17.5, dir: { x: 0, y: -1 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
