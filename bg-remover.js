@@ -330,10 +330,15 @@ document.addEventListener('DOMContentLoaded', () => {
             pacGrad.addColorStop(0, '#ffe06a');
             pacGrad.addColorStop(1, '#f7c948');
             ctx.fillStyle = pacGrad;
+            ctx.shadowColor = '#f7c948';
+            ctx.shadowBlur = 14;
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.arc(0, 0, tileSize * 0.45, mouth * Math.PI, (2 - mouth) * Math.PI);
+            ctx.arc(0, 0, tileSize * 0.48, mouth * Math.PI, (2 - mouth) * Math.PI);
             ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+            ctx.stroke();
             ctx.restore();
 
             this.ghosts.forEach((ghost) => {
@@ -385,6 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let pacmanGame = null;
     if (pacmanCanvas) {
         pacmanGame = new PacmanGame(pacmanCanvas);
+        pacmanGame.start();
+        pacmanStartBtn?.querySelector('span').textContent = 'Restart Pac-Man';
     }
 
     pacmanStartBtn?.addEventListener('click', () => {
@@ -392,10 +399,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pacmanGame.start();
         pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
     });
-
-    // If we want immediate play without button, uncomment next two lines:
-    // pacmanGame?.start();
-    // pacmanStartBtn?.querySelector('span').textContent = 'Restart Pac-Man';
 
     const updateSensitivityDisplay = () => {
         if (bgSensitivity && bgSensitivityValue) {
