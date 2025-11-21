@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastTime = performance.now();
             this.offsetX = 0;
             this.offsetY = 0;
-            this.pacman = { x: 10.5, y: 15.5, dir: { x: -1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resetRound() {
-            this.pacman = { x: 10.5, y: 15.5, dir: { x: -1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 1.5, y: 1.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const nextX = x + dir.x * 0.6;
-            const nextY = y + dir.y * 0.6;
+            const nextX = x + dir.x * 0.45;
+            const nextY = y + dir.y * 0.45;
             return !this.isWall(nextX, nextY);
         }
 
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { pacman } = this;
             const cx = Math.round(pacman.x);
             const cy = Math.round(pacman.y);
-            const aligned = Math.abs(pacman.x - cx) < 0.12 && Math.abs(pacman.y - cy) < 0.12;
+            const aligned = Math.abs(pacman.x - cx) < 0.2 && Math.abs(pacman.y - cy) < 0.2;
             if (!aligned) return;
             if (this.canMove(cx, cy, pacman.pending)) {
                 pacman.dir = { ...pacman.pending };
@@ -378,10 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let pacmanGame = null;
     if (pacmanCanvas) {
         pacmanGame = new PacmanGame(pacmanCanvas);
-        pacmanGame.start();
-        if (pacmanStartBtn) {
-            pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
-        }
     }
 
     pacmanStartBtn?.addEventListener('click', () => {
@@ -389,6 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
         pacmanGame.start();
         pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
     });
+
+    // If we want immediate play without button, uncomment next two lines:
+    // pacmanGame?.start();
+    // pacmanStartBtn?.querySelector('span').textContent = 'Restart Pac-Man';
 
     const updateSensitivityDisplay = () => {
         if (bgSensitivity && bgSensitivityValue) {
