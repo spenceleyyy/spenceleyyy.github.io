@@ -8,38 +8,103 @@
     <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="tool-styles.css">
     <style>
+        body.bg-remover-page {
+            background: #000;
+            color: #f7f7f7;
+        }
+
+        nav {
+            background: rgba(0, 0, 0, 0.75);
+            border-bottom: 1px solid rgba(232, 144, 190, 0.25);
+        }
+
+        main {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header h1 {
+            color: #fff;
+            text-shadow: 0 6px 24px rgba(232, 144, 190, 0.25);
+        }
+
+        .page-subtitle {
+            color: #b7b7b7;
+        }
+
+        .tool-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(232, 144, 190, 0.35);
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.65);
+        }
+
+        .tool-description {
+            color: #d6d6d6;
+        }
+
+        .preview-box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(232, 144, 190, 0.25);
+        }
+
         /* Checkered background for transparency */
         .preview-box.transparent-bg {
-            background-image: 
-                linear-gradient(45deg, #2a4e59 25%, transparent 25%),
-                linear-gradient(-45deg, #2a4e59 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #2a4e59 75%),
-                linear-gradient(-45deg, transparent 75%, #2a4e59 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            background-image:
+                linear-gradient(45deg, rgba(232, 144, 190, 0.12) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(232, 144, 190, 0.12) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(232, 144, 190, 0.12) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(232, 144, 190, 0.12) 75%);
+            background-size: 18px 18px;
+            background-position: 0 0, 0 9px, 9px -9px, -9px 0px;
         }
         
         .preview-box h3 {
-            background: rgba(71, 48, 79, 0.9);
+            background: rgba(0, 0, 0, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 8px;
             display: inline-block;
             margin: -1rem 0 1rem -1rem;
+            color: #fff;
+        }
+
+        /* Pac-Man backdrop */
+        #pacman-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(232, 144, 190, 0.08), transparent 30%), radial-gradient(circle at 80% 60%, rgba(71, 48, 79, 0.15), transparent 35%);
+        }
+
+        #pacman-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 0 12px rgba(232, 144, 190, 0.4));
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        #bg-remover-card {
+            backdrop-filter: blur(14px);
         }
     </style>
 </head>
-<body>
+<body class="bg-remover-page">
     <!-- Navigation injected via navigation.js -->
+
+    <div id="pacman-backdrop">
+        <canvas id="pacman-canvas"></canvas>
+    </div>
 
     <main>
         <div class="page-header">
             <h1>Background Remover</h1>
-            <p class="page-subtitle">Remove backgrounds from images using edge detection</p>
+            <p class="page-subtitle">Edge-aware cutouts with a classic arcade backdrop</p>
         </div>
 
         <div class="tool-container">
             <div class="tool-card" id="bg-remover-card">
-                <p class="tool-description">Upload an image and automatically remove its background. Works best with images that have clear contrast between subject and background.</p>
+                <p class="tool-description">Upload an image and automatically remove its background. This pass runs a color-space aware matting pass, edge boosting, and a gentle feather for the cleanest possible cutout.</p>
                 
                 <input type="file" id="image-upload" accept="image/*">
                 
