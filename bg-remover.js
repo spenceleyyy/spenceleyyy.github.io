@@ -95,17 +95,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bindControls() {
             const handleKeys = (e) => {
-                const key = e.key.toLowerCase();
-                if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(key)) {
-                    e.preventDefault();
-                    if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
-                    if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
-                    if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
-                    if (key === 'arrowright' || key === 'd') this.pacman.pending = { x: 1, y: 0 };
-                }
+                const key = (e.key || '').toLowerCase();
+                const isArrowKey = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key);
+                const isWasd = ['w', 'a', 's', 'd'].includes(key);
+                if (!isArrowKey && !isWasd) return;
+                e.preventDefault();
+                e.stopPropagation();
+                if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
+                if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
+                if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
+                if (key === 'arrowright' || key === 'd') this.pacman.pending = { x: 1, y: 0 };
             };
-            window.addEventListener('keydown', handleKeys, { passive: false });
-            document.addEventListener('keydown', handleKeys, { passive: false });
+            window.addEventListener('keydown', handleKeys, { passive: false, capture: true });
+            document.addEventListener('keydown', handleKeys, { passive: false, capture: true });
         }
 
         resize() {
@@ -375,6 +377,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let pacmanGame = null;
     if (pacmanCanvas) {
         pacmanGame = new PacmanGame(pacmanCanvas);
+        pacmanGame.start();
+        if (pacmanStartBtn) {
+            pacmanStartBtn.querySelector('span').textContent = 'Restart Pac-Man';
+        }
     }
 
     pacmanStartBtn?.addEventListener('click', () => {
