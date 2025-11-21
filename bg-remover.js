@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.tileSize = 22;
             this.lastTime = performance.now();
+            this.offsetX = 0;
+            this.offsetY = 0;
             this.pacman = { x: 9.5, y: 14.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
@@ -94,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
         bindControls() {
             window.addEventListener('keydown', (e) => {
                 const key = e.key.toLowerCase();
+                if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(key)) {
+                    e.preventDefault();
+                }
                 if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
                 if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
                 if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
@@ -103,11 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resize() {
             if (!this.canvas) return;
-            const scaleX = window.innerWidth / this.map[0].length;
-            const scaleY = window.innerHeight / this.map.length;
-            this.tileSize = Math.max(18, Math.min(scaleX, scaleY) * 0.9);
+            const cols = this.map[0].length;
+            const rows = this.map.length;
+            const scaleX = window.innerWidth / cols;
+            const scaleY = window.innerHeight / rows;
+            this.tileSize = Math.max(20, Math.max(scaleX, scaleY));
             this.canvas.width = window.innerWidth;
             this.canvas.height = window.innerHeight;
+            const mapWidth = cols * this.tileSize;
+            const mapHeight = rows * this.tileSize;
+            this.offsetX = (this.canvas.width - mapWidth) / 2;
+            this.offsetY = (this.canvas.height - mapHeight) / 2;
         }
 
         seedPellets() {
@@ -256,8 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
-                    const px = x * tileSize + tileSize / 2;
-                    const py = y * tileSize + tileSize / 2;
+                    const px = this.offsetX + x * tileSize + tileSize / 2;
+                    const py = this.offsetY + y * tileSize + tileSize / 2;
                     if (cell === '#') {
                         ctx.strokeRect(px - tileSize / 2, py - tileSize / 2, tileSize, tileSize);
                     }
@@ -266,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.pellets.forEach((key) => {
                 const [x, y] = key.split(',').map(Number);
-                const px = x * tileSize + tileSize / 2;
-                const py = y * tileSize + tileSize / 2;
+                const px = this.offsetX + x * tileSize + tileSize / 2;
+                const py = this.offsetY + y * tileSize + tileSize / 2;
                 const pelletGlow = ctx.createRadialGradient(px, py, 0, px, py, tileSize * 0.6);
                 pelletGlow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
                 pelletGlow.addColorStop(0.4, 'rgba(232, 144, 190, 0.7)');
@@ -282,8 +293,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.map.forEach((row, y) => {
                 row.split('').forEach((cell, x) => {
                     if (cell === 'o') {
-                        const px = x * tileSize + tileSize / 2;
-                        const py = y * tileSize + tileSize / 2;
+                        const px = this.offsetX + x * tileSize + tileSize / 2;
+                        const py = this.offsetY + y * tileSize + tileSize / 2;
                         ctx.beginPath();
                         ctx.arc(px, py, tileSize * 0.22, 0, Math.PI * 2);
                         ctx.fill();
@@ -296,8 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
         drawEntities(elapsed) {
             const { ctx, tileSize } = this;
             const mouth = (Math.sin(elapsed / 90) + 1) / 4;
-            const pacX = this.pacman.x * tileSize + tileSize / 2;
-            const pacY = this.pacman.y * tileSize + tileSize / 2;
+            const pacX = this.offsetX + this.pacman.x * tileSize + tileSize / 2;
+            const pacY = this.offsetY + this.pacman.y * tileSize + tileSize / 2;
 
             ctx.save();
             ctx.translate(pacX, pacY);
@@ -314,8 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.restore();
 
             this.ghosts.forEach((ghost) => {
-                const gx = ghost.x * tileSize + tileSize / 2;
-                const gy = ghost.y * tileSize + tileSize / 2;
+                const gx = this.offsetX + ghost.x * tileSize + tileSize / 2;
+                const gy = this.offsetY + ghost.y * tileSize + tileSize / 2;
                 ctx.save();
                 const baseColor = this.powerTimer > 0 ? '#4bb2ff' : ghost.color;
                 const bodyGrad = ctx.createLinearGradient(gx, gy - tileSize * 0.4, gx, gy + tileSize * 0.5);
