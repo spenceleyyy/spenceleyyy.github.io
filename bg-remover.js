@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastTime = performance.now();
             this.offsetX = 0;
             this.offsetY = 0;
-            this.pacman = { x: 9.5, y: 14.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 10.5, y: 15.5, dir: { x: -1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         resetRound() {
-            this.pacman = { x: 9.5, y: 14.5, dir: { x: 1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
+            this.pacman = { x: 10.5, y: 15.5, dir: { x: -1, y: 0 }, pending: { x: 0, y: 0 }, speed: 5.2 };
             this.ghosts = [
                 { x: 9.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#e890be', mode: 'chase' },
                 { x: 10.5, y: 8.5, dir: { x: 0, y: 1 }, color: '#9ad7ff', mode: 'chase' },
@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isArrowKey && !isWasd) return;
                 e.preventDefault();
                 e.stopPropagation();
+                this.running = true;
                 if (key === 'arrowup' || key === 'w') this.pacman.pending = { x: 0, y: -1 };
                 if (key === 'arrowdown' || key === 's') this.pacman.pending = { x: 0, y: 1 };
                 if (key === 'arrowleft' || key === 'a') this.pacman.pending = { x: -1, y: 0 };
