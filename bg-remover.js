@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
-            const alignEpsilon = 0.15;
+            const alignEpsilon = 0.3;
 
             // Attempt turn when centered on a tile
             const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
@@ -566,27 +566,26 @@ document.addEventListener('DOMContentLoaded', () => {
             // Tile-based blocking to prevent wall clipping
             if (pacman.dir.x !== 0) {
                 const targetTileX = Math.floor(nextX + (pacman.dir.x > 0 ? 0.49 : -0.49));
-                const tileY = Math.floor(pacman.y + 0.0);
+                const tileY = Math.round(pacman.y);
                 if (this.isWall(targetTileX, tileY)) {
-                    // Snap to center of current tile and halt horizontal motion
-                    pacman.x = Math.round(pacman.x * 2) / 2;
+                    pacman.x = Math.round(pacman.x);
                     pacman.dir.x = 0;
                     pacman.dir.y = 0;
                 } else {
                     pacman.x = nextX;
-                    pacman.y = Math.round(pacman.y * 100) / 100;
+                    pacman.y = Math.round(pacman.y);
                     moved = true;
                 }
             } else if (pacman.dir.y !== 0) {
                 const targetTileY = Math.floor(nextY + (pacman.dir.y > 0 ? 0.49 : -0.49));
-                const tileX = Math.floor(pacman.x + 0.0);
+                const tileX = Math.round(pacman.x);
                 if (this.isWall(tileX, targetTileY)) {
-                    pacman.y = Math.round(pacman.y * 2) / 2;
+                    pacman.y = Math.round(pacman.y);
                     pacman.dir.x = 0;
                     pacman.dir.y = 0;
                 } else {
                     pacman.y = nextY;
-                    pacman.x = Math.round(pacman.x * 100) / 100;
+                    pacman.x = Math.round(pacman.x);
                     moved = true;
                 }
             }
