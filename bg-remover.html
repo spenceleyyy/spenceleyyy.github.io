@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RS | Background Remover with Pac-Man</title>
     <link rel="icon" href="logos/RSlogoUPDATED.png">
+    <link rel="stylesheet" href="tool-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -304,9 +306,25 @@
             background: var(--color-primary);
             border-radius: 10px;
         }
+
+        /* Pixel font for navigation */
+        nav, .nav-links a, .full-name {
+            font-family: 'Press Start 2P', monospace !important;
+            letter-spacing: 0.5px;
+        }
+
+        nav .full-name {
+            font-size: 0.85rem;
+        }
+
+        nav .nav-links a {
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation injected -->
+    <script src="navigation.js"></script>
     <canvas id="pacman-canvas"></canvas>
     <div class="ui-layer" id="ui-layer"></div>
     <script src="bg-remover.js"></script>

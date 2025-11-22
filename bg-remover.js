@@ -133,6 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.lastTime = performance.now();
             if (this.frame) cancelAnimationFrame(this.frame);
+            // Draw immediately to ensure visibility on load
+            this.drawBoard();
+            this.drawEntities(performance.now());
             this.frame = requestAnimationFrame((t) => this.loop(t));
         }
 
