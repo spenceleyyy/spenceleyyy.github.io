@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 2, y: 1, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 5.0 };
+            this.pacman = { x: 2, y: 1, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
             this.ghosts = [
                 { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
                 { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gx = Math.floor(ghost.x + 0.5);
                 const gy = Math.floor(ghost.y + 0.5);
 
-                const aligned = Math.abs(ghost.x - gx) < 0.25 && Math.abs(ghost.y - gy) < 0.25;
+                const aligned = Math.abs(ghost.x - gx) < 0.1 && Math.abs(ghost.y - gy) < 0.1;
 
                 if (aligned) {
                     ghost.x = gx;
@@ -626,8 +626,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!this.isWall(nextX, nextY)) {
                     ghost.x = nextX;
                     ghost.y = nextY;
-                } else if (aligned) {
-                    ghost.dir = this.chooseDirection(ghost);
                 }
             }
         }
