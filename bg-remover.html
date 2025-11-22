@@ -27,7 +27,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 50%, var(--bg-dark) 100%);
+            background: #000;
             color: var(--text-light);
             height: 100vh;
             overflow: hidden;
@@ -319,6 +319,19 @@
 
         nav .nav-links a {
             font-size: 0.75rem;
+        }
+
+        /* Navigation override for this page */
+        nav {
+            background: rgba(0, 0, 0, 0.8) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        nav .nav-links a {
+            color: var(--color-text-dark);
+        }
+        nav .nav-links a:hover,
+        nav .nav-links a:focus {
+            color: var(--color-primary);
         }
     </style>
 </head>

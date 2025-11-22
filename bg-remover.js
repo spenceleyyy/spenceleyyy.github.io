@@ -74,12 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 15, y: 15, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 5.0 };
+            this.pacman = { x: 2, y: 1, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 5.0 };
             this.ghosts = [
-                { x: 2, y: 2, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },   // Top Left
-                { x: 29, y: 2, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' }, // Top Right
-                { x: 2, y: 16, dir: { x: 0, y: -1 }, color: '#ffce76', mode: 'chase' }, // Bottom Left
-                { x: 29, y: 16, dir: { x: 0, y: -1 }, color: '#73ffa0', mode: 'chase' } // Bottom Right
+                { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
+                { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
+                { x: 10, y: 17, dir: { x: 0, y: -1 }, color: '#ffce76', mode: 'chase' },
+                { x: 20, y: 17, dir: { x: 0, y: -1 }, color: '#73ffa0', mode: 'chase' }
             ];
 
             this.pellets = new Set();
@@ -465,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const handleKey = (e) => {
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 's', 'a', 'd', 'W', 'S', 'A', 'D'].includes(e.key)) {
                     e.preventDefault();
+                    this.running = true;
                     const key = e.key.toLowerCase();
                     if (key === 'arrowup' || key === 'w') this.pacman.nextDir = { x: 0, y: -1 };
                     else if (key === 'arrowdown' || key === 's') this.pacman.nextDir = { x: 0, y: 1 };
@@ -644,8 +645,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ghost.x = spawns[i].x;
                         ghost.y = spawns[i].y;
                     } else {
-                        this.pacman.x = 15;
-                        this.pacman.y = 15;
+                        this.pacman.x = 2;
+                        this.pacman.y = 1;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };
                     }
