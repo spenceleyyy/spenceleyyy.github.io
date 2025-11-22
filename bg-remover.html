@@ -34,21 +34,23 @@
             position: relative;
         }
 
+        :root { --nav-offset: 72px; }
+
         #pacman-canvas {
             position: fixed;
-            top: 0;
+            top: var(--nav-offset);
             left: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100% - var(--nav-offset));
             z-index: 1;
         }
 
         .ui-layer {
             position: fixed;
-            top: 0;
+            top: var(--nav-offset);
             left: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100% - var(--nav-offset));
             z-index: 2;
             pointer-events: none;
         }

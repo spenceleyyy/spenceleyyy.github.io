@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gx = Math.floor(ghost.x + 0.5);
                 const gy = Math.floor(ghost.y + 0.5);
 
-                const aligned = Math.abs(ghost.x - gx) < 0.1 && Math.abs(ghost.y - gy) < 0.1;
+                const aligned = Math.abs(ghost.x - gx) < 0.25 && Math.abs(ghost.y - gy) < 0.25;
 
                 if (aligned) {
                     ghost.x = gx;
@@ -626,6 +626,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!this.isWall(nextX, nextY)) {
                     ghost.x = nextX;
                     ghost.y = nextY;
+                } else if (aligned) {
+                    ghost.dir = this.chooseDirection(ghost);
                 }
             }
         }
