@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 2, y: 1, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
+            this.pacman = { x: 3, y: 2, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
             this.ghosts = [
                 { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
                 { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
@@ -676,8 +676,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ghost.x = spawns[i].x;
                         ghost.y = spawns[i].y;
                     } else {
-                        this.pacman.x = 2;
-                        this.pacman.y = 1;
+                        this.pacman.x = 3;
+                        this.pacman.y = 2;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };
                     }
