@@ -545,30 +545,50 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
+            const alignEpsilon = 0.15;
 
-            if (pacman.nextDir.x !== pacman.dir.x || pacman.nextDir.y !== pacman.dir.y) {
-                if (this.canMove(pacman.x, pacman.y, pacman.nextDir)) {
+            // Attempt turn when centered on a tile
+            const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
+            const alignedY = Math.abs(pacman.y - Math.round(pacman.y)) < alignEpsilon;
+            if (alignedX && alignedY) {
+                const tryTileX = Math.round(pacman.x + pacman.nextDir.x);
+                const tryTileY = Math.round(pacman.y + pacman.nextDir.y);
+                if (!this.isWall(tryTileX, tryTileY)) {
                     pacman.dir.x = pacman.nextDir.x;
                     pacman.dir.y = pacman.nextDir.y;
                 }
             }
 
             const speed = pacman.speed * dt;
-            const nextX = pacman.x + pacman.dir.x * speed;
-            const nextY = pacman.y + pacman.dir.y * speed;
+            let nextX = pacman.x + pacman.dir.x * speed;
+            let nextY = pacman.y + pacman.dir.y * speed;
 
-            if (this.canMoveTo(nextX, nextY)) {
-                pacman.x = nextX;
-                pacman.y = nextY;
-                moved = true;
-            } else {
-                debugLog('Pac blocked', {
-                    pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) },
-                    dir: pacman.dir,
-                    next: { x: nextX.toFixed(2), y: nextY.toFixed(2) },
-                    tile: { x: Math.floor(nextX), y: Math.floor(nextY), cell: this.map[Math.floor(nextY)]?.[Math.floor(nextX)] },
-                    r: this.collisionRadius
-                });
+            // Tile-based blocking to prevent wall clipping
+            if (pacman.dir.x !== 0) {
+                const targetTileX = Math.floor(nextX + (pacman.dir.x > 0 ? 0.49 : -0.49));
+                const tileY = Math.floor(pacman.y + 0.0);
+                if (this.isWall(targetTileX, tileY)) {
+                    // Snap to center of current tile and halt horizontal motion
+                    pacman.x = Math.round(pacman.x * 2) / 2;
+                    pacman.dir.x = 0;
+                    pacman.dir.y = 0;
+                } else {
+                    pacman.x = nextX;
+                    pacman.y = Math.round(pacman.y * 100) / 100;
+                    moved = true;
+                }
+            } else if (pacman.dir.y !== 0) {
+                const targetTileY = Math.floor(nextY + (pacman.dir.y > 0 ? 0.49 : -0.49));
+                const tileX = Math.floor(pacman.x + 0.0);
+                if (this.isWall(tileX, targetTileY)) {
+                    pacman.y = Math.round(pacman.y * 2) / 2;
+                    pacman.dir.x = 0;
+                    pacman.dir.y = 0;
+                } else {
+                    pacman.y = nextY;
+                    pacman.x = Math.round(pacman.x * 100) / 100;
+                    moved = true;
+                }
             }
 
             const maxCols = this.map[0].length;
@@ -578,7 +598,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.eatPellets();
 
             if (!moved) {
-                debugLog('Pac stuck?', { pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) }, dir: pacman.dir });
+                debugLog('Pac blocked', {
+                    pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) },
+                    dir: pacman.dir
+                });
             }
         }
 
