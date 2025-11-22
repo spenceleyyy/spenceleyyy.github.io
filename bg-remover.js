@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.08;
+            this.collisionRadius = 0.05;
 
             this.resize();
             this.seedPellets();
@@ -529,8 +529,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMoveTo(x, y) {
-            // Center-only check to avoid over-blocking in tight corridors
-            return !this.isWall(x, y);
+            const r = this.collisionRadius;
+            if (this.isWall(x + r, y + r)) return false;
+            if (this.isWall(x + r, y - r)) return false;
+            if (this.isWall(x - r, y + r)) return false;
+            if (this.isWall(x - r, y - r)) return false;
+            return true;
         }
 
         canMove(x, y, dir) {
