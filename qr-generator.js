@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const includeLogoCheckbox = document.getElementById('include-logo');
     const logoOptions = document.getElementById('logo-options');
     const useRsLogo = document.getElementById('use-rs-logo');
+    const useNeuroLogo = document.getElementById('use-neuro-logo');
     const useCustomLogo = document.getElementById('use-custom-logo');
     const customLogoUpload = document.getElementById('custom-logo-upload');
     const customLogoArea = document.getElementById('custom-logo-area');
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const motionReduced = motionMediaQuery.matches;
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
+    const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
     
     let currentQRCanvas = null;
@@ -56,8 +58,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const toggleCustomArea = () => {
             customLogoArea.style.display = useCustomLogo.checked ? 'block' : 'none';
         };
-        useRsLogo.addEventListener('change', toggleCustomArea);
-        useCustomLogo.addEventListener('change', toggleCustomArea);
+        const handleLogoChoiceChange = () => {
+            toggleCustomArea();
+            if (customLogoName && !useCustomLogo.checked) {
+                customLogoName.style.display = 'none';
+                customLogoName.textContent = '';
+            }
+            rerenderIfNeeded();
+        };
+        useRsLogo.addEventListener('change', handleLogoChoiceChange);
+        useCustomLogo.addEventListener('change', handleLogoChoiceChange);
+        if (useNeuroLogo) {
+            useNeuroLogo.addEventListener('change', handleLogoChoiceChange);
+        }
         toggleCustomArea();
     }
 
@@ -204,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Determine which logo to use
         const logoToUse = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
             ? customLogoDataUrl
-            : DEFAULT_LOGO_PATH;
+            : (useNeuroLogo && useNeuroLogo.checked ? NEURO_LOGO_PATH : DEFAULT_LOGO_PATH);
 
         // Draw the Logo Image inside the cutout
         if (logoToUse) {
