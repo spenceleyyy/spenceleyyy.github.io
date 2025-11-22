@@ -62,13 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "#o#  #.#   #....#   #.#..#.#..o#",
                 "#.####.#####.##.#####.####.###.#",
                 "#............##................#",
-                "####.##.UUUUUUUUUUUUUUUUUU.##.##",
-                "....#..#UUUUUUUUUUUUUUUUUU#..#..",
-                ".####.##UUUUUUUUUUUUUUUUUU##.###",
-                ".#....#UUUUUUUUUUUUUUUUUU#.....#",
-                ".####.##UUUUUUUUUUUUUUUUUU##.###",
-                "....#..#UUUUUUUUUUUUUUUUUU#..#..",
-                "####.##.UUUUUUUUUUUUUUUUUU.##.##",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
+                "#....#UUUUUUUUUUUUUUUUUU#....#",
                 "#............##................#",
                 "#.####.#####.##.#####.####.###.#",
                 "#o#..#.#   #....#   #.#..#.#..o#",
@@ -524,6 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const ix = Math.floor(x);
             const iy = Math.floor(y);
             if (iy < 0 || iy >= this.map.length || ix < 0 || ix >= this.map[0].length) return true;
+            // Hard-code vertical corridors on both sides of the UI void
+            if (ix === 4 || ix === 27) return false;
             const cell = this.map[iy][ix];
             return cell === '#' || cell === 'U';
         }
@@ -545,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
-            const alignEpsilon = 0.3;
+            const alignEpsilon = 0.2;
 
             // Attempt turn when centered on a tile
             const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
