@@ -3,284 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RS | Background Remover</title>
+    <title>RS | Background Remover with Pac-Man</title>
     <link rel="icon" href="logos/RSlogoUPDATED.png">
-    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="tool-styles.css">
     <style>
-        body.bg-remover-page {
-            background: #000;
-            color: #f7f7f7;
-            min-height: 100vh;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        nav {
-            background: rgba(0, 0, 0, 0.75);
-            border-bottom: 1px solid rgba(232, 144, 190, 0.25);
+        :root {
+            --color-primary: #e890be;
+            --color-secondary: #9ad7ff;
+            --color-accent: #ffce76;
+            --color-success: #73ffa0;
+            --bg-dark: #0b0b11;
+            --bg-card: #11111b;
+            --text-light: #e0e0e8;
+            --text-dim: #9090a0;
         }
 
-        main {
-            position: relative;
-            z-index: 2;
-        }
-
-        .page-header h1 {
-            color: #fff;
-            text-shadow: 0 6px 24px rgba(232, 144, 190, 0.25);
-        }
-
-        .page-subtitle {
-            color: #b7b7b7;
-        }
-
-        .tool-card {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(232, 144, 190, 0.35);
-            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.65);
-        }
-
-        .tool-description {
-            color: #d6d6d6;
-        }
-
-        .preview-box {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(232, 144, 190, 0.25);
-        }
-
-        /* Checkered background for transparency */
-        .preview-box.transparent-bg {
-            background-image:
-                linear-gradient(45deg, rgba(232, 144, 190, 0.12) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(232, 144, 190, 0.12) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, rgba(232, 144, 190, 0.12) 75%),
-                linear-gradient(-45deg, transparent 75%, rgba(232, 144, 190, 0.12) 75%);
-            background-size: 18px 18px;
-            background-position: 0 0, 0 9px, 9px -9px, -9px 0px;
-        }
-        
-        .preview-box h3 {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-block;
-            margin: -1rem 0 1rem -1rem;
-            color: #fff;
-        }
-
-        /* Pac-Man backdrop */
-        #pacman-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            background: radial-gradient(circle at 20% 20%, rgba(232, 144, 190, 0.08), transparent 30%), radial-gradient(circle at 80% 60%, rgba(71, 48, 79, 0.15), transparent 35%);
-            overflow: hidden;
-            width: 100vw;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 50%, var(--bg-dark) 100%);
+            color: var(--text-light);
             height: 100vh;
-            pointer-events: none;
+            overflow: hidden;
+            position: relative;
         }
 
         #pacman-canvas {
-            position: absolute;
-            inset: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 12px rgba(232, 144, 190, 0.4));
-            opacity: 0.9;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
             pointer-events: none;
         }
 
-        .pacman-overlay {
+        /* Card positioning is handled by JS to fit the maze */
+        .card {
             position: absolute;
-            inset: 0;
+            background: rgba(17, 17, 27, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+            pointer-events: auto;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            text-align: center;
-            z-index: 3;
-            pointer-events: none;
-            color: #f7f7f7;
-        }
-
-        .pacman-overlay .game-controls {
-            display: flex;
-            gap: 0.75rem;
-            pointer-events: auto;
-        }
-
-        .pacman-title {
-            font-size: 3.5rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, var(--color-primary), #9ad7ff, #f7c948);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 40px rgba(232, 144, 190, 0.35);
-        }
-
-        .pacman-subtitle {
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 1.1rem;
-        }
-
-        .btn-game {
-            padding: 0.85rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(0, 0, 0, 0.55);
-            color: #fff;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .btn-game:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .btn-primary { border-color: rgba(232, 144, 190, 0.5); }
-        .btn-secondary { border-color: rgba(154, 215, 255, 0.5); }
-
-        .instructions {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 0.6rem 1rem;
-            border-radius: 10px;
-            border: 1px solid rgba(232, 144, 190, 0.25);
-            pointer-events: none;
-        }
-
-        #bg-remover-card {
-            backdrop-filter: blur(14px);
-            position: relative;
-            z-index: 2;
+            box-sizing: border-box;
+            min-width: 320px;
+            border: 1px solid rgba(232, 144, 190, 0.2);
         }
 
         .card-header {
             display: flex;
-            align-items: flex-start;
-            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(232, 144, 190, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            background: rgba(23, 45, 51, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .upload-area:hover {
+            border-color: var(--color-primary);
+            background: rgba(232, 144, 190, 0.15);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--color-primary);
+        }
+
+        .upload-text {
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .file-name {
+            display: none;
+            margin-top: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(232, 144, 190, 0.2);
+            border-radius: 8px;
+            color: var(--color-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
+        }
+
+        .controls {
+            display: none;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .control-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .control-label {
+            display: flex;
             justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            font-size: 0.85rem;
         }
 
-        .small-toggle {
-            width: auto;
-            padding: 0.5rem 0.9rem;
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: rgba(232, 144, 190, 0.2);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(232, 144, 190, 0.6);
+            transition: transform 0.1s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: none;
             border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
         }
 
-        .tool-card.collapsed .tool-card-content {
+        .btn-process {
+            background: linear-gradient(135deg, var(--color-primary), #c770a0);
+            color: white;
+            box-shadow: 0 6px 15px rgba(232, 144, 190, 0.4);
+        }
+
+        .btn-process:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(232, 144, 190, 0.6);
+        }
+
+        .btn-process:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(232, 144, 190, 0.2);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-container {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            overflow-y: auto;
+            flex-grow: 1;
+            min-height: 120px;
+        }
+
+        .preview-box {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--color-primary);
+        }
+
+        .preview-img, #processed-canvas {
+            max-width: 100%;
+            height: auto;
+            max-height: 150px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #processed-canvas {
+            background: repeating-conic-gradient(#ddd 0% 25%, white 0% 50%) 50% / 15px 15px;
+        }
+
+        .output-section {
+            display: none;
+            flex-shrink: 0;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--color-success), #5fd885);
+            color: white;
+            box-shadow: 0 6px 15px rgba(115, 255, 160, 0.4);
+            margin-bottom: 0;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(115, 255, 160, 0.6);
+        }
+
+        input[type="file"] {
             display: none;
         }
 
-        .tool-card.collapsed {
-            padding: 1.4rem;
+        .card::-webkit-scrollbar {
+            width: 6px;
         }
-
-        @media (max-width: 768px) {
-            .pacman-overlay {
-                justify-content: flex-end;
-                padding-bottom: 10vh;
-            }
-            .pacman-title {
-                font-size: 2.4rem;
-            }
-            .game-controls {
-                flex-direction: column;
-            }
-            .card-header {
-                flex-direction: column;
-            }
-            .small-toggle {
-                align-self: flex-start;
-            }
+        .card::-webkit-scrollbar-track {
+            background: rgba(232, 144, 190, 0.1);
+            border-radius: 8px;
+        }
+        .card::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="bg-remover-page">
-    <!-- Navigation injected via navigation.js -->
-
-    <div id="pacman-backdrop">
-        <canvas id="pacman-canvas"></canvas>
-        <div class="pacman-overlay">
-            <h1 class="pacman-title">Background Remover</h1>
-            <p class="pacman-subtitle">Play Pac-Man while you process images</p>
-            <div class="game-controls">
-                <button class="btn-game btn-primary" id="pacman-start"><span>Start Pac-Man</span></button>
-                <button class="btn-game btn-secondary" onclick="document.getElementById('bg-remover-card').scrollIntoView({behavior:'smooth'})"><span>Open Tool</span></button>
-            </div>
-            <div class="instructions">Use Arrow Keys or WASD to control Pac-Man</div>
-        </div>
-    </div>
-
-    <main style="position: relative; z-index: 2; background: transparent;">
-        <div class="page-header">
-            <h1>Background Remover</h1>
-            <p class="page-subtitle">Edge-aware cutouts with a classic arcade backdrop</p>
-        </div>
-
-        <div class="tool-container">
-            <div class="tool-card" id="bg-remover-card">
-                <div class="card-header">
-                    <p class="tool-description">Upload an image and automatically remove its background. This pass runs a color-space aware matting pass, edge boosting, and a gentle feather for the cleanest possible cutout.</p>
-                    <button id="toggle-card" class="button-secondary small-toggle"><span>Minimize</span></button>
-                </div>
-                <div class="tool-card-content">
-                    <input type="file" id="image-upload" accept="image/*">
-                    
-                    <label for="image-upload" class="file-upload-area" id="bg-upload-area">
-                        <div class="upload-icon">📷</div>
-                        <div class="upload-text">Drop image here or click to browse</div>
-                        <div class="upload-subtext">Supports JPG, PNG, GIF</div>
-                    </label>
-                    
-                    <p class="file-name" id="file-name"></p>
-                    
-                    <div class="input-group" id="bg-controls" style="display: none;">
-                        <label for="bg-sensitivity">Background sensitivity: <span id="bg-sensitivity-value">65</span>%</label>
-                        <input type="range" id="bg-sensitivity" min="25" max="90" value="65" style="width: 100%; accent-color: var(--color-primary); cursor: pointer;">
-                        <p class="info-text">Lower sensitivity keeps more of the original background. Increase it for stronger removal.</p>
-                    </div>
-                    
-                    <button id="remove-bg" disabled><span>Remove Background</span></button>
-                    
-                    <div id="processing-container" style="display: none;">
-                        <div class="processing-animation">
-                            <div class="spinner-container">
-                                <div class="spinner"></div>
-                            </div>
-                            <p class="processing-text">Removing background...</p>
-                        </div>
-                    </div>
-                    
-                    <div class="preview-container" id="preview-container" style="display: none;">
-                        <div class="preview-box">
-                            <h3>Original</h3>
-                            <img id="original-preview" src="" alt="Original image">
-                        </div>
-                        <div class="preview-box transparent-bg">
-                            <h3>Processed</h3>
-                            <canvas id="processed-canvas"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="output-area" id="bg-output" style="margin-top: 1.5rem; display: none;">
-                        <button id="download-result" class="button-secondary"><span>Download Result (PNG)</span></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button id="pacman-start" class="floating-game-btn"><span>Start Pac-Man</span></button>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 RS. Designed with curiosity and code.</p>
-    </footer>
-
-    <script src="navigation.js"></script>
+<body>
+    <canvas id="pacman-canvas"></canvas>
+    <div class="ui-layer" id="ui-layer"></div>
     <script src="bg-remover.js"></script>
 </body>
 </html>
