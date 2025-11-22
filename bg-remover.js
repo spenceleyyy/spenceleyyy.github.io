@@ -478,15 +478,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resize() {
             if (!this.canvas) return;
+            const navOffset = 72;
             const cols = this.map[0].length;
             const rows = this.map.length;
             const scaleX = window.innerWidth / (cols + 2);
-            const scaleY = window.innerHeight / (rows + 2);
+            const scaleY = (window.innerHeight - navOffset) / (rows + 2);
 
             this.tileSize = Math.floor(Math.max(15, Math.min(scaleX, scaleY)));
 
             this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
+            this.canvas.height = Math.max(200, window.innerHeight - navOffset);
             const mapWidth = cols * this.tileSize;
             const mapHeight = rows * this.tileSize;
             this.offsetX = Math.floor((this.canvas.width - mapWidth) / 2);
@@ -611,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gx = Math.floor(ghost.x + 0.5);
                 const gy = Math.floor(ghost.y + 0.5);
 
-                const aligned = Math.abs(ghost.x - gx) < 0.1 && Math.abs(ghost.y - gy) < 0.1;
+                const aligned = Math.abs(ghost.x - gx) < 0.05 && Math.abs(ghost.y - gy) < 0.05;
 
                 if (aligned) {
                     ghost.x = gx;
@@ -619,13 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     ghost.dir = this.chooseDirection(ghost);
                 }
 
-                const speed = (this.powerTimer > 0 ? 2.5 : 3.5) * dt;
+                const speed = (this.powerTimer > 0 ? 2.5 : 3.8) * dt;
                 const nextX = ghost.x + ghost.dir.x * speed;
                 const nextY = ghost.y + ghost.dir.y * speed;
 
                 if (!this.isWall(nextX, nextY)) {
                     ghost.x = nextX;
                     ghost.y = nextY;
+                } else if (aligned) {
+                    ghost.dir = this.chooseDirection(ghost);
                 }
             }
         }
