@@ -224,7 +224,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
-                ctx.drawImage(img, logoX, logoY, logoTargetSize, logoTargetSize);
+                ctx.save();
+                // Clip to circle so all logos (including NeuroErgo) render as round marks
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.clip();
+                const inset = Math.max(2, logoTargetSize * 0.05);
+                ctx.drawImage(
+                    img,
+                    logoX + inset,
+                    logoY + inset,
+                    logoTargetSize - inset * 2,
+                    logoTargetSize - inset * 2,
+                );
+                ctx.restore();
             };
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
