@@ -261,19 +261,133 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const format = qrFormatSelect.value;
-            const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
-            
             try {
-                const dataUrl = currentQRCanvas.toDataURL(mimeType);
-                const link = document.createElement('a');
-                link.download = `qrcode.${format}`;
-                link.href = dataUrl;
-                link.click();
+                if (format === 'pdf') {
+                    const pdfBlob = buildPdfFromCanvas(currentQRCanvas);
+                    if (!pdfBlob) throw new Error('PDF generation failed');
+                    const link = document.createElement('a');
+                    link.download = 'qrcode.pdf';
+                    link.href = URL.createObjectURL(pdfBlob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                } else {
+                    const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+                    const dataUrl = currentQRCanvas.toDataURL(mimeType);
+                    const link = document.createElement('a');
+                    link.download = `qrcode.${format}`;
+                    link.href = dataUrl;
+                    link.click();
+                }
             } catch (e) {
                 alert("Download failed. A security or loading error occurred.");
                 console.error("Download error:", e);
             }
         });
+    }
+
+    function buildPdfFromCanvas(canvas) {
+        const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        const base64 = jpegDataUrl.split(',')[1];
+        const imgBytes = base64ToUint8Array(base64);
+        const width = canvas.width;
+        const height = canvas.height;
+
+        const header = '%PDF-1.4\n';
+        const catalog = '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+        const pages = '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+        const page = `3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${width} ${height}] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> /ProcSet [/PDF /ImageC] >> >>
+endobj
+`;
+        const contentStream = `q
+${width} 0 0 ${height} 0 0 cm
+/Im0 Do
+Q
+`;
+        const content = `4 0 obj
+<< /Length ${contentStream.length} >>
+stream
+${contentStream}endstream
+endobj
+`;
+        const imageHeader = `5 0 obj
+<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>
+stream
+`;
+        const imageFooter = '\nendstream\nendobj\n';
+        const xrefEntries = [];
+
+        // Build xref offsets (correct absolute positions)
+        const fullParts = [];
+        let cursor = 0;
+        const pushPart = (part) => {
+            fullParts.push(part);
+            cursor += part.length;
+        };
+
+        pushPart(header);
+        const catalogOffset = cursor;
+        pushPart(catalog);
+        const pagesOffset = cursor;
+        pushPart(pages);
+        const pageOffset = cursor;
+        pushPart(page);
+        const contentOffset = cursor;
+        pushPart(content);
+        const imageOffset = cursor;
+        pushPart(imageHeader);
+        pushPart(imgBytes);
+        pushPart(imageFooter);
+
+        const xref = [];
+        xref.push('xref\n');
+        xref.push('0 6\n');
+        xref.push('0000000000 65535 f \n');
+        const pad = (n) => n.toString().padStart(10, '0');
+        [catalogOffset, pagesOffset, pageOffset, contentOffset, imageOffset].forEach((offset) => {
+            xref.push(`${pad(offset)} 00000 n \n`);
+        });
+
+        const trailer = `trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+${cursor}
+%%EOF`;
+
+        const pdfParts = fullParts.concat(xref.join(''), trailer);
+        const pdfBytes = concatToUint8Array(pdfParts);
+        return new Blob([pdfBytes], { type: 'application/pdf' });
+    }
+
+    function base64ToUint8Array(base64) {
+        const binary = atob(base64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i += 1) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+    }
+
+    function concatToUint8Array(chunks) {
+        let total = 0;
+        const normalized = chunks.map((chunk) => {
+            if (typeof chunk === 'string') {
+                const encoder = new TextEncoder();
+                const encoded = encoder.encode(chunk);
+                total += encoded.length;
+                return encoded;
+            }
+            total += chunk.length;
+            return chunk;
+        });
+        const result = new Uint8Array(total);
+        let offset = 0;
+        normalized.forEach((chunk) => {
+            result.set(chunk, offset);
+            offset += chunk.length;
+        });
+        return result;
     }
 
     function playAssemblyAnimation() {

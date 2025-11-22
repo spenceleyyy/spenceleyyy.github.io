@@ -214,6 +214,14 @@ main {
     order: 1;
 }
 
+.analysis-section.full-width {
+    grid-template-columns: 1fr;
+}
+
+.analysis-section.full-width .visual-panel {
+    position: static;
+}
+
 /* Visual Panel */
 .visual-panel {
     position: sticky;
