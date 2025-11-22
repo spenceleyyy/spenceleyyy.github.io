@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 "#o#  #.#   #....#   #.#..#.#..o#",
                 "#.####.#####.##.#####.####.###.#",
                 "#............##................#",
-                "#....########################..#",
-                "#....#UUUUUUUUUUUUUUUUUUUUUU#..#",
-                "#....#U####################U#..#",
-                "#....#U####################U#..#",
-                "#....#U####################U#..#",
-                "#....#U####################U#..#",
-                "#....#UUUUUUUUUUUUUUUUUUUUUU#..#",
-                "#....########################..#",
+                "#.#.########################.#.#",
+                "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
+                "#.#.#U####################U#.#.#",
+                "#.#.#U####################U#.#.#",
+                "#.#.#U####################U#.#.#",
+                "#.#.#U####################U#.#.#",
+                "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
+                "#.#.########################.#.#",
                 "#............##................#",
                 "#.####.#####.##.#####.####.###.#",
                 "#o#..#.#   #....#   #.#..#.#..o#",
@@ -525,8 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const ix = Math.floor(x);
             const iy = Math.floor(y);
             if (iy < 0 || iy >= this.map.length || ix < 0 || ix >= this.map[0].length) return true;
-            // Hard-code vertical corridors on both sides of the UI void
-            if (ix === 4 || ix === 27) return false;
             const cell = this.map[iy][ix];
             return cell === '#' || cell === 'U';
         }
