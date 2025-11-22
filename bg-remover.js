@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 3, y: 2, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
+            this.pacman = { x: 10, y: 17, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
             this.ghosts = [
                 { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
                 { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.1;
+            this.collisionRadius = 0.08;
 
             this.resize();
             this.seedPellets();
@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const step = 0.25;
+            const step = 0.18;
             return this.canMoveTo(x + dir.x * step, y + dir.y * step);
         }
 
@@ -676,8 +676,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         ghost.x = spawns[i].x;
                         ghost.y = spawns[i].y;
                     } else {
-                        this.pacman.x = 3;
-                        this.pacman.y = 2;
+                        this.pacman.x = 10;
+                        this.pacman.y = 17;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };
                     }
@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.translate(pacX, pacY);
             const angle = Math.atan2(this.pacman.dir.y, this.pacman.dir.x);
             ctx.rotate(angle);
-            const pacGrad = ctx.createRadialGradient(0, 0, tileSize * 0.15, 0, 0, tileSize * 0.55);
+            const pacGrad = ctx.createRadialGradient(0, 0, tileSize * 0.12, 0, 0, tileSize * 0.45);
             pacGrad.addColorStop(0, '#ffe06a');
             pacGrad.addColorStop(1, '#f7c948');
             ctx.fillStyle = pacGrad;
@@ -762,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.shadowBlur = 14;
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.arc(0, 0, tileSize * 0.48, mouth * Math.PI, (2 - mouth) * Math.PI);
+            ctx.arc(0, 0, tileSize * 0.4, mouth * Math.PI, (2 - mouth) * Math.PI);
             ctx.fill();
             ctx.lineWidth = 2;
             ctx.strokeStyle = 'rgba(0,0,0,0.5)';
