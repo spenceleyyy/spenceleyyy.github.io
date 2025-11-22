@@ -1,4 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Debug helper ---
+    const DEBUG = true;
+    let lastDebug = 0;
+    const debugLog = (...args) => {
+        if (!DEBUG) return;
+        const now = performance.now();
+        if (now - lastDebug > 250) { // throttle to avoid spam
+            // eslint-disable-next-line no-console
+            console.debug('[PACMAN]', ...args);
+            lastDebug = now;
+        }
+    };
+
     // --- Math Helpers ---
     const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -87,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.3;
+            this.collisionRadius = 0.2;
 
             this.resize();
             this.seedPellets();
@@ -467,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.preventDefault();
                     this.running = true;
                     const key = e.key.toLowerCase();
+                    debugLog('key', key);
                     if (key === 'arrowup' || key === 'w') this.pacman.nextDir = { x: 0, y: -1 };
                     else if (key === 'arrowdown' || key === 's') this.pacman.nextDir = { x: 0, y: 1 };
                     else if (key === 'arrowleft' || key === 'a') this.pacman.nextDir = { x: -1, y: 0 };
@@ -530,6 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updatePacman(dt) {
             const { pacman } = this;
+            let moved = false;
 
             if (pacman.nextDir.x !== pacman.dir.x || pacman.nextDir.y !== pacman.dir.y) {
                 if (this.canMove(pacman.x, pacman.y, pacman.nextDir)) {
@@ -545,6 +560,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.canMoveTo(nextX, nextY)) {
                 pacman.x = nextX;
                 pacman.y = nextY;
+                moved = true;
+            } else {
+                debugLog('Pac blocked', {
+                    pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) },
+                    dir: pacman.dir,
+                    next: { x: nextX.toFixed(2), y: nextY.toFixed(2) },
+                    tile: { x: Math.floor(nextX), y: Math.floor(nextY), cell: this.map[Math.floor(nextY)]?.[Math.floor(nextX)] }
+                });
             }
 
             const maxCols = this.map[0].length;
@@ -552,6 +575,10 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (pacman.x >= maxCols) pacman.x = 0;
 
             this.eatPellets();
+
+            if (!moved) {
+                debugLog('Pac stuck?', { pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) }, dir: pacman.dir });
+            }
         }
 
         eatPellets() {
