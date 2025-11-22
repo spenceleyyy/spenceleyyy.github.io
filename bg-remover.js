@@ -59,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 "################################",
                 "#..............................#",
                 "#.##..###...##...###..##..###..#",
-                "#o#  ###   ######   ###..###..o#",
-                "#.##..###...##...###..##..###..#",
+                "#o#  ###   ####.....###..###..o#",
+                "#.##..###...##........##..###..#",
                 "#..............................#",
                 "#.#.########################.#.#",
                 "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
@@ -72,9 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
                 "#.#.########################.#.#",
                 "#..............................#",
-                "#.##..###...##...###..##..###..#",
-                "#.##.###   #....#   ###..###..o#",
-                "#.##..###...##...###..##..###..#",
+                "#.##..###...##...###......###..#",
+                "#.##.###............###..###..o#",
+                "#.##..###...##...###......###..#",
                 "#..............................#",
                 "################################"
             ];
@@ -549,7 +549,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let moved = false;
             const alignEpsilon = 0.2;
 
-            // Attempt turn when centered on a tile
             const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
             const alignedY = Math.abs(pacman.y - Math.round(pacman.y)) < alignEpsilon;
             if (alignedX && alignedY) {
@@ -562,34 +561,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const speed = pacman.speed * dt;
-            let nextX = pacman.x + pacman.dir.x * speed;
-            let nextY = pacman.y + pacman.dir.y * speed;
+            const nextX = pacman.x + pacman.dir.x * speed;
+            const nextY = pacman.y + pacman.dir.y * speed;
 
-            // Tile-based blocking to prevent wall clipping
-            if (pacman.dir.x !== 0) {
-                const targetTileX = Math.floor(nextX + (pacman.dir.x > 0 ? 0.49 : -0.49));
-                const tileY = Math.round(pacman.y);
-                if (this.isWall(targetTileX, tileY)) {
-                    pacman.x = Math.round(pacman.x);
-                    pacman.dir.x = 0;
-                    pacman.dir.y = 0;
-                } else {
-                    pacman.x = nextX;
-                    pacman.y = Math.round(pacman.y);
-                    moved = true;
-                }
-            } else if (pacman.dir.y !== 0) {
-                const targetTileY = Math.floor(nextY + (pacman.dir.y > 0 ? 0.49 : -0.49));
-                const tileX = Math.round(pacman.x);
-                if (this.isWall(tileX, targetTileY)) {
-                    pacman.y = Math.round(pacman.y);
-                    pacman.dir.x = 0;
-                    pacman.dir.y = 0;
-                } else {
-                    pacman.y = nextY;
-                    pacman.x = Math.round(pacman.x);
-                    moved = true;
-                }
+            if (this.canMoveTo(nextX, nextY)) {
+                pacman.x = nextX;
+                pacman.y = nextY;
+                moved = true;
             }
 
             const maxCols = this.map[0].length;
