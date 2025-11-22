@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.45;
+            this.collisionRadius = 0.3;
 
             this.resize();
             this.seedPellets();
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const step = 0.15;
+            const step = 0.2;
             return this.canMoveTo(x + dir.x * step, y + dir.y * step);
         }
 
