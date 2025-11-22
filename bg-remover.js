@@ -529,12 +529,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMoveTo(x, y) {
-            const r = this.collisionRadius;
-            if (this.isWall(x + r, y + r)) return false;
-            if (this.isWall(x + r, y - r)) return false;
-            if (this.isWall(x - r, y + r)) return false;
-            if (this.isWall(x - r, y - r)) return false;
-            return true;
+            // Center-only check to avoid over-blocking in tight corridors
+            return !this.isWall(x, y);
         }
 
         canMove(x, y, dir) {
