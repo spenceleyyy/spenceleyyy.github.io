@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.2;
+            this.collisionRadius = 0.1;
 
             this.resize();
             this.seedPellets();
@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         canMove(x, y, dir) {
-            const step = 0.2;
+            const step = 0.25;
             return this.canMoveTo(x + dir.x * step, y + dir.y * step);
         }
 
@@ -566,7 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     pos: { x: pacman.x.toFixed(2), y: pacman.y.toFixed(2) },
                     dir: pacman.dir,
                     next: { x: nextX.toFixed(2), y: nextY.toFixed(2) },
-                    tile: { x: Math.floor(nextX), y: Math.floor(nextY), cell: this.map[Math.floor(nextY)]?.[Math.floor(nextX)] }
+                    tile: { x: Math.floor(nextX), y: Math.floor(nextY), cell: this.map[Math.floor(nextY)]?.[Math.floor(nextX)] },
+                    r: this.collisionRadius
                 });
             }
 
