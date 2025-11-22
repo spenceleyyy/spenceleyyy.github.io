@@ -175,8 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'card';
             card.id = 'bg-remover-card';
             card.innerHTML = `
-                <div class="card-header">
+                <div class="card-header" style="justify-content: space-between; align-items: center;">
                     <h2 class="card-title">Background Remover</h2>
+                    <button class="card-portal-btn" id="card-expand-btn">MEGA</button>
                 </div>
 
                 <label for="image-upload" class="upload-area" id="bg-upload-area">
@@ -227,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             uiLayer.appendChild(card);
             bgRemoverCard = card;
             this.initializeCardHandlers();
+            this.initCardExpand();
         }
 
         initializeCardHandlers() {
@@ -476,6 +478,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        initCardExpand() {
+            const expandBtn = document.getElementById('card-expand-btn');
+            if (!expandBtn || !bgRemoverCard) return;
+
+            expandBtn.addEventListener('click', () => {
+                const expanded = bgRemoverCard.classList.toggle('card-expanded');
+                expandBtn.textContent = expanded ? 'RETURN' : 'MEGA';
+
+                if (expanded) {
+                    // Clear inline positioning so fixed centering takes over
+                    bgRemoverCard.style.left = '';
+                    bgRemoverCard.style.top = '';
+                    bgRemoverCard.style.width = '';
+                    bgRemoverCard.style.height = '';
+                } else {
+                    // Restore placement within the maze void
+                    this.placeUICard();
+                }
+            });
+        }
+
         bindControls() {
             const handleKey = (e) => {
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 's', 'a', 'd', 'W', 'S', 'A', 'D'].includes(e.key)) {
@@ -547,9 +570,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
-            const alignEpsilon = 0.15;
+            const alignEpsilon = 0.2;
 
-            // Turning only when centered on a tile
             const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
             const alignedY = Math.abs(pacman.y - Math.round(pacman.y)) < alignEpsilon;
             if (alignedX && alignedY) {
@@ -562,49 +584,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const speed = pacman.speed * dt;
-            const centerSnap = 0.1;
+            const nextX = pacman.x + pacman.dir.x * speed;
+            const nextY = pacman.y + pacman.dir.y * speed;
 
-            // Lock movement to grid paths
-            if (pacman.dir.x !== 0) {
-                // Snap vertically to nearest row center
-                const lockedY = Math.round(pacman.y);
-                if (Math.abs(pacman.y - lockedY) > centerSnap) {
-                    pacman.y += Math.sign(lockedY - pacman.y) * Math.min(Math.abs(lockedY - pacman.y), speed);
-                } else {
-                    pacman.y = lockedY;
-                }
-
-                const nextX = pacman.x + pacman.dir.x * speed;
-                const tileAhead = Math.floor(nextX + (pacman.dir.x > 0 ? 0.5 : -0.5));
-                const tileY = Math.round(pacman.y);
-                if (!this.isWall(tileAhead, tileY)) {
-                    pacman.x = nextX;
-                    moved = true;
-                } else {
-                    pacman.x = Math.round(pacman.x);
-                    pacman.dir.x = 0;
-                    pacman.dir.y = 0;
-                }
-            } else if (pacman.dir.y !== 0) {
-                // Snap horizontally to nearest column center
-                const lockedX = Math.round(pacman.x);
-                if (Math.abs(pacman.x - lockedX) > centerSnap) {
-                    pacman.x += Math.sign(lockedX - pacman.x) * Math.min(Math.abs(lockedX - pacman.x), speed);
-                } else {
-                    pacman.x = lockedX;
-                }
-
-                const nextY = pacman.y + pacman.dir.y * speed;
-                const tileAhead = Math.floor(nextY + (pacman.dir.y > 0 ? 0.5 : -0.5));
-                const tileX = Math.round(pacman.x);
-                if (!this.isWall(tileX, tileAhead)) {
-                    pacman.y = nextY;
-                    moved = true;
-                } else {
-                    pacman.y = Math.round(pacman.y);
-                    pacman.dir.x = 0;
-                    pacman.dir.y = 0;
-                }
+            if (this.canMoveTo(nextX, nextY)) {
+                pacman.x = nextX;
+                pacman.y = nextY;
+                moved = true;
             }
 
             const maxCols = this.map[0].length;

@@ -293,6 +293,49 @@
             box-shadow: 0 8px 20px rgba(115, 255, 160, 0.6);
         }
 
+        /* Expansion (creative) */
+        .card-portal-btn {
+            background: linear-gradient(135deg, #ffce76, #e890be);
+            color: #0b0b11;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card-portal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 206, 118, 0.4);
+        }
+
+        .card.card-expanded {
+            position: fixed !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: min(92vw, 1100px) !important;
+            height: auto !important;
+            max-height: 92vh !important;
+            z-index: 6 !important;
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.65), 0 0 30px rgba(232, 144, 190, 0.4);
+            border: 2px solid rgba(232, 144, 190, 0.35);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, width 0.35s ease;
+        }
+
+        .card-expanded::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border-radius: 24px;
+            background: radial-gradient(circle at 50% 50%, rgba(232, 144, 190, 0.15), transparent 45%);
+            z-index: -1;
+            filter: blur(10px);
+            pointer-events: none;
+        }
+
         input[type="file"] {
             display: none;
         }
