@@ -296,6 +296,40 @@ main {
     letter-spacing: 0.5px;
 }
 
+.download-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1.25rem;
+    flex-wrap: wrap;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.15rem;
+    border-radius: 12px;
+    background: var(--color-primary);
+    color: #1a0f1a;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    box-shadow: 0 8px 20px rgba(232, 144, 190, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.download-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(232, 144, 190, 0.45);
+    opacity: 0.95;
+}
+
+.download-note {
+    color: var(--color-text-body);
+    font-size: 0.95rem;
+}
+
 /* Code Panel */
 .code-panel {
     background: linear-gradient(135deg, rgba(71, 48, 79, 0.6) 0%, rgba(23, 45, 51, 0.4) 100%);
