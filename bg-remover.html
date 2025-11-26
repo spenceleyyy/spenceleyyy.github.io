@@ -317,12 +317,12 @@
             top: 50% !important;
             transform: translate(-50%, -50%) !important;
             width: min(92vw, 1100px) !important;
-            height: auto !important;
-            max-height: 92vh !important;
+            height: min(92vh, 900px) !important;
+            max-height: 95vh !important;
             z-index: 6 !important;
             box-shadow: 0 30px 120px rgba(0, 0, 0, 0.65), 0 0 30px rgba(232, 144, 190, 0.4);
             border: 2px solid rgba(232, 144, 190, 0.35);
-            transition: transform 0.35s ease, box-shadow 0.35s ease, width 0.35s ease;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, width 0.35s ease, height 0.35s ease;
         }
 
         .card-expanded::before {

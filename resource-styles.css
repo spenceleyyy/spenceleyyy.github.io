@@ -110,6 +110,16 @@ nav {
 
 .dropdown-toggle {
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.dropdown-toggle .caret {
+    display: inline-block;
+    transform: translateY(-1px);
+    font-size: 0.8em;
 }
 
 .dropdown-menu {

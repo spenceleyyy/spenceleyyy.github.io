@@ -80,6 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "################################"
             ];
 
+            this.ghostSpawns = [
+                { x: 1, y: 1, dir: { x: 1, y: 0 } },
+                { x: 30, y: 1, dir: { x: -1, y: 0 } },
+                { x: 1, y: 19, dir: { x: 1, y: 0 } },
+                { x: 30, y: 19, dir: { x: -1, y: 0 } }
+            ];
+
             // Detect UI Boundaries from Map
             this.uiBounds = { x: 0, y: 0, w: 0, h: 0 };
             this.detectUIBounds();
@@ -91,12 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Spawn points adapted for new map layout
             this.pacman = { x: 15, y: 17, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
-            this.ghosts = [
-                { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
-                { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
-                { x: 10, y: 19, dir: { x: 1, y: 0 }, color: '#ffce76', mode: 'chase' },
-                { x: 20, y: 19, dir: { x: -1, y: 0 }, color: '#73ffa0', mode: 'chase' }
-            ];
+            const ghostColors = ['#e890be', '#9ad7ff', '#ffce76', '#73ffa0'];
+            this.ghosts = this.ghostSpawns.map((spawn, idx) => {
+                const safeSpawn = this.getSafeGhostSpawn(idx);
+                return {
+                    x: safeSpawn.x,
+                    y: safeSpawn.y,
+                    dir: { ...safeSpawn.dir },
+                    color: ghostColors[idx % ghostColors.length],
+                    mode: 'chase'
+                };
+            });
 
             this.pellets = new Set();
             this.powerTimer = 0;
@@ -554,6 +566,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return cell === '#' || cell === 'U';
         }
 
+        getSafeGhostSpawn(index) {
+            const base = this.ghostSpawns[index % this.ghostSpawns.length];
+            const pacTileX = Math.round(this.pacman.x);
+            const pacTileY = Math.round(this.pacman.y);
+            const offsets = [
+                { x: 0, y: 0 },
+                { x: base.x === 1 ? 1 : -1, y: 0 },
+                { x: 0, y: base.y === 1 ? 1 : -1 },
+                { x: base.x === 1 ? 2 : -2, y: 0 },
+                { x: 0, y: base.y === 1 ? 2 : -2 }
+            ];
+
+            for (const off of offsets) {
+                const sx = base.x + off.x;
+                const sy = base.y + off.y;
+                if (this.isWall(sx, sy)) continue;
+                if (sx === pacTileX && sy === pacTileY) continue;
+                return { x: sx, y: sy, dir: { ...base.dir } };
+            }
+
+            return { x: base.x, y: base.y, dir: { ...base.dir } };
+        }
+
         canMoveTo(x, y) {
             const r = this.collisionRadius;
             if (this.isWall(x + r, y + r)) return false;
@@ -714,9 +749,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (distSq < collisionDistSq) {
                     if (this.powerTimer > 0) {
-                        const spawns = [{ x: 1, y: 1 }, { x: 30, y: 1 }, { x: 1, y: 19 }, { x: 30, y: 19 }];
-                        ghost.x = spawns[i].x;
-                        ghost.y = spawns[i].y;
+                        const spawnPoint = this.getSafeGhostSpawn(i);
+                        ghost.x = spawnPoint.x;
+                        ghost.y = spawnPoint.y;
+                        ghost.dir = { ...spawnPoint.dir };
                     } else {
                         this.pacman.x = 15;
                         this.pacman.y = 17;
