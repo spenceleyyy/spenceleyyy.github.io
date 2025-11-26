@@ -597,6 +597,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return { x: base.x, y: base.y, dir: { ...base.dir } };
         }
 
+        resetPacman() {
+            this.pacman.x = 15;
+            this.pacman.y = 15;
+            this.pacman.dir = { x: 1, y: 0 };
+            this.pacman.nextDir = { x: 1, y: 0 };
+        }
+
         resetGhostsToCorners() {
             this.ghosts.forEach((ghost, idx) => {
                 const spawn = this.getSafeGhostSpawn(idx);
@@ -777,10 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ghost.y = spawnPoint.y;
                         ghost.dir = { ...spawnPoint.dir };
                     } else {
-                        this.pacman.x = 15;
-                        this.pacman.y = 15;
-                        this.pacman.dir = { x: 1, y: 0 };
-                        this.pacman.nextDir = { x: 1, y: 0 };
+                        this.resetPacman();
                         this.resetGhostsToCorners();
                     }
                 }
@@ -825,7 +829,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const px = this.offsetX + x * tileSize + tileSize / 2;
                 const py = this.offsetY + y * tileSize + tileSize / 2;
 
-                ctx.fillStyle = 'rgba(232, 144, 190, 0.6)';
+                // Match nav text color (#FFFFED) for pellets
+                ctx.fillStyle = '#FFFFED';
                 ctx.beginPath();
                 ctx.arc(px, py, tileSize * 0.12, 0, Math.PI * 2);
                 ctx.fill();
@@ -913,6 +918,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.powerTimer > 0) this.powerTimer = Math.max(0, this.powerTimer - dt);
 
             this.updatePacman(dt);
+            if (!this.canMoveTo(this.pacman.x, this.pacman.y) || this.isWall(this.pacman.x, this.pacman.y)) {
+                this.resetPacman();
+            }
             this.updateGhosts(dt);
             this.handleCollisions();
             this.drawBoard();
