@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 15, y: 17, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
+            // Center spawn placed on a fully open row for clean movement start.
+            this.pacman = { x: 15, y: 15, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
             const ghostColors = ['#e890be', '#9ad7ff', '#ffce76', '#73ffa0'];
             this.ghosts = this.ghostSpawns.map((spawn, idx) => {
                 const safeSpawn = this.getSafeGhostSpawn(idx);
@@ -566,8 +567,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         isWall(x, y) {
-            const ix = Math.floor(x);
-            const iy = Math.floor(y);
+            const ix = Math.round(x);
+            const iy = Math.round(y);
             if (iy < 0 || iy >= this.map.length || ix < 0 || ix >= this.map[0].length) return true;
             const cell = this.map[iy][ix];
             return cell === '#' || cell === 'U';
@@ -778,7 +779,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ghost.dir = { ...spawnPoint.dir };
                     } else {
                         this.pacman.x = 15;
-                        this.pacman.y = 17;
+                        this.pacman.y = 15;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };
                         this.resetGhostsToCorners();
