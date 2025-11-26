@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.07;
+            this.collisionRadius = 0.06;
 
             this.resize();
             this.seedPellets();
@@ -625,8 +625,8 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
-            const alignEpsilon = 0.2;
-            const snapEpsilon = 0.12;
+            const alignEpsilon = 0.15;
+            const snapEpsilon = 0.08;
 
             // Snap toward the nearest tile center to avoid getting hung on corners.
             const gridX = Math.round(pacman.x);
