@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Spawn points adapted for new map layout
             // Center spawn placed on a fully open row for clean movement start.
             this.pacman = { x: 15, y: 15, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
+            this.lastSafePac = { x: this.pacman.x, y: this.pacman.y };
             const ghostColors = ['#e890be', '#9ad7ff', '#ffce76', '#73ffa0'];
             this.ghosts = this.ghostSpawns.map((spawn, idx) => {
                 const safeSpawn = this.getSafeGhostSpawn(idx);
@@ -663,11 +664,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.canMoveTo(nextX, nextY)) {
                 pacman.x = nextX;
                 pacman.y = nextY;
+                this.lastSafePac = { x: pacman.x, y: pacman.y };
                 moved = true;
             } else {
                 // Snap only when blocked to slide cleanly into the corridor center.
                 if (Math.abs(pacman.x - gridX) < snapEpsilon) pacman.x = gridX;
                 if (Math.abs(pacman.y - gridY) < snapEpsilon) pacman.y = gridY;
+            }
+
+            // If we ever overlap a wall, revert to last known safe spot and stop movement.
+            if (!this.canMoveTo(pacman.x, pacman.y) || this.isWall(pacman.x, pacman.y)) {
+                pacman.x = this.lastSafePac.x;
+                pacman.y = this.lastSafePac.y;
+                pacman.dir = { x: 0, y: 0 };
+                pacman.nextDir = { x: 0, y: 0 };
+                moved = false;
             }
 
             const maxCols = this.map[0].length;
