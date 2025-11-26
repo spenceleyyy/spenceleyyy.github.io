@@ -625,15 +625,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePacman(dt) {
             const { pacman } = this;
             let moved = false;
-            const alignEpsilon = 0.15;
-            const snapEpsilon = 0.08;
+            const alignEpsilon = 0.12;
+            const snapEpsilon = 0.045;
 
-            // Snap toward the nearest tile center to avoid getting hung on corners.
             const gridX = Math.round(pacman.x);
             const gridY = Math.round(pacman.y);
-            if (Math.abs(pacman.x - gridX) < snapEpsilon) pacman.x = gridX;
-            if (Math.abs(pacman.y - gridY) < snapEpsilon) pacman.y = gridY;
 
+            // Only nudge to grid when already nearly aligned; reduces jitter mid-path.
             if (Math.abs(pacman.dir.x) > 0 && Math.abs(pacman.y - gridY) < alignEpsilon) {
                 pacman.y = gridY;
             } else if (Math.abs(pacman.dir.y) > 0 && Math.abs(pacman.x - gridX) < alignEpsilon) {
@@ -660,6 +658,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pacman.y = nextY;
                 moved = true;
             } else {
+                // Snap only when blocked to slide cleanly into the corridor center.
                 if (Math.abs(pacman.x - gridX) < snapEpsilon) pacman.x = gridX;
                 if (Math.abs(pacman.y - gridY) < snapEpsilon) pacman.y = gridY;
             }
