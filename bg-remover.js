@@ -55,12 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.ctx) return;
 
             // 32 Columns Wide - The "U" section is the UI void (18 cols wide)
+            // Layout is mirrored and fully connected to avoid tiny trapped pockets.
             this.map = [
                 "################################",
                 "#..............................#",
-                "#.##..###...##...###..##..###..#",
-                "#o#  ###   ####.....###..###..o#",
-                "#.##..###...##........##..###..#",
+                "#.###.###..##..##..#...###..#..#",
+                "#o##.###..###....###..###..##o##",
+                "#.##.###..##........##..###.#..#",
                 "#..............................#",
                 "#.#.########################.#.#",
                 "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
@@ -72,9 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 "#.#.#UUUUUUUUUUUUUUUUUUUUUU#.#.#",
                 "#.#.########################.#.#",
                 "#..............................#",
-                "#.#...###...##...###......###..#",
-                "#.#..###............###..###..o#",
-                "#.#...###...##...###......###..#",
+                "#.##.###..##........##..###.#..#",
+                "#o##.###..###....###..###..##o##",
+                "#.###.###..##..##..#...###..#..#",
                 "#..............................#",
                 "################################"
             ];
@@ -89,12 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.offsetY = 0;
 
             // Spawn points adapted for new map layout
-            this.pacman = { x: 10, y: 17, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
+            this.pacman = { x: 15, y: 17, dir: { x: 1, y: 0 }, nextDir: { x: 1, y: 0 }, speed: 4.5 };
             this.ghosts = [
                 { x: 10, y: 1, dir: { x: 1, y: 0 }, color: '#e890be', mode: 'chase' },
                 { x: 20, y: 1, dir: { x: -1, y: 0 }, color: '#9ad7ff', mode: 'chase' },
-                { x: 10, y: 17, dir: { x: 0, y: -1 }, color: '#ffce76', mode: 'chase' },
-                { x: 20, y: 17, dir: { x: 0, y: -1 }, color: '#73ffa0', mode: 'chase' }
+                { x: 10, y: 19, dir: { x: 1, y: 0 }, color: '#ffce76', mode: 'chase' },
+                { x: 20, y: 19, dir: { x: -1, y: 0 }, color: '#73ffa0', mode: 'chase' }
             ];
 
             this.pellets = new Set();
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.running = true;
             this.frame = null;
 
-            this.collisionRadius = 0.08;
+            this.collisionRadius = 0.07;
 
             this.resize();
             this.seedPellets();
@@ -571,6 +572,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const { pacman } = this;
             let moved = false;
             const alignEpsilon = 0.2;
+            const snapEpsilon = 0.12;
+
+            // Snap toward the nearest tile center to avoid getting hung on corners.
+            const gridX = Math.round(pacman.x);
+            const gridY = Math.round(pacman.y);
+            if (Math.abs(pacman.x - gridX) < snapEpsilon) pacman.x = gridX;
+            if (Math.abs(pacman.y - gridY) < snapEpsilon) pacman.y = gridY;
+
+            if (Math.abs(pacman.dir.x) > 0 && Math.abs(pacman.y - gridY) < alignEpsilon) {
+                pacman.y = gridY;
+            } else if (Math.abs(pacman.dir.y) > 0 && Math.abs(pacman.x - gridX) < alignEpsilon) {
+                pacman.x = gridX;
+            }
 
             const alignedX = Math.abs(pacman.x - Math.round(pacman.x)) < alignEpsilon;
             const alignedY = Math.abs(pacman.y - Math.round(pacman.y)) < alignEpsilon;
@@ -591,6 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 pacman.x = nextX;
                 pacman.y = nextY;
                 moved = true;
+            } else {
+                if (Math.abs(pacman.x - gridX) < snapEpsilon) pacman.x = gridX;
+                if (Math.abs(pacman.y - gridY) < snapEpsilon) pacman.y = gridY;
             }
 
             const maxCols = this.map[0].length;
@@ -697,11 +714,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (distSq < collisionDistSq) {
                     if (this.powerTimer > 0) {
-                        const spawns = [{ x: 2, y: 2 }, { x: 29, y: 2 }, { x: 2, y: 16 }, { x: 29, y: 16 }];
+                        const spawns = [{ x: 1, y: 1 }, { x: 30, y: 1 }, { x: 1, y: 19 }, { x: 30, y: 19 }];
                         ghost.x = spawns[i].x;
                         ghost.y = spawns[i].y;
                     } else {
-                        this.pacman.x = 10;
+                        this.pacman.x = 15;
                         this.pacman.y = 17;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };

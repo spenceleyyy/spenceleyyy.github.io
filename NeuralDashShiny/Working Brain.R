@@ -1,3 +1,8 @@
+#What needs to be added: 
+# Need to change the plot types for PSD and MI
+# Need to fix Bordmann Areas
+#Need to fix csv imports
+
 library(shiny)
 library(base64enc)
 library(ggplot2)
@@ -24,29 +29,10 @@ ui <- fluidPage(
     "))
   ),
   
-  titlePanel("Interactive 3D Brain Model - 32 Channel System"),
+  titlePanel("Interactive 3D Brain Model - Multi-Modal Neural Imaging"),
   
-  # --- P-VALUE LEGEND ---
-  tags$div(
-    style = "position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 1000;",
-    h5("Significance (P-Value)", style="margin: 0 0 10px 0; font-weight: bold;"),
-    # Not Significant
-    div(style="display: flex; align-items: center; margin-bottom: 5px;",
-      span(style="width: 20px; height: 20px; background: #ffffff; border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
-      span("> 0.05 (Not Sig)")
-    ),
-    # Significant (Light Red)
-    div(style="display: flex; align-items: center; margin-bottom: 5px;",
-      span(style="width: 20px; height: 20px; background: #ffcccc; border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
-      span("< 0.05 (Sig)")
-    ),
-    # Highly Significant (Deep Red Gradient)
-    div(style="display: flex; align-items: center;",
-      # Gradient from light to deep red to show intensity
-      span(style="width: 20px; height: 20px; background: linear-gradient(to bottom, #ff9999, #ff0000); border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
-      span("< 0.001 (Highly Sig)")
-    )
-  ),
+  # --- LEGEND (Dynamic based on data type) ---
+  uiOutput("legend_output"),
   
   # --- ELECTRODE DETAIL PANEL ---
   absolutePanel(
@@ -65,22 +51,76 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       h4("Controls"),
-      fileInput("brain_file", "Upload Different Brain Model (optional):", accept = c(".glb", ".gltf")),
+      fileInput("brain_file", "Upload Brain Model (optional):", accept = c(".glb", ".gltf")),
+      fileInput("data_file", "Upload Custom Data (CSV):", accept = c(".csv")),
       hr(),
       
-      # [INSTRUCTION] HIDDEN CONTROLS
+      # MODALITY SELECTOR
+      wellPanel(
+        style = "background: #f0f8ff;",
+        h5(strong("Recording Modality")),
+        selectInput("modality", NULL,
+                    choices = c("EEG" = "EEG",
+                                "fNIRS" = "fNIRS"),
+                    selected = "EEG")
+      ),
+      
+      # DATA TYPE SELECTOR
+      wellPanel(
+        style = "background: #f9f9f9;",
+        h5(strong("Data Type")),
+        selectInput("data_type", NULL, 
+                    choices = c("ERP (Event-Related Potential)" = "ERP",
+                                "PSD (Power Spectral Density)" = "PSD",
+                                "Motor Imagery" = "MI"))
+      ),
+      
+      # FREQUENCY BAND SELECTOR (for PSD)
       conditionalPanel(
-        condition = "false", 
+        condition = "input.data_type == 'PSD'",
         wellPanel(
-          style = "background: #f9f9f9;",
-          h5(strong("Condition")),
-          selectInput("mi_task", NULL, choices = c("Real Movement" = "real", "Imagined Movement" = "imagined", "Difference" = "diff"))
+          style = "background: #fff8dc;",
+          h5(strong("Frequency Bands")),
+          checkboxGroupInput("freq_bands", NULL,
+                             choices = c("All (0.5-50 Hz)" = "all",
+                                         "Delta (0.5-4 Hz)" = "delta",
+                                         "Theta (4-8 Hz)" = "theta",
+                                         "Alpha (8-13 Hz)" = "alpha",
+                                         "Beta (13-30 Hz)" = "beta",
+                                         "Gamma (30-50 Hz)" = "gamma"),
+                             selected = "all")
         )
+      ),
+      
+      # MOTOR IMAGERY TASK SELECTOR
+      conditionalPanel(
+        condition = "input.data_type == 'MI'",
+        wellPanel(
+          style = "background: #e8f4f8;",
+          h5(strong("Motor Imagery Condition")),
+          selectInput("mi_task", NULL, 
+                      choices = c("Real Movement" = "real", 
+                                  "Imagined Movement" = "imagined", 
+                                  "Difference (Real - Imagined)" = "diff"))
+        )
+      ),
+      
+      # VISUAL OPTIONS
+      wellPanel(
+        style = "background: #f9f9f9;",
+        h5(strong("Visual Options")),
+        checkboxInput("show_brodmann", "Show Brodmann Areas", value = FALSE),
+        checkboxInput("show_two_brains", "Show Two Brains (Side-by-Side)", value = FALSE)
       ),
       
       hr(),
       p(strong("Mouse Controls:")),
-      tags$ul(tags$li("Left click + drag: Rotate"), tags$li("Right click + drag: Pan"), tags$li("Scroll: Zoom"), tags$li(strong("Click Electrode: View Data"))),
+      tags$ul(
+        tags$li("Left click + drag: Rotate"), 
+        tags$li("Right click + drag: Pan"), 
+        tags$li("Scroll: Zoom"), 
+        tags$li(strong("Click Sensor: View Data"))
+      ),
       hr(),
       actionButton("reset_view", "Reset View", class = "btn-primary")
     ),
@@ -96,21 +136,27 @@ ui <- fluidPage(
   ),
   
   tags$script(HTML('
-    var scene, camera, renderer, controls, brain, animationId;
+    var scene, camera, renderer, controls1, controls2, brain, brain2, animationId;
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     var isDragging = false;
     var mouseDownPos = new THREE.Vector2();
     var eegSpheres = [];
     var eegLabels  = [];
+    var eegSpheres2 = [];
+    var eegLabels2  = [];
     var brodmannMeshes = [];
     var brainCenter = new THREE.Vector3(0, 0, 0);
+    var brainCenter2 = new THREE.Vector3(0, 0, 0);
     var brainBBox = null;
     var brainLoaded = false;
+    var showTwoBrains = false;
+    var currentModality = "EEG";
     
     var currentDataType = "ERP"; 
     var currentTask = "real";
     var electrodePValues = {}; 
+    var electrodePowerValues = {};
 
     const electrodes_32 = [
       {label:"Fp1",x:-27,y:83,z:-3}, {label:"Fpz",x:0,y:87,z:-3}, {label:"Fp2",x:27,y:83,z:-3},
@@ -136,9 +182,12 @@ ui <- fluidPage(
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.outputEncoding = THREE.sRGBEncoding;
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
+      
+      // Single controls that will control both brains together
+      controls1 = new THREE.OrbitControls(camera, renderer.domElement);
+      controls1.enableDamping = true;
+      controls1.dampingFactor = 0.05;
+      
       var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
       hemiLight.position.set(0, 0, 5); 
       scene.add(hemiLight);
@@ -157,12 +206,13 @@ ui <- fluidPage(
       mouseDownPos.y = event.clientY;
     }
     function onMouseMove(event) {
-      if (!eegSpheres.length) return;
+      var allSpheres = eegSpheres.concat(eegSpheres2);
+      if (!allSpheres.length) return;
       var rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
-      var intersects = raycaster.intersectObjects(eegSpheres);
+      var intersects = raycaster.intersectObjects(allSpheres);
       if (intersects.length > 0) { document.body.style.cursor = "pointer"; } else { document.body.style.cursor = "default"; }
     }
     function onMouseClick(event) {
@@ -174,7 +224,8 @@ ui <- fluidPage(
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
-      var intersects = raycaster.intersectObjects(eegSpheres);
+      var allSpheres = eegSpheres.concat(eegSpheres2);
+      var intersects = raycaster.intersectObjects(allSpheres);
       if (intersects.length > 0) {
         var obj = intersects[0].object;
         if (obj.userData && obj.userData.label) {
@@ -202,18 +253,30 @@ ui <- fluidPage(
       ctx.fillText(message, size / 2, size / 2);
       var texture = new THREE.CanvasTexture(canvas);
       texture.minFilter = THREE.LinearFilter;
-      var material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false });
+      var material = new THREE.SpriteMaterial({ 
+        map: texture, 
+        transparent: true, 
+        depthTest: true,    // Enable depth testing
+        depthWrite: false   // Dont write to depth buffer
+      });
       var sprite = new THREE.Sprite(material);
       sprite.scale.set(0.35, 0.35, 1.0); 
+      sprite.renderOrder = 1; // Render after brain
       return sprite;
     }
+    
     function clearEEGElectrodes() {
       for (var i = 0; i < eegSpheres.length; i++) { scene.remove(eegSpheres[i]); }
       for (var j = 0; j < eegLabels.length; j++) { scene.remove(eegLabels[j]); }
+      for (var k = 0; k < eegSpheres2.length; k++) { scene.remove(eegSpheres2[k]); }
+      for (var l = 0; l < eegLabels2.length; l++) { scene.remove(eegLabels2[l]); }
       eegSpheres = [];
       eegLabels  = [];
+      eegSpheres2 = [];
+      eegLabels2  = [];
     }
-    function asaToSurfacePosition(asaX, asaY, asaZ) {
+    
+    function asaToSurfacePosition(asaX, asaY, asaZ, offset) {
       if (!brainBBox) return new THREE.Vector3(0, 0, 0);
       var asaVec = new THREE.Vector3(asaX, asaY, asaZ);
       asaVec.normalize();
@@ -222,7 +285,17 @@ ui <- fluidPage(
       dir.normalize();
       var size = brainBBox.getSize(new THREE.Vector3());
       var surfacePos = new THREE.Vector3(dir.x * size.x / 2 * 1.1, dir.y * size.y / 2 * 1.1, dir.z * size.z / 2 * 1.1);
-      return surfacePos.add(brainCenter);
+      var center = offset ? offset.clone() : brainCenter.clone();
+      return surfacePos.add(center);
+    }
+    
+    function powerToColor(power, minPower, maxPower) {
+      var t = (power - minPower) / (maxPower - minPower);
+      t = Math.max(0, Math.min(1, t));
+      var r = Math.floor(255 * t);
+      var g = 0;
+      var b = Math.floor(255 * (1 - t));
+      return (r << 16) | (g << 8) | b;
     }
     
     function updateVisuals() {
@@ -235,7 +308,19 @@ ui <- fluidPage(
         if (currentTask === "diff")     activeSet = ["FCz", "Cz"];
       }
       
-      eegSpheres.forEach(function(sphere) {
+      var minPower = Infinity;
+      var maxPower = -Infinity;
+      if (currentDataType === "PSD") {
+        for (var label in electrodePowerValues) {
+          var power = electrodePowerValues[label];
+          if (power < minPower) minPower = power;
+          if (power > maxPower) maxPower = power;
+        }
+      }
+      
+      var allSpheres = showTwoBrains ? eegSpheres.concat(eegSpheres2) : eegSpheres;
+      
+      allSpheres.forEach(function(sphere) {
         var label = sphere.userData.label;
         sphere.scale.set(1, 1, 1); 
         sphere.material.transparent = false; 
@@ -243,7 +328,6 @@ ui <- fluidPage(
         if (currentDataType === "ERP") {
           var pval = electrodePValues[label];
           if (pval !== undefined && pval <= 0.05) {
-            // Map p=0.05 -> Light Red, p=0.001 -> Deep Red
             var intensity = pval / 0.05; 
             if (intensity < 0) intensity = 0;
             sphere.material.color.setRGB(1.0, intensity, intensity);
@@ -252,6 +336,19 @@ ui <- fluidPage(
             sphere.material.color.setHex(0xffffff); 
             sphere.material.opacity = 1.0;
           }
+          sphere.material.emissive.setHex(0x000000);
+        } else if (currentDataType === "PSD") {
+          var power = electrodePowerValues[label];
+          if (power !== undefined) {
+            var colorHex = powerToColor(power, minPower, maxPower);
+            sphere.material.color.setHex(colorHex);
+            sphere.material.opacity = 1.0;
+          } else {
+            sphere.material.color.setHex(0x888888);
+            sphere.material.opacity = 0.5;
+            sphere.material.transparent = true;
+          }
+          sphere.material.emissive.setHex(0x000000);
         } else if (currentDataType === "MI") {
           if (activeSet.includes(label)) {
              sphere.material.color.setHex(0xFF4500); 
@@ -270,23 +367,102 @@ ui <- fluidPage(
     function createEEGElectrodes(config) {
       clearEEGElectrodes();
       if (!brainLoaded || !brain || !brainBBox) return;
+      
       var list = electrodes_32;
-      var sphereSize = 0.15; 
+      var sensorSize = 0.15;
+      
+      var offset1 = new THREE.Vector3(0, 0, 0);
+      var offset2 = null;
+      
+      if (showTwoBrains && brain2) {
+        var size = brainBBox.getSize(new THREE.Vector3());
+        var separation = size.x * 1.5;
+        offset1 = new THREE.Vector3(-separation/2, 0, 0);
+        offset2 = new THREE.Vector3(separation/2, 0, 0);
+      }
+      
+      // Create sensors for first brain
       for (var i = 0; i < list.length; i++) {
         var elec = list[i];
-        var pos = asaToSurfacePosition(elec.x, elec.y, elec.z);
-        var geom = new THREE.SphereGeometry(sphereSize, 32, 32);
-        var mat = new THREE.MeshStandardMaterial({ color: 0xFF0000, metalness: 0.2, roughness: 0.2 });
-        var sphere = new THREE.Mesh(geom, mat);
-        sphere.position.copy(pos);
-        sphere.userData = { label: elec.label };
-        eegSpheres.push(sphere);
-        scene.add(sphere);
+        var pos = asaToSurfacePosition(elec.x, elec.y, elec.z, offset1);
+        
+        var geom, mat;
+        if (currentModality === "EEG") {
+          // Spheres for EEG electrodes
+          geom = new THREE.SphereGeometry(sensorSize, 32, 32);
+          mat = new THREE.MeshStandardMaterial({ 
+            color: 0xFF0000, 
+            metalness: 0.2, 
+            roughness: 0.2,
+            depthTest: true,
+            depthWrite: true
+          });
+        } else {
+          // Cylinders for fNIRS optodes
+          geom = new THREE.CylinderGeometry(sensorSize * 0.8, sensorSize * 0.8, sensorSize * 1.5, 32);
+          mat = new THREE.MeshStandardMaterial({ 
+            color: 0xFF0000, 
+            metalness: 0.3, 
+            roughness: 0.3,
+            depthTest: true,
+            depthWrite: true
+          });
+        }
+        
+        var sensor = new THREE.Mesh(geom, mat);
+        sensor.position.copy(pos);
+        sensor.userData = { label: elec.label };
+        sensor.renderOrder = 2; // Render after brain
+        eegSpheres.push(sensor);
+        scene.add(sensor);
+        
         var labelSprite = makeTextSprite(elec.label);
         labelSprite.position.copy(pos); 
         eegLabels.push(labelSprite);
         scene.add(labelSprite);
       }
+      
+      // Create sensors for second brain if visible
+      if (showTwoBrains && brain2 && offset2) {
+        for (var i = 0; i < list.length; i++) {
+          var elec = list[i];
+          var pos = asaToSurfacePosition(elec.x, elec.y, elec.z, offset2);
+          
+          var geom, mat;
+          if (currentModality === "EEG") {
+            geom = new THREE.SphereGeometry(sensorSize, 32, 32);
+            mat = new THREE.MeshStandardMaterial({ 
+              color: 0xFF0000, 
+              metalness: 0.2, 
+              roughness: 0.2,
+              depthTest: true,
+              depthWrite: true
+            });
+          } else {
+            geom = new THREE.CylinderGeometry(sensorSize * 0.8, sensorSize * 0.8, sensorSize * 1.5, 32);
+            mat = new THREE.MeshStandardMaterial({ 
+              color: 0xFF0000, 
+              metalness: 0.3, 
+              roughness: 0.3,
+              depthTest: true,
+              depthWrite: true
+            });
+          }
+          
+          var sensor = new THREE.Mesh(geom, mat);
+          sensor.position.copy(pos);
+          sensor.userData = { label: elec.label };
+          sensor.renderOrder = 2;
+          eegSpheres2.push(sensor);
+          scene.add(sensor);
+          
+          var labelSprite = makeTextSprite(elec.label);
+          labelSprite.position.copy(pos); 
+          eegLabels2.push(labelSprite);
+          scene.add(labelSprite);
+        }
+      }
+      
       updateVisuals();
     }
     
@@ -307,17 +483,56 @@ ui <- fluidPage(
       });
     }
     
+    function updateBrainLayout() {
+      if (!brain || !brainLoaded) return;
+      
+      var size = brainBBox.getSize(new THREE.Vector3());
+      
+      if (showTwoBrains) {
+        var separation = size.x * 1.5;
+        brain.position.x = -separation/2;
+        brainCenter.x = -separation/2;
+        if (brain2) {
+          brain2.position.x = separation/2;
+          brainCenter2.x = separation/2;
+          brain2.visible = true;
+        }
+        camera.position.set(0, -8, 0);
+      } else {
+        brain.position.x = 0;
+        brainCenter.x = 0;
+        if (brain2) {
+          brain2.visible = false;
+        }
+        camera.position.set(0, -6, 0);
+      }
+      
+      createEEGElectrodes("32");
+      controls1.update();
+    }
+    
     function loadModel(fileDataUrl) {
       document.getElementById("loading-message").style.display = "block";
       if (brain) { scene.remove(brain); brain = null; brainLoaded = false; clearEEGElectrodes(); clearBrodmann(); }
+      if (brain2) { scene.remove(brain2); brain2 = null; }
+      
       var loader = new THREE.GLTFLoader();
       loader.load(fileDataUrl, function(gltf) {
         brain = gltf.scene;
         brain.traverse(function(child) {
           if (child.isMesh) {
             if (child.geometry && child.geometry.computeVertexNormals) { child.geometry.computeVertexNormals(); }
-            child.material = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.1, roughness: 0.5 });
+            child.material = new THREE.MeshStandardMaterial({ 
+              color: 0xeeeeee, 
+              metalness: 0.1, 
+              roughness: 0.5,
+              transparent: true,
+              opacity: 0.9,
+              depthWrite: true,
+              depthTest: true
+            });
             child.material.side = THREE.DoubleSide;
+            child.renderOrder = 0; // Brain renders first
           }
         });
         var box = new THREE.Box3().setFromObject(brain);
@@ -330,18 +545,38 @@ ui <- fluidPage(
         brain.rotation.z = Math.PI;
         brain.updateMatrixWorld();
         brainBBox = new THREE.Box3().setFromObject(brain);
+        brainCenter = brainBBox.getCenter(new THREE.Vector3());
         brainLoaded = true;
         scene.add(brain);
+        
+        // Create second brain (clone)
+        brain2 = brain.clone();
+        brain2.traverse(function(child) {
+          if (child.isMesh) {
+            child.material = brain.children[0].material.clone();
+            child.renderOrder = 0;
+          }
+        });
+        scene.add(brain2);
+        brain2.visible = false;
+        
         document.getElementById("loading-message").style.display = "none";
         
-        // Trigger creation of default 32 electrodes
-        createEEGElectrodes("32");
+        updateBrainLayout();
         
       }, undefined, function(error) { console.error("Error:", error); });
     }
+    
     function animate() {
       animationId = requestAnimationFrame(animate);
-      controls.update();
+      controls1.update();
+      
+      // Synchronize both brains rotation if showing two
+      if (showTwoBrains && brain && brain2) {
+        brain.rotation.copy(brain.rotation);
+        brain2.rotation.copy(brain.rotation);
+      }
+      
       renderer.render(scene, camera);
     }
     function onWindowResize() {
@@ -351,10 +586,14 @@ ui <- fluidPage(
       renderer.setSize(container.clientWidth, container.clientHeight);
     }
     function resetView() {
-      camera.position.set(0, -6, 0);
+      if (showTwoBrains) {
+        camera.position.set(0, -8, 0);
+      } else {
+        camera.position.set(0, -6, 0);
+      }
       camera.up.set(0, 0, 1);
       camera.lookAt(0, 0, 0);
-      controls.update();
+      controls1.update();
     }
     document.addEventListener("DOMContentLoaded", function() { initScene(); });
     if (typeof Shiny !== "undefined") {
@@ -365,6 +604,9 @@ ui <- fluidPage(
       Shiny.addCustomMessageHandler("setDataType", function(message) { currentDataType = message.type; updateVisuals(); });
       Shiny.addCustomMessageHandler("setMITask", function(message) { currentTask = message.task; updateVisuals(); });
       Shiny.addCustomMessageHandler("updateElectrodeColors", function(message) { electrodePValues = message; updateVisuals(); });
+      Shiny.addCustomMessageHandler("updateElectrodePower", function(message) { electrodePowerValues = message; updateVisuals(); });
+      Shiny.addCustomMessageHandler("setTwoBrains", function(message) { showTwoBrains = message.show; updateBrainLayout(); });
+      Shiny.addCustomMessageHandler("setModality", function(message) { currentModality = message.modality; createEEGElectrodes("32"); });
     }
   '))
 )
@@ -372,8 +614,70 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   selected_electrode <- reactiveVal(NULL)
+  custom_data <- reactiveVal(NULL)
+  
+  # Dynamic Legend based on data type
+  output$legend_output <- renderUI({
+    if (input$data_type == "ERP") {
+      tags$div(
+        style = "position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 1000;",
+        h5("Significance (P-Value)", style="margin: 0 0 10px 0; font-weight: bold;"),
+        div(style="display: flex; align-items: center; margin-bottom: 5px;",
+            span(style="width: 20px; height: 20px; background: #ffffff; border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
+            span("> 0.05 (Not Sig)")
+        ),
+        div(style="display: flex; align-items: center; margin-bottom: 5px;",
+            span(style="width: 20px; height: 20px; background: #ffcccc; border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
+            span("< 0.05 (Sig)")
+        ),
+        div(style="display: flex; align-items: center;",
+            span(style="width: 20px; height: 20px; background: linear-gradient(to bottom, #ff9999, #ff0000); border: 1px solid #ccc; display: inline-block; margin-right: 8px;"),
+            span("< 0.001 (Highly Sig)")
+        )
+      )
+    } else if (input$data_type == "PSD") {
+      tags$div(
+        style = "position: fixed; bottom: 20px; right: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); z-index: 1000;",
+        h5("Power Spectral Density", style="margin: 0 0 10px 0; font-weight: bold;"),
+        div(style="display: flex; align-items: center; margin-bottom: 10px;",
+            div(style="width: 200px; height: 20px; background: linear-gradient(to right, #0000ff, #ff0000); border: 1px solid #ccc;")
+        ),
+        div(style="display: flex; justify-content: space-between; width: 200px;",
+            span("Low Power", style="font-size: 11px;"),
+            span("High Power", style="font-size: 11px;")
+        )
+      )
+    } else {
+      NULL
+    }
+  })
+  
+  # Handle custom data upload
+  observeEvent(input$data_file, {
+    req(input$data_file)
+    tryCatch({
+      df <- read_csv(input$data_file$datapath)
+      custom_data(df)
+      showNotification("Custom data loaded successfully!", type = "message")
+    }, error = function(e) {
+      showNotification(paste("Error loading data:", e$message), type = "error")
+    })
+  })
   
   simulated_erp_data <- reactive({
+    # Check if custom data exists
+    if (!is.null(custom_data())) {
+      df <- custom_data()
+      # Validate that required columns exist
+      required_cols <- c("Time_ms", "Channel", "Condition", "GrandVoltage")
+      if (all(required_cols %in% names(df))) {
+        return(df)
+      } else {
+        showNotification("Custom data missing required columns: Time_ms, Channel, Condition, GrandVoltage", type = "warning")
+      }
+    }
+    
+    # Default simulated data
     set.seed(42) 
     times <- seq(-200, 800, by = 10)
     channels_list <- c("Fp1", "Fpz", "Fp2", "F7", "F3", "Fz", "F4", "F8", 
@@ -406,8 +710,52 @@ server <- function(input, output, session) {
     do.call(rbind, df_list)
   })
   
-  # Calculate P-Values for coloring
+  simulated_psd_data <- reactive({
+    # Check if custom data exists for PSD
+    if (!is.null(custom_data())) {
+      df <- custom_data()
+      required_cols <- c("Frequency", "Channel", "Power")
+      if (all(required_cols %in% names(df))) {
+        return(df)
+      }
+    }
+    
+    # Default simulated PSD data
+    set.seed(123)
+    channels_list <- c("Fp1", "Fpz", "Fp2", "F7", "F3", "Fz", "F4", "F8", 
+                       "FC5", "FC1", "FC2", "FC6", "T7", "C3", "Cz", "C4", 
+                       "T8", "CP5", "CP1", "CP2", "CP6", "P7", "P3", "Pz", 
+                       "P4", "P8", "POz", "O1", "Oz", "O2", "AFz", "FCz")
+    
+    freqs <- seq(0.5, 50, by = 0.5)
+    
+    df_list <- list()
+    count <- 1
+    
+    for (ch in channels_list) {
+      base_power <- rnorm(length(freqs), 10, 2)
+      alpha_peak <- 20 * exp(-((freqs - 10)^2) / (2 * 2^2))
+      if (grepl("O|P", ch)) alpha_peak <- alpha_peak * 2
+      theta_peak <- 15 * exp(-((freqs - 6)^2) / (2 * 1.5^2))
+      beta_power <- 5 * exp(-((freqs - 20)^2) / (2 * 5^2))
+      if (grepl("C|F", ch)) beta_power <- beta_power * 1.5
+      
+      power <- base_power + alpha_peak + theta_peak + beta_power
+      power <- pmax(power, 1)
+      
+      df_list[[count]] <- data.frame(
+        Frequency = freqs,
+        Channel   = ch,
+        Power     = power
+      )
+      count <- count + 1
+    }
+    do.call(rbind, df_list)
+  })
+  
+  # Calculate P-Values for ERP coloring
   observe({
+    req(input$data_type == "ERP")
     df_all   <- simulated_erp_data()
     channels <- unique(df_all$Channel)
     p_vals_list <- list()
@@ -423,9 +771,42 @@ server <- function(input, output, session) {
     session$sendCustomMessage("updateElectrodeColors", p_vals_list)
   })
   
-  # ---------- DEFAULT BRAIN MODEL (for deployment) ----------
+  # Calculate Power values for PSD coloring
+  observe({
+    req(input$data_type == "PSD")
+    req(length(input$freq_bands) > 0)
+    
+    df_all <- simulated_psd_data()
+    channels <- unique(df_all$Channel)
+    
+    freq_ranges <- list()
+    if ("all" %in% input$freq_bands) {
+      freq_ranges <- list(c(0.5, 50))
+    } else {
+      if ("delta" %in% input$freq_bands) freq_ranges <- c(freq_ranges, list(c(0.5, 4)))
+      if ("theta" %in% input$freq_bands) freq_ranges <- c(freq_ranges, list(c(4, 8)))
+      if ("alpha" %in% input$freq_bands) freq_ranges <- c(freq_ranges, list(c(8, 13)))
+      if ("beta" %in% input$freq_bands) freq_ranges <- c(freq_ranges, list(c(13, 30)))
+      if ("gamma" %in% input$freq_bands) freq_ranges <- c(freq_ranges, list(c(30, 50)))
+    }
+    
+    power_list <- list()
+    for (ch in channels) {
+      elec_data <- df_all %>% dplyr::filter(Channel == ch)
+      total_power <- 0
+      for (range in freq_ranges) {
+        band_data <- elec_data %>% 
+          dplyr::filter(Frequency >= range[1] & Frequency <= range[2])
+        total_power <- total_power + mean(band_data$Power, na.rm = TRUE)
+      }
+      power_list[[ch]] <- total_power / length(freq_ranges)
+    }
+    
+    session$sendCustomMessage("updateElectrodePower", power_list)
+  })
+  
+  # Default brain model
   observeEvent(TRUE, {
-    # Model shipped with the app in ./www/
     default_brain_path <- "www/Brain_MRI_Nevit_Dilmen_NIH3D.glb"
     
     if (!file.exists(default_brain_path)) {
@@ -446,9 +827,8 @@ server <- function(input, output, session) {
     session$sendCustomMessage("setDataType", list(type = "ERP"))
     
   }, once = TRUE)
-  # ----------------------------------------------------------
   
-  # User-uploaded model (optional)
+  # User-uploaded model
   observeEvent(input$brain_file, {
     req(input$brain_file)
     tryCatch({
@@ -459,6 +839,32 @@ server <- function(input, output, session) {
     }, error = function(e) {
       showNotification(paste("Error loading file:", e$message), type = "error")
     })
+  })
+  
+  # Observer for modality changes
+  observeEvent(input$modality, {
+    session$sendCustomMessage("setModality", list(modality = input$modality))
+  })
+  
+  # Observer for data type changes
+  observeEvent(input$data_type, {
+    session$sendCustomMessage("setDataType", list(type = input$data_type))
+  })
+  
+  # Observer for MI task changes
+  observeEvent(input$mi_task, {
+    req(input$data_type == "MI")
+    session$sendCustomMessage("setMITask", list(task = input$mi_task))
+  })
+  
+  # Observer for frequency band changes
+  observeEvent(input$freq_bands, {
+    req(input$data_type == "PSD")
+  })
+  
+  # Observer for two brains toggle
+  observeEvent(input$show_two_brains, {
+    session$sendCustomMessage("setTwoBrains", list(show = input$show_two_brains))
   })
   
   observeEvent(input$clicked_electrode, {
@@ -479,23 +885,43 @@ server <- function(input, output, session) {
   
   output$panel_title <- renderText({
     req(selected_electrode())
-    paste("Electrode:", selected_electrode())
+    paste(ifelse(input$modality == "EEG", "Electrode:", "Optode:"), selected_electrode())
   })
   
   output$data_content <- renderUI({
     req(selected_electrode())
-    tagList(
-      hr(), 
-      h4("ERP Waveform"), 
-      girafeOutput("plot_erp", height = "400px"), 
-      p(em("Interact: Hover points to see values, double click to reset zoom.")), 
-      hr(), 
-      gt_output("table_erp")
-    )
+    
+    if (input$data_type == "ERP") {
+      tagList(
+        hr(), 
+        h4("ERP Waveform"), 
+        girafeOutput("plot_erp", height = "400px"), 
+        p(em("Interact: Hover to see values, drag to select zoom area, double-click to reset.")), 
+        hr(), 
+        gt_output("table_erp")
+      )
+    } else if (input$data_type == "PSD") {
+      tagList(
+        hr(),
+        h4("Power Spectral Density"),
+        girafeOutput("plot_psd", height = "400px"),
+        p(em("Interact: Hover to see values, double click to reset zoom.")),
+        hr(),
+        gt_output("table_psd")
+      )
+    } else {
+      tagList(
+        hr(),
+        h4("Motor Imagery Data"),
+        p("Motor imagery analysis for", ifelse(input$modality == "EEG", "electrode:", "optode:"), selected_electrode())
+      )
+    }
   })
   
   output$plot_erp <- renderGirafe({
     req(selected_electrode())
+    req(input$data_type == "ERP")
+    
     df_all       <- simulated_erp_data()
     channel_name <- selected_electrode()
     df_channel   <- df_all %>% dplyr::filter(Channel == channel_name)
@@ -541,7 +967,7 @@ server <- function(input, output, session) {
       ) +
       labs(
         title    = paste("ERP Waveform - Channel:", channel_name),
-        subtitle = "Hover over points to see values | Drag to zoom | Double-click to reset",
+        subtitle = "Hover over points | Drag to select zoom area | Double-click to reset",
         x        = "Time relative to event (ms)",
         y        = expression("Voltage (µV)")
       ) +
@@ -572,6 +998,93 @@ server <- function(input, output, session) {
         opts_hover(css = "stroke-width:4;stroke:#FF5733;"),
         opts_tooltip(zindex = 9999),
         opts_zoom(min = 0.5, max = 4),
+        opts_selection(type = "multiple", css = "fill:orange;stroke:red;"),
+        opts_sizing(rescale = TRUE, width = 1),
+        opts_toolbar(saveaspng = TRUE)
+      )
+    )
+  })
+  
+  output$plot_psd <- renderGirafe({
+    req(selected_electrode())
+    req(input$data_type == "PSD")
+    
+    df_all       <- simulated_psd_data()
+    channel_name <- selected_electrode()
+    df_channel   <- df_all %>% dplyr::filter(Channel == channel_name)
+    req(nrow(df_channel) > 0)
+    
+    df_channel$Band <- cut(df_channel$Frequency,
+                           breaks = c(0, 4, 8, 13, 30, 50),
+                           labels = c("Delta", "Theta", "Alpha", "Beta", "Gamma"),
+                           include.lowest = TRUE)
+    
+    p <- ggplot(df_channel, aes(x = Frequency, y = Power)) +
+      geom_line_interactive(
+        aes(tooltip = "Power Spectrum", data_id = "power"),
+        color = "#2E86AB",
+        linewidth = 1.2
+      ) +
+      geom_point_interactive(
+        aes(
+          tooltip = paste0(
+            "Channel: ", channel_name, "\n",
+            "Frequency: ", sprintf("%.1f", Frequency), " Hz\n",
+            "Band: ", Band, "\n",
+            "Power: ", sprintf("%.2f", Power), " µV²/Hz"
+          ),
+          data_id = paste("freq", Frequency)
+        ),
+        color = "#2E86AB",
+        size = 1.5,
+        alpha = 0.6
+      ) +
+      annotate("rect", xmin = 0.5, xmax = 4, ymin = -Inf, ymax = Inf,
+               fill = "#E8F4F8", alpha = 0.3) +
+      annotate("rect", xmin = 4, xmax = 8, ymin = -Inf, ymax = Inf,
+               fill = "#D4E8F0", alpha = 0.3) +
+      annotate("rect", xmin = 8, xmax = 13, ymin = -Inf, ymax = Inf,
+               fill = "#C0DCE8", alpha = 0.3) +
+      annotate("rect", xmin = 13, xmax = 30, ymin = -Inf, ymax = Inf,
+               fill = "#ACD0E0", alpha = 0.3) +
+      annotate("rect", xmin = 30, xmax = 50, ymin = -Inf, ymax = Inf,
+               fill = "#98C4D8", alpha = 0.3) +
+      annotate("text", x = 2, y = Inf, label = "δ", 
+               vjust = 2, size = 5, fontface = "bold", color = "gray30") +
+      annotate("text", x = 6, y = Inf, label = "θ", 
+               vjust = 2, size = 5, fontface = "bold", color = "gray30") +
+      annotate("text", x = 10.5, y = Inf, label = "α", 
+               vjust = 2, size = 5, fontface = "bold", color = "gray30") +
+      annotate("text", x = 21.5, y = Inf, label = "β", 
+               vjust = 2, size = 5, fontface = "bold", color = "gray30") +
+      annotate("text", x = 40, y = Inf, label = "γ", 
+               vjust = 2, size = 5, fontface = "bold", color = "gray30") +
+      labs(
+        title = paste("Power Spectral Density - Channel:", channel_name),
+        subtitle = "Hover over points to see values | Double-click to reset",
+        x = "Frequency (Hz)",
+        y = "Power (µV²/Hz)"
+      ) +
+      scale_x_continuous(breaks = seq(0, 50, 5)) +
+      theme_classic(base_size = 14) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40"),
+        axis.line = element_line(color = "black"),
+        axis.ticks = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        panel.grid.major.y = element_line(color = "gray90", linewidth = 0.3),
+        panel.grid.minor = element_blank()
+      )
+    
+    girafe(
+      ggobj = p,
+      width_svg = 6,
+      height_svg = 4,
+      options = list(
+        opts_hover(css = "stroke-width:4;stroke:#FF5733;"),
+        opts_tooltip(zindex = 9999),
+        opts_zoom(min = 0.5, max = 4),
         opts_sizing(rescale = TRUE, width = 1),
         opts_toolbar(saveaspng = TRUE)
       )
@@ -580,6 +1093,8 @@ server <- function(input, output, session) {
   
   output$table_erp <- render_gt({
     req(selected_electrode())
+    req(input$data_type == "ERP")
+    
     df_all    <- simulated_erp_data()
     elec_data <- df_all %>% dplyr::filter(Channel == selected_electrode())
     
@@ -595,7 +1110,6 @@ server <- function(input, output, session) {
       dplyr::group_by(Condition) %>%
       dplyr::summarise(m = mean(GrandVoltage), .groups = "drop")
     
-    # Use syntactic column names for gt (no spaces)
     stats_df <- data.frame(
       Component       = c("N200 (150-250ms)", "P300 (250-500ms)"),
       Motion.Mean     = c(
@@ -652,6 +1166,56 @@ server <- function(input, output, session) {
       tab_options(table.width = pct(100))
   })
   
+  output$table_psd <- render_gt({
+    req(selected_electrode())
+    req(input$data_type == "PSD")
+    
+    df_all <- simulated_psd_data()
+    elec_data <- df_all %>% dplyr::filter(Channel == selected_electrode())
+    
+    bands <- data.frame(
+      Band = c("Delta (0.5-4 Hz)", "Theta (4-8 Hz)", "Alpha (8-13 Hz)", 
+               "Beta (13-30 Hz)", "Gamma (30-50 Hz)"),
+      Min_Freq = c(0.5, 4, 8, 13, 30),
+      Max_Freq = c(4, 8, 13, 30, 50)
+    )
+    
+    bands$Avg_Power <- sapply(1:nrow(bands), function(i) {
+      band_data <- elec_data %>% 
+        dplyr::filter(Frequency >= bands$Min_Freq[i] & Frequency <= bands$Max_Freq[i])
+      mean(band_data$Power, na.rm = TRUE)
+    })
+    
+    bands$Peak_Freq <- sapply(1:nrow(bands), function(i) {
+      band_data <- elec_data %>% 
+        dplyr::filter(Frequency >= bands$Min_Freq[i] & Frequency <= bands$Max_Freq[i])
+      if (nrow(band_data) > 0) {
+        band_data$Frequency[which.max(band_data$Power)]
+      } else {
+        NA
+      }
+    })
+    
+    bands %>%
+      select(Band, Avg_Power, Peak_Freq) %>%
+      gt() %>%
+      tab_header(
+        title = md(paste0("**Channel ", selected_electrode(), " - Band Power**")),
+        subtitle = "Average power in standard frequency bands"
+      ) %>%
+      fmt_number(
+        columns = c(Avg_Power, Peak_Freq),
+        decimals = 2
+      ) %>%
+      cols_label(
+        Band = "Frequency Band",
+        Avg_Power = "Avg Power (µV²/Hz)",
+        Peak_Freq = "Peak Frequency (Hz)"
+      ) %>%
+      cols_align(align = "center", columns = everything()) %>%
+      tab_options(table.width = pct(100))
+  })
+  
   observe({
     session$sendCustomMessage(
       "setBrodmannVisible",
@@ -664,13 +1228,13 @@ server <- function(input, output, session) {
   })
 }
 
-# helper to run JS from server
+# Helper to run JS from server
 runjs <- function(code) {
   session <- shiny::getDefaultReactiveDomain()
   session$sendCustomMessage("shiny-run-js", code)
 }
 
-# append JS handler for runjs() to your existing ui object
+# Append JS handler for runjs()
 ui_final <- tagList(
   ui,
   tags$script(HTML('
