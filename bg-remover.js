@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     mode: 'chase'
                 };
             });
+            this.ghostStartDelay = 5;
 
             this.pellets = new Set();
             this.powerTimer = 0;
@@ -164,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Draw immediately to ensure visibility on load
             this.drawBoard();
             this.drawEntities(performance.now());
+            this.canvas?.focus?.();
             this.frame = requestAnimationFrame((t) => this.loop(t));
         }
 
@@ -526,6 +528,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
             document.addEventListener('keydown', handleKey, { passive: false });
+            window.addEventListener('keydown', handleKey, { passive: false });
+            if (this.canvas) {
+                this.canvas.setAttribute('tabindex', '0');
+                this.canvas.addEventListener('click', () => this.canvas.focus());
+            }
         }
 
         resize() {
@@ -587,6 +594,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             return { x: base.x, y: base.y, dir: { ...base.dir } };
+        }
+
+        resetGhostsToCorners() {
+            this.ghosts.forEach((ghost, idx) => {
+                const spawn = this.getSafeGhostSpawn(idx);
+                ghost.x = spawn.x;
+                ghost.y = spawn.y;
+                ghost.dir = { ...spawn.dir };
+                ghost.mode = 'chase';
+            });
+            this.ghostStartDelay = 5;
         }
 
         canMoveTo(x, y) {
@@ -713,6 +731,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateGhosts(dt) {
+            if (this.ghostStartDelay > 0) {
+                this.ghostStartDelay = Math.max(0, this.ghostStartDelay - dt);
+                return;
+            }
+
             for (const ghost of this.ghosts) {
                 const gx = Math.floor(ghost.x + 0.5);
                 const gy = Math.floor(ghost.y + 0.5);
@@ -758,6 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         this.pacman.y = 17;
                         this.pacman.dir = { x: 1, y: 0 };
                         this.pacman.nextDir = { x: 1, y: 0 };
+                        this.resetGhostsToCorners();
                     }
                 }
             }

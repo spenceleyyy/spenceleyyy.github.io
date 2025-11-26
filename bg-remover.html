@@ -316,9 +316,9 @@
             left: 50% !important;
             top: 50% !important;
             transform: translate(-50%, -50%) !important;
-            width: min(92vw, 1100px) !important;
-            height: min(92vh, 900px) !important;
-            max-height: 95vh !important;
+            width: clamp(360px, 88vw, 1000px) !important;
+            height: clamp(420px, 82vh, calc(100vh - var(--nav-offset) - 28px)) !important;
+            max-height: calc(100vh - var(--nav-offset) - 16px) !important;
             z-index: 6 !important;
             box-shadow: 0 30px 120px rgba(0, 0, 0, 0.65), 0 0 30px rgba(232, 144, 190, 0.4);
             border: 2px solid rgba(232, 144, 190, 0.35);
