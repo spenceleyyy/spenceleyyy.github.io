@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-header" style="justify-content: space-between; align-items: center;">
                     <h2 class="card-title">Background Remover</h2>
-                    <button class="card-portal-btn" id="card-expand-btn">MEGA</button>
+                    <button class="card-portal-btn" id="card-expand-btn">FULLSCREEN</button>
                 </div>
 
                 <label for="image-upload" class="upload-area" id="bg-upload-area">

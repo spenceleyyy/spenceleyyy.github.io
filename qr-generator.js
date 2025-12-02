@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const customLogoName = document.getElementById('custom-logo-name');
     const qrDisplayContent = document.getElementById('qr-display-content'); 
     const qrDownloads = document.getElementById('qr-download-controls');
+    const roundedCornersToggle = document.getElementById('rounded-corners');
+    const backgroundColorInput = document.getElementById('qr-bg-color');
     const heroScrollBtn = document.querySelector('[data-scroll-target="generator"]');
     const revealSections = document.querySelectorAll('.reveal');
     const playToggle = document.getElementById('play-toggle');
@@ -25,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
     const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
+    const DEFAULT_BACKGROUND_COLOR = '#ffffff';
+    const ROUNDED_RADIUS_RATIO = 0.25;
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
@@ -94,6 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (roundedCornersToggle) {
+        roundedCornersToggle.addEventListener('change', rerenderIfNeeded);
+    }
+
+    if (backgroundColorInput) {
+        if (!backgroundColorInput.value) {
+            backgroundColorInput.value = DEFAULT_BACKGROUND_COLOR;
+        }
+        backgroundColorInput.addEventListener('input', rerenderIfNeeded);
+    }
+
     // Generate QR Code using Canvas API directly
     const getTargetSize = () => {
         if (!qrcodeWrapper) return QR_SIZE;
@@ -108,17 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qrDownloads) qrDownloads.style.display = 'flex';
 
         const targetSize = getTargetSize();
+        const backgroundColor = (backgroundColorInput && backgroundColorInput.value) || DEFAULT_BACKGROUND_COLOR;
+        const roundedModules = !!(roundedCornersToggle && roundedCornersToggle.checked);
+        const renderOptions = {
+            rounded: roundedModules,
+            backgroundColor,
+        };
         lastPayload = text;
         qrcodeDiv.innerHTML = '';
         qrcodeDiv.style.width = `${targetSize}px`;
         qrcodeDiv.style.height = `${targetSize}px`;
 
         try {
-            const canvas = buildQRCodeCanvas(text, targetSize);
+            const canvas = buildQRCodeCanvas(text, targetSize, renderOptions);
             qrcodeDiv.appendChild(canvas);
             currentQRCanvas = canvas;
             if (includeLogoCheckbox && includeLogoCheckbox.checked) {
-                addLogoToQR(canvas);
+                addLogoToQR(canvas, backgroundColor);
             }
             playAssemblyAnimation();
         } catch (error) {
@@ -126,14 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function buildQRCodeCanvas(text, size) {
+    function buildQRCodeCanvas(text, size, options = {}) {
+        const {
+            rounded = false,
+            backgroundColor = DEFAULT_BACKGROUND_COLOR,
+        } = options;
         const tempContainer = document.createElement('div');
         const generator = new QRCode(tempContainer, {
             text: '',
             width: size,
             height: size,
             colorDark: '#000000',
-            colorLight: '#ffffff',
+            colorLight: backgroundColor,
             correctLevel: QRCode.CorrectLevel.H,
         });
         generator.clear();
@@ -153,18 +178,40 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, size, size);
 
         const tile = size / moduleCount;
+        const cornerRadius = rounded ? Math.min(tile * ROUNDED_RADIUS_RATIO, tile / 2) : 0;
+        const drawModule = (x, y, w, h) => {
+            if (!cornerRadius) {
+                ctx.fillRect(x, y, w, h);
+                return;
+            }
+            const r = Math.min(cornerRadius, w / 2, h / 2);
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        ctx.fillStyle = '#000000';
         for (let row = 0; row < moduleCount; row += 1) {
             for (let col = 0; col < moduleCount; col += 1) {
-                ctx.fillStyle = qrMatrix.isDark(row, col) ? '#000000' : '#ffffff';
+                if (!qrMatrix.isDark(row, col)) continue;
                 const x = Math.round(col * tile);
                 const y = Math.round(row * tile);
                 const w = Math.ceil((col + 1) * tile) - Math.round(col * tile);
                 const h = Math.ceil((row + 1) * tile) - Math.round(row * tile);
-                ctx.fillRect(x, y, w, h);
+                drawModule(x, y, w, h);
             }
         }
 
@@ -184,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    function addLogoToQR(canvas) {
+    function addLogoToQR(canvas, backgroundColor = DEFAULT_BACKGROUND_COLOR) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         
@@ -197,11 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoY = centerY - logoRadius;
         
         // Create the circular cutout and subtle ring for contrast
-        ctx.save(); 
+        ctx.save();
         ctx.beginPath();
         ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
-        ctx.fillStyle = 'white'; 
-        ctx.fill(); 
+        ctx.fillStyle = backgroundColor;
+        ctx.fill();
         ctx.closePath();
         ctx.restore();
 
