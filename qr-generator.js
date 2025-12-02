@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
-    const ROUNDED_RADIUS_RATIO = 0.25;
+    const OUTER_RADIUS_RATIO = 0.06;
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
@@ -178,31 +178,35 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, size, size);
 
-        const tile = size / moduleCount;
-        const cornerRadius = rounded ? Math.min(tile * ROUNDED_RADIUS_RATIO, tile / 2) : 0;
-        const drawModule = (x, y, w, h) => {
-            if (!cornerRadius) {
-                ctx.fillRect(x, y, w, h);
-                return;
-            }
-            const r = Math.min(cornerRadius, w / 2, h / 2);
+        const outerRadius = rounded ? Math.min(size * OUTER_RADIUS_RATIO, size / 5) : 0;
+        const beginRoundedPath = () => {
             ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.lineTo(x + w - r, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-            ctx.lineTo(x + w, y + h - r);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-            ctx.lineTo(x + r, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-            ctx.lineTo(x, y + r);
-            ctx.quadraticCurveTo(x, y, x + r, y);
+            const r = outerRadius;
+            ctx.moveTo(r, 0);
+            ctx.lineTo(size - r, 0);
+            ctx.quadraticCurveTo(size, 0, size, r);
+            ctx.lineTo(size, size - r);
+            ctx.quadraticCurveTo(size, size, size - r, size);
+            ctx.lineTo(r, size);
+            ctx.quadraticCurveTo(0, size, 0, size - r);
+            ctx.lineTo(0, r);
+            ctx.quadraticCurveTo(0, 0, r, 0);
             ctx.closePath();
-            ctx.fill();
         };
 
+        if (rounded) {
+            ctx.save();
+            beginRoundedPath();
+            ctx.fillStyle = backgroundColor;
+            ctx.fill();
+            ctx.clip();
+        } else {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, size, size);
+        }
+
+        const tile = size / moduleCount;
         ctx.fillStyle = '#000000';
         for (let row = 0; row < moduleCount; row += 1) {
             for (let col = 0; col < moduleCount; col += 1) {
@@ -211,8 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const y = Math.round(row * tile);
                 const w = Math.ceil((col + 1) * tile) - Math.round(col * tile);
                 const h = Math.ceil((row + 1) * tile) - Math.round(row * tile);
-                drawModule(x, y, w, h);
+                ctx.fillRect(x, y, w, h);
             }
+        }
+
+        if (rounded) {
+            ctx.restore();
         }
 
         return canvas;
@@ -243,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoX = centerX - logoRadius;
         const logoY = centerY - logoRadius;
         
-        // Create the circular cutout and subtle ring for contrast
+        // Create the circular cutout matching the background
         ctx.save();
         ctx.beginPath();
         ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
@@ -251,15 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fill();
         ctx.closePath();
         ctx.restore();
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, logoRadius + Math.max(3, logoTargetSize * 0.04), 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,0,0,0.35)';
-        ctx.lineWidth = Math.max(3, logoTargetSize * 0.05);
-        ctx.stroke();
-        ctx.closePath();
-        ctx.restore(); 
 
         // Determine which logo to use
         const logoToUse = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
