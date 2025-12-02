@@ -24,11 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
-    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATED.png";
+    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATEd.pdf";
+    const DEFAULT_LOGO_FALLBACK = "/logos/RSlogoUPDATED.png";
     const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
+    const PDF_WORKER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+
+    if (window.pdfjsLib) {
+        try {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
+        } catch (err) {
+            console.warn("PDF.js worker setup failed:", err);
+        }
+    }
     
     let currentQRCanvas = null;
     let customLogoDataUrl = null;
@@ -246,14 +256,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
 
-        const logoToUse = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
-            ? customLogoDataUrl
-            : (useNeuroLogo && useNeuroLogo.checked ? NEURO_LOGO_PATH : DEFAULT_LOGO_PATH);
+        const logoChoice = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
+            ? { primary: customLogoDataUrl, fallback: null }
+            : (useNeuroLogo && useNeuroLogo.checked
+                ? { primary: NEURO_LOGO_PATH, fallback: null }
+                : { primary: DEFAULT_LOGO_PATH, fallback: DEFAULT_LOGO_FALLBACK });
+        const logoToUse = logoChoice.primary;
+        const logoFallback = logoChoice.fallback;
 
-        const renderLogo = (img) => {
-            const naturalW = img.naturalWidth || logoMaxSize;
-            const naturalH = img.naturalHeight || logoMaxSize;
-            const renderSize = Math.min(logoMaxSize, naturalW, naturalH);
+        const renderLogoCommon = (sourceWidth, sourceHeight, draw) => {
+            const renderSize = Math.min(logoMaxSize, sourceWidth, sourceHeight);
             const logoRadius = renderSize / 2;
             const inset = Math.max(2, renderSize * 0.05);
 
@@ -265,14 +277,25 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.clip();
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            ctx.drawImage(
-                img,
+            draw(
                 centerX - logoRadius + inset,
                 centerY - logoRadius + inset,
                 renderSize - inset * 2,
                 renderSize - inset * 2,
             );
             ctx.restore();
+        };
+
+        const renderLogoFromImage = (img) => {
+            const naturalW = img.naturalWidth || logoMaxSize;
+            const naturalH = img.naturalHeight || logoMaxSize;
+            renderLogoCommon(naturalW, naturalH, (x, y, w, h) => ctx.drawImage(img, x, y, w, h));
+        };
+
+        const renderLogoFromCanvas = (sourceCanvas) => {
+            const w = sourceCanvas.width || logoMaxSize;
+            const h = sourceCanvas.height || logoMaxSize;
+            renderLogoCommon(w, h, (x, y, width, height) => ctx.drawImage(sourceCanvas, x, y, width, height));
         };
 
         const renderFallback = () => {
@@ -292,18 +315,59 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.restore();
         };
 
-        if (logoToUse) {
+        const renderFromPdf = async (pdfUrl) => {
+            if (!window.pdfjsLib) {
+                throw new Error('PDF.js not available');
+            }
+            const pdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1 });
+            const scale = logoMaxSize / Math.max(viewport.width, viewport.height);
+            const scaledViewport = page.getViewport({ scale });
+            const pdfCanvas = document.createElement('canvas');
+            pdfCanvas.width = scaledViewport.width;
+            pdfCanvas.height = scaledViewport.height;
+            const pdfCtx = pdfCanvas.getContext('2d');
+            await page.render({ canvasContext: pdfCtx, viewport: scaledViewport }).promise;
+            return pdfCanvas;
+        };
+
+        const tryRenderImage = (src, fallback) => {
             const img = new Image();
             img.crossOrigin = 'anonymous';
-            img.onload = () => renderLogo(img);
+            img.onload = () => renderLogoFromImage(img);
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
-                renderFallback();
+                if (fallback) {
+                    tryRenderImage(fallback, null);
+                } else {
+                    renderFallback();
+                }
             };
-            img.src = logoToUse;
-        } else {
+            img.src = src;
+        };
+
+        if (!logoToUse) {
             renderFallback();
+            return;
         }
+
+        const isPdfLogo = typeof logoToUse === 'string' && logoToUse.toLowerCase().endsWith('.pdf');
+        if (isPdfLogo) {
+            renderFromPdf(logoToUse)
+                .then((pdfCanvas) => renderLogoFromCanvas(pdfCanvas))
+                .catch((err) => {
+                    console.error("Failed to render PDF logo:", err);
+                    if (logoFallback) {
+                        tryRenderImage(logoFallback, null);
+                    } else {
+                        renderFallback();
+                    }
+                });
+            return;
+        }
+
+        tryRenderImage(logoToUse, logoFallback);
     }
 
     // Download QR Code
