@@ -242,59 +242,67 @@ document.addEventListener('DOMContentLoaded', () => {
     function addLogoToQR(canvas, backgroundColor = DEFAULT_BACKGROUND_COLOR) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
-        
-        const logoTargetSize = Math.round(canvasSize * 0.35); 
-        const logoRadius = logoTargetSize / 2;
-
+        const logoMaxSize = Math.round(canvasSize * 0.35);
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
-        const logoX = centerX - logoRadius;
-        const logoY = centerY - logoRadius;
-        
-        // Create the circular cutout matching the background
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
-        ctx.fillStyle = backgroundColor;
-        ctx.fill();
-        ctx.closePath();
-        ctx.restore();
 
-        // Determine which logo to use
         const logoToUse = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
             ? customLogoDataUrl
             : (useNeuroLogo && useNeuroLogo.checked ? NEURO_LOGO_PATH : DEFAULT_LOGO_PATH);
 
-        // Draw the Logo Image inside the cutout
+        const renderLogo = (img) => {
+            const naturalW = img.naturalWidth || logoMaxSize;
+            const naturalH = img.naturalHeight || logoMaxSize;
+            const renderSize = Math.min(logoMaxSize, naturalW, naturalH);
+            const logoRadius = renderSize / 2;
+            const inset = Math.max(2, renderSize * 0.05);
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
+            ctx.fillStyle = backgroundColor;
+            ctx.fill();
+            ctx.clip();
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(
+                img,
+                centerX - logoRadius + inset,
+                centerY - logoRadius + inset,
+                renderSize - inset * 2,
+                renderSize - inset * 2,
+            );
+            ctx.restore();
+        };
+
+        const renderFallback = () => {
+            const renderSize = Math.min(logoMaxSize, canvasSize * 0.28);
+            const logoRadius = renderSize / 2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
+            ctx.fillStyle = backgroundColor;
+            ctx.fill();
+            ctx.clip();
+            ctx.fillStyle = 'black';
+            ctx.font = `bold ${renderSize / 3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('RS', centerX, centerY);
+            ctx.restore();
+        };
+
         if (logoToUse) {
             const img = new Image();
             img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                ctx.save();
-                // Clip to circle so all logos (including NeuroErgo) render as round marks
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, logoRadius, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.clip();
-                const inset = Math.max(2, logoTargetSize * 0.05);
-                ctx.drawImage(
-                    img,
-                    logoX + inset,
-                    logoY + inset,
-                    logoTargetSize - inset * 2,
-                    logoTargetSize - inset * 2,
-                );
-                ctx.restore();
-            };
+            img.onload = () => renderLogo(img);
             img.onerror = (e) => {
                 console.error("Failed to load logo image:", e);
-                ctx.fillStyle = 'black'; 
-                ctx.font = `bold ${logoTargetSize / 4}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('RS', centerX, centerY);
+                renderFallback();
             };
             img.src = logoToUse;
+        } else {
+            renderFallback();
         }
     }
 
