@@ -5,8 +5,9 @@ account: spenceleyy
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16128033
-bundleId: 11208807
+bundleId: 11263523
 url: https://spenceleyy.shinyapps.io/Working_Draft_of_Final_Project/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: app.R

@@ -4,22 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Isometric City Run</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #05060d;
-      --accent: #7df2c9;
-      --accent-2: #f783ff;
-      --tile-top: linear-gradient(145deg, #7bdd7a, #57a854);
-      --tile-side: linear-gradient(180deg, #2d4d2b, #1a2c1a);
+      --bg: #9fd5ff;
+      --accent: #f36f6f;
+      --accent-2: #ffd166;
+      --tile-top: linear-gradient(145deg, #a8e072, #73c150);
+      --tile-side: linear-gradient(180deg, #57863c, #3c5e2b);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 20% 20%, #1b2140 0, transparent 45%),
-        radial-gradient(circle at 80% 30%, #10252d 0, transparent 40%),
-        var(--bg);
+        radial-gradient(circle at 26% 22%, rgba(255,255,255,0.6) 0, transparent 38%),
+        radial-gradient(circle at 68% 18%, rgba(255,255,255,0.45) 0, transparent 34%),
+        linear-gradient(180deg, #c4e7ff 0%, #8fc4ff 38%, #6ba6f0 100%);
       color: #e6ecf7;
       overflow: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -45,11 +48,11 @@
     .iso-plane.dragging { cursor: grabbing; }
     .iso-floor {
       position: absolute;
-      inset: 10%;
+      inset: 9%;
       display: none;
       pointer-events: none;
       grid-template-columns: repeat(16, 1fr);
-      grid-template-rows: repeat(7, 1fr);
+      grid-template-rows: repeat(10, 1fr);
       gap: 4px;
       padding: 4px;
       z-index: 1;
@@ -203,7 +206,7 @@
 
     // Grid setup
     const cols = 16;
-    const rows = 7;
+    const rows = 10;
     const floorEl = document.getElementById("isoFloor");
     const statusEl = document.getElementById("status");
     const isoPlane = document.getElementById("isoPlane");
@@ -226,6 +229,8 @@
     const boardGroup = { object: null };
     const flickerLights = [];
     const cars = [];
+    const roadCurves = [];
+    let cityGroup = null;
     const clock = new THREE.Clock();
     let hopAnimation = null;
     let threeInitialized = false;
@@ -315,7 +320,7 @@
       threeInitialized = true;
 
       scene = new THREE.Scene();
-      scene.fog = new THREE.Fog(0x030509, 18, 60);
+      scene.fog = new THREE.Fog(0xb5dcff, 28, 120);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setClearColor(0x000000, 0);
@@ -330,12 +335,12 @@
       camera = new THREE.PerspectiveCamera(52, 1, 0.1, 200);
       updateCameraFromAngles();
 
-      const hemi = new THREE.HemisphereLight(0xffffff, 0x223322, 1.1);
-      hemi.position.set(0, 6, 0);
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x87c97c, 1.15);
+      hemi.position.set(0, 10, 0);
       scene.add(hemi);
 
-      const dir = new THREE.DirectionalLight(0xffffff, 1.2);
-      dir.position.set(-6, 10, 6);
+      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+      dir.position.set(-6, 12, 6);
       scene.add(dir);
 
       placeholder = new THREE.Mesh(
@@ -426,48 +431,147 @@
       render();
     }
 
-    function makeLetterTexture(letter, fg = "#e4419c", bg = "#ffd94f") {
-      const size = 256;
-      const canvas = document.createElement("canvas");
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, size, size);
-      ctx.fillStyle = fg;
-      ctx.font = "bold 180px 'Segoe UI', sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(letter, size / 2, size / 2 + 12);
-      const tex = new THREE.CanvasTexture(canvas);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      return tex;
+    const LETTER_PATTERNS = {
+      A: [
+        " 1 ",
+        "1 1",
+        "111",
+        "1 1",
+        "1 1",
+      ],
+      B: [
+        "11 ",
+        "1 1",
+        "11 ",
+        "1 1",
+        "11 ",
+      ],
+      C: [
+        " 11",
+        "1  ",
+        "1  ",
+        "1  ",
+        " 11",
+      ],
+      E: [
+        "111",
+        "1  ",
+        "11 ",
+        "1  ",
+        "111",
+      ],
+      H: [
+        "1 1",
+        "1 1",
+        "111",
+        "1 1",
+        "1 1",
+      ],
+      I: [
+        "111",
+        " 1 ",
+        " 1 ",
+        " 1 ",
+        "111",
+      ],
+      M: [
+        "1 1",
+        "111",
+        "111",
+        "1 1",
+        "1 1",
+      ],
+      N: [
+        "11 ",
+        "111",
+        "1 11",
+        "1 11",
+        "1 11",
+      ],
+      O: [
+        "111",
+        "1 1",
+        "1 1",
+        "1 1",
+        "111",
+      ],
+      P: [
+        "111",
+        "1 1",
+        "111",
+        "1  ",
+        "1  ",
+      ],
+      R: [
+        "111",
+        "1 1",
+        "111",
+        "11 ",
+        "1 1",
+      ],
+      S: [
+        " 11",
+        "1  ",
+        " 1 ",
+        "  1",
+        "11 ",
+      ],
+      T: [
+        "111",
+        " 1 ",
+        " 1 ",
+        " 1 ",
+        " 1 ",
+      ],
+      Y: [
+        "1 1",
+        "1 1",
+        " 1 ",
+        " 1 ",
+        " 1 ",
+      ],
+    };
+
+    function createVoxelLetterMesh(letter, options = {}) {
+      const { scale = 0.4, depth = 0.35, color = "#1a1f2d", accent = "#d9dee8" } = options;
+      const pattern = LETTER_PATTERNS[letter.toUpperCase()] || ["111", "1  ", "111", "1  ", "111"];
+      const group = new THREE.Group();
+      const matFront = new THREE.MeshLambertMaterial({ color });
+      const matSide = new THREE.MeshLambertMaterial({ color: accent });
+      const cubeGeo = new THREE.BoxGeometry(scale, scale, depth);
+      const mats = [matSide, matSide, matSide, matSide, matFront, matFront];
+      const rows = pattern.length;
+      const colsLocal = Math.max(...pattern.map((r) => r.length));
+      for (let y = 0; y < rows; y += 1) {
+        for (let x = 0; x < pattern[y].length; x += 1) {
+          if (pattern[y][x] !== "1") continue;
+          const cube = new THREE.Mesh(cubeGeo, mats);
+          const px = (x - (colsLocal - 1) / 2) * scale;
+          const py = ((rows - 1) / 2 - y) * scale;
+          cube.position.set(px, py, 0);
+          group.add(cube);
+        }
+      }
+      return { mesh: group, width: colsLocal * scale };
     }
 
-    function createLetter(letter) {
-      const tex = makeLetterTexture(letter);
-      const matFront = new THREE.MeshStandardMaterial({
-        map: tex,
-        emissive: new THREE.Color(0xe4419c).multiplyScalar(0.45),
-        metalness: 0.35,
-        roughness: 0.35,
-      });
-      const matSide = new THREE.MeshStandardMaterial({
-        color: 0xffd94f,
-        emissive: 0x3c2f10,
-        metalness: 0.35,
-        roughness: 0.5,
-      });
-      const matDark = new THREE.MeshStandardMaterial({
-        color: 0x0f1320,
-        emissive: 0x060910,
-        metalness: 0.2,
-        roughness: 0.6,
-      });
-      // BoxGeometry material order: +x, -x, +y, -y, +z, -z
-      const geo = new THREE.BoxGeometry(1.2, 1.6, 0.7);
-      const mats = [matSide, matSide, matSide, matDark, matFront, matFront];
-      return new THREE.Mesh(geo, mats);
+    function createVoxelWord(word, options = {}) {
+      const { scale = 0.4, spacing = 0.14, depth = 0.35, color, accent } = options;
+      const group = new THREE.Group();
+      let offsetX = 0;
+      for (let i = 0; i < word.length; i += 1) {
+        const letter = word[i];
+        const { mesh, width } = createVoxelLetterMesh(letter, { scale, depth, color, accent });
+        mesh.position.x = offsetX + width / 2;
+        group.add(mesh);
+        offsetX += width + spacing;
+      }
+      const box = new THREE.Box3().setFromObject(group);
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+      group.position.sub(center);
+      const width = box.max.x - box.min.x;
+      return { group, width };
     }
 
     function createTower(h, color) {
@@ -544,23 +648,12 @@
       const group = new THREE.Group();
       const disc = new THREE.Mesh(
         new THREE.CylinderGeometry(0.4, 0.4, 0.12, 24),
-        new THREE.MeshStandardMaterial({
-          color: 0x1e2a3d,
-          emissive: 0x0c121c,
-          roughness: 0.4,
-          metalness: 0.6,
-        })
+        new THREE.MeshLambertMaterial({ color: 0x3a4e7a })
       );
       group.add(disc);
       const glow = new THREE.Mesh(
         new THREE.CylinderGeometry(0.48, 0.48, 0.02, 24),
-        new THREE.MeshStandardMaterial({
-          color,
-          emissive: color,
-          emissiveIntensity: 1.2,
-          transparent: true,
-          opacity: 0.85,
-        })
+        new THREE.MeshLambertMaterial({ color, transparent: true, opacity: 0.85 })
       );
       glow.position.y = 0.08;
       group.add(glow);
@@ -574,23 +667,12 @@
       const group = new THREE.Group();
       const body = new THREE.Mesh(
         new THREE.BoxGeometry(1.1, 0.3, 0.7),
-        new THREE.MeshStandardMaterial({
-          color: 0x1b2334,
-          metalness: 0.55,
-          roughness: 0.3,
-          emissive: 0x0e1422,
-        })
+        new THREE.MeshLambertMaterial({ color: 0x3b4a72 })
       );
       group.add(body);
       const glow = new THREE.Mesh(
         new THREE.BoxGeometry(1.2, 0.08, 0.8),
-        new THREE.MeshStandardMaterial({
-          color,
-          emissive: color,
-          emissiveIntensity: 1.4,
-          transparent: true,
-          opacity: 0.8,
-        })
+        new THREE.MeshLambertMaterial({ color, transparent: true, opacity: 0.8 })
       );
       glow.position.y = -0.12;
       group.add(glow);
@@ -598,79 +680,328 @@
     }
 
     function generateCity() {
+      if (!scene || !boardGroup.object) return;
+
+      // Reset existing city assets
+      if (cityGroup) {
+        boardGroup.object.remove(cityGroup);
+      }
+      cars.length = 0;
+      flickerLights.length = 0;
+      roadCurves.length = 0;
+
+      cityGroup = new THREE.Group();
+      cityGroup.name = "cityGroup";
+      boardGroup.object.add(cityGroup);
+
+      const worldWidth = cols * tileSize;
+      const worldDepth = rows * tileSize;
       const groundHeight = 0.2;
+      const palette = [0x5fd0ff, 0xff7fbf, 0xffc857, 0x7de5b2, 0x7f8dff, 0xff9f1c, 0x55efc4, 0xff6f59, 0x79f2de, 0xf5a3ff, 0xa0ffd8];
+
       const ground = new THREE.Mesh(
-        new THREE.BoxGeometry(cols * tileSize + 14, groundHeight, rows * tileSize + 12),
-        new THREE.MeshStandardMaterial({ color: 0x0b0f19, roughness: 0.85 })
+        new THREE.BoxGeometry(worldWidth + 16, groundHeight, worldDepth + 16),
+        new THREE.MeshLambertMaterial({ color: 0x79c67c })
       );
       ground.position.set(0, -groundHeight / 2, 0);
-      scene.add(ground);
+      cityGroup.add(ground);
 
-      // Road ribbon (dark) and walkway (lighter)
-      const road = new THREE.Mesh(
-        new THREE.BoxGeometry(cols * tileSize + 12, 0.08, rows * tileSize * 0.9),
-        new THREE.MeshStandardMaterial({
-          color: 0x0f1522,
-          emissive: 0x0a0e18,
-          roughness: 0.75,
-          metalness: 0.15,
-        })
-      );
-      road.position.set(0, 0.04 - groundHeight / 2, tileToWorld(0, Math.floor(rows / 2), 0).z);
-      scene.add(road);
+      const roadWidth = 0.6;
+      const roadThickness = 0.08;
 
-      const walkway = new THREE.Mesh(
-        new THREE.BoxGeometry(cols * tileSize + 6, 0.04, rows * tileSize * 0.32),
-        new THREE.MeshStandardMaterial({
-          color: 0x11192a,
-          emissive: 0x0d1220,
-          roughness: 0.5,
-          metalness: 0.2,
-        })
-      );
-      walkway.position.copy(road.position);
-      walkway.position.y += 0.05;
-      scene.add(walkway);
+      const baseRoadMaterial = new THREE.MeshLambertMaterial({
+        color: 0x2f3545,
+      });
+      const stripeMaterial = new THREE.MeshLambertMaterial({
+        color: 0xfdfdfd,
+      });
 
-      const palette = [0x5fd0ff, 0xff7fbf, 0xffc857, 0x7de5b2, 0x7f8dff];
-      const midRow = Math.floor(rows / 2);
+      const createCurvedRoad = (points) => {
+        const curve = new THREE.CatmullRomCurve3(points);
+        const geom = new THREE.TubeGeometry(curve, 80, roadWidth, 8, false);
+        const road = new THREE.Mesh(geom, baseRoadMaterial.clone());
+        cityGroup.add(road);
+        roadCurves.push(curve);
 
-      // Spread buildings across the whole grid except the letter row, with generous spacing
+        const length = curve.getLength();
+        const stripeSpacing = 1.4;
+        const stripeLength = 0.45;
+        const stripeCount = Math.floor(length / stripeSpacing);
+        for (let i = 0; i < stripeCount; i += 1) {
+          const t = (i * stripeSpacing) / length;
+          const pos = curve.getPointAt(t);
+          const tangent = curve.getTangentAt(t).normalize();
+          const stripeGeom = new THREE.BoxGeometry(stripeLength, 0.02, roadWidth * 0.22);
+          const stripe = new THREE.Mesh(stripeGeom, stripeMaterial);
+          stripe.position.copy(pos);
+          stripe.position.y += 0.02;
+          const quat = new THREE.Quaternion();
+          quat.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(tangent.x, 0, tangent.z).normalize());
+          stripe.quaternion.copy(quat);
+          cityGroup.add(stripe);
+        }
+      };
+
+      const zFront = tileToWorld(0, 0, 0).z;
+      const zMid = tileToWorld(0, Math.floor(rows * 0.55), 0).z;
+      const zBack = tileToWorld(0, rows - 1, 0).z - 1.8;
+      const roadY = roadThickness / 2 - groundHeight / 2;
+
+      const curveA = createCurvedRoad([
+        new THREE.Vector3(-worldWidth / 2 - 3, roadY, zFront - 0.6),
+        new THREE.Vector3(-worldWidth * 0.4, roadY, zMid * 0.55 + zFront * 0.45),
+        new THREE.Vector3(worldWidth * 0.35, roadY, zMid * 0.65 + zFront * 0.35),
+        new THREE.Vector3(worldWidth / 2 + 3, roadY, zFront + 0.2),
+      ]);
+
+      const curveB = createCurvedRoad([
+        new THREE.Vector3(worldWidth / 2 + 3, roadY, zMid),
+        new THREE.Vector3(worldWidth * 0.25, roadY, zMid * 0.9 + zBack * 0.1),
+        new THREE.Vector3(-worldWidth * 0.35, roadY, zMid * 0.7 + zBack * 0.3),
+        new THREE.Vector3(-worldWidth / 2 - 3, roadY, zBack + 0.9),
+      ]);
+
+      const rand2 = (x, y, scale = 43758.5453) => {
+        const s = Math.sin(x * 12.9898 + y * 78.233) * scale;
+        return s - Math.floor(s);
+      };
+
+      const jitterOffset = (x, y) => {
+        const n1 = rand2(x, y);
+        const n2 = rand2(y + 19.1, x - 7.3);
+        const n3 = rand2(x * 0.5 + 11.7, y * 0.5 - 3.9);
+        const magnitude = 0.35 + n3 * 0.22; // tighter jitter
+        const angle = n1 * Math.PI * 2;
+        return {
+          x: Math.cos(angle) * magnitude,
+          z: Math.sin(angle) * magnitude,
+          spin: (n2 - 0.5) * 0.18,
+        };
+      };
+
+      const addWindowBands = (parent, w, h, d, color) => {
+        const bandCount = Math.floor(h / 0.6);
+        for (let i = 0; i < bandCount; i += 1) {
+          const y = -h / 2 + (i + 0.5) * (h / bandCount);
+          const geom = new THREE.BoxGeometry(w * 0.92, 0.04, 0.06);
+          const mat = new THREE.MeshLambertMaterial({ color: 0xf7f9ff });
+          const front = new THREE.Mesh(geom, mat);
+          front.position.set(0, y, d / 2 + 0.001);
+          const back = front.clone();
+          back.position.z = -d / 2 - 0.001;
+          back.rotation.y = Math.PI;
+          parent.add(front, back);
+        }
+      };
+
+      const createBuilding = (height, color) => {
+        const group = new THREE.Group();
+        const variant = Math.floor(Math.random() * 3);
+        const baseColor = new THREE.Color(color);
+
+        if (variant === 0) {
+          const footprintX = THREE.MathUtils.randFloat(0.75, 1.05);
+          const footprintZ = THREE.MathUtils.randFloat(0.75, 1.05);
+          const base = new THREE.Mesh(
+            new THREE.BoxGeometry(footprintX, height, footprintZ),
+            new THREE.MeshLambertMaterial({ color: baseColor })
+          );
+          base.position.y = height / 2;
+          group.add(base);
+          addWindowBands(base, footprintX, height, footprintZ, baseColor);
+        } else if (variant === 1) {
+          const footprint = THREE.MathUtils.randFloat(0.85, 1.15);
+          let currentHeight = 0;
+          for (let i = 0; i < 3; i += 1) {
+            const tierH = height * (0.35 - i * 0.07);
+            const scaleX = 1 - i * 0.16 + rand2(i + 0.2, height) * 0.05;
+            const scaleZ = 1 - i * 0.16 + rand2(height, i + 0.7) * 0.05;
+            const tier = new THREE.Mesh(
+              new THREE.BoxGeometry(footprint * scaleX, tierH, footprint * scaleZ),
+              new THREE.MeshLambertMaterial({
+                color: baseColor.clone().offsetHSL(0.02 * i, 0, 0.03 * i),
+              })
+            );
+            tier.position.y = currentHeight + tierH / 2;
+            currentHeight += tierH;
+            group.add(tier);
+          }
+        } else {
+          const footprint = THREE.MathUtils.randFloat(0.7, 0.95);
+          const prism = new THREE.Mesh(
+            new THREE.CylinderGeometry(footprint * 0.6, footprint, height, 5, 1, false),
+            new THREE.MeshLambertMaterial({
+              color: baseColor.clone().offsetHSL(-0.02, 0.05, 0.08),
+            })
+          );
+          prism.position.y = height / 2;
+          group.add(prism);
+          addWindowBands(prism, footprint * 1.1, height, footprint * 1.1, baseColor);
+        }
+
+        if (Math.random() < 0.35) {
+          const roofLight = new THREE.PointLight(color, 0.9, 5, 2);
+          roofLight.position.y = height + 0.35;
+          group.add(roofLight);
+          flickerLights.push(roofLight);
+        }
+
+        if (Math.random() < 0.35) {
+          const antenna = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.02, 0.05, 0.4, 10),
+            new THREE.MeshLambertMaterial({ color })
+          );
+          antenna.position.y = height + 0.35;
+          group.add(antenna);
+        }
+
+        // Add a simple top cap for extra flavor
+        const bbox = new THREE.Box3().setFromObject(group);
+        const size = new THREE.Vector3();
+        bbox.getSize(size);
+        const cap = new THREE.Mesh(
+          new THREE.BoxGeometry(size.x * 0.7, 0.12, size.z * 0.7),
+          new THREE.MeshLambertMaterial({
+            color: baseColor.clone().offsetHSL(0.05, 0.05, 0.08),
+          })
+        );
+        cap.position.set(0, bbox.max.y + 0.08, 0);
+        group.add(cap);
+
+        group.rotation.y = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(8));
+        return group;
+      };
+
+      const heroWord = "MENTORSHIP";
+      const heroRow = 0; // front row
+      const heroStart = Math.max(0, Math.floor((cols - heroWord.length) / 2));
+      const plazaClearance = 2;
+
+      const inHeroPlaza = (x, y) =>
+        y === heroRow && x >= heroStart - plazaClearance && x <= heroStart + heroWord.length + plazaClearance;
+
+      // Parks to break up grids
+      const parks = [
+        { x: Math.floor(cols * 0.2), y: Math.floor(rows * 0.5), w: 2, h: 2 },
+        { x: Math.floor(cols * 0.65), y: Math.floor(rows * 0.7), w: 2, h: 2 },
+      ];
+      parks.forEach((p) => {
+        const patch = new THREE.Mesh(
+          new THREE.BoxGeometry(p.w * tileSize, 0.05, p.h * tileSize),
+          new THREE.MeshLambertMaterial({ color: 0x9be39f })
+        );
+        const patchPos = tileToWorld(p.x + p.w / 2 - 0.5, p.y + p.h / 2 - 0.5, 0);
+        patch.position.set(patchPos.x, 0.03 - groundHeight / 2, patchPos.z);
+        cityGroup.add(patch);
+      });
+
+      const inPark = (x, y) =>
+        parks.some((p) => x >= p.x && x < p.x + p.w && y >= p.y && y < p.y + p.h);
+
+      const maxRadius = Math.hypot(cols / 2, rows / 2);
+
       for (let y = 0; y < rows; y++) {
-        if (y === midRow) continue;
         for (let x = 0; x < cols; x++) {
-          if ((x + y) % 2 === 1) continue; // checkerboard spacing
-          const h = THREE.MathUtils.randFloat(2.4, 6.0);
-          const color = palette[(x + y) % palette.length];
-          const tower = createTower(h, color);
+          if (inHeroPlaza(x, y) || inPark(x, y)) continue;
+          if ((x + y) % 2 === 1) continue; // checker spacing
+          const densityNoise = rand2(x * 1.3, y * 1.1);
+          if (densityNoise > 0.78) continue; // thin via noise
+
+          const dx = x - cols / 2;
+          const dy = y - rows / 2;
+          const dist = Math.hypot(dx, dy);
+          const heightProfile = 1 - Math.min(1, dist / maxRadius) * 0.45 + rand2(x + 12.3, y + 5.7) * 0.15;
+          const h = THREE.MathUtils.clamp(2.4 * heightProfile, 1.8, 6.8);
+
+          const color = palette[(x * 3 + y * 5 + Math.floor(densityNoise * palette.length)) % palette.length];
+          const building = createBuilding(h, color);
           const pos = tileToWorld(x, y, 0);
-          const jitter = 0.1;
-          tower.position.set(pos.x + (Math.random() - 0.5) * jitter, h / 2, pos.z + (Math.random() - 0.5) * jitter);
-          boardGroup.object.add(tower);
+          const jitter = jitterOffset(x, y);
+          const normalizedX = (x - cols / 2) / (cols / 2);
+          const curvePush = Math.sin(normalizedX * Math.PI) * 0.8;
+          const arcPull = Math.max(0, 1 - Math.abs(y - heroRow) * 0.4) * 0.9;
+          const arcOffsetZ = arcPull * curvePush;
+
+          if (Math.abs(y - heroRow) <= 1) {
+            jitter.x *= 0.35;
+            jitter.z *= 0.35;
+            jitter.spin *= 0.6;
+          }
+
+          building.position.set(
+            pos.x + jitter.x,
+            0,
+            pos.z + jitter.z + arcOffsetZ
+          );
+          building.rotation.y += jitter.spin + curvePush * 0.08;
+          cityGroup.add(building);
         }
       }
 
-      // HERO LETTERS on walkway
-      const word = "MENTORSHIP";
-      const startX = Math.max(0, Math.floor((cols - word.length) / 2));
-      for (let i = 0; i < word.length; i++) {
-        const letter = createLetter(word[i]);
-        const pos = tileToWorld(startX + i, midRow, 0);
-        letter.position.set(pos.x, 0.85, pos.z);
-        boardGroup.object.add(letter);
-      }
+      const billboardWord = "CITY";
+      const billboardVoxel = createVoxelWord(billboardWord, {
+        scale: 0.4,
+        spacing: 0.14,
+        depth: 0.3,
+        color: "#1a1f2d",
+        accent: "#cfd6e2",
+      });
+      const billboardText = billboardVoxel.group;
+      const bPos = tileToWorld(2.5, Math.floor(rows * 0.15), 0);
+      billboardText.position.set(bPos.x, 1.0, bPos.z - 0.2);
+      billboardText.rotation.y = Math.PI;
+      cityGroup.add(billboardText);
+
+      // Place hero text at world center on front row
+      const heroCenterX = 0;
+      const heroCenterZ = tileToWorld(heroStart + heroWord.length / 2, heroRow, 0).z - 0.8;
+
+      const heroVoxel = createVoxelWord(heroWord, {
+        scale: 0.45,
+        spacing: 0.16,
+        depth: 0.35,
+        color: "#1a1f2d",
+        accent: "#cfd6e2",
+      });
+      const heroWidth = heroVoxel.width;
+
+      const heroPad = new THREE.Mesh(
+        new THREE.BoxGeometry(heroWidth + 1.4, 0.06, 2.0),
+        new THREE.MeshLambertMaterial({ color: 0xf2f5f0 })
+      );
+      heroPad.position.set(heroCenterX, 0.05 - groundHeight / 2, heroCenterZ);
+      cityGroup.add(heroPad);
+
+      const heroText = heroVoxel.group;
+      heroText.position.set(heroCenterX, 1.0, heroCenterZ);
+      heroText.rotation.y = Math.PI;
+      cityGroup.add(heroText);
+
+      const makeCarOnCurve = (curve) => {
+        const hueColor = palette[Math.floor(Math.random() * palette.length)];
+        const car = createHoverCar(hueColor);
+        const speed = THREE.MathUtils.randFloat(0.08, 0.14);
+        const startT = Math.random();
+        car.userData = { curve, t: startT, speed };
+        cityGroup.add(car);
+        cars.push(car);
+      };
+
+      roadCurves.forEach((curve) => makeCarOnCurve(curve));
     }
 
     function updateCars() {
       cars.forEach((car) => {
-        const { axis, speed, min, max } = car.userData;
-        if (axis === "x") {
-          car.position.x -= speed;
-          if (car.position.x < min) car.position.x = max;
-        } else {
-          car.position.z += speed;
-          if (car.position.z > max) car.position.z = min;
-        }
+        const { curve, speed } = car.userData;
+        if (!curve) return;
+        car.userData.t = (car.userData.t + speed * 0.002) % 1;
+        const t = car.userData.t;
+        const pos = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t);
+        car.position.copy(pos);
+        car.position.y += 0.05;
+        const yaw = Math.atan2(tangent.z, tangent.x);
+        car.rotation.y = Math.PI / 2 - yaw;
       });
     }
 
