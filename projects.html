@@ -4,485 +4,213 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects | RS</title>
-    
-    <link rel="icon" href="/logos/RSlogoUPDATED.png"> 
-    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
-    
+    <link rel="icon" href="/logos/RSlogoUPDATED.png">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-primary: #e890be; 
-            --color-background-main: #172D33; 
-            --color-background-secondary: #47304F; 
-            --color-text-dark: #FFFFED;       
-            --color-text-body: #A294A6;       
-            --color-text-light: #641E4F;       
-            --color-white: #FFFBEB;           
-            --font-display: -apple-system, BlinkMacMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            --bg: #0b0b0b;
+            --bg-panel: #0f0f0f;
+            --ink: #f7f7f2;
+            --muted: #bfbfb5;
+            --stroke: #f7f7f2;
+            --shadow: #101010;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: var(--font-display);
-            line-height: 1.6;
-            color: var(--color-text-dark);
-            background: var(--color-background-main);
-            overflow-x: hidden;
+            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05), transparent 30%),
+                        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.04), transparent 25%),
+                        repeating-linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 6px, transparent 6px, transparent 12px),
+                        var(--bg);
+            color: var(--ink);
+            font-family: 'Space Grotesk', 'Fredoka', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 0 5vw 4rem;
         }
-        
-        /* --- NAVIGATION --- */
+
         nav {
-            position: fixed;
+            position: sticky;
             top: 0;
             width: 100%;
-            background: rgba(23, 45, 51, 0.85);
-            backdrop-filter: saturate(180%) blur(20px);
-            padding: 1.2rem 5%;
-            z-index: 1000;
-            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            z-index: 10;
+            background: rgba(11, 11, 11, 0.9);
+            border-bottom: 2px solid var(--stroke);
+            box-shadow: 0 8px 0 var(--shadow);
         }
         .nav-content {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0.85rem 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .logo-link {
-            display: flex;
-            flex-direction: row; 
-            align-items: center;
-            text-decoration: none;
-            line-height: 1; 
-            gap: 0.75rem;
-        }
-        .logo-image {
-            height: 55px; 
-            width: auto;
-            transition: opacity 0.3s;
-        }
-        .full-name {
-            font-family: 'Style Script', cursive; 
-            font-size: 1.5rem;
-            font-weight: 400; 
-            color: var(--color-text-dark);
-            margin-top: 0;
-            letter-spacing: 0.5px;
+            font-family: 'Fredoka', sans-serif;
         }
         .nav-links {
             display: flex;
-            gap: 3rem;
+            gap: 1.5rem;
             list-style: none;
-            align-items: center;
-        }
-        
-        /* --- CORRECTED NAVIGATION LINK STYLES for Hover and Active State --- */
-        .nav-links a {
-            color: var(--color-text-dark);
-            text-decoration: none;
-            transition: color 0.3s; 
-            font-size: 0.875rem;
-            font-weight: 400;
-            position: relative;
-            display: block;
-            padding: 0.5rem 0;
-        }
-
-        /* 1. Underline base pseudo-element */
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0; 
-            height: 2px;
-            background: var(--color-primary);
-            transition: width 0.3s ease; 
-        }
-        
-        /* 2. Color and Underline for Active Page (permanently highlighted) */
-        .nav-links .active a { 
-            color: var(--color-primary);
-        }
-        .nav-links .active a::after { 
-            width: 100%; 
-        }
-        
-        /* 3. Color and Underline ONLY on Hover/Focus (only when mouse is over the link) */
-        /* Ensure the effect ONLY runs on hover and doesn't interfere with the permanent active state */
-        .nav-links li:not(.active) a:hover,
-        .nav-links li:not(.active) a:focus { 
-            color: var(--color-primary);
-        }
-        
-        .nav-links li:not(.active) a:hover::after,
-        .nav-links li:not(.active) a:focus::after { 
-            width: 100%; 
-        }
-
-        /* Dropdown styling (matches shared site styles) */
-        .dropdown {
-            position: relative;
-        }
-        
-        .dropdown-toggle {
-            cursor: pointer;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: rgba(23, 45, 51, 0.95);
-            backdrop-filter: saturate(180%) blur(20px);
-            border: 1px solid rgba(232, 144, 190, 0.2);
-            border-radius: 12px;
-            padding: 0.5rem 0;
-            min-width: 220px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            margin-top: 0.5rem;
-            list-style: none;
-        }
-        
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        .dropdown-menu li {
-            list-style: none;
-        }
-        
-        .dropdown-menu a {
-            padding: 0.75rem 1.5rem;
-            display: block;
-            white-space: nowrap;
-            transition: background 0.2s ease;
-        }
-        
-        .dropdown-menu a::after {
-            display: none;
-        }
-        
-        .dropdown-menu a:hover,
-        .dropdown-menu a:focus {
-            background: rgba(232, 144, 190, 0.1);
-        }
-        /* --- END CORRECTED HOVER STYLES --- */
-        
-        /* --- PAGE HEADER --- */
-        .page-header {
-            padding: 8rem 5% 4rem;
-            text-align: center;
-        }
-        .page-header h1 {
-            font-size: 4rem;
-            font-weight: 600;
-            letter-spacing: -2px;
-            margin-bottom: 1rem;
-            color: var(--color-text-dark);
-        }
-        .page-header p {
-            font-size: 1.25rem;
-            color: var(--color-text-body);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        
-        /* --- PROJECT SECTIONS --- */
-        .project-section {
-            margin-bottom: 6rem;
-        }
-        
-        .poster-container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 3rem;
-            overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            cursor: pointer; /* Indicate clickability for fullscreen */
-            transition: transform 0.3s;
-            position: relative; 
-        }
-        .poster-container:hover {
-            transform: scale(1.005);
-        }
-
-        /* Removed placeholder CSS and relying on image loading/error fallback */
-        
-        /* Image styles for display and fallback */
-        .poster-image {
-            width: 100%;
-            height: auto;
-            max-height: 600px; 
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-            transition: opacity 0.3s;
-            /* Fallback style if image fails to load */
-            background: var(--color-background-secondary); 
-            min-height: 200px;
-            font-size: 1rem;
-            color: var(--color-text-body);
-            text-align: center;
-            line-height: 200px;
-        }
-        
-        /* Special layout for FIPRED project with side-by-side images */
-        .dual-image-container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto 3rem;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-        
-        .dual-image-container .poster-container:first-child {
-            grid-column: span 1;
-        }
-
-        .dual-image-container .poster-container:last-child {
-            grid-column: span 1;
-        }
-
-        .dual-image-container .poster-container {
-            margin: 0;
-            width: 100%;
-        }
-        
-        .project-details {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 5%;
-        }
-        
-        .project-title {
-            font-size: 2.5rem;
-            font-weight: 600;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
-            color: var(--color-text-dark);
-            line-height: 1.2;
-        }
-        
-        /* Updated styling for authors section */
-        .project-authors {
-            font-size: 1.125rem;
-            color: var(--color-text-body); 
-            margin-bottom: 2rem;
-            font-weight: 400;
-            line-height: 1.6;
-        }
-        .project-authors .author-name {
-            color: var(--color-primary); 
-            font-weight: 500;
-        }
-        /* Style for the icons/links */
-        .author-icon-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            margin: 0 0.1rem;
-            color: var(--color-text-body); 
-            transition: color 0.3s, background 0.3s;
-            border-radius: 5px;
-        }
-        .author-icon-link:hover {
-            color: var(--color-primary);
-            background: rgba(232, 144, 190, 0.1);
-        }
-        .author-icon-link svg {
-            width: 14px;
-            height: 14px;
-            vertical-align: middle;
-        }
-
-        .project-abstract {
-            font-size: 1.125rem;
-            color: var(--color-text-body);
-            line-height: 1.8;
-            text-align: justify;
-        }
-        
-        .project-abstract p {
-            margin-bottom: 1rem;
-        }
-        
-        .project-link {
-            display: inline-block;
-            margin: 1.5rem 0 2rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--color-primary);
-            color: var(--color-background-main);
-            text-decoration: none;
-            border-radius: 980px;
-            font-size: 1rem;
-            font-weight: 400;
-            transition: background 0.3s;
-        }
-        
-        .project-link:hover {
-            background: #e0609d;
-        }
-        
-        .project-citation {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
             font-size: 0.95rem;
-            color: var(--color-text-body);
-            font-style: italic;
+        }
+        .nav-links a {
+            color: var(--ink);
+            text-decoration: none;
+            padding: 0.35rem 0.2rem;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+        .nav-links a:hover,
+        .nav-links .active a {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        .page-hero {
+            max-width: 1100px;
+            margin: 3.5rem auto 2.5rem;
+            padding: 1rem 0;
+        }
+        .page-hero .eyebrow {
+            font-family: 'Fredoka', sans-serif;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 0.35rem;
+        }
+        .page-hero h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.25rem);
+            letter-spacing: -1px;
+            margin-bottom: 0.75rem;
+        }
+        .page-hero p {
+            max-width: 760px;
+            color: var(--muted);
             line-height: 1.6;
         }
 
-        /* --- FULLSCREEN MODAL STYLES --- */
-        #fullscreen-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        #fullscreen-modal.visible {
+        .projects-list {
             display: flex;
-            opacity: 1;
-        }
-        #modal-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            background-color: var(--color-white); 
-            border-radius: 8px;
-            box-shadow: 0 0 50px rgba(232, 144, 190, 0.5);
-        }
-        #modal-content img {
-            max-width: 100%;
-            max-height: 90vh;
-            display: block;
+            flex-direction: column;
+            gap: 2.25rem;
+            max-width: 1100px;
             margin: 0 auto;
         }
-        #modal-close {
+
+        .project-block {
+            background: var(--bg-panel);
+            border: 2px solid var(--stroke);
+            border-radius: 20px;
+            padding: 1.75rem;
+            position: relative;
+            box-shadow: 12px 12px 0 var(--shadow);
+            overflow: hidden;
+        }
+        .project-block::after {
+            content: "";
             position: absolute;
-            top: 15px;
-            right: 35px;
-            color: white;
-            font-size: 40px;
-            font-weight: 300;
-            cursor: pointer;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-            opacity: 0.8;
-            transition: opacity 0.2s;
+            inset: 10px;
+            border: 2px dashed rgba(247, 247, 242, 0.2);
+            border-radius: 16px;
+            pointer-events: none;
         }
-        #modal-close:hover {
-            opacity: 1;
-            color: var(--color-primary);
+        .project-title-row {
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
-        
-        /* --- FOOTER --- */
+        .project-tag {
+            font-family: 'Fredoka', sans-serif;
+            padding: 0.25rem 0.75rem;
+            border: 2px solid var(--stroke);
+            border-radius: 999px;
+            background: var(--bg);
+            box-shadow: 4px 4px 0 var(--shadow);
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+        .project-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(1.4rem, 3vw, 1.8rem);
+            line-height: 1.3;
+        }
+
+        .video-shell {
+            margin-top: 1.25rem;
+            border: 2px solid var(--stroke);
+            border-radius: 16px;
+            overflow: hidden;
+            background: repeating-linear-gradient(135deg,
+                        rgba(247,247,242,0.06),
+                        rgba(247,247,242,0.06) 10px,
+                        transparent 10px,
+                        transparent 20px);
+            position: relative;
+            box-shadow: 8px 8px 0 var(--shadow);
+        }
+        .video-shell video,
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: block;
+        }
+        .video-shell video {
+            object-fit: cover;
+            filter: grayscale(0.05) contrast(1.1);
+            background: #000;
+        }
+        .video-placeholder {
+            display: grid;
+            place-items: center;
+            color: var(--muted);
+            font-family: 'Fredoka', sans-serif;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .video-label {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            padding: 0.35rem 0.65rem;
+            background: var(--bg);
+            border: 2px solid var(--stroke);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-family: 'Fredoka', sans-serif;
+            letter-spacing: 0.04em;
+            box-shadow: 4px 4px 0 var(--shadow);
+        }
+
         footer {
-            background: var(--color-background-secondary);
-            color: var(--color-text-body);
-            text-align: center;
-            padding: 3rem 5%;
-            font-size: 0.875rem;
-            border-top: 0.5px solid rgba(255,255,255,0.1);
-            margin-top: 6rem;
-        }
-        
-        @media (max-width: 1100px) {
-            nav {
-                padding: 1rem 1.25rem;
-            }
-
-            .nav-content {
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1.25rem;
-            }
-
-            .project-section {
-                padding: 3rem 1.5rem;
-            }
+            margin: 4rem auto 0;
+            max-width: 1100px;
+            padding: 1.5rem 0.5rem 0.5rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+            border-top: 2px solid rgba(247,247,242,0.2);
         }
 
-        @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 2.5rem;
-                letter-spacing: -1px;
+        @media (max-width: 640px) {
+            body {
+                padding: 0 6vw 3rem;
             }
-            .project-title {
-                font-size: 1.75rem;
+            .project-block {
+                padding: 1.25rem;
             }
-            .project-authors {
-                font-size: 1.125rem;
+            .project-block::after {
+                inset: 6px;
             }
-            .project-abstract {
-                font-size: 1rem;
-                text-align: left;
-            }
-            .dual-image-container {
-                /* On mobile, revert to single column layout */
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            .project-citation {
-                font-size: 0.85rem;
-            }
-
-            nav {
-                position: sticky;
-            }
-
-            .nav-content {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.5rem 1rem;
-            }
-
-            .nav-links {
-                width: 100%;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 540px) {
-            .page-header {
-                padding: 6rem 1.25rem 3rem;
-            }
-
-            .project-title {
-                font-size: 1.5rem;
-            }
-
-            .project-authors {
-                font-size: 1rem;
+            .video-label {
+                font-size: 0.72rem;
             }
         }
     </style>
@@ -490,189 +218,93 @@
 <body>
     <!-- Navigation injected via navigation.js -->
 
-    <div class="page-header">
-        <h1>Research Projects</h1>
-        <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
-    </div>
+    <header class="page-hero">
+        <p class="eyebrow">Cartoon Lab Notes</p>
+        <h1>Projects in Motion</h1>
+        <p>Black-and-white, inked edges, and scroll-controlled videos. Each project gets a title and a moving storyboard. FIPRED has its cut for now; the rest roll out soon.</p>
+    </header>
 
-    <!-- PROJECT 1 - NEWEST: EEG Theta Power (Mixed Human-Robot Teams) -->
-    <div class="project-section">
-        <!-- Path is strictly URL-encoded for reliability -->
-        <div class="poster-container" data-src="/projects/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf">
-            <img src="/projects/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image" 
-                 onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: EEG Theta Power Poster';"
-            >
-        </div>
-        <div class="project-details">
-            <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
-            <p class="project-authors">
-                <span class="author-name">Robert J. Spenceley</span>, 
-                <span class="author-name">Aakash Yadav</span> 
-                <a href="[Aakash Yadav LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Aakash Yadav Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>, 
-                & <span class="author-name">Ranjana Mehta</span> 
-                <a href="[Ranjana Mehta LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Ranjana Mehta Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>
-            </p>
-            <div class="project-abstract">
-                <p>Search and rescue (SAR) tasks are some of the most dangerous and cognitively demanding tasks of emergency response. Cognitive demands vary across team members as role-specific duties introduce variable levels of cognitive load. The inclusion of robotic assistance has shown utility in providing recommendations, updating information, and alerting operators in SAR operations. Without perfect reliability, the responder may be a victim of automation bias, additional cognitive load, or lack of trust. Neuroimaging using Electroencephalography (EEG) can provide insights into how changing a teammate’s attributes alters others’ brain functions. This study aims to characterize the impact of different team roles on EEG frequency bands.</p>
-                <p>Forty participants from a large, public university completed a virtual SAR task in 20 teams, completing Human-Human (HHH), Human-Robot Reliable (HHR), and Human-Robot Unreliable (HRU) conditions. EEG data was collected using a 32-electrode cap and analyzed for theta power at frontal (FP1, FP2) and temporoparietal (TP9, TP10) sites. Separate Kruskal-Wallis tests assessed differences between team conditions for each role. </p>
-                <p>Among commanders, higher theta power was observed in HRU conditions at FP2 and TP10, while safety officers showed lower theta power at FP1 in the same condition. Increases in frontal theta in commanders indicate adaptations to task demands, while decreases in safety officers suggest that joint agency was not met. These results suggest that neural adaptation may be role-dependent, with commanders adapting better to unreliable automation, highlighting implications for optimizing robotic assistance in high-stakes response teams.</p>
+    <main class="projects-list">
+        <section class="project-block">
+            <div class="project-title-row">
+                <span class="project-tag">01</span>
+                <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
             </div>
-            <div class="project-citation">
-                <strong>Citation:</strong> Spenceley, R. J., Yadav, A., & Mehta, R. K. (2024). EEG theta power varies across roles in mixed human-robot teams. Poster presented at the Human Factors and Ergonomics Society Annual Meeting.
+            <div class="video-shell">
+                <div class="video-placeholder">Video coming soon</div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- PROJECT 2 - MIDDLE: FIPRED (Wildfire Predictor) -->
-    <div class="project-section">
-        <div class="dual-image-container">
-            <!-- FIPRED Poster (2/3 width) -->
-            <div class="poster-container" data-src="/projects/FIPRED.pdf">
-                <img src="/projects/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image"
-                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: FIPRED Research Poster';"
-                >
+        <section class="project-block">
+            <div class="project-title-row">
+                <span class="project-tag">02</span>
+                <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
             </div>
-            <!-- HFES Cover (1/3 width) -->
-            <div class="poster-container" data-src="/projects/HFES%Cover.png">
-                <img src="/projects/HFES%Cover.png" alt="HFES Proceedings Journal Cover" class="poster-image"
-                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: HFES Proceedings Cover';"
-                >
+            <div class="video-shell">
+                <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+                    <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="video-label">Scroll to play</div>
             </div>
-        </div>
-        <div class="project-details">
-            <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
-            <p class="project-authors">
-                <span class="author-name">Robert J. Spenceley</span>, 
-                <span class="author-name">Christopher D. Wickens</span> 
-                <a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>, 
-                & <span class="author-name">Bianca de Toledo Piza</span> 
-                <a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>
-            </p>
-            <div class="project-abstract">
-                <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
-                <p>Participants performed significantly worse when the raw data influences on the trajectory were removed in a control study, signaling the value of such data in calibrating dependence on the predictor. The FIPRED display was beneficial to participants, improving their ability to predict the future position of the fire. However, the automation bias indicated that participants may have over-relied on the automated assistance.</p>
-            </div>
-            <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
-            <div class="project-citation">
-                <strong>Citation:</strong> Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. <em>Proceedings of the Human Factors and Ergonomics Society Annual Meeting</em>. https://doi.org/10.1177/10711813251364799
-            </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- PROJECT 3 - OLDEST: Prospective Memory -->
-    <div class="project-section">
-        <div class="poster-container" data-src="/projects/REAL%20RMPA%20FINAL%202.pdf">
-            <img src="/projects/REAL%20RMPA%20FINAL%202.pdf" alt="Prospective Memory Research Poster" class="poster-image"
-                 onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Prospective Memory Poster';"
-            >
-        </div>
-        <div class="project-details">
-            <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
-            <p class="project-authors">
-                <span class="author-name">Robert J. Spenceley</span>, 
-                <span class="author-name">Michaela Rice</span>
-                <a href="[Michaela Rice LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Michaela Rice Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>, 
-                & <span class="author-name">Deana Davalos</span>
-                <a href="[Deana Davalos LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                </a>
-                <a href="[Deana Davalos Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </a>
-            </p>
-            <div class="project-abstract">
-                <p>Prospective memory (PM) involves setting intentions and remembering to complete tasks, a process essential for college students to manage daily responsibilities. Executive functioning supports these abilities through planning, monitoring, and managing attention, and prior research suggests the two are closely linked. Using the Dysexecutive Questionnaire (DEX), this study examined which components of executive functioning predict PM performance across five factors: inhibition, interference management, intentionality, planning, and social regulation.</p>
-                <p>Results from seventy-nine participants showed that greater inhibition impairment was associated with lower PM accuracy, while other factors were unrelated. These findings suggest that inhibition plays a key role in PM, supporting the PAM model and emphasizing the importance of self-monitoring and attentional control in remembering intended actions.</p>
+        <section class="project-block" id="prospective-memory">
+            <div class="project-title-row">
+                <span class="project-tag">03</span>
+                <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
             </div>
-            <div class="project-citation">
-                <strong>Citation:</strong> Spenceley, R. J., Rice, M., & Davalos, D. (2023). Components of executive functioning involved in prospective memory performance. Poster presented at the Rocky Mountain Psychological Association Annual Conference.
+            <div class="video-shell">
+                <div class="video-placeholder">Video coming soon</div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 RS. Settle for nothing short of greatness.</p>
+        <p>&copy; 2025 RS — Inked in black and white.</p>
     </footer>
-
-    <!-- Fullscreen Modal Structure -->
-    <div id="fullscreen-modal">
-        <span id="modal-close">&times;</span>
-        <div id="modal-content">
-            <img id="modal-image" src="" alt="Full Screen Poster">
-        </div>
-    </div>
 
     <script src="navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const modal = document.getElementById('fullscreen-modal');
-            const modalImage = document.getElementById('modal-image');
-            const closeModal = document.getElementById('modal-close');
-            const posterContainers = document.querySelectorAll('.poster-container');
+            const videos = Array.from(document.querySelectorAll('[data-scroll-video]'));
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-            // 1. Handle opening the modal when a poster is clicked
-            posterContainers.forEach(container => {
-                container.addEventListener('click', (e) => {
-                    // Use the data-src attribute for the modal image source
-                    const imgSrc = container.getAttribute('data-src');
-                    if (imgSrc) {
-                        modalImage.src = imgSrc;
-                        modal.classList.add('visible');
-                        document.body.style.overflow = 'hidden'; // Prevent scrolling background
+            if (!videos.length || prefersReducedMotion.matches) return;
+
+            videos.forEach(video => {
+                let duration = 0;
+                let ticking = false;
+
+                const sync = () => {
+                    const rect = video.getBoundingClientRect();
+                    const total = rect.height + window.innerHeight;
+                    const progress = Math.min(Math.max((window.innerHeight - rect.top) / total, 0), 1);
+                    if (duration) {
+                        video.currentTime = progress * duration;
                     }
+                    ticking = false;
+                };
+
+                const requestSync = () => {
+                    if (!ticking) {
+                        ticking = true;
+                        requestAnimationFrame(sync);
+                    }
+                };
+
+                video.addEventListener('loadedmetadata', () => {
+                    duration = video.duration || 0;
+                    video.pause();
+                    requestSync();
                 });
-            });
 
-            // 2. Handle closing the modal
-            const close = () => {
-                modal.classList.remove('visible');
-                // Use a short delay before setting display:none to allow transition to finish
-                setTimeout(() => {
-                    modalImage.src = ''; // Clear image source
-                    document.body.style.overflow = ''; // Restore scrolling
-                }, 300); 
-            }
-            
-            // Close on 'x' click
-            closeModal.addEventListener('click', close);
+                video.play().then(() => video.pause()).catch(() => {
+                    /* autoplay might be blocked; scrubbing still works once metadata loads */
+                });
 
-            // Close when clicking outside the image (on the modal background)
-            modal.addEventListener('click', (e) => {
-                if (e.target.id === 'fullscreen-modal') {
-                    close();
-                }
-            });
-
-            // Close on Escape key press
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('visible')) {
-                    close();
-                }
+                window.addEventListener('scroll', requestSync, { passive: true });
+                window.addEventListener('resize', requestSync);
             });
         });
     </script>
