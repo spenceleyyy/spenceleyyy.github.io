@@ -81,6 +81,7 @@
             list-style: none;
             font-size: 0.95rem;
             margin-left: auto;
+            color: inherit;
         }
         .nav-links a {
             color: inherit;
@@ -128,17 +129,27 @@
             background: rgba(247, 247, 242, 0.08);
         }
 
-        .hero-video {
+        .hero-pin {
             position: relative;
-            height: 100vh;
+            height: 210vh;
+            width: 100%;
+        }
+        .hero-video {
+            position: fixed;
+            inset: 0;
             width: 100vw;
+            height: 100vh;
             overflow: hidden;
             border-radius: 0;
-            margin-top: 0;
-            margin-left: 0;
-            margin-right: 0;
+            margin: 0;
             box-shadow: none;
             background: #000;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .hero-video.is-active {
+            opacity: 1;
         }
         .hero-video video {
             position: absolute;
@@ -154,12 +165,13 @@
             pointer-events: none;
         }
         .hero-copy {
-            position: absolute;
+            position: fixed;
             bottom: 12%;
             left: 8%;
             max-width: 520px;
             color: #f7f7f7;
             text-shadow: 0 8px 18px rgba(0,0,0,0.35);
+            pointer-events: none;
         }
         .hero-copy .eyebrow {
             font-family: 'Fredoka', sans-serif;
@@ -180,7 +192,7 @@
             line-height: 1.5;
         }
         .hero-meta {
-            position: absolute;
+            position: fixed;
             top: 16%;
             left: 6%;
             background: rgba(255,255,255,0.92);
@@ -486,21 +498,23 @@
         <p>Scroll through the storyboard: a full-screen cut for FIPRED up top, then the rest of the projects in stark black and white.</p>
     </section>
 
-    <section class="hero-video" id="hero-fipred">
-        <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-            <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <div class="hero-overlay"></div>
-        <div class="hero-copy">
-            <p class="eyebrow">FIPRED</p>
-            <h1>Predictive Automated Displays for Wildfire Management</h1>
-            <p>Scroll to move through the frames. Navigation sits above; the rest of the projects follow once you scroll past.</p>
-        </div>
-        <div class="hero-meta" data-hero-meta>
-            <p class="meta-kicker">Project</p>
-            <h2>FIPRED</h2>
-            <p class="meta-authors">Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
+    <section class="hero-pin" id="hero-fipred-pin">
+        <div class="hero-video" id="hero-fipred">
+            <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+                <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="hero-copy">
+                <p class="eyebrow">FIPRED</p>
+                <h1>Predictive Automated Displays for Wildfire Management</h1>
+                <p>Scroll to move through the frames. Navigation sits above; the rest of the projects follow once you scroll past.</p>
+            </div>
+            <div class="hero-meta" data-hero-meta>
+                <p class="meta-kicker">Project</p>
+                <h2>FIPRED</h2>
+                <p class="meta-authors">Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
+            </div>
         </div>
     </section>
 
@@ -561,7 +575,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Toggle nav styling based on hero scroll position
-            const hero = document.getElementById('hero-fipred');
+            const heroPin = document.getElementById('hero-fipred-pin');
+            const heroVideo = document.getElementById('hero-fipred');
             const waitForNav = () => {
                 const nav = document.querySelector('nav');
                 if (!nav) {
@@ -569,21 +584,14 @@
                     return;
                 }
                 const updateNav = () => {
-                    if (!hero) {
+                    if (!heroPin) {
                         nav.classList.add('nav-solid');
                         return;
                     }
-                    const rect = hero.getBoundingClientRect();
+                    const rect = heroPin.getBoundingClientRect();
                     const navH = nav.offsetHeight || 60;
-                    const heroInView = rect.top <= navH && rect.bottom >= navH;
-                    const beforeHero = rect.top > navH;
-                    if (beforeHero) {
-                        nav.classList.add('nav-solid');
-                    } else if (heroInView) {
-                        nav.classList.remove('nav-solid');
-                    } else {
-                        nav.classList.add('nav-solid');
-                    }
+                    const inView = rect.top <= navH && rect.bottom >= navH;
+                    nav.classList.toggle('nav-solid', !inView);
                 };
                 updateNav();
                 window.addEventListener('scroll', updateNav, { passive: true });
@@ -600,11 +608,15 @@
                 let duration = 0;
                 let ticking = false;
                 const metaTarget = video.closest('.hero-video')?.querySelector('[data-hero-meta]');
+                const pin = video.closest('.hero-pin');
 
                 const sync = () => {
-                    const rect = video.getBoundingClientRect();
-                    const total = rect.height + window.innerHeight;
-                    const progress = Math.min(Math.max((window.innerHeight - rect.top) / total, 0), 1);
+                    const rect = pin ? pin.getBoundingClientRect() : video.getBoundingClientRect();
+                    const pinHeight = rect.height || window.innerHeight;
+                    const scrolledIntoPin = Math.max(0, -rect.top);
+                    const maxScroll = Math.max(1, pinHeight - window.innerHeight);
+                    const clamped = Math.min(scrolledIntoPin, maxScroll);
+                    const progress = Math.min(Math.max(clamped / maxScroll, 0), 1);
                     let targetTime = 0;
                     if (duration) {
                         targetTime = progress * duration;
@@ -632,6 +644,18 @@
                 video.play().then(() => video.pause()).catch(() => {
                     /* autoplay might be blocked; scrubbing still works once metadata loads */
                 });
+
+                // Toggle fixed video visibility only while pin is in view
+                if (pin && heroVideo) {
+                    const toggleVisibility = () => {
+                        const rect = pin.getBoundingClientRect();
+                        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+                        heroVideo.classList.toggle('is-active', inView);
+                    };
+                    toggleVisibility();
+                    window.addEventListener('scroll', toggleVisibility, { passive: true });
+                    window.addEventListener('resize', toggleVisibility);
+                }
 
                 window.addEventListener('scroll', requestSync, { passive: true });
                 window.addEventListener('resize', requestSync);
