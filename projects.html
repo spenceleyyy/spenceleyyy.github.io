@@ -8,12 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0b0b0b;
-            --bg-panel: #0f0f0f;
-            --ink: #f7f7f2;
-            --muted: #bfbfb5;
-            --stroke: #f7f7f2;
-            --shadow: #101010;
+            --bg: #ffffff;
+            --bg-panel: #ffffff;
+            --ink: #0b0b0b;
+            --muted: #3d3d3d;
+            --stroke: #0b0b0b;
+            --shadow: #dcdcdc;
         }
 
         * {
@@ -23,24 +23,30 @@
         }
 
         body {
-            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05), transparent 30%),
-                        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.04), transparent 25%),
-                        repeating-linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 6px, transparent 6px, transparent 12px),
-                        var(--bg);
+            background: var(--bg);
             color: var(--ink);
             font-family: 'Space Grotesk', 'Fredoka', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
-            padding: 0 5vw 4rem;
+            padding: 0 0 4rem;
+        }
+
+        .content-shell {
+            padding: 0 5vw;
         }
 
         nav {
-            position: sticky;
+            position: fixed;
             top: 0;
             width: 100%;
             z-index: 10;
-            background: rgba(11, 11, 11, 0.9);
-            border-bottom: 2px solid var(--stroke);
-            box-shadow: 0 8px 0 var(--shadow);
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        nav.nav-solid {
+            background: rgba(255, 255, 255, 0.96);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
         }
         .nav-content {
             max-width: 1200px;
@@ -61,38 +67,42 @@
             text-decoration: none;
             color: var(--ink);
             letter-spacing: 0.01em;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
         }
-        .logo-image {
-            height: 46px;
-            width: auto;
-            filter: grayscale(1) contrast(1.1);
-            transition: transform 0.2s ease;
-        }
-        .logo-link:hover .logo-image {
-            transform: translateY(-1px);
-        }
+        .logo-image,
         .full-name {
-            font-size: 1.05rem;
-            font-weight: 600;
-            white-space: nowrap;
+            display: none;
         }
         .nav-links {
             display: flex;
             gap: 1.5rem;
             list-style: none;
             font-size: 0.95rem;
+            margin-left: auto;
         }
         .nav-links a {
-            color: var(--ink);
+            color: inherit;
             text-decoration: none;
             padding: 0.35rem 0.2rem;
-            border-bottom: 2px solid transparent;
-            transition: border-color 0.2s ease, color 0.2s ease;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
         .nav-links a:hover,
         .nav-links .active a {
-            border-color: var(--ink);
+            border-color: currentColor;
+        }
+        nav:not(.nav-solid) .nav-links a {
+            color: #f7f7f7;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+        }
+        nav.nav-solid .nav-links a {
             color: var(--ink);
+            text-shadow: none;
         }
         .dropdown {
             position: relative;
@@ -103,16 +113,10 @@
             left: 0;
             min-width: 220px;
             background: var(--bg-panel);
-            border: 2px solid var(--stroke);
-            border-radius: 14px;
-            list-style: none;
-            padding: 0.4rem 0;
-            box-shadow: 10px 10px 0 var(--shadow);
-            display: none;
-            z-index: 20;
+            display: none !important;
         }
-        .dropdown:hover .dropdown-menu {
-            display: block;
+        .dropdown .caret {
+            display: none;
         }
         .dropdown-menu a {
             display: block;
@@ -124,29 +128,56 @@
             background: rgba(247, 247, 242, 0.08);
         }
 
-        .page-hero {
-            max-width: 1100px;
-            margin: 3.5rem auto 2.5rem;
-            padding: 1rem 0;
+        .hero-video {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            border-radius: 28px;
+            margin-top: 0;
+            margin-left: calc(-1 * 5vw);
+            margin-right: calc(-1 * 5vw);
+            box-shadow: 16px 16px 0 var(--shadow);
+            background: #000;
         }
-        .page-hero .eyebrow {
+        .hero-video video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.75) 100%);
+            pointer-events: none;
+        }
+        .hero-copy {
+            position: absolute;
+            bottom: 12%;
+            left: 8%;
+            max-width: 520px;
+            color: #f7f7f7;
+            text-shadow: 0 8px 18px rgba(0,0,0,0.35);
+        }
+        .hero-copy .eyebrow {
             font-family: 'Fredoka', sans-serif;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: var(--muted);
+            color: #f7f7f7;
             font-size: 0.95rem;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
         }
-        .page-hero h1 {
+        .hero-copy h1 {
             font-family: 'Fredoka', sans-serif;
-            font-size: clamp(2.5rem, 5vw, 3.25rem);
+            font-size: clamp(2.6rem, 6vw, 3.6rem);
             letter-spacing: -1px;
             margin-bottom: 0.75rem;
         }
-        .page-hero p {
-            max-width: 760px;
-            color: var(--muted);
-            line-height: 1.6;
+        .hero-copy p {
+            color: #f0f0f0;
+            line-height: 1.5;
         }
 
         .projects-list {
@@ -155,6 +186,7 @@
             gap: 2.25rem;
             max-width: 1100px;
             margin: 0 auto;
+            margin-top: 3.5rem;
         }
 
         .project-block {
@@ -170,7 +202,7 @@
             content: "";
             position: absolute;
             inset: 10px;
-            border: 2px dashed rgba(247, 247, 242, 0.2);
+            border: 2px dashed rgba(0, 0, 0, 0.08);
             border-radius: 16px;
             pointer-events: none;
         }
@@ -319,55 +351,72 @@
 <body>
     <!-- Navigation injected via navigation.js -->
 
-    <header class="page-hero">
-        <p class="eyebrow">Cartoon Lab Notes</p>
-        <h1>Projects in Motion</h1>
-        <p>Black-and-white, inked edges, and scroll-controlled videos. Each project gets a title and a moving storyboard. FIPRED has its cut for now; the rest roll out soon.</p>
-    </header>
+    <section class="hero-video" id="hero-fipred">
+        <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+            <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-copy">
+            <p class="eyebrow">FIPRED</p>
+            <h1>Predictive Automated Displays for Wildfire Management</h1>
+            <p>Scroll to move through the frames. Navigation sits above; the rest of the projects follow once you scroll past.</p>
+        </div>
+    </section>
 
-    <main class="projects-list">
-        <section class="project-block">
-            <div class="project-title-row">
-                <span class="project-tag">01</span>
-                <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
-            </div>
-            <div class="video-shell">
-                <div class="video-placeholder">Video coming soon</div>
-            </div>
-        </section>
+    <div class="content-shell">
+        <main class="projects-list">
+            <section class="project-block">
+                <div class="project-title-row">
+                    <span class="project-tag">02</span>
+                    <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
+                </div>
+                <div class="video-shell">
+                    <div class="video-placeholder">Video coming soon</div>
+                </div>
+            </section>
 
-        <section class="project-block video-block">
-            <div class="project-title-row">
-                <span class="project-tag">02</span>
-                <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
-            </div>
-            <div class="video-shell">
-                <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-                    <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <div class="video-label">Scroll to play</div>
-            </div>
-        </section>
+            <section class="project-block" id="prospective-memory">
+                <div class="project-title-row">
+                    <span class="project-tag">03</span>
+                    <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
+                </div>
+                <div class="video-shell">
+                    <div class="video-placeholder">Video coming soon</div>
+                </div>
+            </section>
+        </main>
 
-        <section class="project-block" id="prospective-memory">
-            <div class="project-title-row">
-                <span class="project-tag">03</span>
-                <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
-            </div>
-            <div class="video-shell">
-                <div class="video-placeholder">Video coming soon</div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 RS — Inked in black and white.</p>
-    </footer>
+        <footer>
+            <p>&copy; 2025 RS — Inked in black and white.</p>
+        </footer>
+    </div>
 
     <script src="navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Toggle nav styling based on hero scroll position
+            const hero = document.getElementById('hero-fipred');
+            const waitForNav = () => {
+                const nav = document.querySelector('nav');
+                if (!nav) {
+                    requestAnimationFrame(waitForNav);
+                    return;
+                }
+                const updateNav = () => {
+                    const trigger = hero ? hero.getBoundingClientRect().bottom - 80 : 0;
+                    if (trigger <= 0) {
+                        nav.classList.add('nav-solid');
+                    } else {
+                        nav.classList.remove('nav-solid');
+                    }
+                };
+                updateNav();
+                window.addEventListener('scroll', updateNav, { passive: true });
+                window.addEventListener('resize', updateNav);
+            };
+            waitForNav();
+
             const videos = Array.from(document.querySelectorAll('[data-scroll-video]'));
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
