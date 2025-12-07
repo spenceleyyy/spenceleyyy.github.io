@@ -607,32 +607,46 @@
 
             videos.forEach(video => {
                 let duration = 0;
-                let ticking = false;
+                let targetProgress = 0;
+                let currentProgress = 0;
+                let rafId = null;
                 const metaTarget = video.closest('.hero-video')?.querySelector('[data-hero-meta]');
                 const pin = video.closest('.hero-pin');
 
-                const sync = () => {
+                const computeProgress = () => {
                     const rect = pin ? pin.getBoundingClientRect() : video.getBoundingClientRect();
                     const pinHeight = rect.height || window.innerHeight;
                     const scrolledIntoPin = Math.max(0, -rect.top);
                     const maxScroll = Math.max(1, pinHeight - window.innerHeight);
                     const clamped = Math.min(scrolledIntoPin, maxScroll);
-                    const progress = Math.min(Math.max(clamped / maxScroll, 0), 1);
-                    let targetTime = 0;
+                    return Math.min(Math.max(clamped / maxScroll, 0), 1);
+                };
+
+                const smoothUpdate = () => {
+                    const delta = targetProgress - currentProgress;
+                    if (Math.abs(delta) < 0.0005) {
+                        currentProgress = targetProgress;
+                        rafId = null;
+                    } else {
+                        currentProgress += delta * 0.16; // easing factor for smoother motion
+                        rafId = requestAnimationFrame(smoothUpdate);
+                    }
                     if (duration) {
-                        targetTime = progress * duration;
+                        const targetTime = currentProgress * duration;
                         video.currentTime = targetTime;
                         if (metaTarget) {
                             metaTarget.classList.toggle('visible', targetTime >= Math.max(0, duration - 2));
                         }
                     }
-                    ticking = false;
                 };
 
                 const requestSync = () => {
-                    if (!ticking) {
-                        ticking = true;
-                        requestAnimationFrame(sync);
+                    targetProgress = computeProgress();
+                    if (!rafId) {
+                        rafId = requestAnimationFrame(() => {
+                            rafId = null;
+                            smoothUpdate();
+                        });
                     }
                 };
 
