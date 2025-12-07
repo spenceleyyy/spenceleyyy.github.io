@@ -628,7 +628,7 @@
                         currentProgress = targetProgress;
                         rafId = null;
                     } else {
-                        currentProgress += delta * 0.16; // easing factor for smoother motion
+                        currentProgress += delta * 0.08; // slower easing for smoother motion
                         rafId = requestAnimationFrame(smoothUpdate);
                     }
                     if (duration) {
