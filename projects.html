@@ -484,6 +484,8 @@
             display: flex;
             align-items: center;
             gap: 0.85rem;
+            position: relative;
+            z-index: 12;
         }
         .view-toggle-label {
             font-family: 'Fredoka', sans-serif;
@@ -859,18 +861,40 @@
             body.mode-list .project-title {
                 font-size: 1.55rem;
             }
-            body.mode-list .project-authors {
-                font-size: 1rem;
-            }
-            body.mode-list .view-toggle-shell {
-                padding-top: 4.5rem;
-                flex-wrap: wrap;
-            }
+        body.mode-list .project-authors {
+            font-size: 1rem;
+        }
+        body.mode-list .view-toggle-shell {
+            padding-top: 4.5rem;
+            flex-wrap: wrap;
+        }
+        }
+
+        .page-hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5.5rem 5vw 1rem;
+        }
+        .page-hero h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2.8rem, 6vw, 3.6rem);
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+        .page-hero p {
+            color: var(--muted);
+            max-width: 720px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <!-- Navigation injected via navigation.js -->
+
+    <header class="page-hero">
+        <h1>Projects</h1>
+        <p>Short intro about the work goes here. Swap in your own copy when ready.</p>
+    </header>
 
     <div class="view-toggle-shell">
         <p class="view-toggle-label">View</p>
