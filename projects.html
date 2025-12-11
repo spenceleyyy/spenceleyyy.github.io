@@ -1270,7 +1270,6 @@
                     section.classList.toggle('is-active', active);
                     section.setAttribute('aria-hidden', active ? 'false' : 'true');
                 });
-                sessionStorage.setItem('projectsView', view);
                 if (navUpdater) navUpdater();
                 if (!isList) {
                     window.dispatchEvent(new Event('resize'));
@@ -1282,8 +1281,7 @@
                 }
             };
 
-            const savedView = sessionStorage.getItem('projectsView');
-            setView(savedView === 'list' ? 'list' : 'storyboard');
+            setView('storyboard');
 
             viewButtons.forEach(button => {
                 button.addEventListener('click', () => {
