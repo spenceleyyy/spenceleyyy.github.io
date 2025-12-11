@@ -476,115 +476,664 @@
                 font-size: 0.72rem;
             }
         }
+
+        .view-toggle-shell {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6.5rem 5vw 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .view-toggle-label {
+            font-family: 'Fredoka', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .view-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.3rem;
+            border: 1px solid var(--stroke);
+            border-radius: 999px;
+            background: var(--bg-panel);
+            box-shadow: 8px 8px 0 var(--shadow);
+        }
+        .toggle-btn {
+            border: none;
+            background: transparent;
+            color: var(--ink);
+            padding: 0.55rem 1rem;
+            border-radius: 999px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        .toggle-btn.is-active {
+            background: var(--ink);
+            color: var(--bg);
+            box-shadow: 4px 4px 0 var(--shadow);
+            transform: translateY(-1px);
+        }
+        .toggle-btn:focus-visible {
+            outline: 2px solid var(--stroke);
+            outline-offset: 3px;
+        }
+        .view-section {
+            display: none;
+        }
+        .view-section.is-active {
+            display: block;
+        }
+
+        body.mode-list {
+            --bg: #0b0b0b;
+            --bg-panel: #0f0f0f;
+            --ink: #f7f7f2;
+            --muted: #bfbfb5;
+            --stroke: #f7f7f2;
+            --shadow: #101010;
+            --color-primary: #e890be;
+            --color-background-main: #172D33;
+            --color-background-secondary: #47304F;
+            --color-text-dark: #FFFFED;
+            --color-text-body: #A294A6;
+            --color-text-light: #641E4F;
+            --color-white: #FFFBEB;
+            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05), transparent 30%),
+                        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.04), transparent 25%),
+                        repeating-linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 6px, transparent 6px, transparent 12px),
+                        var(--color-background-main);
+            color: var(--ink);
+            padding: 0 5vw 4rem;
+        }
+        body.mode-list .view-toggle-shell {
+            padding-top: 5rem;
+        }
+        body.mode-list nav {
+            position: sticky;
+            top: 0;
+            background: rgba(23, 45, 51, 0.9);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.45);
+        }
+        body.mode-list nav.nav-solid {
+            background: rgba(23, 45, 51, 0.95);
+        }
+        body.mode-list .logo-link {
+            visibility: visible;
+            height: auto;
+            overflow: visible;
+            display: inline-flex;
+        }
+        body.mode-list .logo-image,
+        body.mode-list .full-name {
+            display: inline-block;
+        }
+        body.mode-list .logo-image {
+            height: 46px;
+            width: auto;
+            filter: grayscale(1) contrast(1.1);
+        }
+        body.mode-list .full-name {
+            color: var(--color-text-dark);
+            font-size: 1.05rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        body.mode-list .nav-links a {
+            color: var(--color-text-dark);
+            text-shadow: none;
+        }
+        body.mode-list .nav-links a:hover,
+        body.mode-list .nav-links .active a {
+            border-color: currentColor;
+        }
+
+        #list-view {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        body.mode-list .page-header {
+            padding: 6rem 0 3rem;
+            text-align: center;
+        }
+        body.mode-list .page-header h1 {
+            font-size: clamp(2.6rem, 6vw, 3.6rem);
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            color: var(--color-text-dark);
+        }
+        body.mode-list .page-header p {
+            font-size: 1.15rem;
+            color: var(--color-text-body);
+            max-width: 720px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        body.mode-list .project-section {
+            margin-bottom: 5rem;
+        }
+        body.mode-list .poster-container {
+            width: 100%;
+            margin: 0 auto 2rem;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+            background: var(--color-background-secondary);
+        }
+        body.mode-list .poster-container:hover {
+            transform: scale(1.005);
+        }
+        body.mode-list .poster-image {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+            transition: opacity 0.3s;
+            background: var(--color-background-secondary);
+            min-height: 200px;
+            font-size: 1rem;
+            color: var(--color-text-body);
+            text-align: center;
+            line-height: 200px;
+        }
+        body.mode-list .dual-image-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        body.mode-list .dual-image-container .poster-container {
+            margin: 0;
+        }
+        body.mode-list .project-details {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        body.mode-list .project-title {
+            font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+            color: var(--color-text-dark);
+            line-height: 1.25;
+        }
+        body.mode-list .project-authors {
+            font-size: 1.125rem;
+            color: var(--color-text-body);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        body.mode-list .project-authors .author-name {
+            color: var(--color-primary);
+            font-weight: 500;
+        }
+        body.mode-list .author-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin: 0 0.1rem;
+            color: var(--color-text-body);
+            transition: color 0.3s, background 0.3s;
+            border-radius: 5px;
+        }
+        body.mode-list .author-icon-link:hover {
+            color: var(--color-primary);
+            background: rgba(232, 144, 190, 0.1);
+        }
+        body.mode-list .author-icon-link svg {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+        }
+        body.mode-list .project-abstract {
+            font-size: 1.05rem;
+            color: var(--color-text-body);
+            line-height: 1.75;
+            text-align: justify;
+        }
+        body.mode-list .project-abstract p {
+            margin-bottom: 1rem;
+        }
+        body.mode-list .project-link {
+            display: inline-block;
+            margin: 1.5rem 0 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: var(--color-background-main);
+            text-decoration: none;
+            border-radius: 980px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        body.mode-list .project-link:hover {
+            background: #e0609d;
+        }
+        body.mode-list .project-citation {
+            margin-top: 1.5rem;
+            padding-top: 1.75rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem;
+            color: var(--color-text-body);
+            font-style: italic;
+            line-height: 1.6;
+        }
+        body.mode-list footer {
+            background: var(--color-background-secondary);
+            color: var(--color-text-body);
+            text-align: center;
+            padding: 3rem 5%;
+            font-size: 0.875rem;
+            border-top: 0.5px solid rgba(255,255,255,0.1);
+            margin-top: 3rem;
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.25);
+        }
+        body.mode-list #fullscreen-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        body.mode-list #fullscreen-modal.visible {
+            display: flex;
+            opacity: 1;
+        }
+        body.mode-list #modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            background-color: var(--color-white);
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(232, 144, 190, 0.5);
+        }
+        body.mode-list #modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+        }
+        body.mode-list #modal-close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        body.mode-list #modal-close:hover {
+            opacity: 1;
+            color: var(--color-primary);
+        }
+
+        @media (max-width: 1100px) {
+            body.mode-list nav {
+                padding: 1rem 1.25rem;
+            }
+            body.mode-list .nav-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            body.mode-list .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.25rem;
+            }
+            body.mode-list .project-section {
+                padding: 0 1.5rem;
+            }
+        }
+
+        @media (max-width: 860px) {
+            body.mode-list .dual-image-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body.mode-list .page-header h1 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+            body.mode-list .project-title {
+                font-size: 1.8rem;
+            }
+            body.mode-list .project-authors {
+                font-size: 1.05rem;
+            }
+            body.mode-list .project-abstract {
+                font-size: 1rem;
+                text-align: left;
+            }
+            body.mode-list .project-citation {
+                font-size: 0.85rem;
+            }
+            body.mode-list nav {
+                position: sticky;
+            }
+            body.mode-list .nav-content {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem 1rem;
+            }
+            body.mode-list .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 540px) {
+            body.mode-list .page-header {
+                padding: 4.5rem 1.25rem 2.5rem;
+            }
+            body.mode-list .project-title {
+                font-size: 1.55rem;
+            }
+            body.mode-list .project-authors {
+                font-size: 1rem;
+            }
+            body.mode-list .view-toggle-shell {
+                padding-top: 4.5rem;
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navigation injected via navigation.js -->
 
-    <section class="page-intro">
-        <p class="eyebrow">Cartoon Lab Notes</p>
-        <h1>Projects in Motion</h1>
-        <p>Start with the full FIPRED cut; scroll through it to advance the video, and as you near the end the project title and authors slide in. After the video, the full project details and other work appear below.</p>
-        <p style="margin-top:0.65rem;color:var(--muted);">FIPRED · Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
-    </section>
+    <div class="view-toggle-shell">
+        <p class="view-toggle-label">View</p>
+        <div class="view-toggle" role="group" aria-label="Toggle between storyboard and list views">
+            <button class="toggle-btn is-active" type="button" data-view-target="storyboard">Storyboard</button>
+            <button class="toggle-btn" type="button" data-view-target="list">List</button>
+        </div>
+    </div>
 
-    <section class="hero-pin" id="hero-fipred-pin">
-        <div class="hero-video" id="hero-fipred">
-            <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-                <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <div class="hero-overlay"></div>
-            <div class="hero-copy">
-                <p class="eyebrow">FIPRED</p>
-                <h1></h1>
-                <p></p>
+    <div id="storyboard-view" class="view-section is-active" aria-hidden="false">
+        <section class="page-intro">
+            <p class="eyebrow">Cartoon Lab Notes</p>
+            <h1>Projects in Motion</h1>
+            <p>Start with the full FIPRED cut; scroll through it to advance the video, and as you near the end the project title and authors slide in. After the video, the full project details and other work appear below.</p>
+            <p style="margin-top:0.65rem;color:var(--muted);">FIPRED · Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
+        </section>
+
+        <section class="hero-pin" id="hero-fipred-pin">
+            <div class="hero-video" id="hero-fipred">
+                <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+                    <source src="/ProjectsVids/FIPRED.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="hero-overlay"></div>
+                <div class="hero-copy">
+                    <p class="eyebrow">FIPRED</p>
+                    <h1></h1>
+                    <p></p>
+                </div>
+                <div class="hero-meta" data-hero-meta>
+                    <p class="meta-kicker">Project</p>
+                    <h2>FIPRED</h2>
+                    <p class="meta-authors">Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
+                </div>
             </div>
-            <div class="hero-meta" data-hero-meta>
-                <p class="meta-kicker">Project</p>
-                <h2>FIPRED</h2>
-                <p class="meta-authors">Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
+        </section>
+
+        <div class="content-shell">
+            <main class="projects-list">
+                <section class="project-block detail-block" id="fipred-details">
+                    <div class="project-title-row">
+                        <span class="project-tag">01</span>
+                        <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-text">
+                            <p class="project-authors">
+                                <span class="author-name">Robert J. Spenceley</span>,
+                                <span class="author-name">Christopher D. Wickens</span>,
+                                <span class="author-name">Bianca de Toledo Piza</span>
+                            </p>
+                            <div class="project-abstract">
+                                <p>Predictor displays are a form of automation shown to provide notable benefit in many environments and are applied to wildfire suppression in this study. Twenty-two participants predicted fire trajectories using an automated predictor plus raw data. Predictor benefit was evident across scenarios, with significant signs of automation bias when the automation erred.</p>
+                                <p>When raw data influences were removed in a control study, performance dropped, highlighting the value of raw data in calibrating dependence on the predictor. The FIPRED display improved prediction accuracy, but overreliance revealed automation bias, underscoring the need for careful trust calibration in high-stakes contexts.</p>
+                            </div>
+                            <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
+                            <div class="project-citation">
+                                Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. Proceedings of the Human Factors and Ergonomics Society Annual Meeting. https://doi.org/10.1177/10711813251364799
+                            </div>
+                        </div>
+                        <div class="detail-media">
+                            <figure>
+                                <object data="/projects/FIPRED.pdf" type="application/pdf" aria-label="FIPRED Poster" style="width:100%;height:320px;">
+                                    <a href="/projects/FIPRED.pdf">View FIPRED Poster (PDF)</a>
+                                </object>
+                                <figcaption>Presented at HFES ASPIRE 2025.</figcaption>
+                            </figure>
+                            <figure>
+                                <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Cover">
+                                <figcaption>Published in the 2025 ASPIRE Proceedings.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="project-block">
+                    <div class="project-title-row">
+                        <span class="project-tag">02</span>
+                        <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
+                    </div>
+                    <div class="video-shell">
+                        <div class="video-placeholder">Video coming soon</div>
+                    </div>
+                </section>
+
+                <section class="project-block" id="prospective-memory">
+                    <div class="project-title-row">
+                        <span class="project-tag">03</span>
+                        <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
+                    </div>
+                    <div class="video-shell">
+                        <div class="video-placeholder">Video coming soon</div>
+                    </div>
+                </section>
+            </main>
+
+            <footer>
+                <p>&copy; 2025 RS — Inked in black and white.</p>
+            </footer>
+        </div>
+    </div>
+
+    <div id="list-view" class="view-section" aria-hidden="true">
+        <div class="page-header">
+            <h1>Research Projects</h1>
+            <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
+        </div>
+
+        <div class="project-section">
+            <div class="poster-container" data-src="/projects/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf">
+                <img src="/projects/EEG%20Theta%20Power%20Varies%20across%20Roles%20in%20Mixed%20Human-Robot%20Teams.pdf" alt="EEG Theta Power Research Poster" class="poster-image"
+                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: EEG Theta Power Poster';"
+                >
+            </div>
+            <div class="project-details">
+                <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
+                <p class="project-authors">
+                    <span class="author-name">Robert J. Spenceley</span>,
+                    <span class="author-name">Aakash Yadav</span>
+                    <a href="[Aakash Yadav LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Aakash Yadav Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Aakash Yadav Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>,
+                    & <span class="author-name">Ranjana Mehta</span>
+                    <a href="[Ranjana Mehta LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Ranjana Mehta Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Ranjana Mehta Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>
+                </p>
+                <div class="project-abstract">
+                    <p>Search and rescue (SAR) tasks are some of the most dangerous and cognitively demanding tasks of emergency response. Cognitive demands vary across team members as role-specific duties introduce variable levels of cognitive load. The inclusion of robotic assistance has shown utility in providing recommendations, updating information, and alerting operators in SAR operations. Without perfect reliability, the responder may be a victim of automation bias, additional cognitive load, or lack of trust. Neuroimaging using Electroencephalography (EEG) can provide insights into how changing a teammate’s attributes alters others’ brain functions. This study aims to characterize the impact of different team roles on EEG frequency bands.</p>
+                    <p>Forty participants from a large, public university completed a virtual SAR task in 20 teams, completing Human-Human (HHH), Human-Robot Reliable (HHR), and Human-Robot Unreliable (HRU) conditions. EEG data was collected using a 32-electrode cap and analyzed for theta power at frontal (FP1, FP2) and temporoparietal (TP9, TP10) sites. Separate Kruskal-Wallis tests assessed differences between team conditions for each role. </p>
+                    <p>Among commanders, higher theta power was observed in HRU conditions at FP2 and TP10, while safety officers showed lower theta power at FP1 in the same condition. Increases in frontal theta in commanders indicate adaptations to task demands, while decreases in safety officers suggest that joint agency was not met. These results suggest that neural adaptation may be role-dependent, with commanders adapting better to unreliable automation, highlighting implications for optimizing robotic assistance in high-stakes response teams.</p>
+                </div>
+                <div class="project-citation">
+                    <strong>Citation:</strong> Spenceley, R. J., Yadav, A., & Mehta, R. K. (2024). EEG theta power varies across roles in mixed human-robot teams. Poster presented at the Human Factors and Ergonomics Society Annual Meeting.
+                </div>
             </div>
         </div>
-    </section>
 
-    <div class="content-shell">
-        <main class="projects-list">
-            <section class="project-block detail-block" id="fipred-details">
-                <div class="project-title-row">
-                    <span class="project-tag">01</span>
-                    <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
+        <div class="project-section">
+            <div class="dual-image-container">
+                <div class="poster-container" data-src="/projects/FIPRED.pdf">
+                    <img src="/projects/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image"
+                         onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: FIPRED Research Poster';"
+                    >
                 </div>
-                <div class="detail-grid">
-                    <div class="detail-text">
-                        <p class="project-authors">
-                            <span class="author-name">Robert J. Spenceley</span>,
-                            <span class="author-name">Christopher D. Wickens</span>,
-                            <span class="author-name">Bianca de Toledo Piza</span>
-                        </p>
-                        <div class="project-abstract">
-                            <p>Predictor displays are a form of automation shown to provide notable benefit in many environments and are applied to wildfire suppression in this study. Twenty-two participants predicted fire trajectories using an automated predictor plus raw data. Predictor benefit was evident across scenarios, with significant signs of automation bias when the automation erred.</p>
-                            <p>When raw data influences were removed in a control study, performance dropped, highlighting the value of raw data in calibrating dependence on the predictor. The FIPRED display improved prediction accuracy, but overreliance revealed automation bias, underscoring the need for careful trust calibration in high-stakes contexts.</p>
-                        </div>
-                        <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
-                        <div class="project-citation">
-                            Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. Proceedings of the Human Factors and Ergonomics Society Annual Meeting. https://doi.org/10.1177/10711813251364799
-                        </div>
-                    </div>
-                    <div class="detail-media">
-                        <figure>
-                            <object data="/projects/FIPRED.pdf" type="application/pdf" aria-label="FIPRED Poster" style="width:100%;height:320px;">
-                                <a href="/projects/FIPRED.pdf">View FIPRED Poster (PDF)</a>
-                            </object>
-                            <figcaption>Presented at HFES ASPIRE 2025.</figcaption>
-                        </figure>
-                        <figure>
-                            <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Cover">
-                            <figcaption>Published in the 2025 ASPIRE Proceedings.</figcaption>
-                        </figure>
-                    </div>
+                <div class="poster-container" data-src="/logos/HFES%20Cover.png">
+                    <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Journal Cover" class="poster-image"
+                         onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: HFES Proceedings Cover';"
+                    >
                 </div>
-            </section>
+            </div>
+            <div class="project-details">
+                <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
+                <p class="project-authors">
+                    <span class="author-name">Robert J. Spenceley</span>,
+                    <span class="author-name">Christopher D. Wickens</span>
+                    <a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>,
+                    & <span class="author-name">Bianca de Toledo Piza</span>
+                    <a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>
+                </p>
+                <div class="project-abstract">
+                    <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
+                    <p>Participants performed significantly worse when the raw data influences on the trajectory were removed in a control study, signaling the value of such data in calibrating dependence on the predictor. The FIPRED display was beneficial to participants, improving their ability to predict the future position of the fire. However, the automation bias indicated that participants may have over-relied on the automated assistance.</p>
+                </div>
+                <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
+                <div class="project-citation">
+                    <strong>Citation:</strong> Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. <em>Proceedings of the Human Factors and Ergonomics Society Annual Meeting</em>. https://doi.org/10.1177/10711813251364799
+                </div>
+            </div>
+        </div>
 
-            <section class="project-block">
-                <div class="project-title-row">
-                    <span class="project-tag">02</span>
-                    <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
+        <div class="project-section">
+            <div class="poster-container" data-src="/projects/REAL%20RMPA%20FINAL%202.pdf">
+                <img src="/projects/REAL%20RMPA%20FINAL%202.pdf" alt="Prospective Memory Research Poster" class="poster-image"
+                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Prospective Memory Poster';"
+                >
+            </div>
+            <div class="project-details">
+                <h2 class="project-title">Components of Executive Functioning Involved in Prospective Memory Performance</h2>
+                <p class="project-authors">
+                    <span class="author-name">Robert J. Spenceley</span>,
+                    <span class="author-name">Michaela Rice</span>
+                    <a href="[Michaela Rice LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Michaela Rice Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Michaela Rice Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>,
+                    & <span class="author-name">Deana Davalos</span>
+                    <a href="[Deana Davalos LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="[Deana Davalos Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Deana Davalos Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                    </a>
+                </p>
+                <div class="project-abstract">
+                    <p>Prospective memory (PM) involves setting intentions and remembering to complete tasks, a process essential for college students to manage daily responsibilities. Executive functioning supports these abilities through planning, monitoring, and managing attention, and prior research suggests the two are closely linked. Using the Dysexecutive Questionnaire (DEX), this study examined which components of executive functioning predict PM performance across five factors: inhibition, interference management, intentionality, planning, and social regulation.</p>
+                    <p>Results from seventy-nine participants showed that greater inhibition impairment was associated with lower PM accuracy, while other factors were unrelated. These findings suggest that inhibition plays a key role in PM, supporting the PAM model and emphasizing the importance of self-monitoring and attentional control in remembering intended actions.</p>
                 </div>
-                <div class="video-shell">
-                    <div class="video-placeholder">Video coming soon</div>
+                <div class="project-citation">
+                    <strong>Citation:</strong> Spenceley, R. J., Rice, M., & Davalos, D. (2023). Components of executive functioning involved in prospective memory performance. Poster presented at the Rocky Mountain Psychological Association Annual Conference.
                 </div>
-            </section>
-
-            <section class="project-block" id="prospective-memory">
-                <div class="project-title-row">
-                    <span class="project-tag">03</span>
-                    <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
-                </div>
-                <div class="video-shell">
-                    <div class="video-placeholder">Video coming soon</div>
-                </div>
-            </section>
-        </main>
+            </div>
+        </div>
 
         <footer>
-            <p>&copy; 2025 RS — Inked in black and white.</p>
+            <p>&copy; 2025 RS. Settle for nothing short of greatness.</p>
         </footer>
+
+        <div id="fullscreen-modal">
+            <span id="modal-close">&times;</span>
+            <div id="modal-content">
+                <img id="modal-image" src="" alt="Full Screen Poster">
+            </div>
+        </div>
     </div>
 
     <script src="navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Toggle nav styling based on hero scroll position
+            const body = document.body;
             const heroPin = document.getElementById('hero-fipred-pin');
             const heroVideo = document.getElementById('hero-fipred');
+            const viewButtons = Array.from(document.querySelectorAll('[data-view-target]'));
+            const viewSections = {
+                storyboard: document.getElementById('storyboard-view'),
+                list: document.getElementById('list-view'),
+            };
+            const modal = document.getElementById('fullscreen-modal');
+            const modalImage = document.getElementById('modal-image');
+            const closeModal = document.getElementById('modal-close');
+            const posterContainers = modal ? document.querySelectorAll('#list-view .poster-container') : [];
+
+            let nav = null;
+            let navUpdater = null;
             const waitForNav = () => {
-                const nav = document.querySelector('nav');
+                nav = document.querySelector('nav');
                 if (!nav) {
                     requestAnimationFrame(waitForNav);
                     return;
                 }
-                const updateNav = () => {
+                navUpdater = () => {
+                    if (body.classList.contains('mode-list')) {
+                        nav.classList.add('nav-solid');
+                        return;
+                    }
                     if (!heroPin) {
                         nav.classList.add('nav-solid');
                         return;
@@ -594,87 +1143,164 @@
                     const inView = rect.top <= navH && rect.bottom >= navH;
                     nav.classList.toggle('nav-solid', !inView);
                 };
-                updateNav();
-                window.addEventListener('scroll', updateNav, { passive: true });
-                window.addEventListener('resize', updateNav);
+                navUpdater();
+                window.addEventListener('scroll', navUpdater, { passive: true });
+                window.addEventListener('resize', navUpdater);
             };
             waitForNav();
 
             const videos = Array.from(document.querySelectorAll('[data-scroll-video]'));
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-            if (!videos.length || prefersReducedMotion.matches) return;
+            if (videos.length && !prefersReducedMotion.matches) {
+                videos.forEach(video => {
+                    let duration = 0;
+                    let targetProgress = 0;
+                    let currentProgress = 0;
+                    let rafId = null;
+                    const metaTarget = video.closest('.hero-video')?.querySelector('[data-hero-meta]');
+                    const pin = video.closest('.hero-pin');
 
-            videos.forEach(video => {
-                let duration = 0;
-                let targetProgress = 0;
-                let currentProgress = 0;
-                let rafId = null;
-                const metaTarget = video.closest('.hero-video')?.querySelector('[data-hero-meta]');
-                const pin = video.closest('.hero-pin');
-
-                const computeProgress = () => {
-                    const rect = pin ? pin.getBoundingClientRect() : video.getBoundingClientRect();
-                    const pinHeight = rect.height || window.innerHeight;
-                    const scrolledIntoPin = Math.max(0, -rect.top);
-                    const maxScroll = Math.max(1, pinHeight - window.innerHeight);
-                    const clamped = Math.min(scrolledIntoPin, maxScroll);
-                    return Math.min(Math.max(clamped / maxScroll, 0), 1);
-                };
-
-                const smoothUpdate = () => {
-                    const delta = targetProgress - currentProgress;
-                    if (Math.abs(delta) < 0.0005) {
-                        currentProgress = targetProgress;
-                        rafId = null;
-                    } else {
-                        currentProgress += delta * 0.08; // slower easing for smoother motion
-                        rafId = requestAnimationFrame(smoothUpdate);
-                    }
-                    if (duration) {
-                        const targetTime = currentProgress * duration;
-                        video.currentTime = targetTime;
-                        if (metaTarget) {
-                            metaTarget.classList.toggle('visible', targetTime >= Math.max(0, duration - 2));
-                        }
-                    }
-                };
-
-                const requestSync = () => {
-                    targetProgress = computeProgress();
-                    if (!rafId) {
-                        rafId = requestAnimationFrame(() => {
-                            rafId = null;
-                            smoothUpdate();
-                        });
-                    }
-                };
-
-                video.addEventListener('loadedmetadata', () => {
-                    duration = video.duration || 0;
-                    video.pause();
-                    requestSync();
-                });
-
-                video.play().then(() => video.pause()).catch(() => {
-                    /* autoplay might be blocked; scrubbing still works once metadata loads */
-                });
-
-                // Toggle fixed video visibility only while pin is in view
-                if (pin && heroVideo) {
-                    const toggleVisibility = () => {
-                        const rect = pin.getBoundingClientRect();
-                        const inView = rect.top < window.innerHeight && rect.bottom > 0;
-                        heroVideo.classList.toggle('is-active', inView);
+                    const computeProgress = () => {
+                        const rect = pin ? pin.getBoundingClientRect() : video.getBoundingClientRect();
+                        const pinHeight = rect.height || window.innerHeight;
+                        const scrolledIntoPin = Math.max(0, -rect.top);
+                        const maxScroll = Math.max(1, pinHeight - window.innerHeight);
+                        const clamped = Math.min(scrolledIntoPin, maxScroll);
+                        return Math.min(Math.max(clamped / maxScroll, 0), 1);
                     };
-                    toggleVisibility();
-                    window.addEventListener('scroll', toggleVisibility, { passive: true });
-                    window.addEventListener('resize', toggleVisibility);
-                }
 
-                window.addEventListener('scroll', requestSync, { passive: true });
-                window.addEventListener('resize', requestSync);
+                    const smoothUpdate = () => {
+                        const delta = targetProgress - currentProgress;
+                        if (Math.abs(delta) < 0.0005) {
+                            currentProgress = targetProgress;
+                            rafId = null;
+                        } else {
+                            currentProgress += delta * 0.08;
+                            rafId = requestAnimationFrame(smoothUpdate);
+                        }
+                        if (duration) {
+                            const targetTime = currentProgress * duration;
+                            video.currentTime = targetTime;
+                            if (metaTarget) {
+                                metaTarget.classList.toggle('visible', targetTime >= Math.max(0, duration - 2));
+                            }
+                        }
+                    };
+
+                    const requestSync = () => {
+                        if (body.classList.contains('mode-list')) return;
+                        targetProgress = computeProgress();
+                        if (!rafId) {
+                            rafId = requestAnimationFrame(() => {
+                                rafId = null;
+                                smoothUpdate();
+                            });
+                        }
+                    };
+
+                    video.addEventListener('loadedmetadata', () => {
+                        duration = video.duration || 0;
+                        video.pause();
+                        requestSync();
+                    });
+
+                    video.play().then(() => video.pause()).catch(() => {
+                        /* autoplay might be blocked; scrubbing still works once metadata loads */
+                    });
+
+                    if (pin && heroVideo) {
+                        const toggleVisibility = () => {
+                            if (body.classList.contains('mode-list')) {
+                                heroVideo.classList.remove('is-active');
+                                return;
+                            }
+                            const rect = pin.getBoundingClientRect();
+                            const inView = rect.top < window.innerHeight && rect.bottom > 0;
+                            heroVideo.classList.toggle('is-active', inView);
+                        };
+                        toggleVisibility();
+                        window.addEventListener('scroll', toggleVisibility, { passive: true });
+                        window.addEventListener('resize', toggleVisibility);
+                    }
+
+                    window.addEventListener('scroll', requestSync, { passive: true });
+                    window.addEventListener('resize', requestSync);
+                });
+            }
+
+            const setView = (view) => {
+                const isList = view === 'list';
+                body.classList.toggle('mode-list', isList);
+                body.classList.toggle('mode-storyboard', !isList);
+                viewButtons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.viewTarget === view));
+                Object.entries(viewSections).forEach(([key, section]) => {
+                    if (!section) return;
+                    const active = key === view;
+                    section.classList.toggle('is-active', active);
+                    section.setAttribute('aria-hidden', active ? 'false' : 'true');
+                });
+                sessionStorage.setItem('projectsView', view);
+                if (navUpdater) navUpdater();
+                if (!isList) {
+                    window.dispatchEvent(new Event('resize'));
+                    if (modal) {
+                        modal.classList.remove('visible');
+                        if (modalImage) modalImage.src = '';
+                        document.body.style.overflow = '';
+                    }
+                }
+            };
+
+            const savedView = sessionStorage.getItem('projectsView');
+            setView(savedView === 'list' ? 'list' : 'storyboard');
+
+            viewButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.dataset.viewTarget;
+                    setView(target);
+                });
             });
+
+            if (modal) {
+                const close = () => {
+                    modal.classList.remove('visible');
+                    setTimeout(() => {
+                        if (modalImage) {
+                            modalImage.src = '';
+                        }
+                        document.body.style.overflow = '';
+                    }, 250);
+                };
+                const open = (src) => {
+                    if (!src) return;
+                    if (modalImage) {
+                        modalImage.src = src;
+                    }
+                    modal.classList.add('visible');
+                    document.body.style.overflow = 'hidden';
+                };
+
+                posterContainers.forEach(container => {
+                    container.addEventListener('click', () => {
+                        if (!body.classList.contains('mode-list')) return;
+                        const imgSrc = container.getAttribute('data-src');
+                        open(imgSrc);
+                    });
+                });
+
+                closeModal?.addEventListener('click', close);
+                modal.addEventListener('click', (e) => {
+                    if (e.target.id === 'fullscreen-modal') {
+                        close();
+                    }
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && modal.classList.contains('visible')) {
+                        close();
+                    }
+                });
+            }
         });
     </script>
 </body>
