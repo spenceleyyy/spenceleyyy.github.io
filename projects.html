@@ -167,8 +167,10 @@
         .story-gap {
             background: var(--bg);
         }
-        .story-gap-spacer {
+        .story-gap-spacer,
+        .hero-gap-break {
             height: clamp(3rem, 5vh, 5rem);
+            background: var(--bg);
         }
         .hero-copy {
             position: absolute;
@@ -965,6 +967,7 @@
                 </div>
             </div>
         </section>
+        <div class="hero-gap-break" aria-hidden="true"></div>
 
         <section class="story-gap" id="gap-fipred">
             <div class="story-gap-spacer" aria-hidden="true"></div>
@@ -1056,6 +1059,7 @@
             </div>
             <div class="story-gap-spacer" aria-hidden="true"></div>
         </section>
+        <div class="hero-gap-break" aria-hidden="true"></div>
 
         <section class="hero-pin" id="hero-t2d-pin-storyboard">
             <div class="hero-video" id="hero-t2d-storyboard">
