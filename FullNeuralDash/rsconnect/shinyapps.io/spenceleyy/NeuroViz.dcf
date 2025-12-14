@@ -1,0 +1,12 @@
+name: NeuroViz
+title: NeuroViz
+username: spenceleyy
+account: spenceleyy
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16304923
+bundleId: 11316285
+url: https://spenceleyy.shinyapps.io/NeuroViz/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
