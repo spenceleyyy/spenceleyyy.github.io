@@ -164,6 +164,12 @@
             background: transparent;
             pointer-events: none;
         }
+        .story-gap {
+            background: var(--bg);
+        }
+        .story-gap-spacer {
+            height: clamp(3rem, 5vh, 5rem);
+        }
         .hero-copy {
             position: absolute;
             bottom: 12%;
@@ -960,69 +966,96 @@
             </div>
         </section>
 
-        <div class="content-shell">
-            <main class="projects-list">
-                <section class="project-block detail-block" id="fipred-details">
-                    <div class="project-title-row">
-                        <span class="project-tag">01</span>
-                        <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
-                    </div>
-                    <div class="detail-grid">
-                        <div class="detail-text">
+        <section class="story-gap" id="gap-fipred">
+            <div class="story-gap-spacer" aria-hidden="true"></div>
+            <div class="content-shell">
+                <main class="projects-list">
+                    <section class="project-block detail-block" id="fipred-details">
+                        <div class="project-title-row">
+                            <span class="project-tag">01</span>
+                            <h2 class="project-title">FIPRED: Predictive Automated Displays for Wildfire Management</h2>
+                        </div>
+                        <div class="detail-grid">
+                            <div class="detail-text">
+                                <p class="project-authors">
+                                    <span class="author-name">Robert J. Spenceley</span>,
+                                    <span class="author-name">Christopher D. Wickens</span>,
+                                    <span class="author-name">Bianca de Toledo Piza</span>
+                                </p>
+                                <div class="project-abstract">
+                                    <p>Predictor displays are a form of automation shown to provide notable benefit in many environments and are applied to wildfire suppression in this study. Twenty-two participants predicted fire trajectories using an automated predictor plus raw data. Predictor benefit was evident across scenarios, with significant signs of automation bias when the automation erred.</p>
+                                    <p>When raw data influences were removed in a control study, performance dropped, highlighting the value of raw data in calibrating dependence on the predictor. The FIPRED display improved prediction accuracy, but overreliance revealed automation bias, underscoring the need for careful trust calibration in high-stakes contexts.</p>
+                                </div>
+                                <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
+                                <div class="project-citation">
+                                    Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. Proceedings of the Human Factors and Ergonomics Society Annual Meeting. https://doi.org/10.1177/10711813251364799
+                                </div>
+                            </div>
+                            <div class="detail-media">
+                                <figure>
+                                    <object data="/projects/FIPRED.pdf" type="application/pdf" aria-label="FIPRED Poster" style="width:100%;height:320px;">
+                                        <a href="/projects/FIPRED.pdf">View FIPRED Poster (PDF)</a>
+                                    </object>
+                                    <figcaption>Presented at HFES ASPIRE 2025.</figcaption>
+                                </figure>
+                                <figure>
+                                    <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Cover">
+                                    <figcaption>Published in the 2025 ASPIRE Proceedings.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="project-section">
+                        <div class="dual-image-container">
+                            <div class="poster-container" data-src="/projects/FIPRED.pdf">
+                                <img src="/projects/FIPRED.pdf" alt="FIPRED Research Poster" class="poster-image"
+                                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: FIPRED Research Poster';"
+                                >
+                            </div>
+                            <div class="poster-container" data-src="/logos/HFES%20Cover.png">
+                                <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Journal Cover" class="poster-image"
+                                     onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: HFES Proceedings Cover';"
+                                >
+                            </div>
+                        </div>
+                        <div class="project-details">
+                            <h2 class="project-title">FIPRED: A Study of Predictive Automated Displays for Wildfire Fighting Management</h2>
                             <p class="project-authors">
                                 <span class="author-name">Robert J. Spenceley</span>,
-                                <span class="author-name">Christopher D. Wickens</span>,
-                                <span class="author-name">Bianca de Toledo Piza</span>
+                                <span class="author-name">Christopher D. Wickens</span>
+                                <a href="[Christopher D. Wickens LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens LinkedIn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                                </a>
+                                <a href="[Christopher D. Wickens Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Christopher D. Wickens Google Scholar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                                </a>,
+                                & <span class="author-name">Bianca de Toledo Piza</span>
+                                <a href="[Bianca de Toledo Piza LinkedIn Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza LinkedIn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                                </a>
+                                <a href="[Bianca de Toledo Piza Google Scholar Placeholder]" target="_blank" class="author-icon-link" aria-label="Bianca de Toledo Piza Google Scholar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                                </a>
                             </p>
                             <div class="project-abstract">
-                                <p>Predictor displays are a form of automation shown to provide notable benefit in many environments and are applied to wildfire suppression in this study. Twenty-two participants predicted fire trajectories using an automated predictor plus raw data. Predictor benefit was evident across scenarios, with significant signs of automation bias when the automation erred.</p>
-                                <p>When raw data influences were removed in a control study, performance dropped, highlighting the value of raw data in calibrating dependence on the predictor. The FIPRED display improved prediction accuracy, but overreliance revealed automation bias, underscoring the need for careful trust calibration in high-stakes contexts.</p>
+                                <p>Predictor displays are a form of automation that have been shown to provide a notable benefit in many environments and are applied to wildfire suppression in the present study. 22 participants were recruited to participate in a wildfire prediction study in which they predicted the fire trajectory based on the automated predictor and their interpretation of the raw data. In all scenarios, a large predictor benefit was observed, and in four of six scenarios, significant signs of automation bias were found, following an erroneous automated prediction.</p>
+                                <p>Participants performed significantly worse when the raw data influences on the trajectory were removed in a control study, signaling the value of such data in calibrating dependence on the predictor. The FIPRED display was beneficial to participants, improving their ability to predict the future position of the fire. However, the automation bias indicated that participants may have over-relied on the automated assistance.</p>
                             </div>
                             <a href="https://journals.sagepub.com/doi/full/10.1177/10711813251364799" target="_blank" class="project-link">Read Full Paper →</a>
                             <div class="project-citation">
-                                Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. Proceedings of the Human Factors and Ergonomics Society Annual Meeting. https://doi.org/10.1177/10711813251364799
+                                <strong>Citation:</strong> Spenceley, R. J., Wickens, C. D., & de Toledo Piza, B. (2025). FIPRED: A study of predictive automated displays for wildfire fighting management. <em>Proceedings of the Human Factors and Ergonomics Society Annual Meeting</em>. https://doi.org/10.1177/10711813251364799
                             </div>
                         </div>
-                        <div class="detail-media">
-                            <figure>
-                                <object data="/projects/FIPRED.pdf" type="application/pdf" aria-label="FIPRED Poster" style="width:100%;height:320px;">
-                                    <a href="/projects/FIPRED.pdf">View FIPRED Poster (PDF)</a>
-                                </object>
-                                <figcaption>Presented at HFES ASPIRE 2025.</figcaption>
-                            </figure>
-                            <figure>
-                                <img src="/logos/HFES%20Cover.png" alt="HFES Proceedings Cover">
-                                <figcaption>Published in the 2025 ASPIRE Proceedings.</figcaption>
-                            </figure>
-                        </div>
                     </div>
-                </section>
+                </main>
 
-                <section class="project-block">
-                    <div class="project-title-row">
-                        <span class="project-tag">02</span>
-                        <h2 class="project-title">EEG Theta Power Varies across Roles in Mixed Human-Robot Teams</h2>
-                    </div>
-                    <div class="video-shell">
-                        <div class="video-placeholder">Video coming soon</div>
-                    </div>
-                </section>
-
-                <section class="project-block" id="prospective-memory">
-                    <div class="project-title-row">
-                        <span class="project-tag">03</span>
-                        <h2 class="project-title">Components of Executive Functioning in Prospective Memory Performance</h2>
-                    </div>
-                    <div class="video-shell">
-                        <div class="video-placeholder">Video coming soon</div>
-                    </div>
-                </section>
-            </main>
-
-            <footer>
-                <p>&copy; 2025 RS — Inked in black and white.</p>
-            </footer>
-        </div>
+                <footer>
+                    <p>&copy; 2025 RS — Inked in black and white.</p>
+                </footer>
+            </div>
+            <div class="story-gap-spacer" aria-hidden="true"></div>
+        </section>
 
         <section class="hero-pin" id="hero-t2d-pin-storyboard">
             <div class="hero-video" id="hero-t2d-storyboard">
@@ -1037,16 +1070,6 @@
     </div>
 
     <div id="list-view" class="view-section" aria-hidden="true">
-        <section class="hero-pin" id="hero-t2d-pin">
-            <div class="hero-video" id="hero-t2d">
-                <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-                    <source src="/ProjectsVids/T2D.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <div class="hero-overlay"></div>
-            </div>
-        </section>
-
         <div class="page-header">
             <h1>Research Projects</h1>
             <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
