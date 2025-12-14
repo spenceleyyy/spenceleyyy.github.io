@@ -1233,6 +1233,17 @@
                 const pins = Array.from(document.querySelectorAll('.view-section.is-active .hero-pin'))
                     .filter(pin => pin.offsetParent !== null);
 
+                const midpoint = window.innerHeight / 2;
+                const gaps = Array.from(document.querySelectorAll('.hero-gap-break, .story-gap'))
+                    .filter(gap => {
+                        const rect = gap.getBoundingClientRect();
+                        return rect.top <= midpoint && rect.bottom >= midpoint;
+                    });
+                if (gaps.length) {
+                    document.querySelectorAll('.hero-video.is-active').forEach(el => el.classList.remove('is-active'));
+                    return;
+                }
+
                 let activePin = null;
                 const viewportMid = window.innerHeight / 2;
                 for (const pin of pins) {
