@@ -151,6 +151,7 @@
             pointer-events: auto;
             z-index: 0;
             transition: opacity 420ms ease, transform 420ms ease;
+            will-change: transform, opacity;
         }
         .hero-video video {
             position: absolute;
@@ -942,13 +943,6 @@
     </header>
 
     <div id="storyboard-view" class="view-section is-active" aria-hidden="false">
-        <section class="page-intro">
-            <p class="eyebrow">Cartoon Lab Notes</p>
-            <h1>Projects in Motion</h1>
-            <p>Start with the full FIPRED cut; scroll through it to advance the video, and as you near the end the project title and authors slide in. After the video, the full project details and other work appear below.</p>
-            <p style="margin-top:0.65rem;color:var(--muted);">FIPRED · Robert J. Spenceley · Christopher D. Wickens · Bianca de Toledo Piza</p>
-        </section>
-
         <section class="hero-pin" id="hero-fipred-pin">
             <div class="hero-video" id="hero-fipred">
                 <video data-scroll-video playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
@@ -1266,11 +1260,11 @@
 
                     const smoothUpdate = () => {
                         const delta = targetProgress - currentProgress;
-                        if (Math.abs(delta) < 0.0005) {
+                        if (Math.abs(delta) < 0.0003) {
                             currentProgress = targetProgress;
                             rafId = null;
                         } else {
-                            currentProgress += delta * 0.08;
+                            currentProgress += delta * 0.04;
                             rafId = requestAnimationFrame(smoothUpdate);
                         }
                         if (duration) {
