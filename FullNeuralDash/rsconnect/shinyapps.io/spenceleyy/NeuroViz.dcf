@@ -5,7 +5,7 @@ account: spenceleyy
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16304923
-bundleId: 11316285
+bundleId: 11322163
 url: https://spenceleyy.shinyapps.io/NeuroViz/
 version: 1
 asMultiple: FALSE
