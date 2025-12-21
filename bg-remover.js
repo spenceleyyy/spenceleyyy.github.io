@@ -213,6 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <input type="range" class="slider" id="bg-sensitivity" min="30" max="95" value="65">
                     </div>
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Edge Feather</span>
+                            <span id="bg-feather-value">2</span>
+                        </div>
+                        <input type="range" class="slider" id="bg-feather" min="0" max="6" value="2">
+                    </div>
                 </div>
 
                 <button class="btn btn-process" id="remove-bg" disabled>
@@ -262,53 +269,235 @@ document.addEventListener('DOMContentLoaded', () => {
             const bgControls = document.getElementById('bg-controls');
             const bgSensitivity = document.getElementById('bg-sensitivity');
             const bgSensitivityValue = document.getElementById('bg-sensitivity-value');
+            const bgFeather = document.getElementById('bg-feather');
+            const bgFeatherValue = document.getElementById('bg-feather-value');
 
-            const updateSensitivityDisplay = () => {
+            const updateControlDisplays = () => {
                 if (bgSensitivity && bgSensitivityValue) {
                     bgSensitivityValue.textContent = bgSensitivity.value;
                 }
+                if (bgFeather && bgFeatherValue) {
+                    bgFeatherValue.textContent = bgFeather.value;
+                }
             };
-            updateSensitivityDisplay();
+            updateControlDisplays();
 
-            const sampleBackgroundColor = (imageData) => {
+            const sampleEdgeColors = (imageData) => {
                 const { data, width, height } = imageData;
-                const estimatedSamples = (Math.floor(width / 40) + 1) * 2 + (Math.floor(height / 40) + 1) * 2;
-                const rSamples = new Uint8Array(estimatedSamples);
-                const gSamples = new Uint8Array(estimatedSamples);
-                const bSamples = new Uint8Array(estimatedSamples);
+                const targetSamples = 60;
+                const stepX = Math.max(1, Math.floor(width / targetSamples));
+                const stepY = Math.max(1, Math.floor(height / targetSamples));
+                const samples = [];
 
-                let idx = 0;
-                const stepX = Math.max(1, Math.floor(width / 40));
-                const stepY = Math.max(1, Math.floor(height / 40));
+                const pushSample = (x, y) => {
+                    const p = (y * width + x) * 4;
+                    samples.push({ r: data[p], g: data[p + 1], b: data[p + 2] });
+                };
 
                 for (let x = 0; x < width; x += stepX) {
-                    if (idx >= estimatedSamples) break;
-                    let p = x * 4;
-                    rSamples[idx] = data[p]; gSamples[idx] = data[p + 1]; bSamples[idx] = data[p + 2];
-                    idx++;
-                    p = ((height - 1) * width + x) * 4;
-                    rSamples[idx] = data[p]; gSamples[idx] = data[p + 1]; bSamples[idx] = data[p + 2];
-                    idx++;
+                    pushSample(x, 0);
+                    if (height > 1) pushSample(x, height - 1);
                 }
 
                 for (let y = 0; y < height; y += stepY) {
-                    if (idx >= estimatedSamples) break;
-                    let p = y * width * 4;
-                    rSamples[idx] = data[p]; gSamples[idx] = data[p + 1]; bSamples[idx] = data[p + 2];
-                    idx++;
-                    p = (y * width + width - 1) * 4;
-                    rSamples[idx] = data[p]; gSamples[idx] = data[p + 1]; bSamples[idx] = data[p + 2];
-                    idx++;
+                    pushSample(0, y);
+                    if (width > 1) pushSample(width - 1, y);
                 }
 
-                const median = (typedArr, length) => {
-                    if (length === 0) return 0;
-                    const sub = typedArr.subarray(0, length).sort();
-                    const mid = Math.floor(length / 2);
-                    return length % 2 === 0 ? (sub[mid - 1] + sub[mid]) / 2 : sub[mid];
+                return samples;
+            };
+
+            const minDistSqToPalette = (lab, palette) => {
+                let best = Infinity;
+                for (const center of palette) {
+                    const dl = lab.l - center.l;
+                    const da = lab.a - center.a;
+                    const db = lab.b - center.b;
+                    const dist = dl * dl + da * da + db * db;
+                    if (dist < best) best = dist;
+                }
+                return best;
+            };
+
+            const buildBackgroundModel = (samples, maxClusters = 4) => {
+                if (!samples.length) return { palette: [], sampleLabs: [] };
+                const sampleLabs = samples.map((s) => rgbToLabObj(s.r, s.g, s.b));
+                const clusterCount = Math.min(maxClusters, sampleLabs.length);
+                const palette = [];
+
+                palette.push({ ...sampleLabs[0] });
+                for (let i = 1; i < clusterCount; i++) {
+                    let bestIndex = 0;
+                    let bestDist = -1;
+                    for (let j = 0; j < sampleLabs.length; j++) {
+                        const dist = minDistSqToPalette(sampleLabs[j], palette);
+                        if (dist > bestDist) {
+                            bestDist = dist;
+                            bestIndex = j;
+                        }
+                    }
+                    palette.push({ ...sampleLabs[bestIndex] });
+                }
+
+                for (let iter = 0; iter < 5; iter++) {
+                    const sums = Array.from({ length: palette.length }, () => ({ l: 0, a: 0, b: 0, n: 0 }));
+                    for (const lab of sampleLabs) {
+                        let bestIndex = 0;
+                        let bestDist = Infinity;
+                        for (let i = 0; i < palette.length; i++) {
+                            const dl = lab.l - palette[i].l;
+                            const da = lab.a - palette[i].a;
+                            const db = lab.b - palette[i].b;
+                            const dist = dl * dl + da * da + db * db;
+                            if (dist < bestDist) {
+                                bestDist = dist;
+                                bestIndex = i;
+                            }
+                        }
+                        const sum = sums[bestIndex];
+                        sum.l += lab.l;
+                        sum.a += lab.a;
+                        sum.b += lab.b;
+                        sum.n += 1;
+                    }
+
+                    for (let i = 0; i < palette.length; i++) {
+                        if (sums[i].n > 0) {
+                            palette[i].l = sums[i].l / sums[i].n;
+                            palette[i].a = sums[i].a / sums[i].n;
+                            palette[i].b = sums[i].b / sums[i].n;
+                        }
+                    }
+                }
+
+                return { palette, sampleLabs };
+            };
+
+            const computeAdaptiveThreshold = (sampleLabs, palette, sensitivity) => {
+                if (!sampleLabs.length || !palette.length) return 0;
+                const distances = sampleLabs.map((lab) => Math.sqrt(minDistSqToPalette(lab, palette)));
+                distances.sort((a, b) => a - b);
+                const mid = distances[Math.floor(distances.length * 0.5)] ?? 0;
+                const high = distances[Math.floor(distances.length * 0.85)] ?? mid;
+                const variance = Math.max(0, high - mid);
+                const sensitivityNorm = (sensitivity - 30) / 65;
+                const threshold = mid + variance * 1.1 + 8 + sensitivityNorm * 28;
+                return clamp(threshold, 8, 70);
+            };
+
+            const labDistanceSqToPalette = (r, g, b, palette) => {
+                const R = toLinear(r);
+                const G = toLinear(g);
+                const B = toLinear(b);
+                const x = (R * 0.4124 + G * 0.3576 + B * 0.1805) / 0.95047;
+                const y = (R * 0.2126 + G * 0.7152 + B * 0.0722) / 1.00000;
+                const z = (R * 0.0193 + G * 0.1192 + B * 0.9505) / 1.08883;
+
+                const fx = labF(x);
+                const fy = labF(y);
+                const fz = labF(z);
+
+                const L = Math.max(0, 116 * fy - 16);
+                const A = 500 * (fx - fy);
+                const B_val = 200 * (fy - fz);
+
+                let best = Infinity;
+                for (const center of palette) {
+                    const dl = L - center.l;
+                    const da = A - center.a;
+                    const db = B_val - center.b;
+                    const dist = dl * dl + da * da + db * db;
+                    if (dist < best) best = dist;
+                }
+                return best;
+            };
+
+            const buildBackgroundMask = (imageData, palette, threshold) => {
+                const { data, width, height } = imageData;
+                const total = width * height;
+                const state = new Uint8Array(total);
+                if (!palette.length || threshold <= 0) {
+                    state.fill(2);
+                    return state;
+                }
+                const thresholdSq = threshold * threshold;
+                const queue = new Uint32Array(total);
+                let qStart = 0;
+                let qEnd = 0;
+
+                const markPixel = (x, y) => {
+                    const idx = y * width + x;
+                    if (state[idx] !== 0) return;
+                    const p = idx * 4;
+                    const distSq = labDistanceSqToPalette(data[p], data[p + 1], data[p + 2], palette);
+                    if (distSq <= thresholdSq) {
+                        state[idx] = 1;
+                        queue[qEnd++] = idx;
+                    } else {
+                        state[idx] = 2;
+                    }
                 };
 
-                return { r: median(rSamples, idx), g: median(gSamples, idx), b: median(bSamples, idx) };
+                for (let x = 0; x < width; x++) {
+                    markPixel(x, 0);
+                    if (height > 1) markPixel(x, height - 1);
+                }
+                for (let y = 0; y < height; y++) {
+                    markPixel(0, y);
+                    if (width > 1) markPixel(width - 1, y);
+                }
+
+                while (qStart < qEnd) {
+                    const idx = queue[qStart++];
+                    const x = idx % width;
+                    const y = (idx / width) | 0;
+                    if (x > 0) markPixel(x - 1, y);
+                    if (x < width - 1) markPixel(x + 1, y);
+                    if (y > 0) markPixel(x, y - 1);
+                    if (y < height - 1) markPixel(x, y + 1);
+                }
+
+                return state;
+            };
+
+            const boxBlurMask = (mask, width, height, radius) => {
+                if (radius <= 0) return mask;
+                const size = radius * 2 + 1;
+                const tmp = new Uint32Array(width * height);
+                const out = new Uint8ClampedArray(width * height);
+
+                for (let y = 0; y < height; y++) {
+                    let sum = 0;
+                    for (let i = -radius; i <= radius; i++) {
+                        const xi = clamp(i, 0, width - 1);
+                        sum += mask[y * width + xi];
+                    }
+                    tmp[y * width] = sum;
+                    for (let x = 1; x < width; x++) {
+                        const addX = clamp(x + radius, 0, width - 1);
+                        const subX = clamp(x - radius - 1, 0, width - 1);
+                        sum += mask[y * width + addX] - mask[y * width + subX];
+                        tmp[y * width + x] = sum;
+                    }
+                }
+
+                const denom = size * size;
+                for (let x = 0; x < width; x++) {
+                    let sum = 0;
+                    for (let i = -radius; i <= radius; i++) {
+                        const yi = clamp(i, 0, height - 1);
+                        sum += tmp[yi * width + x];
+                    }
+                    out[x] = Math.round(sum / denom);
+                    for (let y = 1; y < height; y++) {
+                        const addY = clamp(y + radius, 0, height - 1);
+                        const subY = clamp(y - radius - 1, 0, height - 1);
+                        sum += tmp[addY * width + x] - tmp[subY * width + x];
+                        out[y * width + x] = Math.round(sum / denom);
+                    }
+                }
+
+                return out;
             };
 
             const applyBackgroundRemoval = () => {
@@ -323,46 +512,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = imageData.data;
                     const sensitivityValue = bgSensitivity ? Number(bgSensitivity.value) : 65;
                     const clampedSensitivity = clamp(sensitivityValue, 30, 95);
+                    const featherValue = bgFeather ? Number(bgFeather.value) : 2;
+                    const featherRadius = clamp(Math.round(featherValue), 0, 6);
 
-                    const bgColor = sampleBackgroundColor(imageData);
-                    const bgLab = rgbToLabObj(bgColor.r, bgColor.g, bgColor.b);
+                    const samples = sampleEdgeColors(imageData);
+                    const { palette, sampleLabs } = buildBackgroundModel(samples);
+                    const threshold = computeAdaptiveThreshold(sampleLabs, palette, clampedSensitivity);
+                    const state = buildBackgroundMask(imageData, palette, threshold);
 
-                    const threshold = 10 + (clampedSensitivity / 100) * 40;
+                    const total = processedCanvas.width * processedCanvas.height;
+                    const mask = new Uint8ClampedArray(total);
+                    for (let i = 0; i < total; i++) {
+                        mask[i] = state[i] === 1 ? 0 : 255;
+                    }
+                    const alphaMask = boxBlurMask(mask, processedCanvas.width, processedCanvas.height, featherRadius);
 
-                    const len = data.length;
-                    for (let i = 0; i < len; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-
-                        const rs = r / 255;
-                        const R = rs <= 0.04045 ? rs / 12.92 : Math.pow((rs + 0.055) / 1.055, 2.4);
-                        const gs = g / 255;
-                        const G = gs <= 0.04045 ? gs / 12.92 : Math.pow((gs + 0.055) / 1.055, 2.4);
-                        const bs = b / 255;
-                        const B = bs <= 0.04045 ? bs / 12.92 : Math.pow((bs + 0.055) / 1.055, 2.4);
-
-                        const x = (R * 0.4124 + G * 0.3576 + B * 0.1805) / 0.95047;
-                        const y = (R * 0.2126 + G * 0.7152 + B * 0.0722);
-                        const z = (R * 0.0193 + G * 0.1192 + B * 0.9505) / 1.08883;
-
-                        const fx = x > 0.008856 ? Math.cbrt(x) : 7.787 * x + 0.137931;
-                        const fy = y > 0.008856 ? Math.cbrt(y) : 7.787 * y + 0.137931;
-                        const fz = z > 0.008856 ? Math.cbrt(z) : 7.787 * z + 0.137931;
-
-                        const L = Math.max(0, 116 * fy - 16);
-                        const A = 500 * (fx - fy);
-                        const B_val = 200 * (fy - fz);
-
-                        const dl = L - bgLab.l;
-                        const da = A - bgLab.a;
-                        const db = B_val - bgLab.b;
-
-                        const dist = Math.sqrt(dl * dl + da * da + db * db);
-
-                        if (dist < threshold) {
-                            data[i + 3] = 0;
-                        }
+                    for (let i = 0; i < total; i++) {
+                        data[i * 4 + 3] = alphaMask[i];
                     }
 
                     ctx.putImageData(imageData, 0, 0);
@@ -408,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fileName.style.display = 'block';
                 removeBgBtn.disabled = false;
                 if (bgControls) bgControls.style.display = 'block';
-                updateSensitivityDisplay();
+                updateControlDisplays();
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -472,7 +638,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let sliderTimeout;
             bgSensitivity?.addEventListener('input', () => {
-                updateSensitivityDisplay();
+                updateControlDisplays();
+                if (uploadedImage && previewContainer.style.display === 'grid') {
+                    clearTimeout(sliderTimeout);
+                    sliderTimeout = setTimeout(() => {
+                        processBackground({ skipLoader: true });
+                    }, 50);
+                }
+            });
+            bgFeather?.addEventListener('input', () => {
+                updateControlDisplays();
                 if (uploadedImage && previewContainer.style.display === 'grid') {
                     clearTimeout(sliderTimeout);
                     sliderTimeout = setTimeout(() => {
