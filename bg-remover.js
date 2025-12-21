@@ -381,8 +381,94 @@ document.addEventListener('DOMContentLoaded', () => {
                 const high = distances[Math.floor(distances.length * 0.85)] ?? mid;
                 const variance = Math.max(0, high - mid);
                 const sensitivityNorm = (sensitivity - 30) / 65;
-                const threshold = mid + variance * 1.1 + 8 + sensitivityNorm * 28;
-                return clamp(threshold, 8, 70);
+                const threshold = mid + variance * 0.8 + 6 + sensitivityNorm * 20;
+                return clamp(threshold, 6, 55);
+            };
+
+            const computeEdgeMap = (imageData) => {
+                const { data, width, height } = imageData;
+                const total = width * height;
+                const lum = new Float32Array(total);
+                for (let i = 0; i < total; i++) {
+                    const p = i * 4;
+                    lum[i] = 0.2126 * data[p] + 0.7152 * data[p + 1] + 0.0722 * data[p + 2];
+                }
+
+                const edge = new Float32Array(total);
+                let maxEdge = 0;
+                for (let y = 1; y < height - 1; y++) {
+                    const row = y * width;
+                    for (let x = 1; x < width - 1; x++) {
+                        const idx = row + x;
+                        const gx =
+                            -lum[idx - width - 1] + lum[idx - width + 1]
+                            - 2 * lum[idx - 1] + 2 * lum[idx + 1]
+                            - lum[idx + width - 1] + lum[idx + width + 1];
+                        const gy =
+                            -lum[idx - width - 1] - 2 * lum[idx - width] - lum[idx - width + 1]
+                            + lum[idx + width - 1] + 2 * lum[idx + width] + lum[idx + width + 1];
+                        const value = Math.sqrt(gx * gx + gy * gy);
+                        edge[idx] = value;
+                        if (value > maxEdge) maxEdge = value;
+                    }
+                }
+                return { edge, maxEdge };
+            };
+
+            const computeEdgeThreshold = (edge, maxEdge, sensitivityNorm, width, height) => {
+                if (maxEdge <= 0) return 1;
+                let sum = 0;
+                let sumSq = 0;
+                let count = 0;
+                for (let y = 1; y < height - 1; y++) {
+                    const row = y * width;
+                    for (let x = 1; x < width - 1; x++) {
+                        const idx = row + x;
+                        const value = edge[idx] / maxEdge;
+                        sum += value;
+                        sumSq += value * value;
+                        count++;
+                    }
+                }
+                if (!count) return 1;
+                const mean = sum / count;
+                const variance = Math.max(0, sumSq / count - mean * mean);
+                const std = Math.sqrt(variance);
+                const factor = 0.8 + sensitivityNorm * 0.8;
+                return clamp(mean + std * factor, 0.08, 0.6);
+            };
+
+            const dilateEdgeMap = (edge, width, height) => {
+                const total = width * height;
+                const out = new Float32Array(total);
+                if (width < 3 || height < 3) {
+                    out.set(edge);
+                    return out;
+                }
+                for (let y = 1; y < height - 1; y++) {
+                    const row = y * width;
+                    for (let x = 1; x < width - 1; x++) {
+                        let maxVal = 0;
+                        for (let dy = -1; dy <= 1; dy++) {
+                            const nRow = (y + dy) * width;
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const value = edge[nRow + x + dx];
+                                if (value > maxVal) maxVal = value;
+                            }
+                        }
+                        out[row + x] = maxVal;
+                    }
+                }
+
+                for (let x = 0; x < width; x++) {
+                    out[x] = edge[x];
+                    out[(height - 1) * width + x] = edge[(height - 1) * width + x];
+                }
+                for (let y = 0; y < height; y++) {
+                    out[y * width] = edge[y * width];
+                    out[y * width + width - 1] = edge[y * width + width - 1];
+                }
+                return out;
             };
 
             const labDistanceSqToPalette = (r, g, b, palette) => {
@@ -412,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return best;
             };
 
-            const buildBackgroundMask = (imageData, palette, threshold) => {
+            const buildBackgroundMask = (imageData, palette, threshold, edge, maxEdge, edgeThreshold) => {
                 const { data, width, height } = imageData;
                 const total = width * height;
                 const state = new Uint8Array(total);
@@ -425,12 +511,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 let qStart = 0;
                 let qEnd = 0;
 
-                const markPixel = (x, y) => {
+                const markPixel = (x, y, isBorder = false) => {
                     const idx = y * width + x;
                     if (state[idx] !== 0) return;
                     const p = idx * 4;
                     const distSq = labDistanceSqToPalette(data[p], data[p + 1], data[p + 2], palette);
-                    if (distSq <= thresholdSq) {
+                    const edgeStrength = maxEdge > 0 ? edge[idx] / maxEdge : 0;
+                    if (distSq <= thresholdSq && (isBorder || edgeStrength <= edgeThreshold)) {
                         state[idx] = 1;
                         queue[qEnd++] = idx;
                     } else {
@@ -439,12 +526,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
 
                 for (let x = 0; x < width; x++) {
-                    markPixel(x, 0);
-                    if (height > 1) markPixel(x, height - 1);
+                    markPixel(x, 0, true);
+                    if (height > 1) markPixel(x, height - 1, true);
                 }
                 for (let y = 0; y < height; y++) {
-                    markPixel(0, y);
-                    if (width > 1) markPixel(width - 1, y);
+                    markPixel(0, y, true);
+                    if (width > 1) markPixel(width - 1, y, true);
                 }
 
                 while (qStart < qEnd) {
@@ -512,13 +599,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = imageData.data;
                     const sensitivityValue = bgSensitivity ? Number(bgSensitivity.value) : 65;
                     const clampedSensitivity = clamp(sensitivityValue, 30, 95);
+                    const sensitivityNorm = (clampedSensitivity - 30) / 65;
                     const featherValue = bgFeather ? Number(bgFeather.value) : 2;
                     const featherRadius = clamp(Math.round(featherValue), 0, 6);
 
                     const samples = sampleEdgeColors(imageData);
                     const { palette, sampleLabs } = buildBackgroundModel(samples);
                     const threshold = computeAdaptiveThreshold(sampleLabs, palette, clampedSensitivity);
-                    const state = buildBackgroundMask(imageData, palette, threshold);
+                    const { edge, maxEdge } = computeEdgeMap(imageData);
+                    const edgeField = dilateEdgeMap(edge, processedCanvas.width, processedCanvas.height);
+                    const edgeThreshold = computeEdgeThreshold(edgeField, maxEdge, sensitivityNorm, processedCanvas.width, processedCanvas.height);
+                    const state = buildBackgroundMask(imageData, palette, threshold, edgeField, maxEdge, edgeThreshold);
 
                     const total = processedCanvas.width * processedCanvas.height;
                     const mask = new Uint8ClampedArray(total);
