@@ -253,11 +253,15 @@
     .pull-project {
       position: absolute;
       left: 50%;
-      bottom: -120px;
+      bottom: -420px;
       transform: translateX(-50%);
       width: min(520px, 92vw);
       z-index: 3;
       pointer-events: auto;
+    }
+    body.show-projects .pull-project {
+      bottom: -120px;
+      transition: bottom 0.8s ease;
     }
     .pull-project .project-window {
       min-height: 360px;
