@@ -34,6 +34,93 @@
       overflow-x: hidden;
     }
 
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 40;
+      background: #000;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.85rem 6vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .logo-image {
+      width: 40px;
+      height: 40px;
+    }
+    .full-name {
+      font-size: 0.85rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 0.45rem);
+      left: 0;
+      min-width: 210px;
+      padding: 0.7rem 0.9rem;
+      margin: 0;
+      list-style: none;
+      background: rgba(4, 6, 12, 0.96);
+      border-radius: 12px;
+      border: 1px solid rgba(127, 231, 255, 0.2);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      display: none;
+      z-index: 5;
+    }
+    .dropdown-menu li + li {
+      margin-top: 0.35rem;
+    }
+    .dropdown-menu a {
+      color: #fff;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+    }
+    .dropdown:hover .dropdown-menu,
+    .dropdown:focus-within .dropdown-menu {
+      display: block;
+    }
+    .dropdown-menu::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 0;
+      right: 0;
+      height: 10px;
+    }
+
     .portfolio-page nav {
       background: #000 !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -268,6 +355,18 @@
     }
 
     @media (max-width: 720px) {
+      nav {
+        position: sticky;
+      }
+      .nav-content {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1.2rem;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
       .scroll-stage {
         height: 200vh;
       }
