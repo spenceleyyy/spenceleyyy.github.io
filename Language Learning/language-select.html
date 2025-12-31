@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaBloom — Choose Language</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoUPDATED.png" />
+  <meta name="theme-color" content="#ff8d62" />
+  <link rel="stylesheet" href="linguabloom.css" />
+</head>
+<body class="language-page">
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="logo">
+        <span>LB</span>
+        LinguaBloom
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+      </div>
+    </header>
+
+    <section class="view active" id="viewLanguage">
+      <div class="language-select-layout" id="languageSelectLayout">
+        <div class="language-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Start here</p>
+            <h2>Select your language</h2>
+            <p class="panel-sub">Pick a language to reveal where it shines.</p>
+          </div>
+          <div class="language-grid" id="languageGrid"></div>
+        </div>
+        <div class="globe-panel">
+          <div class="globe-card">
+            <div class="globe-shell" id="globeShell">
+              <div class="globe-animation active" id="globeAnimation" aria-hidden="true">
+                <canvas id="globeCanvas" class="globe-canvas" aria-label="Language globe"></canvas>
+              </div>
+            </div>
+            <div class="globe-caption" id="globeCaption">Choose a language to explore its home countries.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="icon-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="control-group">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="packSelect">Language Pack</label>
+        <select id="packSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="scriptModeSelect">Script display</label>
+        <select id="scriptModeSelect" class="control-select">
+          <option value="both">Hanzi + Pinyin</option>
+          <option value="hanzi">Hanzi only</option>
+          <option value="romanized">Pinyin only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="focusSelect">I want to learn</label>
+        <select id="focusSelect" class="control-select">
+          <option value="all">Everything</option>
+          <option value="new-words">New words</option>
+          <option value="conversations">Conversations</option>
+          <option value="spoken">Spoken only</option>
+          <option value="review">Review</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="speakerSelect">Speaker</label>
+        <select id="speakerSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="speedRange">Speech speed <span class="range-value" id="speedValue">1.0x</span></label>
+        <input type="range" id="speedRange" class="control-range" min="0.6" max="1.4" step="0.1" value="1" />
+      </div>
+      <div class="control-actions">
+        <span class="save-status" id="saveStatus">Progress saved</span>
+        <button class="tiny-btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <script src="linguabloom.js" defer></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../lib/three/three.module.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+
+    const shell = document.getElementById("globeShell");
+    const canvas = document.getElementById("globeCanvas");
+    const animationWrap = document.getElementById("globeAnimation");
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+    camera.position.set(0, 0, 3.1);
+
+    const globeGroup = new THREE.Group();
+    scene.add(globeGroup);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(3, 2, 2);
+    scene.add(dirLight);
+
+    const markerGroup = new THREE.Group();
+    globeGroup.add(markerGroup);
+
+    let markers = [];
+    let animationStart = 0;
+    let stepDurationMs = 900;
+    let markerColor = "#7bcf9d";
+    let globeRadius = 1;
+
+    const parseWkt = (wkt) => {
+      if (!wkt) return null;
+      const match = wkt.match(/Point\\(([-\\d.]+)\\s+([-\\d.]+)\\)/);
+      if (!match) return null;
+      return { lon: Number(match[1]), lat: Number(match[2]) };
+    };
+
+    const latLonToVector = (lat, lon, radius) => {
+      const phi = (90 - lat) * (Math.PI / 180);
+      const theta = (lon + 180) * (Math.PI / 180);
+      const x = -radius * Math.sin(phi) * Math.cos(theta);
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+      const y = radius * Math.cos(phi);
+      return new THREE.Vector3(x, y, z);
+    };
+
+    const clearMarkers = () => {
+      markers.forEach((mesh) => {
+        mesh.geometry.dispose();
+        mesh.material.dispose();
+        markerGroup.remove(mesh);
+      });
+      markers = [];
+    };
+
+    const buildMarkers = (countryList) => {
+      clearMarkers();
+      const color = new THREE.Color(markerColor);
+      const geometry = new THREE.SphereGeometry(0.02, 14, 14);
+      countryList.forEach((entry) => {
+        const coords = parseWkt(entry.coord_wkt);
+        if (!coords) return;
+        const material = new THREE.MeshStandardMaterial({
+          color,
+          transparent: true,
+          opacity: 0.25,
+          emissive: color,
+          emissiveIntensity: 0.45,
+          depthWrite: false
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.copy(latLonToVector(coords.lat, coords.lon, globeRadius + 0.02));
+        markerGroup.add(mesh);
+        markers.push(mesh);
+      });
+    };
+
+    const playCountrySequence = (label) => {
+      if (!markers.length) return;
+      animationStart = performance.now();
+      window.languageAnimationDurationMs = Math.max(markers.length * stepDurationMs, 1200);
+      window.dispatchEvent(
+        new CustomEvent("globeAnimationDuration", {
+          detail: { label: label || "", durationMs: window.languageAnimationDurationMs }
+        })
+      );
+    };
+
+    const updateMarkers = (time) => {
+      if (!markers.length || !animationStart) return;
+      const elapsed = time - animationStart;
+      const index = Math.floor(elapsed / stepDurationMs);
+      const activeIndex = index % markers.length;
+      markers.forEach((mesh, idx) => {
+        const active = idx === activeIndex;
+        const targetScale = active ? 1.8 : 1.0;
+        const scale = mesh.scale.x + (targetScale - mesh.scale.x) * 0.2;
+        mesh.scale.setScalar(scale);
+        mesh.material.opacity = active ? 0.9 : 0.25;
+        mesh.material.emissiveIntensity = active ? 1.2 : 0.45;
+      });
+    };
+
+    const fitRenderer = () => {
+      if (!shell) return;
+      const rect = shell.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      renderer.setSize(size, size, false);
+      camera.aspect = 1;
+      camera.updateProjectionMatrix();
+    };
+
+    const animate = (time) => {
+      updateMarkers(time);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    };
+
+    const globeMaterial = new THREE.MeshStandardMaterial({
+      color: "#1f2b3a",
+      roughness: 0.92,
+      metalness: 0.05
+    });
+    const globeGeometry = new THREE.SphereGeometry(globeRadius, 64, 64);
+    const globeMesh = new THREE.Mesh(globeGeometry, globeMaterial);
+    globeGroup.add(globeMesh);
+
+    let languageData = null;
+    const loadLanguageData = async () => {
+      if (languageData) return languageData;
+      const res = await fetch("languageMaps_debug.json");
+      if (!res.ok) throw new Error(`languageMaps_debug.json load failed: ${res.status}`);
+      languageData = await res.json();
+      return languageData;
+    };
+
+    const playLanguageAnimation = async (label, highlight) => {
+      if (!label) return;
+      const data = await loadLanguageData();
+      let entry = data[label];
+      if (!entry) {
+        const match = Object.keys(data).find((key) => key.toLowerCase() === label.toLowerCase());
+        if (match) entry = data[match];
+      }
+      if (!entry || !entry.countries) return;
+      markerColor = highlight || markerColor;
+      buildMarkers(entry.countries);
+      playCountrySequence(label);
+    };
+
+    const syncFromActiveCard = () => {
+      const activeCard = document.querySelector(".language-card.active");
+      const labelNode = activeCard?.querySelector(".lang-label");
+      const label = labelNode?.textContent?.trim();
+      if (label) {
+        const color = getComputedStyle(shell).getPropertyValue("--highlight-color") || markerColor;
+        playLanguageAnimation(label, color.trim() || markerColor);
+      }
+    };
+
+    const onPointerMove = (event) => {
+      if (!onPointerMove.dragging) return;
+      const dx = event.clientX - onPointerMove.lastX;
+      const dy = event.clientY - onPointerMove.lastY;
+      onPointerMove.lastX = event.clientX;
+      onPointerMove.lastY = event.clientY;
+      globeGroup.rotation.y += dx * 0.005;
+      globeGroup.rotation.x += dy * 0.005;
+      globeGroup.rotation.x = THREE.MathUtils.clamp(globeGroup.rotation.x, -1.2, 1.2);
+    };
+    onPointerMove.dragging = false;
+
+    canvas.addEventListener("pointerdown", (event) => {
+      onPointerMove.dragging = true;
+      onPointerMove.lastX = event.clientX;
+      onPointerMove.lastY = event.clientY;
+      canvas.setPointerCapture(event.pointerId);
+    });
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", () => {
+      onPointerMove.dragging = false;
+    });
+
+    window.addEventListener("languagechange", (event) => {
+      if (!event?.detail?.label) return;
+      const highlight = event.detail.highlight || markerColor;
+      playLanguageAnimation(event.detail.label, highlight);
+    });
+
+    window.addEventListener("resize", fitRenderer);
+    fitRenderer();
+    requestAnimationFrame(animate);
+    window.addEventListener("DOMContentLoaded", syncFromActiveCard);
+  </script>
+</body>
+</html>

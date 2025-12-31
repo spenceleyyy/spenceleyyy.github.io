@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio | RS</title>
+  <link rel="icon" href="/logos/RSlogoUPDATED.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500;700&family=Sora:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080b12;
+      --bg-2: #0f1624;
+      --ink: #ecf2ff;
+      --muted: rgba(236, 242, 255, 0.64);
+      --accent: #7fe7ff;
+      --accent-2: #ff9bd6;
+      --panel: rgba(12, 18, 32, 0.88);
+      --panel-border: rgba(127, 231, 255, 0.3);
+      --shadow: 0 30px 80px rgba(2, 4, 10, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(127, 231, 255, 0.12), transparent 45%),
+        radial-gradient(circle at 80% 5%, rgba(255, 155, 214, 0.12), transparent 42%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      color: var(--ink);
+      font-family: "Sora", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .portfolio-page nav {
+      background: #000 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: none !important;
+    }
+    .portfolio-page nav .logo-link,
+    .portfolio-page nav .nav-links a {
+      color: #fff !important;
+      text-shadow: none !important;
+    }
+    .portfolio-page nav .nav-links a {
+      position: relative;
+      overflow: visible;
+      display: inline-flex;
+      align-items: center;
+    }
+    .portfolio-page nav .nav-links a:hover {
+      color: var(--accent) !important;
+    }
+
+    .butterfly-spark {
+      position: absolute;
+      left: var(--spark-x);
+      top: var(--spark-y);
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+      transform-origin: center;
+      animation: butterfly-float 1.2s ease-out forwards;
+      filter: drop-shadow(0 0 6px rgba(127, 231, 255, 0.6));
+      z-index: 5;
+    }
+    .butterfly-spark svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .butterfly-wing {
+      fill: rgba(127, 231, 255, 0.7);
+    }
+    .butterfly-body {
+      stroke: rgba(127, 231, 255, 0.95);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+    @keyframes butterfly-float {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(var(--spark-scale, 0.8)) rotate(var(--spark-rot-start, 0deg));
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--spark-x-drift), var(--spark-y-drift))
+          scale(calc(var(--spark-scale, 0.8) + 0.2)) rotate(var(--spark-rot-end, 45deg));
+      }
+    }
+
+    main {
+      padding-top: 64px;
+    }
+
+    .hero-intro {
+      padding: clamp(4rem, 10vw, 7rem) 6vw 3rem;
+      max-width: 1000px;
+    }
+    .hero-intro h1 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      margin: 0 0 1rem;
+      letter-spacing: 0.02em;
+    }
+    .hero-intro p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .scroll-stage {
+      position: relative;
+      height: 220vh;
+      padding: 0 6vw;
+    }
+    .sticky-frame {
+      position: sticky;
+      top: 10vh;
+      height: 80vh;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sticky-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .frame-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8, 11, 18, 0.25) 0%, rgba(8, 11, 18, 0.65) 75%);
+      pointer-events: none;
+    }
+    .frame-title {
+      position: absolute;
+      bottom: clamp(1.5rem, 4vw, 3rem);
+      left: clamp(1.5rem, 4vw, 3rem);
+      z-index: 2;
+    }
+    .frame-title h2 {
+      margin: 0 0 0.5rem;
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+    }
+    .frame-title span {
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    .projects-reveal {
+      position: relative;
+      margin-top: -8vh;
+      padding: clamp(3rem, 7vw, 6rem) 6vw 8rem;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      pointer-events: none;
+    }
+    body.show-projects .projects-reveal {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .projects-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .projects-head h3 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin: 0;
+    }
+    .projects-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .project-window {
+      background: var(--panel);
+      border-radius: 20px;
+      border: 1px solid var(--panel-border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 360px;
+      backdrop-filter: blur(10px);
+    }
+    .window-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 12, 22, 0.8);
+    }
+    .window-dots {
+      display: flex;
+      gap: 0.35rem;
+    }
+    .window-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .window-title {
+      margin-left: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      flex: 1;
+    }
+    .window-action {
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .window-body {
+      flex: 1;
+      background: #0a101b;
+      position: relative;
+    }
+    .window-body iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .window-caption {
+      padding: 1rem 1.2rem 1.4rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    footer {
+      padding: 2rem 6vw 4rem;
+      color: rgba(236, 242, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 720px) {
+      .scroll-stage {
+        height: 200vh;
+      }
+      .sticky-frame {
+        top: 12vh;
+        height: 70vh;
+      }
+      .projects-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .project-window {
+        min-height: 320px;
+      }
+      .window-body {
+        min-height: 220px;
+      }
+    }
+  </style>
+</head>
+<body class="portfolio-page">
+  <script src="navigation.js" defer></script>
+
+  <main>
+    <section class="hero-intro">
+      <h1>Studio Portfolio</h1>
+      <p>Scroll through the butterfly flight to unlock the workbench. Each window below is a live project you can interact with.</p>
+    </section>
+
+    <section class="scroll-stage" id="butterflyStage">
+      <div class="sticky-frame">
+        <video id="butterflyVideo" playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+          <source src="butterfly.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div class="frame-overlay"></div>
+        <div class="frame-title">
+          <span>Scroll to play</span>
+          <h2>Butterfly Sequence</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-reveal" id="projectShowcase">
+      <div class="projects-head">
+        <h3>Live Project Windows</h3>
+        <p>These are embedded canvases. Click inside to interact, or pop them out to explore the full experience.</p>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-window">
+          <div class="window-bar">
+            <div class="window-dots">
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+            </div>
+            <div class="window-title">LinguaBloom — Language Learning</div>
+            <a class="window-action" href="Language%20Learning/language-learning.html" target="_blank" rel="noopener">Open</a>
+          </div>
+          <div class="window-body">
+            <iframe src="Language%20Learning/language-learning.html" title="Language Learning App" loading="lazy"></iframe>
+          </div>
+          <div class="window-caption">[Placeholder description for the language learning app.]</div>
+        </article>
+
+        <article class="project-window">
+          <div class="window-bar">
+            <div class="window-dots">
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+              <span class="window-dot"></span>
+            </div>
+            <div class="window-title">Journal Project</div>
+            <a class="window-action" href="journal.html" target="_blank" rel="noopener">Open</a>
+          </div>
+          <div class="window-body">
+            <iframe src="journal.html" title="Journal App" loading="lazy"></iframe>
+          </div>
+          <div class="window-caption">[Placeholder description for the journal project.]</div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 RS — Portfolio experiments in motion.
+  </footer>
+
+  <script>
+    const stage = document.getElementById("butterflyStage");
+    const video = document.getElementById("butterflyVideo");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let videoDuration = 0;
+    let ticking = false;
+
+    const syncVideo = () => {
+      ticking = false;
+      if (!videoDuration || !stage) return;
+      const rect = stage.getBoundingClientRect();
+      const maxScroll = Math.max(1, stage.offsetHeight - window.innerHeight);
+      const progress = Math.min(Math.max(-rect.top / maxScroll, 0), 1);
+      const targetTime = progress * videoDuration;
+      if (Math.abs(video.currentTime - targetTime) > 0.04) {
+        video.currentTime = targetTime;
+      }
+      document.body.classList.toggle("show-projects", progress >= 0.98);
+    };
+
+    const requestSync = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(syncVideo);
+    };
+
+    if (video) {
+      video.addEventListener("loadedmetadata", () => {
+        videoDuration = video.duration || 0;
+        video.pause();
+        syncVideo();
+      });
+
+      if (!prefersReducedMotion.matches) {
+        video.play().then(() => video.pause()).catch(() => {});
+        window.addEventListener("scroll", requestSync, { passive: true });
+        window.addEventListener("resize", requestSync);
+      } else {
+        document.body.classList.add("show-projects");
+      }
+    }
+
+    const butterflySvg = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <line class="butterfly-body" x1="12" y1="6" x2="12" y2="18"></line>
+        <polygon class="butterfly-wing" points="12,12 4,7 6,17"></polygon>
+        <polygon class="butterfly-wing" points="12,12 18,7 16,17"></polygon>
+      </svg>
+    `;
+
+    const spawnButterflies = (link, event) => {
+      const rect = link.getBoundingClientRect();
+      const originX = event?.clientX ? event.clientX - rect.left : rect.width * 0.5;
+      const originY = rect.height * 0.7;
+      for (let i = 0; i < 3; i += 1) {
+        const spark = document.createElement("span");
+        spark.className = "butterfly-spark";
+        spark.innerHTML = butterflySvg;
+        const jitterX = (Math.random() - 0.5) * 10;
+        const jitterY = (Math.random() - 0.5) * 6;
+        const driftX = (Math.random() - 0.5) * 60;
+        const driftY = -35 - Math.random() * 50;
+        const scale = 0.7 + Math.random() * 0.5;
+        const rotStart = `${Math.random() * 40 - 20}deg`;
+        const rotEnd = `${Math.random() * 120 - 60}deg`;
+        spark.style.setProperty("--spark-x", `${originX + jitterX}px`);
+        spark.style.setProperty("--spark-y", `${originY + jitterY}px`);
+        spark.style.setProperty("--spark-x-drift", `${driftX}px`);
+        spark.style.setProperty("--spark-y-drift", `${driftY}px`);
+        spark.style.setProperty("--spark-scale", scale);
+        spark.style.setProperty("--spark-rot-start", rotStart);
+        spark.style.setProperty("--spark-rot-end", rotEnd);
+        spark.addEventListener("animationend", () => spark.remove());
+        link.appendChild(spark);
+      }
+    };
+
+    const initNavButterflies = () => {
+      const nav = document.querySelector("nav");
+      if (!nav) return false;
+      const links = nav.querySelectorAll(".nav-links a");
+      if (!links.length) return false;
+      links.forEach((link) => {
+        link.addEventListener("mouseenter", (event) => spawnButterflies(link, event));
+      });
+      return true;
+    };
+
+    if (!initNavButterflies()) {
+      const observer = new MutationObserver(() => {
+        if (initNavButterflies()) observer.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+  </script>
+</body>
+</html>

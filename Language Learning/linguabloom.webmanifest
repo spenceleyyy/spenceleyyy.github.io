@@ -1,0 +1,17 @@
+{
+  "name": "LinguaBloom",
+  "short_name": "LinguaBloom",
+  "start_url": "language-learning.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff1dc",
+  "theme_color": "#ff8d62",
+  "icons": [
+    {
+      "src": "../logos/RSlogoUPDATED.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

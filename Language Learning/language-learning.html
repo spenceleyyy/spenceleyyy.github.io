@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaBloom — Welcome</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoUPDATED.png" />
+  <meta name="theme-color" content="#ff8d62" />
+  <link rel="stylesheet" href="linguabloom.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="logo">
+        <span>LB</span>
+        LinguaBloom
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+      </div>
+    </header>
+
+    <section class="view active centered" id="viewWelcome">
+      <div class="simple-card">
+        <h1>Welcome back</h1>
+        <p>Log in or continue as a guest.</p>
+        <input type="text" id="loginName" placeholder="Your name" />
+        <div class="stack">
+          <button class="btn btn-primary" id="loginBtn">Continue</button>
+          <button class="btn btn-secondary" id="guestBtn">Continue as guest</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="icon-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="control-group">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="packSelect">Language Pack</label>
+        <select id="packSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="scriptModeSelect">Script display</label>
+        <select id="scriptModeSelect" class="control-select">
+          <option value="both">Hanzi + Pinyin</option>
+          <option value="hanzi">Hanzi only</option>
+          <option value="romanized">Pinyin only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="focusSelect">I want to learn</label>
+        <select id="focusSelect" class="control-select">
+          <option value="all">Everything</option>
+          <option value="new-words">New words</option>
+          <option value="conversations">Conversations</option>
+          <option value="spoken">Spoken only</option>
+          <option value="review">Review</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="speakerSelect">Speaker</label>
+        <select id="speakerSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="speedRange">Speech speed <span class="range-value" id="speedValue">1.0x</span></label>
+        <input type="range" id="speedRange" class="control-range" min="0.6" max="1.4" step="0.1" value="1" />
+      </div>
+      <div class="control-actions">
+        <span class="save-status" id="saveStatus">Progress saved</span>
+        <button class="tiny-btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <script src="linguabloom.js" defer></script>
+</body>
+</html>

@@ -9,23 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #9fd5ff;
-      --accent: #f36f6f;
-      --accent-2: #ffd166;
-      --tile-top: linear-gradient(145deg, #a8e072, #73c150);
-      --tile-side: linear-gradient(180deg, #57863c, #3c5e2b);
+      --bg: #07090f;
+      --accent: #5de2ff;
+      --accent-2: #ff5fd1;
+      --tile-top: linear-gradient(145deg, rgba(12, 18, 32, 0.9), rgba(6, 9, 20, 0.95));
+      --tile-side: linear-gradient(180deg, rgba(8, 12, 24, 0.9), rgba(4, 6, 14, 0.95));
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 26% 22%, rgba(255,255,255,0.6) 0, transparent 38%),
-        radial-gradient(circle at 68% 18%, rgba(255,255,255,0.45) 0, transparent 34%),
-        linear-gradient(180deg, #c4e7ff 0%, #8fc4ff 38%, #6ba6f0 100%);
-      color: #e6ecf7;
+        radial-gradient(circle at 18% 20%, rgba(0, 245, 255, 0.14) 0, transparent 42%),
+        radial-gradient(circle at 76% 24%, rgba(255, 97, 216, 0.16) 0, transparent 45%),
+        radial-gradient(circle at 58% 78%, rgba(125, 255, 154, 0.12) 0, transparent 52%),
+        linear-gradient(180deg, #05070d 0%, #0b1022 45%, #111a2d 100%);
+      color: #dfe8ff;
       overflow: hidden;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Press Start 2P", "Space Mono", monospace;
     }
     .iso-board {
       width: 100vw;
@@ -159,28 +160,126 @@
     .three-layer {
       position: absolute;
       inset: 0;
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 2;
+      transition: opacity 0.9s ease;
     }
     .three-layer canvas {
       position: absolute;
       inset: 0;
       width: 100% !important;
       height: 100% !important;
+      pointer-events: auto;
+      touch-action: none;
     }
-    .status {
+    .zoom-control {
       position: fixed;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 12px;
-      letter-spacing: 0.03em;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      background: rgba(6, 10, 20, 0.7);
+      border: 1px solid rgba(93, 226, 255, 0.35);
+      border-radius: 12px;
+      padding: 8px;
+      width: 56px;
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       backdrop-filter: blur(8px);
-      z-index: 4;
+    }
+    .zoom-control input[type="range"] {
+      width: 160px;
+      transform: rotate(-90deg);
+      appearance: none;
+      background: transparent;
+    }
+    .zoom-control input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      background: rgba(93, 226, 255, 0.4);
+      border-radius: 999px;
+    }
+    .zoom-control input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #dfe8ff;
+      border: 2px solid rgba(93, 226, 255, 0.9);
+      margin-top: -5px;
+    }
+    .zoom-control input[type="range"]::-moz-range-track {
+      height: 4px;
+      background: rgba(93, 226, 255, 0.4);
+      border-radius: 999px;
+    }
+    .zoom-control input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #dfe8ff;
+      border: 2px solid rgba(93, 226, 255, 0.9);
+    }
+    .game-over-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(6, 8, 16, 0.86);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 6;
+      transition: opacity 0.8s ease;
+    }
+    .game-over-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 28px 30px;
+      border-radius: 16px;
+      background: rgba(12, 18, 32, 0.85);
+      border: 1px solid rgba(255, 97, 216, 0.4);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      text-align: center;
+    }
+    .game-over-title {
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #ffb6e8;
+    }
+    .game-over-sub {
+      font-size: 11px;
+      color: rgba(223, 232, 255, 0.7);
+    }
+    .game-over-button {
+      font-family: inherit;
+      font-size: 11px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(93, 226, 255, 0.6);
+      background: linear-gradient(135deg, rgba(93, 226, 255, 0.25), rgba(255, 95, 209, 0.25));
+      color: #e9f2ff;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .game-over-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(93, 226, 255, 0.25);
+    }
+    body.game-over .three-layer {
+      opacity: 0;
+      transition: opacity 0.9s ease;
+    }
+    body.game-over .zoom-control {
+      opacity: 0;
+      pointer-events: none;
+    }
+    body.game-over .game-over-screen {
+      opacity: 1;
+      pointer-events: auto;
     }
   </style>
 </head>
@@ -191,7 +290,16 @@
       <div class="three-layer" id="threeLayer"></div>
     </div>
   </div>
-  <div class="status" id="status">Ready</div>
+  <div class="zoom-control">
+    <input type="range" id="zoomSlider" min="10" max="50" value="20" step="1" />
+  </div>
+  <div class="game-over-screen" id="gameOver">
+    <div class="game-over-card">
+      <div class="game-over-title">GAME OVER</div>
+      <div class="game-over-sub">You got launched.</div>
+      <button class="game-over-button" id="respawnBtn">Respawn</button>
+    </div>
+  </div>
 
   <script type="importmap">
     {
@@ -208,17 +316,18 @@
     const cols = 16;
     const rows = 10;
     const floorEl = document.getElementById("isoFloor");
-    const statusEl = document.getElementById("status");
+    const zoomSlider = document.getElementById("zoomSlider");
     const isoPlane = document.getElementById("isoPlane");
     const isoBoard = document.querySelector(".iso-board");
     const threeLayer = document.getElementById("threeLayer");
+    const respawnBtn = document.getElementById("respawnBtn");
 
     const tiles = [];
-    let charX = 7;
-    let charY = 3;
+    const charPos = new THREE.Vector3(0, 0, 0);
+    let walkBounds = { minX: -8, maxX: 8, minZ: -5, maxZ: 5 };
     let boardAngleZ = -45;
     let boardAngleX = 55;
-    let facing = "down";
+    let facingYaw = 0;
 
     // Three.js objects
     let renderer = null;
@@ -229,11 +338,47 @@
     const boardGroup = { object: null };
     const flickerLights = [];
     const cars = [];
+    const pedestrians = [];
+    const buildingColliders = [];
+    const boats = [];
+    const boatCurves = [];
     const roadCurves = [];
     let cityGroup = null;
+    let lakeGroup = null;
+    let lakeOutline = null;
+    let dockInfo = null;
+    let dockBoat = null;
+    let activeBoat = null;
+    let isRidingBoat = false;
+    let flyState = null;
+    let gameOver = false;
     const clock = new THREE.Clock();
     let hopAnimation = null;
     let threeInitialized = false;
+    let geojsonData = null;
+    let geojsonPromise = null;
+    const geojsonUrl = "./export.geojson";
+    const useOverpass = false;
+    const useHardcodedLake = true;
+    const cityScale = 4;
+    let dataSourceLabel = "Local export";
+    const overpassConfig = {
+      endpoint: "https://overpass-api.de/api/interpreter",
+      bounds: {
+        south: 43.0479,
+        west: -89.4167,
+        north: 43.0874,
+        east: -89.3625,
+      },
+    };
+    const enableLakeDrag = false;
+    const lakeDrag = {
+      active: false,
+      offset: new THREE.Vector3(),
+      raycaster: new THREE.Raycaster(),
+      pointer: new THREE.Vector2(),
+      plane: new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.01),
+    };
 
     const tileSize = 1.0;
     const layerHeight = 0.35;
@@ -241,8 +386,72 @@
     const chickenLift = 0.0;
     const chickenBaseY = -0.18;
     const chickenScale = 0.7;
+    const walkStep = 0.7;
+    const playerRadius = 0.25;
+    const cameraTarget = new THREE.Vector3(0, chickenBaseY, 0);
+    const carModelUrl = "./cars.glb";
+    const boatModelUrl = "./boats.glb";
+    const carModelHeading = 0;
+    const boatModelHeading = 0;
+    const carTargetLength = 1.2;
+    const boatTargetLength = 3.8;
+    const boatScale = 4;
+    const boatControlSpeed = 1.6 * (cityScale / 2);
+    const dockBoardRadius = 1.4 * (cityScale / 2);
+    const dockBoatOffset = 0.55 * (cityScale / 2);
+    const boatSeatOffset = new THREE.Vector3(0, 0.32, 0);
+    const carHitRadius = 0.85;
+    const carModelName = "";
+    const boatModelName = "";
+    const carModelIndex = -1;
+    const boatModelIndex = -1;
+    const boatExcludeLargestCount = 1;
+    const boatExcludeLargestPercent = 0;
+    const modelCache = {
+      car: null,
+      boat: null,
+      carVariants: [],
+      boatVariants: [],
+      carPromise: null,
+      boatPromise: null,
+    };
+    let carVariantCursor = 0;
+    let boatVariantCursor = 0;
     const degToRad = Math.PI / 180;
-    const cameraRadius = 20;
+    let cameraRadius = 20;
+    const cameraMinRadius = 10;
+    const cameraMaxRadius = 50;
+    const neonStyle = {
+      palette: [
+        0x00f5ff, 0xff61d8, 0x7dff9a, 0xfff38a, 0x8a7dff, 0xff8a5b,
+        0x49a6ff, 0x44ffd1, 0xff4fd8, 0xffc857, 0xbaff5a, 0x6c63ff,
+      ],
+      categoryColors: {
+        water: 0x3ad7ff,
+        road: 0xff66c9,
+        park: 0x6dff98,
+        ground: 0x586bff,
+        building: 0x9cf7ff,
+        vehicle: 0xffd166,
+        sign: 0xfff38a,
+        character: 0xff61d8,
+        accent: 0xa0c4ff,
+      },
+      opacity: {
+        default: 0.06,
+        ground: 0.03,
+        water: 0.14,
+        road: 0.05,
+        park: 0.04,
+        building: 0.07,
+        vehicle: 0.2,
+        sign: 0.22,
+        character: 0.22,
+        accent: 0.16,
+      },
+      outlineOpacity: 0.92,
+      edgeThreshold: 35,
+    };
 
     function tileToWorld(x, y, layer = 0) {
       const halfX = ((cols - 1) * tileSize) / 2;
@@ -268,15 +477,22 @@
       const x = r * Math.cos(tilt) * Math.cos(spin);
       const y = r * Math.sin(tilt);
       const z = r * Math.cos(tilt) * Math.sin(spin);
-      camera.position.set(x, y, z);
-      camera.lookAt(0, chickenBaseY, 0);
+      camera.position.set(cameraTarget.x + x, y, cameraTarget.z + z);
+      camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
+    }
+
+    function setCameraRadius(nextRadius, { syncSlider = true } = {}) {
+      const clamped = Math.max(cameraMinRadius, Math.min(cameraMaxRadius, nextRadius));
+      cameraRadius = clamped;
+      if (zoomSlider && syncSlider) {
+        zoomSlider.value = String(clamped);
+      }
+      updateCameraFromAngles();
     }
 
     function updateChickenRotation() {
       if (!chicken) return;
-      const map = { up: Math.PI, down: 0, left: Math.PI / 2, right: -Math.PI / 2 };
-      const yaw = map[facing] ?? 0;
-      chicken.rotation.set(0, yaw, 0);
+      chicken.rotation.set(0, facingYaw, 0);
       chicken.updateMatrixWorld();
     }
 
@@ -301,26 +517,340 @@
       hopAnimation = requestAnimationFrame(step);
     }
 
-    function updateStatus(pos) {
-      statusEl.textContent = `Grid (${charX}, ${charY}) · World ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)} · Facing ${facing}`;
-    }
-
     function updateChickenPosition(playHop = false) {
-      if (!chicken) return;
-      const pos = tileToWorld(charX, charY, chickenLayer);
-      chicken.position.x = pos.x;
-      chicken.position.z = pos.z;
-      chicken.position.y = chickenBaseY + chickenLift;
-      updateStatus({ x: pos.x, y: chicken.position.y, z: pos.z });
+      if (!chicken || isRidingBoat || flyState) return;
+      chicken.position.set(charPos.x, chickenBaseY + chickenLift, charPos.z);
+      cameraTarget.set(charPos.x, chickenBaseY, charPos.z);
+      updateCameraFromAngles();
       if (playHop) animateHop();
     }
+
+    function setGameOverState(active) {
+      document.body.classList.toggle("game-over", active);
+    }
+
+    function resetDockBoat() {
+      if (!dockBoat || !dockInfo) return;
+      dockBoat.position.set(dockInfo.boatPoint.x, 0.04, dockInfo.boatPoint.z);
+      dockBoat.rotation.y = Math.atan2(dockInfo.dir.x, dockInfo.dir.z) + boatModelHeading;
+    }
+
+    function resetGame() {
+      gameOver = false;
+      flyState = null;
+      isRidingBoat = false;
+      activeBoat = null;
+      facingYaw = 0;
+      setGameOverState(false);
+      resetDockBoat();
+      if (dockInfo?.spawn) {
+        charPos.x = dockInfo.spawn.x;
+        charPos.z = dockInfo.spawn.z;
+      } else {
+        charPos.x = 0;
+        charPos.z = 0;
+      }
+      updateChickenRotation();
+      updateChickenPosition(false);
+    }
+
+    if (respawnBtn) {
+      respawnBtn.addEventListener("click", () => {
+        resetGame();
+      });
+    }
+
+    function updateBoatRider() {
+      if (!isRidingBoat || !activeBoat || !chicken) return;
+      const seatOffset = boatSeatOffset.clone().applyQuaternion(activeBoat.quaternion);
+      chicken.position.copy(activeBoat.position).add(seatOffset);
+      chicken.rotation.y = activeBoat.rotation.y;
+      charPos.x = activeBoat.position.x;
+      charPos.z = activeBoat.position.z;
+      cameraTarget.set(charPos.x, chickenBaseY, charPos.z);
+      updateCameraFromAngles();
+    }
+
+    function isNearDock() {
+      if (!dockInfo || !chicken) return false;
+      const dx = chicken.position.x - dockInfo.spawn.x;
+      const dz = chicken.position.z - dockInfo.spawn.z;
+      return Math.hypot(dx, dz) <= dockBoardRadius || isPointOnDock(chicken.position.x, chicken.position.z);
+    }
+
+    function boardDockBoat() {
+      if (!dockBoat || !dockInfo || !chicken) return;
+      const dockDist = dockBoat.position.distanceTo(
+        new THREE.Vector3(dockInfo.boatPoint.x, dockBoat.position.y, dockInfo.boatPoint.z)
+      );
+      if (dockDist > 2.2) return;
+      isRidingBoat = true;
+      activeBoat = dockBoat;
+      updateBoatRider();
+    }
+
+    function disembarkBoat() {
+      if (!activeBoat) return;
+      isRidingBoat = false;
+      activeBoat = null;
+      const exitOffset = dockInfo?.landDir ?? new THREE.Vector3(1, 0, 0);
+      facingYaw = Math.atan2(exitOffset.x, exitOffset.z);
+      charPos.x = chicken.position.x + exitOffset.x * 0.6;
+      charPos.z = chicken.position.z + exitOffset.z * 0.6;
+      updateChickenRotation();
+      updateChickenPosition(false);
+    }
+
+    function triggerCarHit(car) {
+      if (gameOver || flyState || !chicken) return;
+      gameOver = true;
+      const away = new THREE.Vector3().subVectors(chicken.position, car.position);
+      if (away.lengthSq() < 1e-6) away.set(1, 0, 0);
+      away.normalize();
+      flyState = {
+        position: new THREE.Vector3(chicken.position.x, chicken.position.y, chicken.position.z),
+        velocity: new THREE.Vector3(away.x * 24, 14, away.z * 24),
+        spin: THREE.MathUtils.randFloat(6, 10),
+        gravity: 18,
+        fadeAt: clock.getElapsedTime() + 0.6,
+        shown: false,
+      };
+    }
+
+    function checkCarCollisions() {
+      if (gameOver || flyState || isRidingBoat || !chicken) return;
+      const cx = chicken.position.x;
+      const cz = chicken.position.z;
+      for (let i = 0; i < cars.length; i += 1) {
+        const car = cars[i];
+        if (!car) continue;
+        const dx = car.position.x - cx;
+        const dz = car.position.z - cz;
+        const hitDist = (car.userData?.collisionRadius ?? carHitRadius) + playerRadius;
+        if (dx * dx + dz * dz <= hitDist * hitDist) {
+          triggerCarHit(car);
+          break;
+        }
+      }
+    }
+
+    const buildOverpassQuery = (bounds) => {
+      const { south, west, north, east } = bounds;
+      return `
+[out:json][timeout:25];
+(
+  way["building"](${south},${west},${north},${east});
+  relation["building"](${south},${west},${north},${east});
+  way["highway"](${south},${west},${north},${east});
+  way["natural"="water"](${south},${west},${north},${east});
+  relation["natural"="water"](${south},${west},${north},${east});
+  way["landuse"~"park|grass|recreation_ground"](${south},${west},${north},${east});
+  relation["landuse"~"park|grass|recreation_ground"](${south},${west},${north},${east});
+);
+out body geom;
+`;
+    };
+
+    const closeRing = (ring) => {
+      if (!ring || ring.length < 2) return ring;
+      const first = ring[0];
+      const last = ring[ring.length - 1];
+      if (first[0] === last[0] && first[1] === last[1]) return ring;
+      return [...ring, first];
+    };
+
+    const stitchSegments = (segments) => {
+      const used = new Set();
+      const rings = [];
+      const coordKey = (coord) => `${coord[0].toFixed(6)},${coord[1].toFixed(6)}`;
+      const findMatchAtEnd = (endKey) => {
+        for (let i = 0; i < segments.length; i += 1) {
+          if (used.has(i)) continue;
+          const seg = segments[i];
+          const segStart = coordKey(seg[0]);
+          const segEnd = coordKey(seg[seg.length - 1]);
+          if (segStart === endKey) return { index: i, reverse: false };
+          if (segEnd === endKey) return { index: i, reverse: true };
+        }
+        return null;
+      };
+      const findMatchAtStart = (startKey) => {
+        for (let i = 0; i < segments.length; i += 1) {
+          if (used.has(i)) continue;
+          const seg = segments[i];
+          const segStart = coordKey(seg[0]);
+          const segEnd = coordKey(seg[seg.length - 1]);
+          if (segEnd === startKey) return { index: i, reverse: false };
+          if (segStart === startKey) return { index: i, reverse: true };
+        }
+        return null;
+      };
+
+      segments.forEach((segment, idx) => {
+        if (used.has(idx)) return;
+        let ring = segment.slice();
+        used.add(idx);
+        let safety = 0;
+        while (safety < segments.length * 3) {
+          safety += 1;
+          const endKey = coordKey(ring[ring.length - 1]);
+          const startKey = coordKey(ring[0]);
+          const endMatch = findMatchAtEnd(endKey);
+          if (endMatch) {
+            const seg = segments[endMatch.index];
+            used.add(endMatch.index);
+            const nextPoints = endMatch.reverse ? seg.slice(0, -1).reverse() : seg.slice(1);
+            ring = ring.concat(nextPoints);
+            continue;
+          }
+          const startMatch = findMatchAtStart(startKey);
+          if (startMatch) {
+            const seg = segments[startMatch.index];
+            used.add(startMatch.index);
+            const prependPoints = startMatch.reverse ? seg.slice(1).reverse() : seg.slice(0, -1);
+            ring = prependPoints.concat(ring);
+            continue;
+          }
+          break;
+        }
+        rings.push(closeRing(ring));
+      });
+      return rings.filter((ring) => ring.length >= 4);
+    };
+
+    const elementTags = (el) => {
+      const props = { ...(el.tags || {}) };
+      props["@id"] = `${el.type}/${el.id}`;
+      return props;
+    };
+
+    const convertOverpassToGeojson = (data) => {
+      const features = [];
+      const elements = data?.elements || [];
+      elements.forEach((el) => {
+        if (!el.tags) return;
+        if (!el.geometry || el.geometry.length < 2) return;
+        const coords = el.geometry.map((pt) => [pt.lon, pt.lat]);
+        const props = elementTags(el);
+        const isPolygon = Boolean(props.building || props.natural === "water" || props.landuse);
+        const isRoad = Boolean(props.highway);
+        if (el.type === "way") {
+          if (isPolygon) {
+            const ring = closeRing(coords);
+            if (ring.length >= 4) {
+              features.push({
+                type: "Feature",
+                properties: props,
+                geometry: { type: "Polygon", coordinates: [ring] },
+              });
+            }
+            return;
+          }
+          if (isRoad) {
+            features.push({
+              type: "Feature",
+              properties: props,
+              geometry: { type: "LineString", coordinates: coords },
+            });
+          }
+        }
+      });
+
+      elements.forEach((el) => {
+        if (el.type !== "relation" || !el.tags) return;
+        const props = elementTags(el);
+        const isPolygon = Boolean(props.building || props.natural === "water" || props.landuse);
+        if (!isPolygon) return;
+        const members = el.members || [];
+        const outerSegments = members
+          .filter((m) => m.geometry && m.geometry.length >= 2 && (m.role === "outer" || !m.role))
+          .map((m) => m.geometry.map((pt) => [pt.lon, pt.lat]));
+        const innerSegments = members
+          .filter((m) => m.geometry && m.geometry.length >= 2 && m.role === "inner")
+          .map((m) => m.geometry.map((pt) => [pt.lon, pt.lat]));
+        if (!outerSegments.length) return;
+        const outerRings = stitchSegments(outerSegments);
+        if (!outerRings.length) return;
+        const innerRings = innerSegments.length ? stitchSegments(innerSegments) : [];
+        if (outerRings.length === 1) {
+          features.push({
+            type: "Feature",
+            properties: props,
+            geometry: { type: "Polygon", coordinates: [outerRings[0], ...innerRings] },
+          });
+        } else {
+          const multiCoords = outerRings.map((ring, idx) => {
+            if (!innerRings.length || idx > 0) return [ring];
+            return [ring, ...innerRings];
+          });
+          features.push({
+            type: "Feature",
+            properties: props,
+            geometry: { type: "MultiPolygon", coordinates: multiCoords },
+          });
+        }
+      });
+
+      return { type: "FeatureCollection", features };
+    };
+
+    const loadOverpassGeojson = async () => {
+      if (!useOverpass) return null;
+      const query = buildOverpassQuery(overpassConfig.bounds);
+      const response = await fetch(overpassConfig.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: `data=${encodeURIComponent(query)}`,
+      });
+      if (!response.ok) {
+        throw new Error(`Overpass failed: ${response.status}`);
+      }
+      const data = await response.json();
+      return convertOverpassToGeojson(data);
+    };
+
+    const loadGeojson = () => {
+      if (geojsonPromise) return geojsonPromise;
+      geojsonPromise = (async () => {
+        if (useOverpass) {
+          try {
+            const osmData = await loadOverpassGeojson();
+            if (osmData?.features?.length) {
+              geojsonData = osmData;
+              dataSourceLabel = "Live OSM";
+              return osmData;
+            }
+          } catch (err) {
+            dataSourceLabel = "OSM failed";
+            console.warn("Overpass load failed, falling back", err);
+          }
+        }
+        return fetch(geojsonUrl)
+          .then((res) => {
+            if (!res.ok) throw new Error(`GeoJSON load failed: ${res.status}`);
+            return res.json();
+          })
+          .then((data) => {
+            geojsonData = data;
+            dataSourceLabel = "Local export";
+            return data;
+          })
+          .catch((err) => {
+            console.warn("GeoJSON load failed", err);
+            geojsonData = false;
+            dataSourceLabel = "No data";
+            return null;
+          });
+      })();
+      return geojsonPromise;
+    };
 
     function initThree() {
       if (threeInitialized || !threeLayer) return;
       threeInitialized = true;
 
       scene = new THREE.Scene();
-      scene.fog = new THREE.Fog(0xb5dcff, 28, 120);
+      scene.fog = new THREE.Fog(0x070a14, 22, 120);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setClearColor(0x000000, 0);
@@ -335,20 +865,23 @@
       camera = new THREE.PerspectiveCamera(52, 1, 0.1, 200);
       updateCameraFromAngles();
 
-      const hemi = new THREE.HemisphereLight(0xffffff, 0x87c97c, 1.15);
+      const hemi = new THREE.HemisphereLight(0x72d9ff, 0x0b0f1f, 0.55);
       hemi.position.set(0, 10, 0);
       scene.add(hemi);
 
-      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+      const dir = new THREE.DirectionalLight(0x9ad7ff, 0.55);
       dir.position.set(-6, 12, 6);
       scene.add(dir);
 
       placeholder = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1.4, 1),
-        new THREE.MeshStandardMaterial({ color: 0x00cba9, metalness: 0.2, roughness: 0.6 })
+        new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.2, roughness: 0.6 })
       );
       placeholder.position.y = chickenBaseY + chickenLift;
       placeholder.scale.setScalar(chickenScale);
+      placeholder.userData.neonCategory = "character";
+      placeholder.userData.neonColor = 0xffffff;
+      applyNeonToObject(placeholder, { category: "character" });
 
       const group = new THREE.Group();
       group.name = "boardGroup";
@@ -371,6 +904,11 @@
             if (n.isMesh) {
               n.castShadow = true;
               n.receiveShadow = true;
+              n.userData.skipNeonOutline = true;
+              const mat = Array.isArray(n.material) ? n.material[0] : n.material;
+              if (mat && mat.color && mat.color.isColor) {
+                mat.color.set(0xffffff);
+              }
             }
           });
           const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22 });
@@ -378,6 +916,7 @@
           const shadow = new THREE.Mesh(shadowGeom, shadowMat);
           shadow.rotation.x = -Math.PI / 2;
           shadow.position.y = 0.01;
+          shadow.userData.skipNeon = true;
           chicken.add(shadow);
 
           if (!boardGroup.object) {
@@ -386,6 +925,9 @@
             scene.add(boardGroup.object);
           }
           boardGroup.object.add(chicken);
+          chicken.userData.neonCategory = "character";
+          chicken.userData.neonColor = 0xffffff;
+          applyNeonToObject(chicken, { category: "character" });
 
           if (placeholder) {
             boardGroup.object.remove(placeholder);
@@ -406,8 +948,7 @@
         }
       );
 
-      // Procedural city elements around tiles
-      generateCity();
+      loadGeojson().finally(() => generateCity());
 
       const resize = () => {
         const { clientWidth: w, clientHeight: h } = threeLayer;
@@ -421,11 +962,88 @@
       new ResizeObserver(resize).observe(threeLayer);
       window.addEventListener("resize", resize);
 
+      const updatePointer = (event) => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        lakeDrag.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        lakeDrag.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+      };
+
+      const onLakePointerDown = (event) => {
+        if (!enableLakeDrag) return;
+        if (!lakeGroup || lakeGroup.children.length === 0) return;
+        if (event.button !== 0) return;
+        updatePointer(event);
+        lakeDrag.raycaster.setFromCamera(lakeDrag.pointer, camera);
+        const hits = lakeDrag.raycaster.intersectObjects(lakeGroup.children, true);
+        if (!hits.length) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const hitPoint = new THREE.Vector3();
+        if (lakeDrag.raycaster.ray.intersectPlane(lakeDrag.plane, hitPoint)) {
+          lakeDrag.active = true;
+          lakeDrag.offset.copy(lakeGroup.position).sub(hitPoint);
+          renderer.domElement.setPointerCapture?.(event.pointerId);
+        }
+      };
+
+      const onLakePointerMove = (event) => {
+        if (!enableLakeDrag) return;
+        if (!lakeDrag.active || !lakeGroup) return;
+        event.preventDefault();
+        event.stopPropagation();
+        updatePointer(event);
+        lakeDrag.raycaster.setFromCamera(lakeDrag.pointer, camera);
+        const hitPoint = new THREE.Vector3();
+        if (lakeDrag.raycaster.ray.intersectPlane(lakeDrag.plane, hitPoint)) {
+          lakeGroup.position.copy(hitPoint).add(lakeDrag.offset);
+        }
+      };
+
+      const onLakePointerUp = (event) => {
+        if (!enableLakeDrag) return;
+        if (lakeDrag.active) {
+          event?.preventDefault?.();
+          event?.stopPropagation?.();
+          if (event?.pointerId != null) {
+            try { renderer?.domElement?.releasePointerCapture?.(event.pointerId); } catch (_) {}
+          }
+        }
+        lakeDrag.active = false;
+      };
+
+      if (enableLakeDrag) {
+        renderer.domElement.addEventListener("pointerdown", onLakePointerDown);
+        renderer.domElement.addEventListener("pointermove", onLakePointerMove);
+        renderer.domElement.addEventListener("pointerup", onLakePointerUp);
+        renderer.domElement.addEventListener("pointerleave", onLakePointerUp);
+      }
+
       function render() {
         requestAnimationFrame(render);
-        const t = clock.getElapsedTime();
+        const dt = clock.getDelta();
+        const t = clock.elapsedTime;
         updateCars();
+        updatePedestrians(t);
+        updateBoats(t);
         updateFlicker(t);
+        if (flyState && chicken) {
+          flyState.velocity.y -= flyState.gravity * dt;
+          flyState.position.addScaledVector(flyState.velocity, dt);
+          chicken.position.set(flyState.position.x, flyState.position.y, flyState.position.z);
+          chicken.rotation.y += flyState.spin * dt;
+          charPos.x = flyState.position.x;
+          charPos.z = flyState.position.z;
+          cameraTarget.set(charPos.x, chicken.position.y, charPos.z);
+          updateCameraFromAngles();
+          if (!flyState.shown && t >= flyState.fadeAt) {
+            flyState.shown = true;
+            setGameOverState(true);
+          }
+        } else if (isRidingBoat) {
+          updateBoatRider();
+        } else {
+          checkCarCollisions();
+        }
         renderer.render(scene, camera);
       }
       render();
@@ -665,45 +1283,1664 @@
 
     function createHoverCar(color) {
       const group = new THREE.Group();
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.3, 0.7),
-        new THREE.MeshLambertMaterial({ color: 0x3b4a72 })
-      );
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x3b4a72, roughness: 0.5, metalness: 0.2 });
+      const accentMat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.4 });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.28, 0.7), bodyMat);
       group.add(body);
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.2, 0.5), accentMat);
+      cabin.position.set(-0.1, 0.22, 0);
+      group.add(cabin);
+      const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.32, 0.2, 12), bodyMat);
+      nose.rotation.z = Math.PI / 2;
+      nose.position.set(0.55, 0.05, 0);
+      group.add(nose);
       const glow = new THREE.Mesh(
-        new THREE.BoxGeometry(1.2, 0.08, 0.8),
-        new THREE.MeshLambertMaterial({ color, transparent: true, opacity: 0.8 })
+        new THREE.BoxGeometry(1.2, 0.06, 0.8),
+        new THREE.MeshLambertMaterial({ color, transparent: true, opacity: 0.75 })
       );
-      glow.position.y = -0.12;
+      glow.position.y = -0.1;
       group.add(glow);
       return group;
     }
 
-    function generateCity() {
+    function createPedestrian(color) {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.1, 0.32, 10),
+        new THREE.MeshLambertMaterial({ color })
+      );
+      body.position.y = 0.16;
+      group.add(body);
+      const head = new THREE.Mesh(
+        new THREE.SphereGeometry(0.09, 12, 12),
+        new THREE.MeshLambertMaterial({ color: 0xf1d7c2 })
+      );
+      head.position.y = 0.36;
+      group.add(head);
+      return group;
+    }
+
+    function createStreetLight(glowColor) {
+      const group = new THREE.Group();
+      const poleMat = new THREE.MeshLambertMaterial({ color: 0x273042 });
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.9, 8), poleMat);
+      pole.position.y = 0.45;
+      group.add(pole);
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.04, 0.05), poleMat);
+      arm.position.set(0.14, 0.78, 0);
+      group.add(arm);
+      const lamp = new THREE.Mesh(
+        new THREE.SphereGeometry(0.07, 10, 10),
+        new THREE.MeshStandardMaterial({ color: glowColor, emissive: glowColor, emissiveIntensity: 0.7 })
+      );
+      lamp.position.set(0.26, 0.76, 0);
+      group.add(lamp);
+      return group;
+    }
+
+    function createBoat(color) {
+      const group = new THREE.Group();
+      const hullMat = new THREE.MeshStandardMaterial({ color: 0x384a66, roughness: 0.7, metalness: 0.1 });
+      const deckMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.2 });
+      const hull = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.12, 0.35), hullMat);
+      hull.position.y = 0.03;
+      group.add(hull);
+      const bow = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.28, 10), hullMat);
+      bow.rotation.z = Math.PI / 2;
+      bow.position.set(0.48, 0.06, 0);
+      group.add(bow);
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.06, 0.22), deckMat);
+      deck.position.y = 0.12;
+      group.add(deck);
+      const cabin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.22, 0.12, 0.18),
+        new THREE.MeshStandardMaterial({ color: 0xe8edf3, roughness: 0.6, metalness: 0.05 })
+      );
+      cabin.position.set(0.05, 0.19, 0);
+      group.add(cabin);
+      const mast = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.02, 0.02, 0.3, 8),
+        new THREE.MeshStandardMaterial({ color: 0xd6d6d6, roughness: 0.7, metalness: 0.1 })
+      );
+      mast.position.set(-0.18, 0.26, 0);
+      group.add(mast);
+      return group;
+    }
+
+    const createWindowTextures = () => {
+      const buildTexture = (base, lit, dim, chance) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 64;
+        canvas.height = 128;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return null;
+        ctx.fillStyle = base;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const rows = 18;
+        const cols = 10;
+        const padX = 4;
+        const padY = 4;
+        const cellW = (canvas.width - padX * 2) / cols;
+        const cellH = (canvas.height - padY * 2) / rows;
+        for (let y = 0; y < rows; y += 1) {
+          for (let x = 0; x < cols; x += 1) {
+            const litWindow = Math.random() < chance;
+            ctx.fillStyle = litWindow ? lit : dim;
+            const wx = padX + x * cellW + cellW * 0.18;
+            const wy = padY + y * cellH + cellH * 0.18;
+            ctx.fillRect(wx, wy, cellW * 0.62, cellH * 0.62);
+          }
+        }
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        return tex;
+      };
+      return {
+        diffuse: buildTexture("#6f7682", "#cfd7e3", "#5a606b", 0.5),
+        glow: buildTexture("#000000", "#ffffff", "#000000", 0.2),
+      };
+    };
+
+    const windowTextures = createWindowTextures();
+
+    const createFacadeMaterial = (baseColor, height, perimeter, seed, style) => {
+      const diffuse = windowTextures.diffuse?.clone();
+      const glow = windowTextures.glow?.clone();
+      const repeatX = Math.max(1, Math.round((perimeter || 6) * 0.35));
+      const repeatY = Math.max(1, Math.round((height || 2) * 1.4));
+      const offsetX = seededRandom(seed * 0.19);
+      const offsetY = seededRandom(seed * 0.31);
+      if (diffuse) {
+        diffuse.wrapS = THREE.RepeatWrapping;
+        diffuse.wrapT = THREE.RepeatWrapping;
+        diffuse.repeat.set(repeatX, repeatY);
+        diffuse.offset.set(offsetX, offsetY);
+      }
+      if (glow) {
+        glow.wrapS = THREE.RepeatWrapping;
+        glow.wrapT = THREE.RepeatWrapping;
+        glow.repeat.set(repeatX, repeatY);
+        glow.offset.set(offsetX, offsetY);
+      }
+      const roughness = style?.preset?.roughness ?? 0.7;
+      const metalness = style?.preset?.metalness ?? 0.05;
+      const emissiveIntensity = style?.preset?.emissive ?? 0.35;
+      return new THREE.MeshStandardMaterial({
+        color: baseColor,
+        roughness,
+        metalness,
+        map: diffuse ?? null,
+        emissive: new THREE.Color(0xfff1d6),
+        emissiveMap: glow ?? null,
+        emissiveIntensity,
+      });
+    };
+
+    const normalizeModel = (model, targetLength) => {
+      model.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      const maxLen = Math.max(size.x, size.z, 0.001);
+      const scale = targetLength / maxLen;
+      model.scale.setScalar(scale);
+      model.updateMatrixWorld(true);
+      const scaledBox = new THREE.Box3().setFromObject(model);
+      const center = new THREE.Vector3();
+      scaledBox.getCenter(center);
+      model.position.sub(new THREE.Vector3(center.x, scaledBox.min.y, center.z));
+      model.updateMatrixWorld(true);
+      return model;
+    };
+
+    const prepareModel = (model) => {
+      model.traverse((node) => {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+          if (node.material) node.material = node.material.clone();
+        }
+      });
+      return model;
+    };
+
+    const hasMeshDescendant = (node) => {
+      let found = false;
+      node.traverse((child) => {
+        if (child.isMesh) found = true;
+      });
+      return found;
+    };
+
+    const extractModelCandidates = (scene) => {
+      const topLevel = (scene.children ?? []).filter((child) => hasMeshDescendant(child));
+      if (topLevel.length > 1) return topLevel;
+      if (topLevel.length === 1) {
+        const nested = topLevel[0].children.filter((child) => hasMeshDescendant(child));
+        if (nested.length > 1) return nested;
+      }
+      const candidates = [];
+      const seen = new Set();
+      scene.traverse((node) => {
+        if (!node.isMesh) return;
+        let root = node;
+        while (root.parent && root.parent !== scene) root = root.parent;
+        if (seen.has(root)) return;
+        seen.add(root);
+        candidates.push(root);
+      });
+      if (!candidates.length) {
+        scene.children.forEach((child) => candidates.push(child));
+      }
+      return candidates;
+    };
+
+    const selectModelFromScene = (scene, name, index) => {
+      if (!scene) return null;
+      if (name) {
+        const byName = scene.getObjectByName(name);
+        if (byName) return byName;
+      }
+      const children = extractModelCandidates(scene);
+      if (Number.isFinite(index) && index >= 0 && children[index]) return children[index];
+      let best = null;
+      let bestSize = 0;
+      children.forEach((child) => {
+        const box = new THREE.Box3().setFromObject(child);
+        if (!Number.isFinite(box.min.x)) return;
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const score = size.x * size.y * size.z;
+        if (score > bestSize) {
+          bestSize = score;
+          best = child;
+        }
+      });
+      return best ?? scene;
+    };
+
+    const buildModelVariants = (scene, options) => {
+      const candidates = extractModelCandidates(scene);
+      if (!candidates.length) return [];
+      if (options.name) {
+        const obj = scene.getObjectByName(options.name);
+        if (obj) return [normalizeModel(prepareModel(obj.clone(true)), options.targetLength)];
+      }
+      if (Number.isFinite(options.index) && options.index >= 0 && candidates[options.index]) {
+        return [normalizeModel(prepareModel(candidates[options.index].clone(true)), options.targetLength)];
+      }
+      const scored = candidates
+        .map((candidate) => {
+          const box = new THREE.Box3().setFromObject(candidate);
+          if (!Number.isFinite(box.min.x)) return null;
+          const size = new THREE.Vector3();
+          box.getSize(size);
+          const volume = size.x * size.y * size.z;
+          return { candidate, volume };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.volume - a.volume);
+      if (!scored.length) return [];
+      const cut = Math.max(
+        options.excludeLargestCount ?? 0,
+        Math.floor(scored.length * (options.excludeLargestPercent ?? 0))
+      );
+      const filtered = scored.slice(cut);
+      const finalList = filtered.length ? filtered : [scored[scored.length - 1]];
+      return finalList.map((entry) =>
+        normalizeModel(prepareModel(entry.candidate.clone(true)), options.targetLength)
+      );
+    };
+
+    const loadCarModels = () => {
+      if (modelCache.carPromise) return modelCache.carPromise;
+      const loader = new GLTFLoader();
+      modelCache.carPromise = new Promise((resolve) => {
+        loader.load(
+          carModelUrl,
+          (gltf) => {
+            modelCache.carVariants = buildModelVariants(gltf.scene, {
+              name: carModelName,
+              index: carModelIndex,
+              targetLength: carTargetLength,
+            });
+            modelCache.car = modelCache.carVariants[0] ?? null;
+            resolve(modelCache.carVariants);
+          },
+          undefined,
+          (err) => {
+            console.warn("Car model failed to load", err);
+            modelCache.car = null;
+            modelCache.carVariants = [];
+            resolve([]);
+          }
+        );
+      });
+      return modelCache.carPromise;
+    };
+
+    const loadBoatModels = () => {
+      if (modelCache.boatPromise) return modelCache.boatPromise;
+      const loader = new GLTFLoader();
+      modelCache.boatPromise = new Promise((resolve) => {
+        loader.load(
+          boatModelUrl,
+          (gltf) => {
+            modelCache.boatVariants = buildModelVariants(gltf.scene, {
+              name: boatModelName,
+              index: boatModelIndex,
+              targetLength: boatTargetLength,
+              excludeLargestCount: boatExcludeLargestCount,
+              excludeLargestPercent: boatExcludeLargestPercent,
+            });
+            modelCache.boat = modelCache.boatVariants[0] ?? null;
+            resolve(modelCache.boatVariants);
+          },
+          undefined,
+          (err) => {
+            console.warn("Boat model failed to load", err);
+            modelCache.boat = null;
+            modelCache.boatVariants = [];
+            resolve([]);
+          }
+        );
+      });
+      return modelCache.boatPromise;
+    };
+
+    const getNextCarVariant = () => {
+      if (!modelCache.carVariants.length) return null;
+      const model = modelCache.carVariants[carVariantCursor % modelCache.carVariants.length];
+      carVariantCursor += 1;
+      return model;
+    };
+
+    const getNextBoatVariant = () => {
+      if (!modelCache.boatVariants.length) return null;
+      const model = modelCache.boatVariants[boatVariantCursor % modelCache.boatVariants.length];
+      boatVariantCursor += 1;
+      return model;
+    };
+
+    const spawnCarOnCurve = (curve, palette) => {
+      if (!cityGroup) return;
+      const hueColor = palette[Math.floor(Math.random() * palette.length)];
+      const variant = getNextCarVariant();
+      const car = variant ? variant.clone(true) : createHoverCar(hueColor);
+      const speed = THREE.MathUtils.randFloat(0.08, 0.14);
+      const startT = Math.random();
+      car.userData = {
+        curve,
+        t: startT,
+        speed,
+        heading: carModelHeading,
+        neonCategory: "vehicle",
+        neonSeed: Math.floor(startT * 10000),
+        collisionRadius: carHitRadius,
+      };
+      cityGroup.add(car);
+      cars.push(car);
+    };
+
+    const spawnPedestrianOnCurve = (curve, palette) => {
+      if (!cityGroup) return;
+      const hueColor = palette[Math.floor(Math.random() * palette.length)];
+      const walker = createPedestrian(hueColor);
+      const speed = THREE.MathUtils.randFloat(0.03, 0.06);
+      const startT = Math.random();
+      const offset = THREE.MathUtils.randFloat(-0.28, 0.28);
+      walker.userData = {
+        curve,
+        t: startT,
+        speed,
+        offset,
+        bob: Math.random() * Math.PI * 2,
+        neonCategory: "character",
+        neonSeed: Math.floor(startT * 10000),
+      };
+      cityGroup.add(walker);
+      pedestrians.push(walker);
+    };
+
+    const spawnBoatOnCurve = (curve, palette) => {
+      if (!cityGroup) return;
+      const hueColor = palette[Math.floor(Math.random() * palette.length)];
+      const variant = getNextBoatVariant();
+      const boat = variant ? variant.clone(true) : createBoat(hueColor);
+      boat.scale.multiplyScalar(boatScale);
+      const speed = THREE.MathUtils.randFloat(0.025, 0.05);
+      const startT = Math.random();
+      boat.userData = {
+        curve,
+        t: startT,
+        speed,
+        bob: Math.random() * Math.PI * 2,
+        heading: boatModelHeading,
+        neonCategory: "vehicle",
+        neonSeed: Math.floor(startT * 10000),
+      };
+      applyNeonToObject(boat, { category: "vehicle" });
+      cityGroup.add(boat);
+      boats.push(boat);
+    };
+
+    const createLoopCurveFromPolygon = (points, scale) => {
+      if (!points || points.length < 3) return null;
+      const centroid = polygonCentroid(points);
+      const scaled = points.map((p) => ({
+        x: centroid.x + (p.x - centroid.x) * scale,
+        z: centroid.z + (p.z - centroid.z) * scale,
+      }));
+      const vectors = scaled.map((p) => new THREE.Vector3(p.x, 0.03, p.z));
+      return new THREE.CatmullRomCurve3(vectors, true);
+    };
+
+    const addBuildingCollider = (object) => {
+      if (!object) return;
+      object.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(object);
+      if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) return;
+      buildingColliders.push(box);
+    };
+
+    const isPointOnDock = (x, z) => {
+      if (!dockInfo) return false;
+      const dx = x - dockInfo.center.x;
+      const dz = z - dockInfo.center.z;
+      const along = dx * dockInfo.dir.x + dz * dockInfo.dir.z;
+      const across = dx * dockInfo.right.x + dz * dockInfo.right.z;
+      return Math.abs(along) <= dockInfo.length * 0.5 + 0.2 &&
+        Math.abs(across) <= dockInfo.width * 0.5 + 0.2;
+    };
+
+    const isBlockedPosition = (x, z) => {
+      if (!isRidingBoat && lakeOutline && pointInPolygon({ x, z }, lakeOutline) && !isPointOnDock(x, z)) {
+        return true;
+      }
+      for (let i = 0; i < buildingColliders.length; i += 1) {
+        const box = buildingColliders[i];
+        if (x >= box.min.x - playerRadius && x <= box.max.x + playerRadius &&
+            z >= box.min.z - playerRadius && z <= box.max.z + playerRadius) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const placeStreetLights = (curve, interval, offset, palette) => {
+      if (!cityGroup || !curve) return;
+      const length = curve.getLength();
+      const count = Math.floor(length / interval);
+      for (let i = 0; i <= count; i += 1) {
+        const t = (i * interval) / length;
+        if (t > 1) break;
+        const pos = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t).normalize();
+        const normal = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+        const color = palette[i % palette.length];
+        const lamp = createStreetLight(color);
+        lamp.userData.neonCategory = "accent";
+        lamp.userData.neonSeed = i;
+        lamp.position.copy(pos).addScaledVector(normal, offset);
+        lamp.rotation.y = Math.atan2(normal.x, normal.z);
+        cityGroup.add(lamp);
+      }
+    };
+
+    const hashString = (value) => {
+      const str = String(value ?? "");
+      let hash = 0;
+      for (let i = 0; i < str.length; i += 1) {
+        hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+      }
+      return hash;
+    };
+
+    const seededRandom = (seed) => {
+      const x = Math.sin(seed * 12.9898) * 43758.5453;
+      return x - Math.floor(x);
+    };
+
+    function resolveNeonCategory(node, fallback = "default") {
+      let current = node;
+      while (current) {
+        if (current.userData && current.userData.neonCategory) return current.userData.neonCategory;
+        current = current.parent;
+      }
+      return fallback;
+    }
+
+    function resolveNeonSeed(node, fallback) {
+      let current = node;
+      while (current) {
+        const seed = current.userData ? current.userData.neonSeed : null;
+        if (Number.isFinite(seed)) return seed;
+        current = current.parent;
+      }
+      if (Number.isFinite(fallback)) return fallback;
+      return hashString(node && node.uuid ? node.uuid : "");
+    }
+
+    function resolveNeonColor(node, fallback) {
+      let current = node;
+      while (current) {
+        if (current.userData && Number.isFinite(current.userData.neonColor)) {
+          return current.userData.neonColor;
+        }
+        current = current.parent;
+      }
+      return fallback;
+    }
+
+    function pickNeonColor(seed, category) {
+      if (category && neonStyle.categoryColors[category]) return neonStyle.categoryColors[category];
+      const palette = neonStyle.palette;
+      if (!palette.length) return 0xffffff;
+      if (!Number.isFinite(seed)) {
+        return palette[Math.floor(Math.random() * palette.length)];
+      }
+      const idx = Math.floor(seededRandom(seed) * palette.length) % palette.length;
+      return palette[idx];
+    }
+
+    function pickNeonAccent(seed, primary) {
+      let accent = pickNeonColor(seed + 19.7, null);
+      if (accent === primary) accent = pickNeonColor(seed + 43.2, null);
+      return accent;
+    }
+
+    function getMeshBaseColor(mesh) {
+      const material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+      if (material && material.color && material.color.isColor) return material.color.clone();
+      return null;
+    }
+
+    function applyNeonToMesh(mesh, options = {}) {
+      if (!mesh || !mesh.isMesh) return;
+      if (mesh.userData && (mesh.userData.skipNeon || mesh.userData.neonStyled)) return;
+
+      const category = options.category ?? resolveNeonCategory(mesh, "default");
+      const seed = resolveNeonSeed(mesh, options.seed);
+      const inheritedColor = resolveNeonColor(mesh, null);
+      const outlineColor = options.outlineColor ?? inheritedColor ?? pickNeonColor(seed, category);
+      const opacity = options.fillOpacity ?? neonStyle.opacity[category] ?? neonStyle.opacity.default;
+      const baseColor = getMeshBaseColor(mesh) ?? new THREE.Color(0x0b0f19);
+      const fillColor = baseColor.clone().lerp(new THREE.Color(outlineColor), 0.45);
+
+      const fillMat = new THREE.MeshBasicMaterial({
+        color: fillColor,
+        transparent: true,
+        opacity,
+        depthWrite: false,
+      });
+      fillMat.side = THREE.DoubleSide;
+      mesh.material = fillMat;
+
+      const skipOutline = mesh.isSkinnedMesh || (mesh.userData && mesh.userData.skipNeonOutline);
+      if (mesh.geometry && !(mesh.userData && mesh.userData.neonOutline) && !skipOutline) {
+        const edges = new THREE.EdgesGeometry(mesh.geometry, neonStyle.edgeThreshold);
+        const lineMat = new THREE.LineBasicMaterial({
+          color: outlineColor,
+          transparent: true,
+          opacity: neonStyle.outlineOpacity,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const outline = new THREE.LineSegments(edges, lineMat);
+        outline.userData.neonOutline = true;
+        outline.renderOrder = (mesh.renderOrder || 0) + 1;
+        mesh.add(outline);
+        if (mesh.userData) mesh.userData.neonOutline = outline;
+      }
+
+      if (mesh.userData) mesh.userData.neonStyled = true;
+    }
+
+    function applyNeonToObject(root, options = {}) {
+      if (!root) return;
+      root.traverse((child) => {
+        if (!child.isMesh) return;
+        applyNeonToMesh(child, options);
+      });
+    }
+
+    function decorateBuilding(building, dims, seed, accentColor) {
+      if (!building || !dims) return;
+      const width = dims.width ?? 0;
+      const depth = dims.depth ?? 0;
+      const height = dims.height ?? 0;
+      if (!Number.isFinite(width) || !Number.isFinite(depth) || !Number.isFinite(height)) return;
+      if (width < 0.12 || depth < 0.12 || height < 0.3) return;
+
+      if (height > 1.8 && seededRandom(seed * 0.71) > 0.55) {
+        const bandHeight = Math.min(0.08, height * 0.06);
+        const band = new THREE.Mesh(
+          new THREE.BoxGeometry(width * 1.02, bandHeight, depth * 1.02),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        const bandY = height * (0.35 + seededRandom(seed * 0.91) * 0.45);
+        band.position.y = bandY;
+        band.userData.neonCategory = "accent";
+        band.userData.neonColor = pickNeonColor(seed + 23.8, null);
+        building.add(band);
+      }
+
+      if (height > 2.4 && seededRandom(seed * 0.83) > 0.65) {
+        const antennaH = Math.min(1.6, height * 0.35) + 0.2;
+        const antenna = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.03, 0.04, antennaH, 6),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        const ax = (seededRandom(seed * 1.13) - 0.5) * width * 0.35;
+        const az = (seededRandom(seed * 1.39) - 0.5) * depth * 0.35;
+        antenna.position.set(ax, height + antennaH / 2 + 0.05, az);
+        antenna.userData.neonCategory = "accent";
+        antenna.userData.neonColor = pickNeonColor(seed + 39.1, null);
+        const beacon = new THREE.Mesh(
+          new THREE.SphereGeometry(0.06, 10, 10),
+          new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        beacon.position.y = antennaH / 2 + 0.06;
+        beacon.userData.neonCategory = "accent";
+        beacon.userData.neonColor = pickNeonColor(seed + 52.6, null);
+        antenna.add(beacon);
+        building.add(antenna);
+      }
+    }
+
+    const parseLengthMeters = (value) => {
+      if (value == null) return null;
+      if (typeof value === "number" && Number.isFinite(value)) return value;
+      const str = String(value).trim().toLowerCase();
+      if (!str) return null;
+      const numeric = Number.parseFloat(str.replace(/[^0-9.]+/g, ""));
+      if (!Number.isFinite(numeric)) return null;
+      if (str.includes("ft") || str.includes("feet")) return numeric * 0.3048;
+      return numeric;
+    };
+
+    const parseColorValue = (value) => {
+      if (!value) return null;
+      const raw = String(value).trim().toLowerCase();
+      if (!raw) return null;
+      if (raw.startsWith("#")) return raw;
+      if (/^[0-9a-f]{6}$/.test(raw)) return `#${raw}`;
+      const named = {
+        white: "#f1f1f1",
+        black: "#2b2b2b",
+        gray: "#9aa0a6",
+        grey: "#9aa0a6",
+        beige: "#d7c3a5",
+        tan: "#c8a97e",
+        brown: "#8a6f5a",
+        brick: "#b56450",
+        red: "#c56a6a",
+        blue: "#7b93b4",
+        green: "#7c9a7a",
+      };
+      return named[raw] ?? null;
+    };
+
+    const materialFromTag = (value) => {
+      const raw = String(value ?? "").toLowerCase();
+      if (!raw) return null;
+      if (raw.includes("glass")) return "glass";
+      if (raw.includes("concrete")) return "concrete";
+      if (raw.includes("brick")) return "brick";
+      if (raw.includes("metal") || raw.includes("steel")) return "metal";
+      if (raw.includes("wood") || raw.includes("timber")) return "wood";
+      if (raw.includes("stone")) return "stone";
+      return null;
+    };
+
+    const materialPresets = {
+      glass: { color: "#9fb4cf", roughness: 0.2, metalness: 0.35, emissive: 0.55 },
+      concrete: { color: "#b5b7bb", roughness: 0.85, metalness: 0.05, emissive: 0.2 },
+      brick: { color: "#b86b5a", roughness: 0.8, metalness: 0.05, emissive: 0.25 },
+      metal: { color: "#9aa3ad", roughness: 0.4, metalness: 0.4, emissive: 0.25 },
+      wood: { color: "#b7895d", roughness: 0.75, metalness: 0.05, emissive: 0.2 },
+      stone: { color: "#b0a79a", roughness: 0.8, metalness: 0.05, emissive: 0.2 },
+    };
+
+    const resolveBuildingStyle = (props, seed, fallbackPalette) => {
+      const materialHint = materialFromTag(props["building:material"] ?? props.material);
+      const preset = materialHint ? materialPresets[materialHint] : null;
+      const colorTag = parseColorValue(props["building:colour"] ?? props.colour ?? props.color);
+      const baseColor = new THREE.Color(colorTag ?? preset?.color ?? fallbackPalette[seed % fallbackPalette.length]);
+      const roofTag = parseColorValue(props["roof:colour"] ?? props["roof:color"]);
+      const roofColor = new THREE.Color(roofTag ?? baseColor).offsetHSL(0, -0.05, 0.12);
+      return { baseColor, roofColor, materialHint, preset };
+    };
+
+    const collectBounds = (features, filterFn = null) => {
+      let minLon = Infinity;
+      let maxLon = -Infinity;
+      let minLat = Infinity;
+      let maxLat = -Infinity;
+
+      const visitCoord = (coord) => {
+        const lon = coord[0];
+        const lat = coord[1];
+        if (lon < minLon) minLon = lon;
+        if (lon > maxLon) maxLon = lon;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+      };
+
+      const visitGeometry = (geom) => {
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === "LineString") {
+          geom.coordinates.forEach(visitCoord);
+        } else if (geom.type === "Polygon") {
+          geom.coordinates.forEach((ring) => ring.forEach(visitCoord));
+        }
+      };
+
+      features.forEach((f) => {
+        if (filterFn && !filterFn(f.properties ?? {}, f)) return;
+        visitGeometry(f.geometry);
+      });
+      if (!Number.isFinite(minLon)) return null;
+      return { minLon, maxLon, minLat, maxLat };
+    };
+
+    const normalizeRing = (ring) => {
+      if (!ring || ring.length < 3) return [];
+      const last = ring[ring.length - 1];
+      const first = ring[0];
+      if (last[0] === first[0] && last[1] === first[1]) {
+        return ring.slice(0, -1);
+      }
+      return ring;
+    };
+
+    const polygonArea = (points) => {
+      let sum = 0;
+      for (let i = 0; i < points.length; i += 1) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % points.length];
+        sum += p1.x * p2.z - p2.x * p1.z;
+      }
+      return Math.abs(sum) * 0.5;
+    };
+
+    const polygonPerimeter = (points) => {
+      let sum = 0;
+      for (let i = 0; i < points.length; i += 1) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % points.length];
+        sum += Math.hypot(p2.x - p1.x, p2.z - p1.z);
+      }
+      return sum;
+    };
+
+    const scaleShape = (shape, scale) => {
+      const outer = shape.getPoints();
+      const scaled = new THREE.Shape(outer.map((p) => new THREE.Vector2(p.x * scale, p.y * scale)));
+      shape.holes.forEach((hole) => {
+        const holePts = hole.getPoints();
+        const holePath = new THREE.Path(holePts.map((p) => new THREE.Vector2(p.x * scale, p.y * scale)));
+        scaled.holes.push(holePath);
+      });
+      return scaled;
+    };
+
+    const clipPolygonToRect = (points, rect) => {
+      if (!points || points.length < 3) return [];
+      const clipEdge = (input, inside, intersect) => {
+        const output = [];
+        for (let i = 0; i < input.length; i += 1) {
+          const current = input[i];
+          const prev = input[(i + input.length - 1) % input.length];
+          const currInside = inside(current);
+          const prevInside = inside(prev);
+          if (currInside) {
+            if (!prevInside) output.push(intersect(prev, current));
+            output.push(current);
+          } else if (prevInside) {
+            output.push(intersect(prev, current));
+          }
+        }
+        return output;
+      };
+
+      let result = points.slice();
+      result = clipEdge(
+        result,
+        (p) => p.x >= rect.minX,
+        (p1, p2) => {
+          const t = (rect.minX - p1.x) / (p2.x - p1.x);
+          return { x: rect.minX, z: p1.z + (p2.z - p1.z) * t };
+        }
+      );
+      result = clipEdge(
+        result,
+        (p) => p.x <= rect.maxX,
+        (p1, p2) => {
+          const t = (rect.maxX - p1.x) / (p2.x - p1.x);
+          return { x: rect.maxX, z: p1.z + (p2.z - p1.z) * t };
+        }
+      );
+      result = clipEdge(
+        result,
+        (p) => p.z >= rect.minZ,
+        (p1, p2) => {
+          const t = (rect.minZ - p1.z) / (p2.z - p1.z);
+          return { x: p1.x + (p2.x - p1.x) * t, z: rect.minZ };
+        }
+      );
+      result = clipEdge(
+        result,
+        (p) => p.z <= rect.maxZ,
+        (p1, p2) => {
+          const t = (rect.maxZ - p1.z) / (p2.z - p1.z);
+          return { x: p1.x + (p2.x - p1.x) * t, z: rect.maxZ };
+        }
+      );
+      return result.length >= 3 ? result : [];
+    };
+
+    const polygonCentroid = (points) => {
+      let area = 0;
+      let cx = 0;
+      let cz = 0;
+      for (let i = 0; i < points.length; i += 1) {
+        const p1 = points[i];
+        const p2 = points[(i + 1) % points.length];
+        const cross = p1.x * p2.z - p2.x * p1.z;
+        area += cross;
+        cx += (p1.x + p2.x) * cross;
+        cz += (p1.z + p2.z) * cross;
+      }
+      if (Math.abs(area) < 1e-6) {
+        const avg = points.reduce((acc, p) => ({ x: acc.x + p.x, z: acc.z + p.z }), { x: 0, z: 0 });
+        return { x: avg.x / points.length, z: avg.z / points.length };
+      }
+      area *= 0.5;
+      return { x: cx / (6 * area), z: cz / (6 * area) };
+    };
+
+    const buildShapeFromRings = (rings, project) => {
+      const outer = normalizeRing(rings[0] ?? []);
+      if (outer.length < 3) return null;
+      const outerWorld = outer.map((coord) => project(coord[0], coord[1]));
+      const centroid = polygonCentroid(outerWorld);
+      const shape = new THREE.Shape(
+        outerWorld.map((p) => new THREE.Vector2(p.x - centroid.x, p.z - centroid.z))
+      );
+
+      if (rings.length > 1) {
+        for (let i = 1; i < rings.length; i += 1) {
+          const hole = normalizeRing(rings[i]);
+          if (hole.length < 3) continue;
+          const holeWorld = hole.map((coord) => project(coord[0], coord[1]));
+          const holePath = new THREE.Path(
+            holeWorld.map((p) => new THREE.Vector2(p.x - centroid.x, p.z - centroid.z))
+          );
+          shape.holes.push(holePath);
+        }
+      }
+
+      return { shape, centroid, area: polygonArea(outerWorld), perimeter: polygonPerimeter(outerWorld) };
+    };
+
+    const buildClippedShapeFromRings = (rings, project, clipRect) => {
+      const outer = normalizeRing(rings[0] ?? []);
+      if (outer.length < 3) return null;
+      let outerWorld = outer.map((coord) => project(coord[0], coord[1]));
+      if (clipRect) {
+        outerWorld = clipPolygonToRect(outerWorld, clipRect);
+      }
+      if (outerWorld.length < 3) return null;
+      const centroid = polygonCentroid(outerWorld);
+      const shape = new THREE.Shape(
+        outerWorld.map((p) => new THREE.Vector2(p.x - centroid.x, p.z - centroid.z))
+      );
+      return { shape, centroid, area: polygonArea(outerWorld) };
+    };
+
+    const buildShapeFromWorldRing = (ring) => {
+      if (!ring || ring.length < 3) return null;
+      const centroid = polygonCentroid(ring);
+      const shape = new THREE.Shape(
+        ring.map((p) => new THREE.Vector2(p.x - centroid.x, p.z - centroid.z))
+      );
+      return {
+        shape,
+        centroid,
+        area: polygonArea(ring),
+        perimeter: polygonPerimeter(ring),
+      };
+    };
+
+    const buildShapeFromWorldRingAbsolute = (ring) => {
+      if (!ring || ring.length < 3) return null;
+      const shape = new THREE.Shape(ring.map((p) => new THREE.Vector2(p.x, p.z)));
+      return { shape };
+    };
+
+    const pointInPolygon = (point, polygon) => {
+      let inside = false;
+      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const xi = polygon[i].x;
+        const zi = polygon[i].z;
+        const xj = polygon[j].x;
+        const zj = polygon[j].z;
+        const intersects =
+          zi > point.z !== zj > point.z &&
+          point.x < ((xj - xi) * (point.z - zi)) / (zj - zi + 1e-9) + xi;
+        if (intersects) inside = !inside;
+      }
+      return inside;
+    };
+
+    const distancePointToSegment = (point, a, b) => {
+      const abx = b.x - a.x;
+      const abz = b.z - a.z;
+      const apx = point.x - a.x;
+      const apz = point.z - a.z;
+      const abLenSq = abx * abx + abz * abz;
+      if (abLenSq < 1e-9) return Math.hypot(apx, apz);
+      const t = Math.max(0, Math.min(1, (apx * abx + apz * abz) / abLenSq));
+      const cx = a.x + abx * t;
+      const cz = a.z + abz * t;
+      return Math.hypot(point.x - cx, point.z - cz);
+    };
+
+    const distanceToPolygon = (point, polygon) => {
+      let min = Infinity;
+      for (let i = 0; i < polygon.length; i += 1) {
+        const a = polygon[i];
+        const b = polygon[(i + 1) % polygon.length];
+        const d = distancePointToSegment(point, a, b);
+        if (d < min) min = d;
+      }
+      return min;
+    };
+
+    const buildDockInfo = (outline) => {
+      if (!outline || outline.length < 3) return null;
+      const centroid = polygonCentroid(outline);
+      let dockIndex = 0;
+      let dockAnchor = outline[0];
+      for (let i = 1; i < outline.length; i += 1) {
+        if (outline[i].z > dockAnchor.z) {
+          dockAnchor = outline[i];
+          dockIndex = i;
+        }
+      }
+      const prev = outline[(dockIndex - 1 + outline.length) % outline.length];
+      const next = outline[(dockIndex + 1) % outline.length];
+      const along = new THREE.Vector3(next.x - prev.x, 0, next.z - prev.z);
+      if (along.lengthSq() < 1e-6) along.set(1, 0, 0);
+      along.normalize();
+      const landDir = new THREE.Vector3(dockAnchor.x - centroid.x, 0, dockAnchor.z - centroid.z);
+      if (landDir.lengthSq() < 1e-6) landDir.set(-along.z, 0, along.x);
+      landDir.normalize();
+      const waterDir = landDir.clone().multiplyScalar(-1);
+      const dockScale = Math.max(1, cityScale / 2);
+      const length = 3.4 * dockScale;
+      const width = 0.8 * dockScale;
+      const center = new THREE.Vector3(
+        dockAnchor.x,
+        0.05,
+        dockAnchor.z
+      ).addScaledVector(waterDir, length * 0.45);
+      const spawn = new THREE.Vector3(
+        dockAnchor.x,
+        0,
+        dockAnchor.z
+      ).addScaledVector(landDir, 1.4 * dockScale);
+      let spawnPoint = spawn;
+      if (pointInPolygon({ x: spawnPoint.x, z: spawnPoint.z }, outline)) {
+        const step = 0.7 * dockScale;
+        for (let i = 0; i < 6; i += 1) {
+          spawnPoint = spawnPoint.clone().addScaledVector(landDir, step);
+          if (!pointInPolygon({ x: spawnPoint.x, z: spawnPoint.z }, outline)) break;
+        }
+      }
+      const boatPoint = new THREE.Vector3(
+        dockAnchor.x,
+        0.03,
+        dockAnchor.z
+      ).addScaledVector(waterDir, length + dockBoatOffset);
+      const angle = Math.atan2(-waterDir.z, waterDir.x);
+      const right = new THREE.Vector3(-waterDir.z, 0, waterDir.x);
+      return { center, dir: waterDir, landDir, right, length, width, angle, spawn: spawnPoint, boatPoint };
+    };
+
+    const createDockMesh = (info) => {
+      const deckMat = new THREE.MeshLambertMaterial({ color: 0x2d3547 });
+      const railMat = new THREE.MeshLambertMaterial({ color: 0x1a2232 });
+      const group = new THREE.Group();
+      group.userData.neonCategory = "accent";
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(info.length, 0.12, info.width), deckMat);
+      deck.position.set(info.center.x, info.center.y, info.center.z);
+      deck.rotation.y = info.angle;
+      deck.userData.neonCategory = "accent";
+      group.add(deck);
+
+      const postGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.26, 8);
+      const postOffsets = [-info.length * 0.35, info.length * 0.35];
+      postOffsets.forEach((offset) => {
+        const post = new THREE.Mesh(postGeo, railMat);
+        const pos = new THREE.Vector3(info.center.x, 0.12, info.center.z)
+          .addScaledVector(info.dir, offset);
+        post.position.copy(pos);
+        post.rotation.y = info.angle;
+        post.userData.neonCategory = "accent";
+        group.add(post);
+      });
+      applyNeonToObject(group, { category: "accent" });
+      return group;
+    };
+
+    const createDockBoat = (info) => {
+      const palette = [0xffc857, 0x6fe4ff, 0xff7fbf, 0x8bd17c];
+      const hueColor = palette[Math.floor(Math.random() * palette.length)];
+      const variant = getNextBoatVariant();
+      const boat = variant ? variant.clone(true) : createBoat(hueColor);
+      boat.scale.multiplyScalar(boatScale);
+      boat.position.set(info.boatPoint.x, 0.04, info.boatPoint.z);
+      boat.rotation.y = Math.atan2(info.dir.x, info.dir.z) + boatModelHeading;
+      boat.userData.neonCategory = "vehicle";
+      boat.userData.isDockBoat = true;
+      applyNeonToObject(boat, { category: "vehicle" });
+      return boat;
+    };
+
+    const getLargestWaterPolygon = (features) => {
+      let best = null;
+      let bestArea = 0;
+      const areaFromRing = (ring) => {
+        let sum = 0;
+        for (let i = 0; i < ring.length; i += 1) {
+          const p1 = ring[i];
+          const p2 = ring[(i + 1) % ring.length];
+          sum += p1[0] * p2[1] - p2[0] * p1[1];
+        }
+        return Math.abs(sum) * 0.5;
+      };
+      const boundsFromRing = (ring) => {
+        let minLon = Infinity;
+        let maxLon = -Infinity;
+        let minLat = Infinity;
+        let maxLat = -Infinity;
+        ring.forEach((coord) => {
+          minLon = Math.min(minLon, coord[0]);
+          maxLon = Math.max(maxLon, coord[0]);
+          minLat = Math.min(minLat, coord[1]);
+          maxLat = Math.max(maxLat, coord[1]);
+        });
+        return { minLon, maxLon, minLat, maxLat };
+      };
+      const visit = (coords) => {
+        const outer = normalizeRing(coords[0] ?? []);
+        if (outer.length < 3) return;
+        const area = areaFromRing(outer);
+        if (area > bestArea) {
+          bestArea = area;
+          best = { rings: coords, bounds: boundsFromRing(outer) };
+        }
+      };
+      features.forEach((feature) => {
+        const props = feature.properties ?? {};
+        if (props.natural !== "water") return;
+        const geom = feature.geometry;
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === "Polygon") {
+          visit(geom.coordinates);
+        } else if (geom.type === "MultiPolygon") {
+          geom.coordinates.forEach((coords) => visit(coords));
+        }
+      });
+      return best;
+    };
+
+
+    const sampleLinePoints = (coords, project, y) => {
+      if (!coords || coords.length < 2) return [];
+      const step = Math.max(1, Math.floor(coords.length / 40));
+      const points = [];
+      for (let i = 0; i < coords.length; i += step) {
+        const coord = coords[i];
+        const p = project(coord[0], coord[1]);
+        points.push(new THREE.Vector3(p.x, y, p.z));
+      }
+      const last = coords[coords.length - 1];
+      const lastP = project(last[0], last[1]);
+      points.push(new THREE.Vector3(lastP.x, y, lastP.z));
+      return points;
+    };
+
+    const createCoastlineRing = () => {
+      const tracedCoastline = [
+        { x: -14.768, z: 2.522 },
+        { x: -14.853, z: 4.059 },
+        { x: -14.544, z: 4.138 },
+        { x: -14.299, z: 4.134 },
+        { x: -14.074, z: 4.238 },
+        { x: -13.921, z: 4.517 },
+        { x: -13.524, z: 5.013 },
+        { x: -12.854, z: 5.542 },
+        { x: -12.144, z: 6.037 },
+        { x: -9.861, z: 7.813 },
+        { x: -7.847, z: 9.059 },
+        { x: -5.803, z: 9.472 },
+        { x: -3.553, z: 8.708 },
+        { x: -2.244, z: 8.127 },
+        { x: -0.52, z: 7.362 },
+        { x: 1.771, z: 6.063 },
+        { x: 4.849, z: 4.768 },
+        { x: 5.604, z: 4.364 },
+        { x: 7.076, z: 4.848 },
+        { x: 8.219, z: 6.323 },
+        { x: 11.349, z: 5.459 },
+        { x: 13.498, z: 6.127 },
+        { x: 14.695, z: 6.459 },
+        { x: 15.456, z: 6.729 },
+        { x: 15.611, z: 6.555 },
+        { x: 16.248, z: 5.739 },
+        { x: 14.693, z: 7.647 },
+        { x: 16.674, z: 10.927 },
+        { x: 16.606, z: 6.427 },
+        { x: 16.356, z: 6.175 },
+        { x: 16.026, z: 2.617 },
+        { x: 15.473, z: -1.146 },
+        { x: 15.601, z: -4.188 },
+        { x: 13.501, z: -15.036 },
+        { x: 10.283, z: -14.099 },
+        { x: 6.83, z: -14.495 },
+        { x: 3.958, z: -14.176 },
+        { x: 2.414, z: -14.175 },
+        { x: 0.976, z: -13.857 },
+        { x: -3.48, z: -13.545 },
+        { x: -7.563, z: -14.105 },
+        { x: -10.477, z: -12.038 },
+        { x: -11.041, z: -11.816 },
+        { x: -10.975, z: -11.502 },
+        { x: -11.891, z: -10.673 },
+        { x: -12.447, z: -10.294 },
+        { x: -13.262, z: -9.623 },
+        { x: -13.981, z: -8.816 },
+        { x: -14.514, z: -7.667 },
+        { x: -14.692, z: -6.188 },
+        { x: -15.139, z: -6.002 },
+        { x: -14.892, z: -3.884 },
+        { x: -11.812, z: -6.275 },
+        { x: -12.672, z: -5.775 },
+        { x: -13.478, z: -4.822 },
+        { x: -14.984, z: -3.865 },
+        { x: -15.115, z: -3.124 },
+        { x: -15.011, z: -1.775 },
+        { x: -14.542, z: -0.179 },
+        { x: -14.993, z: 2.394 },
+        { x: -14.878, z: 3.765 },
+      ];
+      return tracedCoastline.map((p) => ({ x: p.x * cityScale, z: p.z * cityScale }));
+    };
+
+    const generateCityFromGeojson = (data, worldWidth, worldDepth, groundHeight) => {
+      const features = data?.features ?? [];
+      if (!features.length) return false;
+      const bounds = collectBounds(features);
+      if (!bounds) return false;
+      const mainWater = getLargestWaterPolygon(features);
+      const buildingBounds = collectBounds(features, (props) => Boolean(props.building));
+      const dataBounds = collectBounds(features, (props) => props.natural !== "water");
+      const baseBounds = buildingBounds ?? dataBounds ?? bounds;
+      const lonSpan = baseBounds.maxLon - baseBounds.minLon;
+      const latSpan = baseBounds.maxLat - baseBounds.minLat;
+      if (lonSpan <= 0 || latSpan <= 0) return false;
+      const padLon = lonSpan * (buildingBounds && mainWater ? 0.35 : 0.12);
+      const padLat = latSpan * (buildingBounds && mainWater ? 0.35 : 0.12);
+      const viewBounds = {
+        minLon: baseBounds.minLon - padLon,
+        maxLon: baseBounds.maxLon + padLon,
+        minLat: baseBounds.minLat - padLat,
+        maxLat: baseBounds.maxLat + padLat,
+      };
+      const viewLonSpan = viewBounds.maxLon - viewBounds.minLon;
+      const viewLatSpan = viewBounds.maxLat - viewBounds.minLat;
+
+      const mapScale = 6.4 * cityScale;
+      const mapWidth = worldWidth * mapScale;
+      const mapDepth = worldDepth * mapScale;
+      walkBounds = {
+        minX: -mapWidth / 2 + 1,
+        maxX: mapWidth / 2 - 1,
+        minZ: -mapDepth / 2 + 1,
+        maxZ: mapDepth / 2 - 1,
+      };
+      clampCharacterToBounds();
+      updateChickenPosition(false);
+      const scale = Math.min(mapWidth / viewLonSpan, mapDepth / viewLatSpan);
+      const centerLon = (viewBounds.minLon + viewBounds.maxLon) / 2;
+      const centerLat = (viewBounds.minLat + viewBounds.maxLat) / 2;
+      const latRad = (centerLat * Math.PI) / 180;
+      const metersPerDegLat =
+        111132.92 - 559.82 * Math.cos(2 * latRad) + 1.175 * Math.cos(4 * latRad);
+      const metersPerDegLon =
+        111412.84 * Math.cos(latRad) - 93.5 * Math.cos(3 * latRad);
+      const metersPerDeg = (metersPerDegLat + metersPerDegLon) / 2;
+      const worldUnitsPerMeter = scale / metersPerDeg;
+
+      const project = (lon, lat) => ({
+        x: (lon - centerLon) * scale,
+        z: -(lat - centerLat) * scale,
+      });
+
+      const clipRect = {
+        minX: (viewBounds.minLon - centerLon) * scale,
+        maxX: (viewBounds.maxLon - centerLon) * scale,
+        minZ: -(viewBounds.maxLat - centerLat) * scale,
+        maxZ: -(viewBounds.minLat - centerLat) * scale,
+      };
+      const boundsToRect = (b, padScale) => {
+        const padLon = (b.maxLon - b.minLon) * padScale;
+        const padLat = (b.maxLat - b.minLat) * padScale;
+        const minLon = b.minLon - padLon;
+        const maxLon = b.maxLon + padLon;
+        const minLat = b.minLat - padLat;
+        const maxLat = b.maxLat + padLat;
+        return {
+          minX: (minLon - centerLon) * scale,
+          maxX: (maxLon - centerLon) * scale,
+          minZ: -(maxLat - centerLat) * scale,
+          maxZ: -(minLat - centerLat) * scale,
+        };
+      };
+      const intersectRect = (a, b) => {
+        const rect = {
+          minX: Math.max(a.minX, b.minX),
+          maxX: Math.min(a.maxX, b.maxX),
+          minZ: Math.max(a.minZ, b.minZ),
+          maxZ: Math.min(a.maxZ, b.maxZ),
+        };
+        if (rect.minX >= rect.maxX || rect.minZ >= rect.maxZ) return a;
+        return rect;
+      };
+      const waterTrimRect = buildingBounds ? boundsToRect(buildingBounds, 0.12) : null;
+      const waterClipRect = waterTrimRect ? intersectRect(clipRect, waterTrimRect) : clipRect;
+
+      let waterOutline = null;
+      if (useHardcodedLake) {
+        waterOutline = createCoastlineRing();
+      } else if (mainWater) {
+        const waterWorld = normalizeRing(mainWater.rings[0]).map((coord) => project(coord[0], coord[1]));
+        const clipped = clipPolygonToRect(waterWorld, waterClipRect);
+        waterOutline = clipped.length >= 3 ? clipped : waterWorld;
+      }
+      lakeOutline = waterOutline ? waterOutline.map((p) => ({ x: p.x, z: p.z })) : null;
+      dockInfo = lakeOutline ? buildDockInfo(lakeOutline) : null;
+      let shorelineLimit = Infinity;
+      if (waterOutline) {
+        let minX = Infinity;
+        let maxX = -Infinity;
+        let minZ = Infinity;
+        let maxZ = -Infinity;
+        waterOutline.forEach((p) => {
+          minX = Math.min(minX, p.x);
+          maxX = Math.max(maxX, p.x);
+          minZ = Math.min(minZ, p.z);
+          maxZ = Math.max(maxZ, p.z);
+        });
+        const waterSpanX = maxX - minX;
+        const waterSpanZ = maxZ - minZ;
+        shorelineLimit = Math.max(0.6, Math.max(waterSpanX, waterSpanZ) * 0.2);
+      }
+
+      const applyPolygons = (geom, handler) => {
+        if (!geom || !geom.coordinates) return;
+        if (geom.type === "Polygon") {
+          handler(geom.coordinates);
+          return;
+        }
+        if (geom.type === "MultiPolygon") {
+          geom.coordinates.forEach((coords) => handler(coords));
+        }
+      };
+
+      const base = new THREE.Mesh(
+        new THREE.BoxGeometry(mapWidth + 6, groundHeight, mapDepth + 6),
+        new THREE.MeshLambertMaterial({ color: 0x7fbf7b })
+      );
+      base.position.set(0, -groundHeight / 2, 0);
+      base.userData.neonCategory = "ground";
+      base.userData.neonSeed = 1;
+      cityGroup.add(base);
+
+      lakeGroup = new THREE.Group();
+      lakeGroup.name = "lakeGroup";
+      lakeGroup.userData.neonCategory = "water";
+      lakeGroup.userData.neonSeed = 2;
+      cityGroup.add(lakeGroup);
+
+      const waterMat = new THREE.MeshLambertMaterial({ color: 0x66aee8, transparent: true, opacity: 0.92 });
+      const parkMat = new THREE.MeshLambertMaterial({ color: 0x8fd39e });
+      const roadMat = new THREE.MeshLambertMaterial({ color: 0x2f3545 });
+      const minorRoadMat = new THREE.MeshLambertMaterial({ color: 0x4a5163 });
+      const pathMat = new THREE.MeshLambertMaterial({ color: 0xbfc7d4 });
+      const buildingPalette = [
+        new THREE.Color(0xb6b8ba),
+        new THREE.Color(0xc7b9a6),
+        new THREE.Color(0xa7b3bf),
+        new THREE.Color(0xb79483),
+        new THREE.Color(0x9aa4b1),
+        new THREE.Color(0xc2c7c9),
+      ];
+
+      const roadWidths = {
+        trunk: 0.6,
+        primary: 0.55,
+        secondary: 0.5,
+        tertiary: 0.45,
+        residential: 0.36,
+        unclassified: 0.34,
+        service: 0.3,
+      };
+      const majorRoadTypes = new Set(["trunk", "primary", "secondary", "tertiary", "residential"]);
+      const minorRoadTypes = new Set(["service", "unclassified"]);
+      const pathRoadTypes = new Set([
+        "footway",
+        "cycleway",
+        "path",
+        "steps",
+        "bridleway",
+        "track",
+        "pedestrian",
+      ]);
+      const ignoredRoadTypes = new Set(["construction", "proposed", "abandoned", "razed"]);
+
+      const roadsForCars = [];
+      const roadsForWalkers = [];
+      const waterMeshes = [];
+      const parkMeshes = [];
+      const minBuildingArea = Math.max(0.001, mapWidth * mapDepth * 0.0000015);
+
+      if (useHardcodedLake && waterOutline && waterOutline.length >= 3) {
+        const shapeData = buildShapeFromWorldRingAbsolute(waterOutline);
+        if (shapeData) {
+          const geomWater = new THREE.ShapeGeometry(shapeData.shape);
+          geomWater.rotateX(-Math.PI / 2);
+          const water = new THREE.Mesh(geomWater, waterMat);
+          water.position.set(0, 0.01, 0);
+          water.userData.neonCategory = "water";
+          waterMeshes.push(water);
+        }
+      }
+
+      features.forEach((feature) => {
+        const geom = feature.geometry;
+        const props = feature.properties ?? {};
+        if (!geom) return;
+
+        if (props.natural === "water") {
+          if (useHardcodedLake) return;
+          applyPolygons(geom, (coords) => {
+            const shapeData = buildClippedShapeFromRings(coords, project, waterClipRect);
+            if (!shapeData) return;
+            const geomWater = new THREE.ShapeGeometry(shapeData.shape);
+            geomWater.rotateX(-Math.PI / 2);
+            const water = new THREE.Mesh(geomWater, waterMat);
+            water.position.set(shapeData.centroid.x, 0.01, shapeData.centroid.z);
+            water.userData.neonCategory = "water";
+            waterMeshes.push(water);
+          });
+          return;
+        }
+
+        if (props.landuse && ["park", "grass", "recreation_ground"].includes(props.landuse)) {
+          applyPolygons(geom, (coords) => {
+            const shapeData = buildClippedShapeFromRings(coords, project, clipRect);
+            if (!shapeData) return;
+            const geomPark = new THREE.ShapeGeometry(shapeData.shape);
+            geomPark.rotateX(-Math.PI / 2);
+            const park = new THREE.Mesh(geomPark, parkMat);
+            park.position.set(shapeData.centroid.x, 0.012, shapeData.centroid.z);
+            park.userData.neonCategory = "park";
+            parkMeshes.push(park);
+          });
+          return;
+        }
+
+        if (props.highway && geom.type === "LineString") {
+          const type = props.highway;
+          if (ignoredRoadTypes.has(type)) return;
+          let width = roadWidths[type];
+          let material = roadMat;
+          if (pathRoadTypes.has(type)) {
+            width = 0.14;
+            material = pathMat;
+          } else if (minorRoadTypes.has(type)) {
+            material = minorRoadMat;
+          } else if (!majorRoadTypes.has(type)) {
+            width = 0.2;
+            material = pathMat;
+          }
+          if (!width) width = pathRoadTypes.has(type) ? 0.14 : 0.2;
+          const points = sampleLinePoints(geom.coordinates, project, 0.015);
+          if (points.length < 2) return;
+          const curve = new THREE.CatmullRomCurve3(points);
+          const geomRoad = new THREE.TubeGeometry(curve, Math.max(24, points.length * 3), width / 2, 6, false);
+          const road = new THREE.Mesh(geomRoad, material);
+          road.userData.neonCategory = "road";
+          cityGroup.add(road);
+          roadsForWalkers.push({ curve, length: curve.getLength(), type });
+          if (majorRoadTypes.has(type)) {
+            roadsForCars.push({ curve, length: curve.getLength() });
+          }
+          return;
+        }
+
+        if (props.building) {
+          applyPolygons(geom, (coords) => {
+            const shapeData = buildShapeFromRings(coords, project);
+            if (!shapeData) return;
+            if (shapeData.area < minBuildingArea) return;
+            if (waterOutline && !useHardcodedLake) {
+              const point = { x: shapeData.centroid.x, z: shapeData.centroid.z };
+              if (pointInPolygon(point, waterOutline)) return;
+              const distance = distanceToPolygon(point, waterOutline);
+              if (distance > shorelineLimit) return;
+            }
+
+            const type = props.building;
+            const levels = Number.parseFloat(props["building:levels"] ?? props.levels);
+            const heightMetersTag = parseLengthMeters(props.height ?? props["building:height"]);
+            const roofHeightMetersTag = parseLengthMeters(props["roof:height"]);
+            const roofShape = String(props["roof:shape"] ?? "").toLowerCase();
+            const areaMeters = shapeData.area / Math.max(1e-6, worldUnitsPerMeter * worldUnitsPerMeter);
+            const seed = hashString(props["@id"] ?? `${shapeData.centroid.x}-${shapeData.centroid.z}`);
+
+            let heightMeters = heightMetersTag;
+            if (!heightMeters && Number.isFinite(levels)) heightMeters = levels * 3.2;
+            if (!heightMeters) {
+              heightMeters = 4 + Math.min(20, Math.sqrt(areaMeters) * 0.45);
+              if (["house", "detached", "garage", "bungalow"].includes(type)) {
+                heightMeters = 3.5 + Math.min(6, Math.sqrt(areaMeters) * 0.25);
+              } else if (type === "apartments") {
+                heightMeters *= 1.3;
+              } else if (["commercial", "retail", "office"].includes(type)) {
+                heightMeters *= 1.4;
+              }
+            }
+            if (!Number.isFinite(heightMetersTag) && !Number.isFinite(levels)) {
+              heightMeters *= 0.78 + seededRandom(seed * 0.77) * 0.64;
+            }
+            heightMeters = THREE.MathUtils.clamp(heightMeters, 3, 90);
+            let height = heightMeters * worldUnitsPerMeter;
+            height = Math.max(height, 1.1);
+
+            const style = resolveBuildingStyle(props, seed, buildingPalette);
+            const baseColor = style.baseColor.clone();
+            const tone = ((seed % 37) / 37 - 0.5) * 0.06;
+            baseColor.offsetHSL(0, -0.05, tone);
+            const roofColor = style.roofColor.clone();
+            const buildingNeon = pickNeonColor(seed + 3.7, null);
+            const accentNeon = pickNeonAccent(seed, buildingNeon);
+
+            const geomBuilding = new THREE.ExtrudeGeometry(shapeData.shape, {
+              depth: height,
+              bevelEnabled: false,
+            });
+            geomBuilding.rotateX(-Math.PI / 2);
+            const perimeterMeters = shapeData.perimeter / Math.max(1e-6, worldUnitsPerMeter);
+            const facadeMat = createFacadeMaterial(baseColor, heightMeters, perimeterMeters, seed, style);
+            const building = new THREE.Mesh(
+              geomBuilding,
+              facadeMat
+            );
+            building.userData.neonCategory = "building";
+            building.userData.neonSeed = seed;
+            building.userData.neonColor = buildingNeon;
+            geomBuilding.computeBoundingBox();
+            const bbox = geomBuilding.boundingBox;
+            if (bbox) {
+              const sizeX = bbox.max.x - bbox.min.x;
+              const sizeZ = bbox.max.z - bbox.min.z;
+              const roofMat = new THREE.MeshStandardMaterial({ color: roofColor, roughness: 0.8, metalness: 0.02 });
+              const slopedRoof = roofShape && roofShape !== "flat";
+              const roofHeight = roofHeightMetersTag
+                ? roofHeightMetersTag * worldUnitsPerMeter
+                : slopedRoof
+                  ? Math.min(height * 0.2, 0.8)
+                  : 0;
+              if (slopedRoof && roofHeight > 0.04) {
+                const roofScale =
+                  roofShape === "pyramidal"
+                    ? 0.6
+                    : roofShape === "gabled"
+                      ? 0.78
+                      : roofShape === "hipped"
+                        ? 0.74
+                        : roofShape === "skillion"
+                          ? 0.82
+                          : 0.86;
+                const roofShapeScaled = scaleShape(shapeData.shape, roofScale);
+                const roofGeom = new THREE.ExtrudeGeometry(roofShapeScaled, {
+                  depth: roofHeight,
+                  bevelEnabled: false,
+                });
+                roofGeom.rotateX(-Math.PI / 2);
+                const roof = new THREE.Mesh(roofGeom, roofMat);
+                roof.position.y = height;
+                roof.userData.neonCategory = "accent";
+                roof.userData.neonColor = accentNeon;
+                building.add(roof);
+              } else {
+                const capShape = scaleShape(shapeData.shape, 0.98);
+                const capGeom = new THREE.ShapeGeometry(capShape);
+                capGeom.rotateX(-Math.PI / 2);
+                const cap = new THREE.Mesh(capGeom, roofMat);
+                cap.position.y = height + 0.02;
+                cap.userData.neonCategory = "accent";
+                cap.userData.neonColor = accentNeon;
+                building.add(cap);
+
+                const allowUnits = heightMeters > 12 && areaMeters > 350 && !["house", "detached", "bungalow"].includes(type);
+                const unitCount = allowUnits ? 1 + (seed % 2) : 0;
+                for (let i = 0; i < unitCount; i += 1) {
+                  const unitW = sizeX * (0.08 + ((seed + i) % 4) * 0.01);
+                  const unitD = sizeZ * (0.08 + ((seed + i) % 4) * 0.01);
+                  const unitH = 0.1 + ((seed + i) % 3) * 0.05;
+                  const unit = new THREE.Mesh(
+                    new THREE.BoxGeometry(unitW, unitH, unitD),
+                    new THREE.MeshStandardMaterial({ color: roofColor.clone().offsetHSL(0, -0.02, -0.06), roughness: 0.9, metalness: 0.05 })
+                  );
+                  const ux = (seededRandom(seed * 0.13 + i * 3.1) - 0.5) * (sizeX * 0.5);
+                  const uz = (seededRandom(seed * 0.21 + i * 4.2) - 0.5) * (sizeZ * 0.5);
+                  unit.position.set(ux, height + 0.02 + unitH / 2, uz);
+                  unit.userData.neonCategory = "accent";
+                  unit.userData.neonColor = accentNeon;
+                  building.add(unit);
+                }
+              }
+              decorateBuilding(building, { width: sizeX, depth: sizeZ, height }, seed, accentNeon);
+            }
+            building.position.set(shapeData.centroid.x, 0, shapeData.centroid.z);
+            cityGroup.add(building);
+            addBuildingCollider(building);
+          });
+        }
+      });
+
+      if (lakeGroup) {
+        waterMeshes.forEach((mesh) => lakeGroup.add(mesh));
+      } else {
+        waterMeshes.forEach((mesh) => cityGroup.add(mesh));
+      }
+      parkMeshes.forEach((mesh) => cityGroup.add(mesh));
+      if (dockInfo) {
+        const dock = createDockMesh(dockInfo);
+        cityGroup.add(dock);
+        dockBoat = createDockBoat(dockInfo);
+        cityGroup.add(dockBoat);
+        if (dockInfo.spawn) {
+          charPos.x = dockInfo.spawn.x;
+          charPos.z = dockInfo.spawn.z;
+          clampCharacterToBounds();
+          updateChickenPosition(false);
+        }
+      }
+
+      roadsForCars
+        .sort((a, b) => b.length - a.length)
+        .slice(0, 6)
+        .forEach((entry) => {
+          roadCurves.push(entry.curve);
+        });
+
+      const walkerPalette = [0xffd6a5, 0x9bf6ff, 0xbdb2ff, 0xfdffb6, 0xa0c4ff];
+      const lightPalette = [0xfff1b8, 0xcbe4ff, 0xffd0d0];
+
+      roadCurves.forEach((curve) => {
+        spawnCarOnCurve(curve, [0x6fe4ff, 0xffc857, 0xff7fbf, 0x7de5b2]);
+        placeStreetLights(curve, 2.6, 0.7, lightPalette);
+      });
+
+      if (waterOutline && waterOutline.length >= 3) {
+        const boatCurve = createLoopCurveFromPolygon(waterOutline, 0.62);
+        if (boatCurve) {
+          boatCurves.push(boatCurve);
+          const boatPalette = [0xffc857, 0x6fe4ff, 0xff7fbf, 0x8bd17c];
+          for (let i = 0; i < 4; i += 1) {
+            spawnBoatOnCurve(boatCurve, boatPalette);
+          }
+        }
+      }
+
+      roadsForWalkers
+        .sort((a, b) => b.length - a.length)
+        .slice(0, 12)
+        .forEach((entry, idx) => {
+          spawnPedestrianOnCurve(entry.curve, walkerPalette);
+          if (idx % 2 === 0) spawnPedestrianOnCurve(entry.curve, walkerPalette);
+        });
+      applyNeonToObject(cityGroup);
+      return true;
+    };
+
+    async function generateCity() {
       if (!scene || !boardGroup.object) return;
 
       // Reset existing city assets
       if (cityGroup) {
         boardGroup.object.remove(cityGroup);
       }
+      lakeGroup = null;
+      lakeOutline = null;
+      dockInfo = null;
+      dockBoat = null;
+      activeBoat = null;
+      isRidingBoat = false;
+      gameOver = false;
+      flyState = null;
+      setGameOverState(false);
       cars.length = 0;
+      pedestrians.length = 0;
+      boats.length = 0;
       flickerLights.length = 0;
       roadCurves.length = 0;
+      buildingColliders.length = 0;
+      boatCurves.length = 0;
+      carVariantCursor = 0;
+      boatVariantCursor = 0;
 
       cityGroup = new THREE.Group();
       cityGroup.name = "cityGroup";
       boardGroup.object.add(cityGroup);
 
+      await loadCarModels();
+      await loadBoatModels();
+
       const worldWidth = cols * tileSize;
       const worldDepth = rows * tileSize;
       const groundHeight = 0.2;
-      const palette = [0x5fd0ff, 0xff7fbf, 0xffc857, 0x7de5b2, 0x7f8dff, 0xff9f1c, 0x55efc4, 0xff6f59, 0x79f2de, 0xf5a3ff, 0xa0ffd8];
+      walkBounds = {
+        minX: -worldWidth / 2 - 6,
+        maxX: worldWidth / 2 + 6,
+        minZ: -worldDepth / 2 - 6,
+        maxZ: worldDepth / 2 + 6,
+      };
+      clampCharacterToBounds();
+      updateChickenPosition(false);
+      const geoData = geojsonData === null ? await loadGeojson() : geojsonData;
+      if (geoData && geoData.features) {
+        const built = generateCityFromGeojson(geoData, worldWidth, worldDepth, groundHeight);
+        if (built) return;
+      }
+      const palette = [0x9cc9f5, 0xb8b4f4, 0x8fd3b5, 0xf1c07a, 0xf0a5b7, 0x94b4f2];
+      const carPalette = [0x6fe4ff, 0xffc857, 0xff7fbf, 0x7de5b2, 0xff6f59];
+      const districtSize = 4;
 
       const ground = new THREE.Mesh(
         new THREE.BoxGeometry(worldWidth + 16, groundHeight, worldDepth + 16),
         new THREE.MeshLambertMaterial({ color: 0x79c67c })
       );
       ground.position.set(0, -groundHeight / 2, 0);
+      ground.userData.neonCategory = "ground";
+      ground.userData.neonSeed = 3;
       cityGroup.add(ground);
 
       const roadWidth = 0.6;
@@ -720,6 +2957,7 @@
         const curve = new THREE.CatmullRomCurve3(points);
         const geom = new THREE.TubeGeometry(curve, 80, roadWidth, 8, false);
         const road = new THREE.Mesh(geom, baseRoadMaterial.clone());
+        road.userData.neonCategory = "road";
         cityGroup.add(road);
         roadCurves.push(curve);
 
@@ -735,6 +2973,7 @@
           const stripe = new THREE.Mesh(stripeGeom, stripeMaterial);
           stripe.position.copy(pos);
           stripe.position.y += 0.02;
+          stripe.userData.neonCategory = "road";
           const quat = new THREE.Quaternion();
           quat.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(tangent.x, 0, tangent.z).normalize());
           stripe.quaternion.copy(quat);
@@ -766,25 +3005,43 @@
         return s - Math.floor(s);
       };
 
+      const smoothstep = (t) => t * t * (3 - 2 * t);
+
+      const smoothNoise = (x, y) => {
+        const x0 = Math.floor(x);
+        const x1 = x0 + 1;
+        const y0 = Math.floor(y);
+        const y1 = y0 + 1;
+        const sx = smoothstep(x - x0);
+        const sy = smoothstep(y - y0);
+        const n00 = rand2(x0, y0);
+        const n10 = rand2(x1, y0);
+        const n01 = rand2(x0, y1);
+        const n11 = rand2(x1, y1);
+        const ix0 = THREE.MathUtils.lerp(n00, n10, sx);
+        const ix1 = THREE.MathUtils.lerp(n01, n11, sx);
+        return THREE.MathUtils.lerp(ix0, ix1, sy);
+      };
+
       const jitterOffset = (x, y) => {
-        const n1 = rand2(x, y);
-        const n2 = rand2(y + 19.1, x - 7.3);
-        const n3 = rand2(x * 0.5 + 11.7, y * 0.5 - 3.9);
-        const magnitude = 0.35 + n3 * 0.22; // tighter jitter
+        const n1 = rand2(x + 11.7, y - 3.4);
+        const n2 = rand2(x - 5.9, y + 8.1);
+        const magnitude = 0.08 + n2 * 0.06;
         const angle = n1 * Math.PI * 2;
         return {
           x: Math.cos(angle) * magnitude,
           z: Math.sin(angle) * magnitude,
-          spin: (n2 - 0.5) * 0.18,
+          spin: (n2 - 0.5) * 0.05,
         };
       };
 
       const addWindowBands = (parent, w, h, d, color) => {
-        const bandCount = Math.floor(h / 0.6);
+        const bandCount = Math.max(2, Math.floor(h / 1.1));
+        const windowColor = new THREE.Color(color).offsetHSL(0, -0.2, 0.35);
         for (let i = 0; i < bandCount; i += 1) {
           const y = -h / 2 + (i + 0.5) * (h / bandCount);
           const geom = new THREE.BoxGeometry(w * 0.92, 0.04, 0.06);
-          const mat = new THREE.MeshLambertMaterial({ color: 0xf7f9ff });
+          const mat = new THREE.MeshLambertMaterial({ color: windowColor, transparent: true, opacity: 0.85 });
           const front = new THREE.Mesh(geom, mat);
           front.position.set(0, y, d / 2 + 0.001);
           const back = front.clone();
@@ -794,81 +3051,80 @@
         }
       };
 
-      const createBuilding = (height, color) => {
+      const createBuilding = (height, color, seeds = {}) => {
         const group = new THREE.Group();
-        const variant = Math.floor(Math.random() * 3);
-        const baseColor = new THREE.Color(color);
+        const baseColor = color.clone ? color.clone() : new THREE.Color(color);
+        const seedA = seeds.a ?? Math.random();
+        const seedB = seeds.b ?? Math.random();
+        const seedC = seeds.c ?? Math.random();
+        const seedD = seeds.d ?? Math.random();
+        const variant = Math.floor(seedA * 3);
+        const footprint = THREE.MathUtils.lerp(0.78, 0.98, seedB);
+        const depth = footprint * THREE.MathUtils.lerp(0.85, 1.05, seedC);
+        const accent = baseColor.clone().offsetHSL(0.02, 0.04, 0.08);
 
         if (variant === 0) {
-          const footprintX = THREE.MathUtils.randFloat(0.75, 1.05);
-          const footprintZ = THREE.MathUtils.randFloat(0.75, 1.05);
           const base = new THREE.Mesh(
-            new THREE.BoxGeometry(footprintX, height, footprintZ),
+            new THREE.BoxGeometry(footprint, height, depth),
             new THREE.MeshLambertMaterial({ color: baseColor })
           );
           base.position.y = height / 2;
           group.add(base);
-          addWindowBands(base, footprintX, height, footprintZ, baseColor);
-        } else if (variant === 1) {
-          const footprint = THREE.MathUtils.randFloat(0.85, 1.15);
-          let currentHeight = 0;
-          for (let i = 0; i < 3; i += 1) {
-            const tierH = height * (0.35 - i * 0.07);
-            const scaleX = 1 - i * 0.16 + rand2(i + 0.2, height) * 0.05;
-            const scaleZ = 1 - i * 0.16 + rand2(height, i + 0.7) * 0.05;
-            const tier = new THREE.Mesh(
-              new THREE.BoxGeometry(footprint * scaleX, tierH, footprint * scaleZ),
-              new THREE.MeshLambertMaterial({
-                color: baseColor.clone().offsetHSL(0.02 * i, 0, 0.03 * i),
-              })
-            );
-            tier.position.y = currentHeight + tierH / 2;
-            currentHeight += tierH;
-            group.add(tier);
+          if (height > 2.4) {
+            addWindowBands(base, footprint, height, depth, baseColor);
           }
-        } else {
-          const footprint = THREE.MathUtils.randFloat(0.7, 0.95);
-          const prism = new THREE.Mesh(
-            new THREE.CylinderGeometry(footprint * 0.6, footprint, height, 5, 1, false),
-            new THREE.MeshLambertMaterial({
-              color: baseColor.clone().offsetHSL(-0.02, 0.05, 0.08),
-            })
+        } else if (variant === 1) {
+          const lowerH = height * 0.62;
+          const upperH = height * 0.38;
+          const lower = new THREE.Mesh(
+            new THREE.BoxGeometry(footprint, lowerH, depth),
+            new THREE.MeshLambertMaterial({ color: baseColor })
           );
-          prism.position.y = height / 2;
-          group.add(prism);
-          addWindowBands(prism, footprint * 1.1, height, footprint * 1.1, baseColor);
+          lower.position.y = lowerH / 2;
+          group.add(lower);
+          if (lowerH > 2.2) {
+            addWindowBands(lower, footprint, lowerH, depth, baseColor);
+          }
+
+          const upperFootprint = footprint * 0.78;
+          const upperDepth = depth * 0.78;
+          const upper = new THREE.Mesh(
+            new THREE.BoxGeometry(upperFootprint, upperH, upperDepth),
+            new THREE.MeshLambertMaterial({ color: accent })
+          );
+          upper.position.y = lowerH + upperH / 2;
+          group.add(upper);
+        } else {
+          const podiumH = height * 0.28;
+          const podium = new THREE.Mesh(
+            new THREE.BoxGeometry(footprint, podiumH, depth),
+            new THREE.MeshLambertMaterial({ color: baseColor })
+          );
+          podium.position.y = podiumH / 2;
+          group.add(podium);
+
+          const towerH = height - podiumH;
+          const towerW = footprint * 0.68;
+          const towerD = depth * 0.68;
+          const tower = new THREE.Mesh(
+            new THREE.BoxGeometry(towerW, towerH, towerD),
+            new THREE.MeshLambertMaterial({ color: accent })
+          );
+          tower.position.y = podiumH + towerH / 2;
+          group.add(tower);
+          if (towerH > 2.2) {
+            addWindowBands(tower, towerW, towerH, towerD, accent);
+          }
         }
 
-        if (Math.random() < 0.35) {
-          const roofLight = new THREE.PointLight(color, 0.9, 5, 2);
-          roofLight.position.y = height + 0.35;
+        if (seedD > 0.9) {
+          const roofLight = new THREE.PointLight(baseColor, 0.8, 4, 2);
+          roofLight.position.y = height + 0.3;
           group.add(roofLight);
           flickerLights.push(roofLight);
         }
 
-        if (Math.random() < 0.35) {
-          const antenna = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.02, 0.05, 0.4, 10),
-            new THREE.MeshLambertMaterial({ color })
-          );
-          antenna.position.y = height + 0.35;
-          group.add(antenna);
-        }
-
-        // Add a simple top cap for extra flavor
-        const bbox = new THREE.Box3().setFromObject(group);
-        const size = new THREE.Vector3();
-        bbox.getSize(size);
-        const cap = new THREE.Mesh(
-          new THREE.BoxGeometry(size.x * 0.7, 0.12, size.z * 0.7),
-          new THREE.MeshLambertMaterial({
-            color: baseColor.clone().offsetHSL(0.05, 0.05, 0.08),
-          })
-        );
-        cap.position.set(0, bbox.max.y + 0.08, 0);
-        group.add(cap);
-
-        group.rotation.y = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(8));
+        group.rotation.y = (seedC - 0.5) * 0.08;
         return group;
       };
 
@@ -892,6 +3148,7 @@
         );
         const patchPos = tileToWorld(p.x + p.w / 2 - 0.5, p.y + p.h / 2 - 0.5, 0);
         patch.position.set(patchPos.x, 0.03 - groundHeight / 2, patchPos.z);
+        patch.userData.neonCategory = "park";
         cityGroup.add(patch);
       });
 
@@ -903,23 +3160,47 @@
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           if (inHeroPlaza(x, y) || inPark(x, y)) continue;
-          if ((x + y) % 2 === 1) continue; // checker spacing
-          const densityNoise = rand2(x * 1.3, y * 1.1);
-          if (densityNoise > 0.78) continue; // thin via noise
+          const blockX = Math.floor(x / districtSize);
+          const blockY = Math.floor(y / districtSize);
+          const densityNoise = smoothNoise(x * 0.45, y * 0.45);
+          if (densityNoise < 0.38) continue;
+          if ((x + y) % 3 === 1 && densityNoise < 0.62) continue;
 
           const dx = x - cols / 2;
           const dy = y - rows / 2;
           const dist = Math.hypot(dx, dy);
-          const heightProfile = 1 - Math.min(1, dist / maxRadius) * 0.45 + rand2(x + 12.3, y + 5.7) * 0.15;
-          const h = THREE.MathUtils.clamp(2.4 * heightProfile, 1.8, 6.8);
+          const centerFalloff = 1 - Math.min(1, dist / maxRadius);
+          const bandNoise = smoothNoise(x * 0.22 + 10.3, y * 0.22 - 7.1);
+          const districtHeight = 0.85 + rand2(blockX + 9.1, blockY + 4.4) * 0.35;
+          const heightProfile = 0.5 + centerFalloff * 0.6 + bandNoise * 0.45;
+          const h = THREE.MathUtils.clamp(heightProfile * districtHeight * 2.4, 1.6, 5.6);
 
-          const color = palette[(x * 3 + y * 5 + Math.floor(densityNoise * palette.length)) % palette.length];
-          const building = createBuilding(h, color);
+          const swatch = palette[Math.floor(rand2(blockX + 2.4, blockY - 1.7) * palette.length)];
+          const blockTone = (rand2(blockX + 6.1, blockY + 3.9) - 0.5) * 0.12;
+          const tileTone = (rand2(x + 2.2, y + 1.7) - 0.5) * 0.06;
+          const baseColor = new THREE.Color(swatch).offsetHSL(0, -0.08, blockTone + tileTone);
+          const seeds = {
+            a: rand2(x * 1.7, y * 2.1),
+            b: rand2(x * 2.9 + 1.3, y * 1.5 - 0.7),
+            c: rand2(x * 0.9 - 4.1, y * 3.3 + 2.7),
+            d: rand2(x * 4.2 + 5.4, y * 0.8 + 1.6),
+          };
+          const building = createBuilding(h, baseColor, seeds);
+          const buildingSeed = hashString(`${x}-${y}-${h.toFixed(2)}`);
+          const buildingNeon = pickNeonColor(buildingSeed + 5.1, null);
+          const accentNeon = pickNeonAccent(buildingSeed, buildingNeon);
+          building.userData.neonCategory = "building";
+          building.userData.neonSeed = buildingSeed;
+          building.userData.neonColor = buildingNeon;
+          const bbox = new THREE.Box3().setFromObject(building);
+          const size = new THREE.Vector3();
+          bbox.getSize(size);
+          decorateBuilding(building, { width: size.x, depth: size.z, height: size.y }, buildingSeed, accentNeon);
           const pos = tileToWorld(x, y, 0);
           const jitter = jitterOffset(x, y);
           const normalizedX = (x - cols / 2) / (cols / 2);
-          const curvePush = Math.sin(normalizedX * Math.PI) * 0.8;
-          const arcPull = Math.max(0, 1 - Math.abs(y - heroRow) * 0.4) * 0.9;
+          const curvePush = Math.sin(normalizedX * Math.PI) * 0.45;
+          const arcPull = Math.max(0, 1 - Math.abs(y - heroRow) * 0.45) * 0.6;
           const arcOffsetZ = arcPull * curvePush;
 
           if (Math.abs(y - heroRow) <= 1) {
@@ -933,8 +3214,9 @@
             0,
             pos.z + jitter.z + arcOffsetZ
           );
-          building.rotation.y += jitter.spin + curvePush * 0.08;
+          building.rotation.y += jitter.spin + curvePush * 0.04;
           cityGroup.add(building);
+          addBuildingCollider(building);
         }
       }
 
@@ -947,6 +3229,8 @@
         accent: "#cfd6e2",
       });
       const billboardText = billboardVoxel.group;
+      billboardText.userData.neonCategory = "sign";
+      billboardText.userData.neonSeed = hashString(billboardWord);
       const bPos = tileToWorld(2.5, Math.floor(rows * 0.15), 0);
       billboardText.position.set(bPos.x, 1.0, bPos.z - 0.2);
       billboardText.rotation.y = Math.PI;
@@ -970,24 +3254,24 @@
         new THREE.MeshLambertMaterial({ color: 0xf2f5f0 })
       );
       heroPad.position.set(heroCenterX, 0.05 - groundHeight / 2, heroCenterZ);
+      heroPad.userData.neonCategory = "accent";
       cityGroup.add(heroPad);
 
       const heroText = heroVoxel.group;
+      heroText.userData.neonCategory = "sign";
+      heroText.userData.neonSeed = hashString(heroWord);
       heroText.position.set(heroCenterX, 1.0, heroCenterZ);
       heroText.rotation.y = Math.PI;
       cityGroup.add(heroText);
 
-      const makeCarOnCurve = (curve) => {
-        const hueColor = palette[Math.floor(Math.random() * palette.length)];
-        const car = createHoverCar(hueColor);
-        const speed = THREE.MathUtils.randFloat(0.08, 0.14);
-        const startT = Math.random();
-        car.userData = { curve, t: startT, speed };
-        cityGroup.add(car);
-        cars.push(car);
-      };
-
-      roadCurves.forEach((curve) => makeCarOnCurve(curve));
+      const walkerPalette = [0xffd6a5, 0x9bf6ff, 0xbdb2ff, 0xfdffb6, 0xa0c4ff];
+      const lightPalette = [0xfff1b8, 0xcbe4ff, 0xffd0d0];
+      roadCurves.forEach((curve) => {
+        spawnCarOnCurve(curve, carPalette);
+        spawnPedestrianOnCurve(curve, walkerPalette);
+        placeStreetLights(curve, 2.4, 0.6, lightPalette);
+      });
+      applyNeonToObject(cityGroup);
     }
 
     function updateCars() {
@@ -1001,7 +3285,38 @@
         car.position.copy(pos);
         car.position.y += 0.05;
         const yaw = Math.atan2(tangent.z, tangent.x);
-        car.rotation.y = Math.PI / 2 - yaw;
+        const heading = car.userData.heading ?? 0;
+        car.rotation.y = Math.PI / 2 - yaw + heading;
+      });
+    }
+
+    function updatePedestrians(time) {
+      pedestrians.forEach((walker) => {
+        const { curve, speed, offset, bob } = walker.userData;
+        if (!curve) return;
+        walker.userData.t = (walker.userData.t + speed * 0.001) % 1;
+        const t = walker.userData.t;
+        const pos = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t).normalize();
+        const normal = new THREE.Vector3(-tangent.z, 0, tangent.x).normalize();
+        walker.position.copy(pos).addScaledVector(normal, offset);
+        walker.position.y += 0.02 + Math.sin(time * 3.5 + bob) * 0.02;
+        walker.rotation.y = Math.PI / 2 - Math.atan2(tangent.z, tangent.x);
+      });
+    }
+
+    function updateBoats(time) {
+      boats.forEach((boat) => {
+        const { curve, speed, bob } = boat.userData;
+        if (!curve) return;
+        boat.userData.t = (boat.userData.t + speed * 0.0015) % 1;
+        const t = boat.userData.t;
+        const pos = curve.getPointAt(t);
+        const tangent = curve.getTangentAt(t);
+        boat.position.copy(pos);
+        boat.position.y += 0.02 + Math.sin(time * 1.6 + bob) * 0.02;
+        const heading = boat.userData.heading ?? 0;
+        boat.rotation.y = Math.PI / 2 - Math.atan2(tangent.z, tangent.x) + heading;
       });
     }
 
@@ -1037,48 +3352,86 @@
       }
     }
 
-    function indexFromXY(x, y) {
-      return y * cols + x;
-    }
-
     function updateCharacter(playHop = true) {
-      tiles.forEach((t) => t.classList.remove("has-character", "active", "hop"));
-      const idx = indexFromXY(charX, charY);
-      const tile = tiles[idx];
-      if (tile) {
-        tile.classList.add("has-character", "active");
-        if (playHop) {
-          tile.classList.add("hop");
-          setTimeout(() => tile.classList.remove("hop"), 210);
-        }
-      }
       updateChickenRotation();
       updateChickenPosition(playHop);
     }
 
-    function setCharacterTo(x, y, playHop = true) {
-      if (x < 0 || x >= cols || y < 0 || y >= rows) return;
-      const dx = x - charX;
-      const dy = y - charY;
-      if (dx === 0 && dy === 0) return;
-      if (Math.abs(dx) > Math.abs(dy)) facing = dx > 0 ? "right" : "left";
-      else if (dy !== 0) facing = dy > 0 ? "down" : "up";
-      charX = x;
-      charY = y;
+    function clampCharacterToBounds() {
+      if (!walkBounds) return;
+      charPos.x = clamp(charPos.x, walkBounds.minX, walkBounds.maxX);
+      charPos.z = clamp(charPos.z, walkBounds.minZ, walkBounds.maxZ);
+    }
+
+    function setCharacterTo(x, z, playHop = true) {
+      const dx = x - charPos.x;
+      const dz = z - charPos.z;
+      if (dx !== 0 || dz !== 0) {
+        facingYaw = Math.atan2(dx, dz);
+      }
+      let nextX = x;
+      let nextZ = z;
+      if (walkBounds) {
+        nextX = clamp(nextX, walkBounds.minX, walkBounds.maxX);
+        nextZ = clamp(nextZ, walkBounds.minZ, walkBounds.maxZ);
+      }
+      if (isBlockedPosition(nextX, nextZ)) return;
+      charPos.x = nextX;
+      charPos.z = nextZ;
       updateCharacter(playHop);
     }
 
-    function moveCharacter(dx, dy) {
-      const nx = charX + dx;
-      const ny = charY + dy;
-      if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) return;
-      if (dx === 1) facing = "right";
-      else if (dx === -1) facing = "left";
-      else if (dy === 1) facing = "down";
-      else if (dy === -1) facing = "up";
-      charX = nx;
-      charY = ny;
+    function getScreenMoveBasis() {
+      const forward = new THREE.Vector3(0, 0, 1);
+      if (camera) {
+        camera.getWorldDirection(forward);
+      }
+      forward.y = 0;
+      if (forward.lengthSq() < 1e-6) {
+        forward.set(0, 0, 1);
+      } else {
+        forward.normalize();
+      }
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0));
+      if (right.lengthSq() < 1e-6) {
+        right.set(1, 0, 0);
+      } else {
+        right.normalize();
+      }
+      return { forward, right };
+    }
+
+    function moveCharacter(screenX, screenY) {
+      const { forward, right } = getScreenMoveBasis();
+      const moveDir = new THREE.Vector3()
+        .addScaledVector(right, screenX)
+        .addScaledVector(forward, screenY);
+      if (moveDir.lengthSq() === 0) return;
+      moveDir.normalize();
+      facingYaw = Math.atan2(moveDir.x, moveDir.z);
+      let nextX = charPos.x + moveDir.x * walkStep;
+      let nextZ = charPos.z + moveDir.z * walkStep;
+      if (walkBounds) {
+        nextX = clamp(nextX, walkBounds.minX, walkBounds.maxX);
+        nextZ = clamp(nextZ, walkBounds.minZ, walkBounds.maxZ);
+      }
+      if (isBlockedPosition(nextX, nextZ)) return;
+      charPos.x = nextX;
+      charPos.z = nextZ;
       updateCharacter(true);
+    }
+
+    function moveBoat(screenX, screenY) {
+      if (!activeBoat) return;
+      const { forward, right } = getScreenMoveBasis();
+      const moveDir = new THREE.Vector3()
+        .addScaledVector(right, screenX)
+        .addScaledVector(forward, screenY);
+      if (moveDir.lengthSq() === 0) return;
+      moveDir.normalize();
+      activeBoat.position.addScaledVector(moveDir, boatControlSpeed);
+      activeBoat.rotation.y = Math.atan2(moveDir.x, moveDir.z) + boatModelHeading;
+      updateBoatRider();
     }
 
     // Initial placement
@@ -1090,6 +3443,12 @@
       syncBoardGroupRotation();
     }
     applyBoardAngle();
+    if (zoomSlider) {
+      zoomSlider.value = String(cameraRadius);
+      zoomSlider.addEventListener("input", () => {
+        setCameraRadius(Number(zoomSlider.value), { syncSlider: false });
+      });
+    }
 
     // Pointer-based drag rotation
     let isDragging = false;
@@ -1105,6 +3464,8 @@
     const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
     isoPlane.addEventListener("pointerdown", (e) => {
+      if (lakeDrag.active) return;
+      if (e.button !== 0) return;
       isDragging = true;
       activePointerId = e.pointerId;
       dragStartX = e.clientX;
@@ -1116,7 +3477,9 @@
     });
 
     isoPlane.addEventListener("pointermove", (e) => {
-      if (!isDragging || e.pointerId !== activePointerId) return;
+      if (lakeDrag.active) return;
+      if (e.pointerId !== activePointerId) return;
+      if (!isDragging) return;
       const dx = e.clientX - dragStartX;
       const dy = e.clientY - dragStartY;
       const sensitivity = 0.3;
@@ -1136,26 +3499,48 @@
     }
     isoPlane.addEventListener("pointerup", endDrag);
     isoPlane.addEventListener("pointercancel", endDrag);
+    isoPlane.addEventListener("contextmenu", (e) => e.preventDefault());
 
     // Keyboard controls
     window.addEventListener("keydown", (e) => {
+      if (gameOver) return;
+      const moveFn = isRidingBoat ? moveBoat : moveCharacter;
       switch (e.key) {
-        case "ArrowUp": e.preventDefault(); moveCharacter(0, -1); break;
-        case "ArrowDown": e.preventDefault(); moveCharacter(0, 1); break;
-        case "ArrowLeft": e.preventDefault(); moveCharacter(-1, 0); break;
-        case "ArrowRight": e.preventDefault(); moveCharacter(1, 0); break;
+        case "ArrowUp": e.preventDefault(); moveFn(0, 1); break;
+        case "ArrowDown": e.preventDefault(); moveFn(0, -1); break;
+        case "ArrowLeft": e.preventDefault(); moveFn(-1, 0); break;
+        case "ArrowRight": e.preventDefault(); moveFn(1, 0); break;
         case "q": case "Q": boardAngleZ = clamp(boardAngleZ - 5, minAngleZ, maxAngleZ); applyBoardAngle(); break;
         case "e": case "E": boardAngleZ = clamp(boardAngleZ + 5, minAngleZ, maxAngleZ); applyBoardAngle(); break;
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (!chicken) return;
+        if (isRidingBoat) {
+          const boatPos = { x: chicken.position.x, z: chicken.position.z };
+          const canExit = !lakeOutline ||
+            !pointInPolygon(boatPos, lakeOutline) ||
+            distanceToPolygon(boatPos, lakeOutline) <= 0.6;
+          if (canExit) {
+            disembarkBoat();
+          }
+        } else if (isNearDock()) {
+          boardDockBoat();
+        }
       }
     });
 
     // Click-to-move
     floorEl.addEventListener("click", (e) => {
+      if (gameOver || isRidingBoat) return;
       const tile = e.target.closest(".iso-tile");
       if (!tile) return;
       const tx = Number(tile.dataset.x);
       const ty = Number(tile.dataset.y);
-      if (Number.isFinite(tx) && Number.isFinite(ty)) setCharacterTo(tx, ty, true);
+      if (Number.isFinite(tx) && Number.isFinite(ty)) {
+        const pos = tileToWorld(tx, ty, 0);
+        setCharacterTo(pos.x, pos.z, true);
+      }
     });
   </script>
 </body>
