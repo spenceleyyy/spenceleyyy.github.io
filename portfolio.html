@@ -19,6 +19,7 @@
       --panel: rgba(12, 18, 32, 0.88);
       --panel-border: rgba(127, 231, 255, 0.3);
       --shadow: 0 30px 80px rgba(2, 4, 10, 0.55);
+      --nav-height: 72px;
     }
 
     * { box-sizing: border-box; }
@@ -41,11 +42,13 @@
       z-index: 40;
       background: #000;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      height: var(--nav-height);
     }
     .nav-content {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0.85rem 6vw;
+      padding: 0 6vw;
+      height: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -159,11 +162,11 @@
       display: block;
     }
     .butterfly-wing {
-      fill: rgba(127, 231, 255, 0.7);
+      fill: #6bd6ff;
     }
     .butterfly-body {
-      stroke: rgba(127, 231, 255, 0.95);
-      stroke-width: 1.5;
+      stroke: #9aa4b1;
+      stroke-width: 1.6;
       stroke-linecap: round;
     }
     @keyframes butterfly-float {
@@ -182,7 +185,7 @@
     }
 
     main {
-      padding-top: 64px;
+      padding-top: var(--nav-height);
     }
 
     .hero-intro {
@@ -205,17 +208,19 @@
     .scroll-stage {
       position: relative;
       height: 220vh;
-      padding: 0 6vw;
+      padding: 0;
     }
     .sticky-frame {
       position: sticky;
-      top: 10vh;
-      height: 80vh;
-      border-radius: 28px;
+      top: var(--nav-height);
+      height: calc(100vh - var(--nav-height));
+      border-radius: 0;
       overflow: hidden;
       background: #000;
       box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: none;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
     }
     .sticky-frame video {
       width: 100%;
@@ -357,21 +362,26 @@
     @media (max-width: 720px) {
       nav {
         position: sticky;
+        height: auto;
       }
       .nav-content {
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem 1.2rem;
+        padding: 0.8rem 6vw;
       }
       .nav-links {
         flex-wrap: wrap;
         justify-content: center;
       }
+      main {
+        padding-top: 0;
+      }
       .scroll-stage {
         height: 200vh;
       }
       .sticky-frame {
-        top: 12vh;
+        top: 0;
         height: 70vh;
       }
       .projects-head {
