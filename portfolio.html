@@ -188,23 +188,6 @@
       padding-top: var(--nav-height);
     }
 
-    .hero-intro {
-      padding: clamp(4rem, 10vw, 7rem) 6vw 3rem;
-      max-width: 1000px;
-    }
-    .hero-intro h1 {
-      font-family: "Fraunces", serif;
-      font-size: clamp(2.4rem, 6vw, 4.2rem);
-      margin: 0 0 1rem;
-      letter-spacing: 0.02em;
-    }
-    .hero-intro p {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 720px;
-    }
-
     .scroll-stage {
       position: relative;
       height: 220vh;
@@ -215,18 +198,26 @@
       top: var(--nav-height);
       height: calc(100vh - var(--nav-height));
       border-radius: 0;
-      overflow: hidden;
-      background: #000;
-      box-shadow: var(--shadow);
+      overflow: visible;
+      background: transparent;
+      box-shadow: none;
       border: none;
       width: 100vw;
       margin-left: calc(50% - 50vw);
+    }
+    .video-surface {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #000;
+      z-index: 1;
     }
     .sticky-frame video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none;
     }
     .frame-overlay {
       position: absolute;
@@ -234,22 +225,42 @@
       background: linear-gradient(180deg, rgba(8, 11, 18, 0.25) 0%, rgba(8, 11, 18, 0.65) 75%);
       pointer-events: none;
     }
-    .frame-title {
+    .video-glass {
       position: absolute;
-      bottom: clamp(1.5rem, 4vw, 3rem);
-      left: clamp(1.5rem, 4vw, 3rem);
+      top: clamp(2.5rem, 6vw, 5rem);
+      left: clamp(1.5rem, 5vw, 4rem);
+      padding: 1.1rem 1.6rem;
+      border-radius: 18px;
+      background: rgba(15, 22, 36, 0.35);
+      border: 1px solid rgba(127, 231, 255, 0.3);
+      backdrop-filter: blur(10px);
+      color: rgba(236, 242, 255, 0.85);
       z-index: 2;
+      max-width: min(520px, 90vw);
     }
-    .frame-title h2 {
-      margin: 0 0 0.5rem;
+    .video-glass h1 {
       font-family: "Fraunces", serif;
-      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      margin: 0 0 0.6rem;
+      letter-spacing: 0.03em;
     }
-    .frame-title span {
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      font-size: 0.75rem;
-      color: var(--accent);
+    .video-glass p {
+      margin: 0;
+      color: rgba(236, 242, 255, 0.7);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    .pull-project {
+      position: absolute;
+      left: 50%;
+      bottom: -120px;
+      transform: translateX(-50%);
+      width: min(520px, 92vw);
+      z-index: 3;
+      pointer-events: auto;
+    }
+    .pull-project .project-window {
+      min-height: 360px;
     }
 
     .projects-reveal {
@@ -384,6 +395,12 @@
         top: 0;
         height: 70vh;
       }
+      .video-glass {
+        padding: 0.9rem 1.1rem;
+      }
+      .pull-project {
+        bottom: -140px;
+      }
       .projects-head {
         flex-direction: column;
         align-items: flex-start;
@@ -401,21 +418,35 @@
   <script src="navigation.js" defer></script>
 
   <main>
-    <section class="hero-intro">
-      <h1>Studio Portfolio</h1>
-      <p>Scroll through the butterfly flight to unlock the workbench. Each window below is a live project you can interact with.</p>
-    </section>
-
     <section class="scroll-stage" id="butterflyStage">
       <div class="sticky-frame">
-        <video id="butterflyVideo" playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-          <source src="butterfly.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <div class="frame-overlay"></div>
-        <div class="frame-title">
-          <span>Scroll to play</span>
-          <h2>Butterfly Sequence</h2>
+        <div class="video-surface">
+          <video id="butterflyVideo" playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
+            <source src="butterfly.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div class="frame-overlay"></div>
+          <div class="video-glass">
+            <h1>Studio Portfolio</h1>
+            <p>Scroll to pilot the butterfly and surface the projects it carries.</p>
+          </div>
+        </div>
+        <div class="pull-project">
+          <article class="project-window">
+            <div class="window-bar">
+              <div class="window-dots">
+                <span class="window-dot"></span>
+                <span class="window-dot"></span>
+                <span class="window-dot"></span>
+              </div>
+              <div class="window-title">LinguaBloom — Language Learning</div>
+              <a class="window-action" href="Language%20Learning/language-learning.html" target="_blank" rel="noopener">Open</a>
+            </div>
+            <div class="window-body">
+              <iframe src="Language%20Learning/language-learning.html" title="Language Learning App" loading="lazy"></iframe>
+            </div>
+            <div class="window-caption">[Placeholder description for the language learning app.]</div>
+          </article>
         </div>
       </div>
     </section>
@@ -427,22 +458,6 @@
       </div>
 
       <div class="project-grid">
-        <article class="project-window">
-          <div class="window-bar">
-            <div class="window-dots">
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-            </div>
-            <div class="window-title">LinguaBloom — Language Learning</div>
-            <a class="window-action" href="Language%20Learning/language-learning.html" target="_blank" rel="noopener">Open</a>
-          </div>
-          <div class="window-body">
-            <iframe src="Language%20Learning/language-learning.html" title="Language Learning App" loading="lazy"></iframe>
-          </div>
-          <div class="window-caption">[Placeholder description for the language learning app.]</div>
-        </article>
-
         <article class="project-window">
           <div class="window-bar">
             <div class="window-dots">
