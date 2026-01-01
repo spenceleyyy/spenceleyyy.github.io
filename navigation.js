@@ -113,6 +113,17 @@ function initializeChickenNav() {
         chicken.classList.add('hopping');
     };
 
+    const markLanding = (link) => {
+        const item = link.closest('li');
+        if (!item) {
+            return;
+        }
+        item.classList.add('chicken-landing');
+        window.setTimeout(() => {
+            item.classList.remove('chicken-landing');
+        }, hopDuration);
+    };
+
     const moveChickenTo = (link, index) => {
         const navRect = navContent.getBoundingClientRect();
         const linkRect = link.getBoundingClientRect();
@@ -126,6 +137,7 @@ function initializeChickenNav() {
         }
         nav.classList.add('chicken-ready');
         triggerHop();
+        markLanding(link);
         lastLeft = left;
         currentIndex = index;
     };
