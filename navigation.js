@@ -131,10 +131,8 @@ function initializeChickenNav() {
         const top = linkRect.top - navRect.top;
         chicken.style.left = `${left}px`;
         chicken.style.top = `${top}px`;
-        if (lastLeft !== null) {
-            const direction = left >= lastLeft ? 1 : -1;
-            chicken.style.setProperty('--chicken-scale-x', direction);
-        }
+        const direction = currentIndex === null || index >= currentIndex ? 1 : -1;
+        chicken.style.setProperty('--chicken-scale-x', direction);
         nav.classList.add('chicken-ready');
         triggerHop();
         markLanding(link);
