@@ -85,28 +85,27 @@ function initializeChickenNav() {
         chicken = document.createElement('div');
         chicken.className = 'nav-chicken';
         chicken.setAttribute('aria-hidden', 'true');
-        chicken.innerHTML = `
-            <svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                <rect x="20" y="14" width="28" height="14" rx="2" fill="#f7f7f7" stroke="#d9dde4" stroke-width="1"></rect>
-                <rect x="20" y="22" width="28" height="6" rx="1" fill="#e6e9ef"></rect>
-                <rect x="8" y="12" width="14" height="12" rx="2" fill="#f7f7f7" stroke="#d9dde4" stroke-width="1"></rect>
-                <rect x="2" y="16" width="6" height="6" rx="1" fill="#f2a23a"></rect>
-                <rect x="11" y="16" width="3" height="3" fill="#1b1b1b"></rect>
-                <rect x="12" y="8" width="6" height="4" rx="1" fill="#f2a23a"></rect>
-                <rect x="48" y="16" width="6" height="8" rx="1" fill="#f7f7f7" stroke="#d9dde4" stroke-width="1"></rect>
-                <rect x="24" y="28" width="4" height="4" fill="#f2a23a"></rect>
-                <rect x="36" y="28" width="4" height="4" fill="#f2a23a"></rect>
-            </svg>
-        `;
+        const duckSrc = document.body.dataset.navDuck || 'logos/nav-duck.png';
+        const duckImage = document.createElement('img');
+        duckImage.src = duckSrc;
+        duckImage.alt = '';
+        duckImage.decoding = 'async';
+        duckImage.loading = 'eager';
+        chicken.appendChild(duckImage);
         navContent.appendChild(chicken);
     }
 
-    const links = Array.from(navLinks.querySelectorAll('a'));
+    const links = Array.from(navLinks.querySelectorAll(':scope > li > a'));
     if (!links.length) {
         return;
     }
 
+    const hopDuration = 240;
+    let activeJumpId = 0;
     let lastLeft = null;
+    let currentIndex = null;
+
+    const linkIndexMap = new Map(links.map((link, index) => [link, index]));
 
     const triggerHop = () => {
         chicken.classList.remove('hopping');
@@ -114,7 +113,7 @@ function initializeChickenNav() {
         chicken.classList.add('hopping');
     };
 
-    const moveChickenTo = (link) => {
+    const moveChickenTo = (link, index) => {
         const navRect = navContent.getBoundingClientRect();
         const linkRect = link.getBoundingClientRect();
         const left = linkRect.left - navRect.left + linkRect.width / 2;
@@ -128,18 +127,55 @@ function initializeChickenNav() {
         nav.classList.add('chicken-ready');
         triggerHop();
         lastLeft = left;
+        currentIndex = index;
+    };
+
+    const jumpAcross = (targetIndex) => {
+        if (targetIndex == null) {
+            return;
+        }
+        if (currentIndex === null) {
+            moveChickenTo(links[targetIndex], targetIndex);
+            return;
+        }
+        if (targetIndex === currentIndex) {
+            moveChickenTo(links[targetIndex], targetIndex);
+            return;
+        }
+
+        const direction = targetIndex > currentIndex ? 1 : -1;
+        const path = [];
+        for (let i = currentIndex + direction; direction > 0 ? i <= targetIndex : i >= targetIndex; i += direction) {
+            path.push(i);
+        }
+
+        const jumpId = ++activeJumpId;
+        const stepJump = () => {
+            if (jumpId !== activeJumpId) {
+                return;
+            }
+            const nextIndex = path.shift();
+            if (nextIndex === undefined) {
+                return;
+            }
+            moveChickenTo(links[nextIndex], nextIndex);
+            if (path.length) {
+                setTimeout(stepJump, hopDuration);
+            }
+        };
+        stepJump();
     };
 
     const setDefaultChicken = () => {
         const active = navLinks.querySelector('li.active a') || links[0];
         if (active) {
-            moveChickenTo(active);
+            jumpAcross(linkIndexMap.get(active));
         }
     };
 
     links.forEach(link => {
-        link.addEventListener('mouseenter', () => moveChickenTo(link));
-        link.addEventListener('focus', () => moveChickenTo(link));
+        link.addEventListener('mouseenter', () => jumpAcross(linkIndexMap.get(link)));
+        link.addEventListener('focus', () => jumpAcross(linkIndexMap.get(link)));
     });
 
     navLinks.addEventListener('mouseleave', setDefaultChicken);
