@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reinitialize dropdown functionality after loading
             initializeDropdowns();
             highlightActiveNavLink();
+            updateNavHeight();
+            initializeChickenNav();
+            window.addEventListener('load', updateNavHeight);
         })
         .catch(error => console.error('Error loading navigation:', error));
 });
@@ -51,4 +54,68 @@ function highlightActiveNavLink() {
             }
         }
     });
+}
+
+function updateNavHeight() {
+    const nav = document.querySelector('nav');
+    if (!nav) {
+        return;
+    }
+    document.documentElement.style.setProperty('--nav-height', `${nav.offsetHeight}px`);
+}
+
+function initializeChickenNav() {
+    const nav = document.querySelector('nav');
+    if (!nav) {
+        return;
+    }
+    const navLinks = nav.querySelector('.nav-links');
+    if (!navLinks) {
+        return;
+    }
+
+    let chicken = navLinks.querySelector('.nav-chicken');
+    if (!chicken) {
+        chicken = document.createElement('li');
+        chicken.className = 'nav-chicken';
+        chicken.setAttribute('aria-hidden', 'true');
+        chicken.innerHTML = '&#128020;';
+        navLinks.appendChild(chicken);
+    }
+
+    const items = Array.from(navLinks.querySelectorAll('li'))
+        .filter(item => !item.classList.contains('nav-chicken'));
+    const links = items.map(item => item.querySelector('a')).filter(Boolean);
+    if (!links.length) {
+        return;
+    }
+
+    const moveChickenTo = (link) => {
+        const navRect = navLinks.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        const left = linkRect.left - navRect.left + linkRect.width / 2;
+        const top = linkRect.top - navRect.top;
+        chicken.style.left = `${left}px`;
+        chicken.style.top = `${top}px`;
+        navLinks.classList.add('chicken-ready');
+    };
+
+    const setDefaultChicken = () => {
+        const active = navLinks.querySelector('li.active a') || links[0];
+        if (active) {
+            moveChickenTo(active);
+        }
+    };
+
+    links.forEach(link => {
+        link.addEventListener('mouseenter', () => moveChickenTo(link));
+        link.addEventListener('focus', () => moveChickenTo(link));
+    });
+
+    navLinks.addEventListener('mouseleave', setDefaultChicken);
+    window.addEventListener('resize', () => {
+        updateNavHeight();
+        window.requestAnimationFrame(setDefaultChicken);
+    });
+    window.requestAnimationFrame(setDefaultChicken);
 }
