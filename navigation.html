@@ -20,7 +20,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            transform: translate(-50%, -80%) scaleX(var(--chicken-scale-x));
+            transform: translate(-50%, -100%) scaleX(var(--chicken-scale-x));
             pointer-events: none;
             opacity: 0;
             z-index: 2;
@@ -46,9 +46,9 @@
         }
 
         @keyframes nav-chicken-hop {
-            0% { transform: translate(-50%, -80%) scaleX(var(--chicken-scale-x)); }
-            45% { transform: translate(-50%, -115%) scaleX(var(--chicken-scale-x)); }
-            100% { transform: translate(-50%, -80%) scaleX(var(--chicken-scale-x)); }
+            0% { transform: translate(-50%, -100%) scaleX(var(--chicken-scale-x)); }
+            45% { transform: translate(-50%, -135%) scaleX(var(--chicken-scale-x)); }
+            100% { transform: translate(-50%, -100%) scaleX(var(--chicken-scale-x)); }
         }
 
         @media (prefers-reduced-motion: reduce) {
