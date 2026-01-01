@@ -28,26 +28,33 @@
             position: fixed;
             top: 0;
             width: 100%;
-            height: var(--nav-height);
+            min-height: var(--nav-height);
+            height: auto;
+            padding: 0.35rem 0;
             background: linear-gradient(90deg, rgba(4, 8, 18, 0.98), rgba(6, 14, 30, 0.98));
             border-bottom: 1px solid rgba(127, 231, 255, 0.45);
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
+            overflow: visible;
             z-index: 50;
         }
 
         body.mentorship-page nav .nav-content {
-            max-width: 1200px;
+            max-width: 1320px;
             margin: 0 auto;
             padding: 0 6vw;
-            height: 100%;
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 1.25rem;
         }
 
         body.mentorship-page nav .logo-link {
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
         }
 
         body.mentorship-page nav .logo-image {
@@ -56,21 +63,26 @@
             border-radius: 50%;
             border: 1px solid rgba(127, 231, 255, 0.35);
             box-shadow: 0 0 18px rgba(127, 231, 255, 0.45);
+            flex: 0 0 auto;
         }
 
         body.mentorship-page nav .full-name {
             font-family: "Orbitron", sans-serif;
-            letter-spacing: 0.22em;
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             color: rgba(230, 246, 255, 0.9);
+            line-height: 1;
         }
 
         body.mentorship-page nav .nav-links {
             margin-left: auto;
             display: flex;
-            gap: 1.5rem;
+            gap: 1.35rem;
             list-style: none;
             padding: 0;
+            align-items: center;
+            flex-wrap: nowrap;
         }
 
         body.mentorship-page nav .nav-links a {
@@ -81,6 +93,14 @@
             color: rgba(230, 246, 255, 0.75);
             text-decoration: none;
             transition: color 0.2s ease, text-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        body.mentorship-page nav .caret {
+            font-size: 0.6rem;
+            opacity: 0.75;
         }
 
         body.mentorship-page nav .nav-links a:hover,
@@ -155,6 +175,11 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 padding: 0.8rem 6vw;
+            }
+
+            body.mentorship-page nav .logo-link {
+                flex-direction: column;
+                gap: 0.4rem;
             }
 
             body.mentorship-page nav .nav-links {
