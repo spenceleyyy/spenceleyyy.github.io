@@ -155,12 +155,12 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.9rem 1.4rem;
+      gap: 0.9rem 1.2rem;
     }
     .toolbar-group {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
     }
     .toolbar-group label {
       font-size: 0.6rem;
@@ -210,6 +210,17 @@
     .toolbar-actions button.primary {
       border-color: var(--studio-accent);
       color: var(--studio-accent);
+    }
+    .toolbar-button {
+      border-radius: 999px;
+      border: 1px solid var(--studio-line);
+      padding: 0.5rem 0.9rem;
+      background: var(--studio-white);
+      text-transform: uppercase;
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      cursor: pointer;
+      color: var(--studio-ink);
     }
 
     main {
@@ -349,19 +360,21 @@
     }
 
     body.edit-mode .intro,
-    body.edit-mode .default-options {
+    body.edit-mode .default-options,
+    body.edit-mode footer {
       display: none;
     }
 
     .design-surface {
-      margin-top: 3rem;
+      --grid-size: 24px;
       position: relative;
+      margin-top: 3rem;
       border-radius: 28px;
       border: 1px solid var(--canvas-line);
       background: var(--page-bg);
       color: var(--canvas-ink);
       overflow: hidden;
-      min-height: 640px;
+      min-height: 780px;
       transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
     }
     body.edit-mode .design-surface {
@@ -372,46 +385,158 @@
       min-height: calc(100vh - var(--nav-height) - var(--toolbar-offset));
     }
 
-    .glass-art {
+    .glass-art,
+    .glass-windows,
+    .grid-overlay {
       position: absolute;
       inset: 0;
-      opacity: 0;
       pointer-events: none;
+    }
+
+    .glass-windows {
+      opacity: 0.4;
+      mix-blend-mode: multiply;
+    }
+    .glass-window {
+      position: absolute;
+      width: 240px;
+      height: 360px;
+      color: var(--glass-lead);
+      opacity: 0.5;
+    }
+    .glass-window svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .glass-window .pane {
+      fill: var(--glass-2);
+      stroke: var(--glass-lead);
+      stroke-width: 2.2;
+    }
+    .glass-window .pane-alt {
+      fill: var(--glass-3);
+      stroke: var(--glass-lead);
+      stroke-width: 2.2;
+    }
+    .glass-window .outline {
+      fill: none;
+      stroke: var(--glass-lead);
+      stroke-width: 3.2;
+    }
+    .glass-window.window-left {
+      left: 6%;
+      top: 12%;
+      transform: rotate(-2deg);
+    }
+    .glass-window.window-center {
+      left: 38%;
+      top: 6%;
+      transform: rotate(1deg);
+    }
+    .glass-window.window-right {
+      right: 8%;
+      top: 14%;
+      transform: rotate(3deg);
+    }
+
+    .grid-overlay {
+      background-image:
+        linear-gradient(transparent calc(var(--grid-size) - 1px), rgba(0, 0, 0, 0.06) var(--grid-size)),
+        linear-gradient(90deg, transparent calc(var(--grid-size) - 1px), rgba(0, 0, 0, 0.06) var(--grid-size));
+      background-size: var(--grid-size) var(--grid-size);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    body.edit-mode .grid-overlay {
+      opacity: 0.35;
+    }
+
+    .glass-art {
+      opacity: 0;
       transition: opacity 0.4s ease;
     }
 
-    .design-header {
+    .canvas-layer {
       position: relative;
       z-index: 2;
+      min-height: 780px;
+    }
+
+    .editor-item {
+      position: absolute;
+      left: calc(var(--x) * var(--grid-size));
+      top: calc(var(--y) * var(--grid-size));
+      width: calc(var(--w) * var(--grid-size));
+      min-height: calc(var(--h) * var(--grid-size));
+      padding: 0.6rem;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    body.edit-mode .editor-item {
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    body.edit-mode .editor-item:hover {
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+    .editor-item.is-dragging {
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(-6px) scale(1.02);
+      z-index: 30;
+    }
+    .editor-item.is-selected {
+      border-color: var(--canvas-accent);
+      box-shadow: 0 10px 26px rgba(15, 91, 91, 0.2);
+    }
+
+    .drag-handle {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--canvas-accent);
+      opacity: 0;
+      cursor: grab;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+    }
+    body.edit-mode .editor-item:hover .drag-handle {
+      opacity: 0.9;
+    }
+
+    body.dragging .editor-item:not(.is-dragging) {
+      animation: jitter 0.22s infinite alternate;
+    }
+
+    .editor-item [contenteditable="true"] {
+      outline: none;
+    }
+
+    .design-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1.5rem;
-      padding: 1.1rem 2.2rem;
+      padding: 0.6rem 1.1rem;
       background: var(--header-bg);
       border-bottom: 1px solid var(--canvas-line);
+      border-radius: 14px;
     }
     .design-logo {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
       font-weight: 600;
     }
     .design-nav {
       display: flex;
-      gap: 1.4rem;
+      gap: 1.2rem;
       font-size: 0.65rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: var(--canvas-muted);
-    }
-
-    .design-body {
-      position: relative;
-      z-index: 2;
-      padding: 2.8rem 2.4rem 3.4rem;
-      display: grid;
-      gap: 2.4rem;
     }
 
     .design-kicker {
@@ -449,54 +574,131 @@
       width: fit-content;
     }
 
-    .design-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.6rem;
-      border-top: 1px solid var(--canvas-line);
-      padding-top: 1.8rem;
-    }
-    .design-card {
+    .design-card,
+    .design-note,
+    .design-divider,
+    .design-spacer {
       border: 1px solid var(--canvas-line);
-      border-radius: 18px;
-      padding: 1.2rem 1.3rem;
-      background: rgba(255, 255, 255, 0.6);
-      display: grid;
-      gap: 0.6rem;
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      background: rgba(255, 255, 255, 0.65);
     }
-    .design-card h3 {
-      margin: 0;
+    .design-card h3,
+    .design-note h4 {
+      margin: 0 0 0.4rem;
       font-size: 1rem;
     }
-    .design-card p {
-      margin: 0;
-      color: var(--canvas-muted);
-    }
-
-    .design-notes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.6rem;
-    }
-    .design-note {
-      border-top: 1px solid var(--canvas-line);
-      padding-top: 1.2rem;
-      display: grid;
-      gap: 0.4rem;
-    }
-    .design-note h4 {
-      margin: 0;
-      font-size: 0.95rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
+    .design-card p,
     .design-note p {
       margin: 0;
       color: var(--canvas-muted);
     }
+    .design-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--canvas-line);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.4));
+      background-size: cover;
+      background-position: center;
+      min-height: 180px;
+    }
+    .design-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--canvas-line);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.4));
+      background-size: cover;
+      background-position: center;
+      min-height: 180px;
+    }
+
+    .design-divider,
+    .design-spacer {
+      background: transparent;
+      border-color: transparent;
+      padding: 0.4rem;
+    }
+    .design-divider .divider-line,
+    .design-spacer .spacer-line {
+      height: 1px;
+      background: var(--canvas-line);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .design-spacer .spacer-line {
+      height: 22px;
+      border-radius: 12px;
+      border: 1px dashed var(--canvas-line);
+      background: transparent;
+    }
+    body.edit-mode .design-divider:hover .divider-line,
+    body.edit-mode .design-spacer:hover .spacer-line {
+      opacity: 1;
+    }
+
+    .mosaic-text {
+      color: transparent;
+      background-image: var(--mosaic-texture);
+      background-size: var(--mosaic-scale);
+      background-position: center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 1px 0 var(--glass-lead);
+    }
+    .template-linework .mosaic-text,
+    .template-aurora .mosaic-text {
+      color: var(--canvas-ink);
+      background-image: none;
+      text-shadow: none;
+    }
+    .template-linework .glass-art {
+      opacity: 0.25;
+      background:
+        linear-gradient(90deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(27, 26, 23, 0.08), transparent 60%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+    }
+    .template-aurora .glass-art {
+      opacity: 0.5;
+      background:
+        radial-gradient(circle at 20% 25%, rgba(12, 92, 122, 0.35), transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(199, 112, 82, 0.35), transparent 60%),
+        radial-gradient(circle at 45% 80%, rgba(119, 89, 162, 0.25), transparent 60%);
+    }
+    .editor-item[data-anim][data-trigger=\"load\"] {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) ease var(--anim-delay, 0s) both;
+    }
+    .editor-item[data-anim][data-trigger=\"hover\"]:hover {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) ease var(--anim-delay, 0s) both;
+    }
+    .editor-item[data-anim][data-trigger=\"click\"].animate-now {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) ease var(--anim-delay, 0s) both;
+    }
+    @keyframes anim-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes anim-slide-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes anim-slide-down { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes anim-slide-left { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes anim-slide-right { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes anim-scale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes anim-rotate { from { opacity: 0; transform: rotate(-4deg) scale(0.98); } to { opacity: 1; transform: rotate(0deg) scale(1); } }
+    @keyframes anim-float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+    @keyframes anim-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+    @keyframes anim-flip { from { opacity: 0; transform: rotateX(25deg); } to { opacity: 1; transform: rotateX(0deg); } }
+    @keyframes anim-blur { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
+    @keyframes anim-bounce { 0% { transform: translateY(0); } 40% { transform: translateY(-14px); } 70% { transform: translateY(6px); } 100% { transform: translateY(0); } }
+    @keyframes anim-glow { 0% { box-shadow: 0 0 0 rgba(15, 91, 91, 0); } 50% { box-shadow: 0 0 18px rgba(15, 91, 91, 0.4); } 100% { box-shadow: 0 0 0 rgba(15, 91, 91, 0); } }
+    .template-linework .mosaic-text,
+    .template-aurora .mosaic-text {
+      color: var(--canvas-ink);
+      background-image: none;
+      text-shadow: none;
+    }
 
     .template-mosaic .glass-art {
-      opacity: 0.55;
+      opacity: 0.58;
       background:
         repeating-linear-gradient(45deg, var(--glass-lead) 0 2px, transparent 2px calc(var(--tile-size) * 0.9)),
         repeating-linear-gradient(-45deg, var(--glass-lead) 0 2px, transparent 2px calc(var(--tile-size) * 1.1)),
@@ -508,14 +710,6 @@
         calc(var(--tile-size) * 1.6) calc(var(--tile-size) * 1.6);
       mix-blend-mode: multiply;
     }
-    .template-mosaic .design-title {
-      background:
-        linear-gradient(120deg, var(--glass-1), var(--glass-2) 35%, var(--glass-3) 70%, var(--glass-4));
-      color: transparent;
-      -webkit-background-clip: text;
-      background-clip: text;
-      text-shadow: 0 1px 0 var(--glass-lead);
-    }
 
     .template-linework .glass-art {
       opacity: 0.25;
@@ -524,10 +718,6 @@
         linear-gradient(0deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
         linear-gradient(120deg, rgba(27, 26, 23, 0.08), transparent 60%);
       background-size: 18px 18px, 18px 18px, 100% 100%;
-    }
-    .template-linework .design-title,
-    .template-aurora .design-title {
-      color: var(--canvas-ink);
     }
 
     .template-aurora .glass-art {
@@ -538,14 +728,97 @@
         radial-gradient(circle at 45% 80%, rgba(119, 89, 162, 0.25), transparent 60%);
     }
 
-    body.edit-mode [data-edit] {
-      outline: 1px dashed rgba(15, 91, 91, 0.35);
-      outline-offset: 4px;
-      cursor: text;
+    .element-menu {
+      position: absolute;
+      z-index: 80;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--studio-line);
+      border-radius: 14px;
+      padding: 0.8rem;
+      min-width: 200px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+      display: none;
     }
-    body.edit-mode [data-edit]:focus {
-      outline-color: var(--canvas-accent);
-      background: rgba(255, 255, 255, 0.45);
+    .element-menu.open {
+      display: block;
+    }
+    .menu-row {
+      display: grid;
+      gap: 0.4rem;
+      margin-bottom: 0.6rem;
+    }
+    .menu-row:last-child {
+      margin-bottom: 0;
+    }
+    .menu-row label {
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--studio-muted);
+    }
+    .menu-row select,
+    .menu-row input[type="range"],
+    .menu-row button {
+      border: 1px solid var(--studio-line);
+      border-radius: 8px;
+      background: var(--studio-white);
+      padding: 0.35rem 0.5rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+    }
+    .menu-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .add-fab {
+      position: fixed;
+      right: 24px;
+      bottom: 28px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid var(--studio-line);
+      background: var(--studio-white);
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      z-index: 70;
+      display: none;
+    }
+    body.edit-mode .add-fab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add-menu {
+      position: fixed;
+      right: 24px;
+      bottom: 92px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--studio-line);
+      border-radius: 16px;
+      padding: 0.9rem;
+      min-width: 200px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+      display: none;
+      z-index: 70;
+    }
+    .add-menu.open {
+      display: grid;
+      gap: 0.5rem;
+    }
+    .add-menu button {
+      border: 1px solid var(--studio-line);
+      background: var(--studio-white);
+      border-radius: 10px;
+      padding: 0.5rem 0.7rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      cursor: pointer;
     }
 
     .export-drawer {
@@ -557,7 +830,7 @@
       border-top: 1px solid var(--studio-line);
       transform: translateY(110%);
       transition: transform 0.3s ease;
-      z-index: 70;
+      z-index: 80;
     }
     .export-drawer.open {
       transform: translateY(0);
@@ -596,12 +869,36 @@
       color: var(--studio-ink);
     }
 
-    footer {
-      padding: 3rem 6vw 4rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      color: rgba(27, 26, 23, 0.5);
-      font-size: 0.85rem;
+    .editor-item[data-anim][data-trigger="load"] {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) var(--anim-ease, ease) var(--anim-delay, 0s) both;
+    }
+    .editor-item[data-anim][data-trigger="hover"]:hover {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) var(--anim-ease, ease) var(--anim-delay, 0s) both;
+    }
+    .editor-item[data-anim][data-trigger="click"].animate-now {
+      animation: var(--anim-name) var(--anim-duration, 0.8s) var(--anim-ease, ease) var(--anim-delay, 0s) both;
+    }
+
+    @keyframes anim-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes anim-slide-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes anim-slide-down { from { opacity: 0; transform: translateY(-24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes anim-slide-left { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes anim-slide-right { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes anim-scale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes anim-rotate { from { opacity: 0; transform: rotate(-4deg) scale(0.98); } to { opacity: 1; transform: rotate(0deg) scale(1); } }
+    @keyframes anim-float { 0% { transform: translateY(0); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0); } }
+    @keyframes anim-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+    @keyframes anim-flip { from { opacity: 0; transform: rotateX(25deg); } to { opacity: 1; transform: rotateX(0deg); } }
+    @keyframes anim-blur { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: blur(0); } }
+    @keyframes anim-bounce { 0% { transform: translateY(0); } 40% { transform: translateY(-14px); } 70% { transform: translateY(6px); } 100% { transform: translateY(0); } }
+    @keyframes anim-glow { 0% { box-shadow: 0 0 0 rgba(15, 91, 91, 0); } 50% { box-shadow: 0 0 18px rgba(15, 91, 91, 0.4); } 100% { box-shadow: 0 0 0 rgba(15, 91, 91, 0); } }
+
+    @keyframes jitter {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(1px, -1px); }
+      50% { transform: translate(-1px, 1px); }
+      75% { transform: translate(1px, 1px); }
+      100% { transform: translate(0, 0); }
     }
 
     @keyframes float-in {
@@ -623,10 +920,6 @@
       }
       .option-action {
         display: none;
-      }
-      .design-header {
-        flex-direction: column;
-        align-items: flex-start;
       }
       .design-nav {
         flex-wrap: wrap;
@@ -672,7 +965,12 @@
         <label for="tileSize">Tile</label>
         <input type="range" id="tileSize" min="28" max="80" value="52" />
       </div>
-      <span class="toolbar-hint">Click any text to edit.</span>
+      <div class="toolbar-group">
+        <label for="gridSize">Grid</label>
+        <input type="range" id="gridSize" min="16" max="40" value="24" />
+      </div>
+      <button class="toolbar-button" type="button" id="shuffleGlass">Shuffle glass</button>
+      <span class="toolbar-hint">Click text to edit. Drag dot to move.</span>
       <div class="toolbar-actions">
         <button class="primary" type="button" id="exportToggle">Export</button>
         <button type="button" id="exitEdit">Exit</button>
@@ -722,56 +1020,171 @@
 
     <section class="design-surface template-mosaic" id="designSurface">
       <div class="glass-art"></div>
-      <header class="design-header">
-        <div class="design-logo" data-edit="logo" id="designLogo">RS Studio</div>
-        <nav class="design-nav">
-          <span data-edit="nav1" id="designNav1">Work</span>
-          <span data-edit="nav2" id="designNav2">Studio</span>
-          <span data-edit="nav3" id="designNav3">Contact</span>
-        </nav>
-      </header>
-      <div class="design-body">
-        <div class="design-hero">
-          <p class="design-kicker" data-edit="kicker" id="designKicker">Curated sessions</p>
-          <h1 class="design-title" data-edit="title" id="designTitle">Stained glass pages for modern ateliers</h1>
-          <p class="design-subtitle" data-edit="subtitle" id="designSubtitle">Creamy canvas, luminous mosaic overlays, and an editorial grid that keeps everything calm.</p>
-          <a class="design-button" href="#" data-edit="button" id="designButton">Request a layout</a>
+      <div class="glass-windows">
+        <div class="glass-window window-left">
+          <svg viewBox="0 0 220 320" aria-hidden="true">
+            <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+            <rect class="pane" x="40" y="120" width="60" height="60" rx="8" />
+            <rect class="pane-alt" x="120" y="120" width="60" height="60" rx="8" />
+            <rect class="pane-alt" x="40" y="190" width="60" height="60" rx="8" />
+            <rect class="pane" x="120" y="190" width="60" height="60" rx="8" />
+          </svg>
         </div>
-        <div class="design-grid">
-          <article class="design-card">
-            <h3 data-edit="card1Title" id="card1Title">Glass texture</h3>
-            <p data-edit="card1Body" id="card1Body">Layered gradients and lead lines for a stained glass feel.</p>
-          </article>
-          <article class="design-card">
-            <h3 data-edit="card2Title" id="card2Title">White header</h3>
-            <p data-edit="card2Body" id="card2Body">Clean navigation floating over the mosaic background.</p>
-          </article>
-          <article class="design-card">
-            <h3 data-edit="card3Title" id="card3Title">Warm palette</h3>
-            <p data-edit="card3Body" id="card3Body">Cream and sand tones balanced with jewel accents.</p>
-          </article>
+        <div class="glass-window window-center">
+          <svg viewBox="0 0 220 320" aria-hidden="true">
+            <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+            <rect class="pane-alt" x="50" y="110" width="120" height="80" rx="10" />
+            <rect class="pane" x="50" y="200" width="120" height="80" rx="10" />
+          </svg>
         </div>
-        <div class="design-notes">
-          <div class="design-note">
-            <h4 data-edit="note1Title" id="note1Title">Studio notes</h4>
-            <p data-edit="note1Body" id="note1Body">Use this space for a short brand message or mission.</p>
+        <div class="glass-window window-right">
+          <svg viewBox="0 0 220 320" aria-hidden="true">
+            <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+            <rect class="pane" x="40" y="120" width="60" height="60" rx="8" />
+            <rect class="pane-alt" x="120" y="120" width="60" height="60" rx="8" />
+            <rect class="pane-alt" x="40" y="190" width="60" height="60" rx="8" />
+            <rect class="pane" x="120" y="190" width="60" height="60" rx="8" />
+          </svg>
+        </div>
+      </div>
+      <div class="grid-overlay"></div>
+
+      <div class="canvas-layer" id="canvasLayer">
+        <div class="editor-item" data-id="header" style="--x:2; --y:2; --w:44; --h:4;">
+          <span class="drag-handle"></span>
+          <div class="design-header">
+            <div class="design-logo mosaic-text" data-edit="logo" contenteditable="false">RS Studio</div>
+            <nav class="design-nav">
+              <span class="mosaic-text" data-edit="nav1" contenteditable="false">Work</span>
+              <span class="mosaic-text" data-edit="nav2" contenteditable="false">Studio</span>
+              <span class="mosaic-text" data-edit="nav3" contenteditable="false">Contact</span>
+            </nav>
           </div>
-          <div class="design-note">
-            <h4 data-edit="note2Title" id="note2Title">Timeline</h4>
-            <p data-edit="note2Body" id="note2Body">2 to 4 weeks for a full buildout.</p>
+        </div>
+
+        <div class="editor-item" data-id="hero" style="--x:4; --y:8; --w:32; --h:14;">
+          <span class="drag-handle"></span>
+          <p class="design-kicker mosaic-text" data-edit="kicker" contenteditable="false">Curated sessions</p>
+          <h1 class="design-title mosaic-text" data-edit="title" contenteditable="false">Stained glass pages for modern ateliers</h1>
+          <p class="design-subtitle mosaic-text" data-edit="subtitle" contenteditable="false">Creamy canvas, luminous mosaic overlays, and an editorial grid that keeps everything calm.</p>
+          <a class="design-button mosaic-text" href="#" data-edit="button" contenteditable="false">Request a layout</a>
+        </div>
+
+        <div class="editor-item" data-id="card1" style="--x:4; --y:24; --w:12; --h:6;">
+          <span class="drag-handle"></span>
+          <div class="design-card">
+            <h3 class="mosaic-text" data-edit="card1Title" contenteditable="false">Glass texture</h3>
+            <p class="mosaic-text" data-edit="card1Body" contenteditable="false">Layered gradients and lead lines for a stained glass feel.</p>
           </div>
+        </div>
+        <div class="editor-item" data-id="card2" style="--x:18; --y:24; --w:12; --h:6;">
+          <span class="drag-handle"></span>
+          <div class="design-card">
+            <h3 class="mosaic-text" data-edit="card2Title" contenteditable="false">White header</h3>
+            <p class="mosaic-text" data-edit="card2Body" contenteditable="false">Clean navigation floating over the mosaic background.</p>
+          </div>
+        </div>
+        <div class="editor-item" data-id="card3" style="--x:32; --y:24; --w:12; --h:6;">
+          <span class="drag-handle"></span>
+          <div class="design-card">
+            <h3 class="mosaic-text" data-edit="card3Title" contenteditable="false">Warm palette</h3>
+            <p class="mosaic-text" data-edit="card3Body" contenteditable="false">Cream and sand tones balanced with jewel accents.</p>
+          </div>
+        </div>
+
+        <div class="editor-item" data-id="note1" style="--x:4; --y:33; --w:12; --h:5;">
+          <span class="drag-handle"></span>
           <div class="design-note">
-            <h4 data-edit="note3Title" id="note3Title">Contact</h4>
-            <p data-edit="note3Body" id="note3Body">hello@studio.com</p>
+            <h4 class="mosaic-text" data-edit="note1Title" contenteditable="false">Studio notes</h4>
+            <p class="mosaic-text" data-edit="note1Body" contenteditable="false">Use this space for a short brand message or mission.</p>
+          </div>
+        </div>
+        <div class="editor-item" data-id="note2" style="--x:18; --y:33; --w:12; --h:5;">
+          <span class="drag-handle"></span>
+          <div class="design-note">
+            <h4 class="mosaic-text" data-edit="note2Title" contenteditable="false">Timeline</h4>
+            <p class="mosaic-text" data-edit="note2Body" contenteditable="false">2 to 4 weeks for a full buildout.</p>
+          </div>
+        </div>
+        <div class="editor-item" data-id="note3" style="--x:32; --y:33; --w:12; --h:5;">
+          <span class="drag-handle"></span>
+          <div class="design-note">
+            <h4 class="mosaic-text" data-edit="note3Title" contenteditable="false">Contact</h4>
+            <p class="mosaic-text" data-edit="note3Body" contenteditable="false">hello@studio.com</p>
+          </div>
+        </div>
+
+        <div class="editor-item" data-id="divider1" data-type="divider" style="--x:4; --y:41; --w:40; --h:1;">
+          <span class="drag-handle"></span>
+          <div class="design-divider">
+            <div class="divider-line"></div>
+          </div>
+        </div>
+        <div class="editor-item" data-id="spacer1" data-type="spacer" style="--x:4; --y:44; --w:40; --h:2;">
+          <span class="drag-handle"></span>
+          <div class="design-spacer">
+            <div class="spacer-line"></div>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    (c) 2025 RS. Page Designer in progress.
-  </footer>
+  <button class="add-fab" id="addFab" type="button">+</button>
+  <div class="add-menu" id="addMenu">
+    <button type="button" data-add="heading">Heading</button>
+    <button type="button" data-add="text">Text</button>
+    <button type="button" data-add="button">Button</button>
+    <button type="button" data-add="image">Image</button>
+    <button type="button" data-add="card">Card</button>
+    <button type="button" data-add="divider">Divider</button>
+    <button type="button" data-add="spacer">Spacer</button>
+  </div>
+
+  <div class="element-menu" id="elementMenu" aria-hidden="true">
+    <div class="menu-row">
+      <label for="animSelect">Animation</label>
+      <select id="animSelect">
+        <option value="">None</option>
+        <option value="anim-fade">Fade</option>
+        <option value="anim-slide-up">Slide Up</option>
+        <option value="anim-slide-down">Slide Down</option>
+        <option value="anim-slide-left">Slide Left</option>
+        <option value="anim-slide-right">Slide Right</option>
+        <option value="anim-scale">Scale</option>
+        <option value="anim-rotate">Rotate</option>
+        <option value="anim-float">Float</option>
+        <option value="anim-pulse">Pulse</option>
+        <option value="anim-flip">Flip</option>
+        <option value="anim-blur">Blur In</option>
+        <option value="anim-bounce">Bounce</option>
+        <option value="anim-glow">Glow</option>
+      </select>
+    </div>
+    <div class="menu-row">
+      <label for="animTrigger">Trigger</label>
+      <select id="animTrigger">
+        <option value="load">On load</option>
+        <option value="hover">On hover</option>
+        <option value="click">On click</option>
+      </select>
+    </div>
+    <div class="menu-row">
+      <label for="animDuration">Duration</label>
+      <input type="range" id="animDuration" min="200" max="2400" value="800" />
+    </div>
+    <div class="menu-row">
+      <label for="animDelay">Delay</label>
+      <input type="range" id="animDelay" min="0" max="2000" value="0" />
+    </div>
+    <div class="menu-row menu-actions">
+      <button type="button" id="bringFront">Front</button>
+      <button type="button" id="sendBack">Back</button>
+      <button type="button" id="duplicate">Duplicate</button>
+      <button type="button" id="setImage">Image URL</button>
+      <button type="button" id="deleteItem">Delete</button>
+    </div>
+  </div>
 
   <div class="export-drawer" id="exportDrawer" aria-hidden="true">
     <div class="export-inner">
@@ -797,29 +1210,8 @@
           ink: "#1e1c1a",
           tileSize: 52,
           glassBase: "#d6b694",
-          glassAccent: "#c1937a"
-        },
-        content: {
-          logo: "RS Studio",
-          nav1: "Work",
-          nav2: "Studio",
-          nav3: "Contact",
-          kicker: "Curated sessions",
-          title: "Stained glass pages for modern ateliers",
-          subtitle: "Creamy canvas, luminous mosaic overlays, and an editorial grid that keeps everything calm.",
-          button: "Request a layout",
-          card1Title: "Glass texture",
-          card1Body: "Layered gradients and lead lines for a stained glass feel.",
-          card2Title: "White header",
-          card2Body: "Clean navigation floating over the mosaic background.",
-          card3Title: "Warm palette",
-          card3Body: "Cream and sand tones balanced with jewel accents.",
-          note1Title: "Studio notes",
-          note1Body: "Use this space for a short brand message or mission.",
-          note2Title: "Timeline",
-          note2Body: "2 to 4 weeks for a full buildout.",
-          note3Title: "Contact",
-          note3Body: "hello@studio.com"
+          glassAccent: "#c1937a",
+          gridSize: 24
         }
       },
       linework: {
@@ -831,29 +1223,8 @@
           ink: "#1b1a17",
           tileSize: 36,
           glassBase: "#d6b694",
-          glassAccent: "#c1937a"
-        },
-        content: {
-          logo: "RS Studio",
-          nav1: "Ledger",
-          nav2: "Work",
-          nav3: "Contact",
-          kicker: "Studio blueprint",
-          title: "Linework pages with confident rhythm",
-          subtitle: "Structured layouts, subtle grid texture, and calm typography for clear storytelling.",
-          button: "Open the dossier",
-          card1Title: "Grid texture",
-          card1Body: "Soft structure keeps layouts consistent and readable.",
-          card2Title: "Typography",
-          card2Body: "High contrast serif headlines with clean captions.",
-          card3Title: "Modular blocks",
-          card3Body: "Swap modules without breaking the flow.",
-          note1Title: "Deliverables",
-          note1Body: "One-page layout and responsive system.",
-          note2Title: "Cadence",
-          note2Body: "Weekly progress drops.",
-          note3Title: "Contact",
-          note3Body: "studio@domain.com"
+          glassAccent: "#c1937a",
+          gridSize: 24
         }
       },
       aurora: {
@@ -865,34 +1236,14 @@
           ink: "#1f1916",
           tileSize: 46,
           glassBase: "#d6b694",
-          glassAccent: "#c1937a"
-        },
-        content: {
-          logo: "RS Studio",
-          nav1: "Field",
-          nav2: "Stories",
-          nav3: "Contact",
-          kicker: "Editorial release",
-          title: "Aurora pages for story-led launches",
-          subtitle: "Soft color washes, open spacing, and a crisp header to spotlight your narrative.",
-          button: "Launch the story",
-          card1Title: "Atmosphere",
-          card1Body: "Diffused gradients that set a calm tone.",
-          card2Title: "Story blocks",
-          card2Body: "Paragraphs built for long-form reading.",
-          card3Title: "Focus",
-          card3Body: "Minimal UI that supports the story arc.",
-          note1Title: "Format",
-          note1Body: "Landing page or editorial spread.",
-          note2Title: "Length",
-          note2Body: "Long-form narrative friendly.",
-          note3Title: "Contact",
-          note3Body: "hello@studio.com"
+          glassAccent: "#c1937a",
+          gridSize: 24
         }
       }
     };
 
     const designSurface = document.getElementById("designSurface");
+    const canvasLayer = document.getElementById("canvasLayer");
     const toolbar = document.getElementById("editorToolbar");
     const templateSelect = document.getElementById("templateSelect");
     const exportDrawer = document.getElementById("exportDrawer");
@@ -901,6 +1252,10 @@
     const copyButton = document.getElementById("copyButton");
     const closeExport = document.getElementById("closeExport");
     const exitEdit = document.getElementById("exitEdit");
+    const addFab = document.getElementById("addFab");
+    const addMenu = document.getElementById("addMenu");
+    const elementMenu = document.getElementById("elementMenu");
+    const shuffleGlass = document.getElementById("shuffleGlass");
 
     const inputs = {
       headerColor: document.getElementById("headerColor"),
@@ -909,46 +1264,51 @@
       textColor: document.getElementById("textColor"),
       glassBase: document.getElementById("glassBase"),
       glassAccent: document.getElementById("glassAccent"),
-      tileSize: document.getElementById("tileSize")
+      tileSize: document.getElementById("tileSize"),
+      gridSize: document.getElementById("gridSize")
     };
 
-    const contentNodes = {
-      logo: document.getElementById("designLogo"),
-      nav1: document.getElementById("designNav1"),
-      nav2: document.getElementById("designNav2"),
-      nav3: document.getElementById("designNav3"),
-      kicker: document.getElementById("designKicker"),
-      title: document.getElementById("designTitle"),
-      subtitle: document.getElementById("designSubtitle"),
-      button: document.getElementById("designButton"),
-      card1Title: document.getElementById("card1Title"),
-      card1Body: document.getElementById("card1Body"),
-      card2Title: document.getElementById("card2Title"),
-      card2Body: document.getElementById("card2Body"),
-      card3Title: document.getElementById("card3Title"),
-      card3Body: document.getElementById("card3Body"),
-      note1Title: document.getElementById("note1Title"),
-      note1Body: document.getElementById("note1Body"),
-      note2Title: document.getElementById("note2Title"),
-      note2Body: document.getElementById("note2Body"),
-      note3Title: document.getElementById("note3Title"),
-      note3Body: document.getElementById("note3Body")
+    const animControls = {
+      select: document.getElementById("animSelect"),
+      trigger: document.getElementById("animTrigger"),
+      duration: document.getElementById("animDuration"),
+      delay: document.getElementById("animDelay")
+    };
+
+    const actions = {
+      bringFront: document.getElementById("bringFront"),
+      sendBack: document.getElementById("sendBack"),
+      duplicate: document.getElementById("duplicate"),
+      setImage: document.getElementById("setImage"),
+      deleteItem: document.getElementById("deleteItem")
     };
 
     const state = {
       templateId: "mosaic",
       vars: { ...templates.mosaic.vars },
-      content: { ...templates.mosaic.content }
+      selected: null,
+      lastPointer: { x: 200, y: 200 }
     };
 
-    const clamp = (value) => Math.max(0, Math.min(255, value));
+    const glassPalette = [
+      "#d6574f",
+      "#e5b458",
+      "#5aa6c7",
+      "#6fbf9f",
+      "#a164d5",
+      "#d98ba0",
+      "#4a7a5d",
+      "#f0c47a"
+    ];
+
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
     const adjustColor = (hex, amount) => {
       const clean = hex.replace("#", "");
       const num = parseInt(clean, 16);
-      const r = clamp((num >> 16) + amount);
-      const g = clamp(((num >> 8) & 0x00ff) + amount);
-      const b = clamp((num & 0x0000ff) + amount);
+      const r = clamp((num >> 16) + amount, 0, 255);
+      const g = clamp(((num >> 8) & 0x00ff) + amount, 0, 255);
+      const b = clamp((num & 0x0000ff) + amount, 0, 255);
       return `#${[r, g, b].map((val) => val.toString(16).padStart(2, "0")).join("")}`;
     };
 
@@ -967,11 +1327,29 @@
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     };
 
+    const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+    const buildMosaicTexture = () => {
+      const colors = shuffle([...glassPalette]).slice(0, 6);
+      const angle = Math.floor(Math.random() * 120) + 60;
+      return `
+        conic-gradient(from ${angle}deg at 16px 16px, ${colors[0]} 0 90deg, ${colors[1]} 0 180deg, ${colors[2]} 0 270deg, ${colors[3]} 0),
+        conic-gradient(from ${angle + 20}deg at 32px 32px, ${colors[4]} 0 90deg, ${colors[1]} 0 180deg, ${colors[0]} 0 270deg, ${colors[5]} 0),
+        linear-gradient(120deg, ${colors[2]}, ${colors[3]}, ${colors[4]})
+      `;
+    };
+
     const applyGlassPalette = (base, accent) => {
       designSurface.style.setProperty("--glass-1", base);
       designSurface.style.setProperty("--glass-2", adjustColor(base, 16));
       designSurface.style.setProperty("--glass-3", accent);
       designSurface.style.setProperty("--glass-4", adjustColor(accent, 20));
+    };
+
+    const applyMosaicText = () => {
+      const texture = buildMosaicTexture();
+      designSurface.style.setProperty("--mosaic-texture", texture);
+      designSurface.style.setProperty("--mosaic-scale", `${Math.max(state.vars.tileSize * 0.7, 28)}px`);
     };
 
     const applyVars = () => {
@@ -986,17 +1364,11 @@
       designSurface.style.setProperty("--canvas-line", line);
       designSurface.style.setProperty("--tile-size", `${state.vars.tileSize}px`);
       designSurface.style.setProperty("--glass-lead", lead);
+      designSurface.style.setProperty("--grid-size", `${state.vars.gridSize}px`);
       applyGlassPalette(state.vars.glassBase, state.vars.glassAccent);
       document.documentElement.style.setProperty("--studio-bg", state.vars.pageBg);
       document.documentElement.style.setProperty("--studio-accent", state.vars.accent);
-    };
-
-    const applyContent = () => {
-      Object.keys(contentNodes).forEach((key) => {
-        if (contentNodes[key]) {
-          contentNodes[key].textContent = state.content[key];
-        }
-      });
+      applyMosaicText();
     };
 
     const updateInputs = () => {
@@ -1007,6 +1379,7 @@
       inputs.glassBase.value = state.vars.glassBase;
       inputs.glassAccent.value = state.vars.glassAccent;
       inputs.tileSize.value = state.vars.tileSize;
+      inputs.gridSize.value = state.vars.gridSize;
     };
 
     const setActiveOption = (id) => {
@@ -1039,10 +1412,8 @@
       if (!template) return;
       state.templateId = id;
       state.vars = { ...template.vars };
-      state.content = { ...template.content };
       designSurface.className = `design-surface template-${id}`;
       applyVars();
-      applyContent();
       updateInputs();
       setActiveOption(id);
       templateSelect.value = id;
@@ -1098,301 +1469,267 @@
       state.vars.tileSize = parseInt(event.target.value, 10);
       applyVars();
     });
+    inputs.gridSize.addEventListener("input", (event) => {
+      state.vars.gridSize = parseInt(event.target.value, 10);
+      applyVars();
+    });
 
-    const escapeHtml = (value) => String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    shuffleGlass.addEventListener("click", () => {
+      applyMosaicText();
+    });
 
-    const readContent = () => {
-      const result = {};
-      Object.keys(contentNodes).forEach((key) => {
-        result[key] = escapeHtml(contentNodes[key].textContent.trim());
+    const setSelection = (item) => {
+      if (state.selected) {
+        state.selected.classList.remove("is-selected");
+      }
+      state.selected = item;
+      if (item) {
+        item.classList.add("is-selected");
+        showElementMenu(item);
+        syncMenuWithItem(item);
+      } else {
+        elementMenu.classList.remove("open");
+        elementMenu.setAttribute("aria-hidden", "true");
+      }
+    };
+
+    const showElementMenu = (item) => {
+      const rect = item.getBoundingClientRect();
+      const menuWidth = elementMenu.offsetWidth || 220;
+      const top = rect.top + window.scrollY - 12;
+      const left = Math.min(rect.left + window.scrollX, window.innerWidth - menuWidth - 20);
+      elementMenu.style.top = `${Math.max(80, top)}px`;
+      elementMenu.style.left = `${Math.max(20, left)}px`;
+      elementMenu.classList.add("open");
+      elementMenu.setAttribute("aria-hidden", "false");
+    };
+
+    const syncMenuWithItem = (item) => {
+      const anim = item.dataset.anim || "";
+      const trigger = item.dataset.trigger || "load";
+      const duration = parseInt(item.dataset.duration || "800", 10);
+      const delay = parseInt(item.dataset.delay || "0", 10);
+      animControls.select.value = anim;
+      animControls.trigger.value = trigger;
+      animControls.duration.value = duration;
+      animControls.delay.value = delay;
+      const hasImage = item.querySelector(".design-image");
+      actions.setImage.style.display = hasImage ? "inline-flex" : "none";
+    };
+
+    const applyAnimationToItem = (item) => {
+      if (!item) return;
+      const anim = animControls.select.value;
+      if (!anim) {
+        delete item.dataset.anim;
+        item.style.removeProperty("--anim-name");
+      } else {
+        item.dataset.anim = anim;
+        item.style.setProperty("--anim-name", anim);
+      }
+      item.dataset.trigger = animControls.trigger.value;
+      item.dataset.duration = animControls.duration.value;
+      item.dataset.delay = animControls.delay.value;
+      item.style.setProperty("--anim-duration", `${animControls.duration.value}ms`);
+      item.style.setProperty("--anim-delay", `${animControls.delay.value}ms`);
+    };
+
+    animControls.select.addEventListener("change", () => applyAnimationToItem(state.selected));
+    animControls.trigger.addEventListener("change", () => applyAnimationToItem(state.selected));
+    animControls.duration.addEventListener("input", () => applyAnimationToItem(state.selected));
+    animControls.delay.addEventListener("input", () => applyAnimationToItem(state.selected));
+
+    actions.bringFront.addEventListener("click", () => {
+      if (!state.selected) return;
+      state.selected.style.zIndex = 40;
+    });
+    actions.sendBack.addEventListener("click", () => {
+      if (!state.selected) return;
+      state.selected.style.zIndex = 1;
+    });
+    actions.duplicate.addEventListener("click", () => {
+      if (!state.selected) return;
+      const clone = state.selected.cloneNode(true);
+      clone.style.setProperty("--x", parseInt(state.selected.style.getPropertyValue("--x"), 10) + 1);
+      clone.style.setProperty("--y", parseInt(state.selected.style.getPropertyValue("--y"), 10) + 1);
+      canvasLayer.appendChild(clone);
+      attachItemHandlers(clone);
+    });
+    actions.setImage.addEventListener("click", () => {
+      if (!state.selected) return;
+      const imageNode = state.selected.querySelector(".design-image");
+      if (!imageNode) return;
+      const current = imageNode.dataset.src || "";
+      const url = window.prompt("Image URL", current);
+      if (url === null) return;
+      imageNode.dataset.src = url.trim();
+      imageNode.style.backgroundImage = url.trim() ? `url(\"${url.trim()}\")` : "";
+    });
+    actions.deleteItem.addEventListener("click", () => {
+      if (!state.selected) return;
+      const toRemove = state.selected;
+      setSelection(null);
+      toRemove.remove();
+    });
+
+    const attachItemHandlers = (item) => {
+      const handle = item.querySelector(".drag-handle");
+      if (handle) {
+        handle.addEventListener("pointerdown", startDrag);
+      }
+      item.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setSelection(item);
+        if (item.dataset.trigger === "click" && item.dataset.anim) {
+          item.classList.remove("animate-now");
+          void item.offsetWidth;
+          item.classList.add("animate-now");
+        }
       });
-      return result;
     };
 
-    const getVar = (name) => getComputedStyle(designSurface).getPropertyValue(name).trim();
+    document.querySelectorAll(".editor-item").forEach(attachItemHandlers);
 
-    const buildExport = () => {
-      const content = readContent();
-      const vars = {
-        pageBg: getVar("--page-bg"),
-        headerBg: getVar("--header-bg"),
-        accent: getVar("--canvas-accent"),
-        ink: getVar("--canvas-ink"),
-        muted: getVar("--canvas-muted"),
-        line: getVar("--canvas-line"),
-        tileSize: getVar("--tile-size"),
-        glass1: getVar("--glass-1"),
-        glass2: getVar("--glass-2"),
-        glass3: getVar("--glass-3"),
-        glass4: getVar("--glass-4"),
-        lead: getVar("--glass-lead")
+    const startDrag = (event) => {
+      if (!document.body.classList.contains("edit-mode")) return;
+      const item = event.target.closest(".editor-item");
+      if (!item) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setSelection(item);
+      const rect = item.getBoundingClientRect();
+      const surfaceRect = designSurface.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+      const grid = state.vars.gridSize;
+      item.classList.add("is-dragging");
+      document.body.classList.add("dragging");
+
+      const move = (moveEvent) => {
+        const x = Math.round((moveEvent.clientX - surfaceRect.left - offsetX) / grid);
+        const y = Math.round((moveEvent.clientY - surfaceRect.top - offsetY) / grid);
+        item.style.setProperty("--x", clamp(x, 0, 60));
+        item.style.setProperty("--y", clamp(y, 0, 80));
       };
-      const templateClass = `template-${state.templateId}`;
-      const mosaicStyles = state.templateId === "mosaic" ? `
-    .template-mosaic .glass-art {
-      opacity: 0.55;
-      background:
-        repeating-linear-gradient(45deg, ${vars.lead} 0 2px, transparent 2px calc(${vars.tileSize} * 0.9)),
-        repeating-linear-gradient(-45deg, ${vars.lead} 0 2px, transparent 2px calc(${vars.tileSize} * 1.1)),
-        conic-gradient(from 90deg at 12px 12px, ${vars.glass1} 0 90deg, ${vars.glass2} 0 180deg, ${vars.glass3} 0 270deg, ${vars.glass4} 0),
-        conic-gradient(from 90deg at 32px 32px, ${vars.glass2} 0 90deg, ${vars.glass4} 0 180deg, ${vars.glass1} 0 270deg, ${vars.glass3} 0);
-      background-size: calc(${vars.tileSize} * 1.1) calc(${vars.tileSize} * 1.1),
-        calc(${vars.tileSize} * 1.2) calc(${vars.tileSize} * 1.2),
-        calc(${vars.tileSize} * 1) calc(${vars.tileSize} * 1),
-        calc(${vars.tileSize} * 1.6) calc(${vars.tileSize} * 1.6);
-      mix-blend-mode: multiply;
-    }
-    .template-mosaic .design-title {
-      background: linear-gradient(120deg, ${vars.glass1}, ${vars.glass2} 35%, ${vars.glass3} 70%, ${vars.glass4});
-      color: transparent;
-      -webkit-background-clip: text;
-      background-clip: text;
-      text-shadow: 0 1px 0 ${vars.lead};
-    }` : "";
 
-      const lineworkStyles = state.templateId === "linework" ? `
-    .template-linework .glass-art {
-      opacity: 0.25;
-      background:
-        linear-gradient(90deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
-        linear-gradient(120deg, rgba(27, 26, 23, 0.08), transparent 60%);
-      background-size: 18px 18px, 18px 18px, 100% 100%;
-    }` : "";
+      const stop = () => {
+        item.classList.remove("is-dragging");
+        document.body.classList.remove("dragging");
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", stop);
+      };
 
-      const auroraStyles = state.templateId === "aurora" ? `
-    .template-aurora .glass-art {
-      opacity: 0.5;
-      background:
-        radial-gradient(circle at 20% 25%, rgba(12, 92, 122, 0.35), transparent 55%),
-        radial-gradient(circle at 80% 20%, rgba(199, 112, 82, 0.35), transparent 60%),
-        radial-gradient(circle at 45% 80%, rgba(119, 89, 162, 0.25), transparent 60%);
-    }` : "";
-
-      return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exported Page</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --page-bg: ${vars.pageBg};
-      --header-bg: ${vars.headerBg};
-      --canvas-ink: ${vars.ink};
-      --canvas-muted: ${vars.muted};
-      --canvas-accent: ${vars.accent};
-      --canvas-line: ${vars.line};
-      --tile-size: ${vars.tileSize};
-      --glass-1: ${vars.glass1};
-      --glass-2: ${vars.glass2};
-      --glass-3: ${vars.glass3};
-      --glass-4: ${vars.glass4};
-      --glass-lead: ${vars.lead};
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Archivo", sans-serif;
-      background: var(--page-bg);
-      color: var(--canvas-ink);
-      min-height: 100vh;
-    }
-    .design-surface {
-      position: relative;
-      background: var(--page-bg);
-      color: var(--canvas-ink);
-      overflow: hidden;
-      min-height: 100vh;
-    }
-    .glass-art {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    .design-header {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-      padding: 1.1rem 2.2rem;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--canvas-line);
-    }
-    .design-logo {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .design-nav {
-      display: flex;
-      gap: 1.4rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--canvas-muted);
-    }
-    .design-body {
-      position: relative;
-      z-index: 2;
-      padding: 2.8rem 2.4rem 3.4rem;
-      display: grid;
-      gap: 2.4rem;
-    }
-    .design-kicker {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--canvas-muted);
-      margin: 0 0 0.6rem;
-    }
-    .design-title {
-      margin: 0 0 0.8rem;
-      font-family: "Instrument Serif", serif;
-      font-size: clamp(2.2rem, 4vw, 3.6rem);
-      line-height: 1.1;
-    }
-    .design-subtitle {
-      margin: 0 0 1.4rem;
-      color: var(--canvas-muted);
-      max-width: 520px;
-      font-size: 1rem;
-    }
-    .design-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.7rem 1.6rem;
-      border-radius: 999px;
-      border: 1px solid currentColor;
-      background: transparent;
-      color: var(--canvas-accent);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      text-decoration: none;
-      width: fit-content;
-    }
-    .design-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.6rem;
-      border-top: 1px solid var(--canvas-line);
-      padding-top: 1.8rem;
-    }
-    .design-card {
-      border: 1px solid var(--canvas-line);
-      border-radius: 18px;
-      padding: 1.2rem 1.3rem;
-      background: rgba(255, 255, 255, 0.6);
-      display: grid;
-      gap: 0.6rem;
-    }
-    .design-card h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-    .design-card p {
-      margin: 0;
-      color: var(--canvas-muted);
-    }
-    .design-notes {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.6rem;
-    }
-    .design-note {
-      border-top: 1px solid var(--canvas-line);
-      padding-top: 1.2rem;
-      display: grid;
-      gap: 0.4rem;
-    }
-    .design-note h4 {
-      margin: 0;
-      font-size: 0.95rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .design-note p {
-      margin: 0;
-      color: var(--canvas-muted);
-    }
-    ${mosaicStyles}
-    ${lineworkStyles}
-    ${auroraStyles}
-    @media (max-width: 900px) {
-      .design-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .design-nav {
-        flex-wrap: wrap;
-      }
-    }
-  </style>
-</head>
-<body>
-  <section class="design-surface ${templateClass}">
-    <div class="glass-art"></div>
-    <header class="design-header">
-      <div class="design-logo">${content.logo}</div>
-      <nav class="design-nav">
-        <span>${content.nav1}</span>
-        <span>${content.nav2}</span>
-        <span>${content.nav3}</span>
-      </nav>
-    </header>
-    <div class="design-body">
-      <div class="design-hero">
-        <p class="design-kicker">${content.kicker}</p>
-        <h1 class="design-title">${content.title}</h1>
-        <p class="design-subtitle">${content.subtitle}</p>
-        <a class="design-button" href="#">${content.button}</a>
-      </div>
-      <div class="design-grid">
-        <article class="design-card">
-          <h3>${content.card1Title}</h3>
-          <p>${content.card1Body}</p>
-        </article>
-        <article class="design-card">
-          <h3>${content.card2Title}</h3>
-          <p>${content.card2Body}</p>
-        </article>
-        <article class="design-card">
-          <h3>${content.card3Title}</h3>
-          <p>${content.card3Body}</p>
-        </article>
-      </div>
-      <div class="design-notes">
-        <div class="design-note">
-          <h4>${content.note1Title}</h4>
-          <p>${content.note1Body}</p>
-        </div>
-        <div class="design-note">
-          <h4>${content.note2Title}</h4>
-          <p>${content.note2Body}</p>
-        </div>
-        <div class="design-note">
-          <h4>${content.note3Title}</h4>
-          <p>${content.note3Body}</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</body>
-</html>`;
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", stop);
     };
+
+    document.addEventListener("click", () => {
+      setSelection(null);
+      addMenu.classList.remove("open");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setSelection(null);
+        addMenu.classList.remove("open");
+      }
+    });
+
+    const createItem = (type) => {
+      const item = document.createElement("div");
+      item.className = "editor-item";
+      item.dataset.id = `item-${Date.now()}`;
+      item.style.setProperty("--x", Math.round(state.lastPointer.x / state.vars.gridSize));
+      item.style.setProperty("--y", Math.round(state.lastPointer.y / state.vars.gridSize));
+      item.style.setProperty("--w", 12);
+      item.style.setProperty("--h", 4);
+      item.innerHTML = '<span class="drag-handle"></span>';
+
+      if (type === "heading") {
+        const h = document.createElement("h2");
+        h.className = "design-title mosaic-text";
+        h.textContent = "New heading";
+        h.dataset.edit = "heading";
+        h.setAttribute("contenteditable", "false");
+        item.appendChild(h);
+      } else if (type === "text") {
+        const p = document.createElement("p");
+        p.className = "design-subtitle mosaic-text";
+        p.textContent = "New paragraph text.";
+        p.dataset.edit = "text";
+        p.setAttribute("contenteditable", "false");
+        item.appendChild(p);
+      } else if (type === "button") {
+        const a = document.createElement("a");
+        a.className = "design-button mosaic-text";
+        a.textContent = "New button";
+        a.href = "#";
+        a.dataset.edit = "button";
+        a.setAttribute("contenteditable", "false");
+        item.appendChild(a);
+      } else if (type === "image") {
+        item.style.setProperty("--w", 14);
+        item.style.setProperty("--h", 8);
+        const image = document.createElement("div");
+        image.className = "design-image";
+        image.dataset.image = "true";
+        item.appendChild(image);
+      } else if (type === "card") {
+        item.style.setProperty("--w", 12);
+        item.style.setProperty("--h", 6);
+        const card = document.createElement("div");
+        card.className = "design-card";
+        card.innerHTML = '<h3 class="mosaic-text" data-edit="cardTitle" contenteditable="false">Card title</h3><p class="mosaic-text" data-edit="cardBody" contenteditable="false">Card text goes here.</p>';
+        item.appendChild(card);
+      } else if (type === "divider") {
+        item.dataset.type = "divider";
+        item.style.setProperty("--w", 20);
+        item.style.setProperty("--h", 1);
+        const divider = document.createElement("div");
+        divider.className = "design-divider";
+        divider.innerHTML = '<div class="divider-line"></div>';
+        item.appendChild(divider);
+      } else if (type === "spacer") {
+        item.dataset.type = "spacer";
+        item.style.setProperty("--w", 20);
+        item.style.setProperty("--h", 2);
+        const spacer = document.createElement("div");
+        spacer.className = "design-spacer";
+        spacer.innerHTML = '<div class="spacer-line"></div>';
+        item.appendChild(spacer);
+      }
+      return item;
+    };
+
+    addFab.addEventListener("click", (event) => {
+      event.stopPropagation();
+      addMenu.classList.toggle("open");
+    });
+
+    addMenu.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const button = event.target.closest("button[data-add]");
+      if (!button) return;
+      const type = button.dataset.add;
+      const item = createItem(type);
+      canvasLayer.appendChild(item);
+      attachItemHandlers(item);
+      toggleEditable(true);
+      addMenu.classList.remove("open");
+      setSelection(item);
+    });
+
+    elementMenu.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    designSurface.addEventListener("pointerdown", (event) => {
+      const rect = designSurface.getBoundingClientRect();
+      state.lastPointer = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
+      };
+    });
 
     exportToggle.addEventListener("click", () => {
       exportOutput.value = buildExport();
@@ -1428,6 +1765,269 @@
       exportDrawer.setAttribute("aria-hidden", "true");
       document.querySelector(".default-options").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const buildExport = () => {
+      const items = Array.from(canvasLayer.querySelectorAll(".editor-item")).map((item) => {
+        const clone = item.cloneNode(true);
+        clone.classList.remove("is-selected", "is-dragging");
+        clone.querySelectorAll(".drag-handle").forEach((handle) => handle.remove());
+        clone.querySelectorAll("[contenteditable]").forEach((node) => node.removeAttribute("contenteditable"));
+        return clone.outerHTML;
+      }).join("\n");
+
+      const vars = {
+        pageBg: getComputedStyle(designSurface).getPropertyValue("--page-bg").trim(),
+        headerBg: getComputedStyle(designSurface).getPropertyValue("--header-bg").trim(),
+        ink: getComputedStyle(designSurface).getPropertyValue("--canvas-ink").trim(),
+        muted: getComputedStyle(designSurface).getPropertyValue("--canvas-muted").trim(),
+        accent: getComputedStyle(designSurface).getPropertyValue("--canvas-accent").trim(),
+        line: getComputedStyle(designSurface).getPropertyValue("--canvas-line").trim(),
+        tileSize: getComputedStyle(designSurface).getPropertyValue("--tile-size").trim(),
+        glass1: getComputedStyle(designSurface).getPropertyValue("--glass-1").trim(),
+        glass2: getComputedStyle(designSurface).getPropertyValue("--glass-2").trim(),
+        glass3: getComputedStyle(designSurface).getPropertyValue("--glass-3").trim(),
+        glass4: getComputedStyle(designSurface).getPropertyValue("--glass-4").trim(),
+        lead: getComputedStyle(designSurface).getPropertyValue("--glass-lead").trim(),
+        mosaic: getComputedStyle(designSurface).getPropertyValue("--mosaic-texture").trim(),
+        mosaicScale: getComputedStyle(designSurface).getPropertyValue("--mosaic-scale").trim(),
+        gridSize: getComputedStyle(designSurface).getPropertyValue("--grid-size").trim()
+      };
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exported Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --page-bg: ${escapeHtml(vars.pageBg)};
+      --header-bg: ${escapeHtml(vars.headerBg)};
+      --canvas-ink: ${escapeHtml(vars.ink)};
+      --canvas-muted: ${escapeHtml(vars.muted)};
+      --canvas-accent: ${escapeHtml(vars.accent)};
+      --canvas-line: ${escapeHtml(vars.line)};
+      --tile-size: ${escapeHtml(vars.tileSize)};
+      --glass-1: ${escapeHtml(vars.glass1)};
+      --glass-2: ${escapeHtml(vars.glass2)};
+      --glass-3: ${escapeHtml(vars.glass3)};
+      --glass-4: ${escapeHtml(vars.glass4)};
+      --glass-lead: ${escapeHtml(vars.lead)};
+      --mosaic-texture: ${escapeHtml(vars.mosaic)};
+      --mosaic-scale: ${escapeHtml(vars.mosaicScale)};
+      --grid-size: ${escapeHtml(vars.gridSize)};
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Archivo", sans-serif;
+      background: var(--page-bg);
+      color: var(--canvas-ink);
+      min-height: 100vh;
+    }
+    .design-surface {
+      position: relative;
+      background: var(--page-bg);
+      color: var(--canvas-ink);
+      overflow: hidden;
+      min-height: 100vh;
+    }
+    .glass-art,
+    .glass-windows {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .glass-windows {
+      opacity: 0.4;
+      mix-blend-mode: multiply;
+    }
+    .glass-window {
+      position: absolute;
+      width: 240px;
+      height: 360px;
+      color: var(--glass-lead);
+      opacity: 0.5;
+    }
+    .glass-window svg { width: 100%; height: 100%; display: block; }
+    .glass-window .pane { fill: var(--glass-2); stroke: var(--glass-lead); stroke-width: 2.2; }
+    .glass-window .pane-alt { fill: var(--glass-3); stroke: var(--glass-lead); stroke-width: 2.2; }
+    .glass-window .outline { fill: none; stroke: var(--glass-lead); stroke-width: 3.2; }
+    .glass-window.window-left { left: 6%; top: 12%; transform: rotate(-2deg); }
+    .glass-window.window-center { left: 38%; top: 6%; transform: rotate(1deg); }
+    .glass-window.window-right { right: 8%; top: 14%; transform: rotate(3deg); }
+    .glass-art {
+      opacity: 0.58;
+      background:
+        repeating-linear-gradient(45deg, var(--glass-lead) 0 2px, transparent 2px calc(var(--tile-size) * 0.9)),
+        repeating-linear-gradient(-45deg, var(--glass-lead) 0 2px, transparent 2px calc(var(--tile-size) * 1.1)),
+        conic-gradient(from 90deg at 12px 12px, var(--glass-1) 0 90deg, var(--glass-2) 0 180deg, var(--glass-3) 0 270deg, var(--glass-4) 0),
+        conic-gradient(from 90deg at 32px 32px, var(--glass-2) 0 90deg, var(--glass-4) 0 180deg, var(--glass-1) 0 270deg, var(--glass-3) 0);
+      background-size: calc(var(--tile-size) * 1.1) calc(var(--tile-size) * 1.1),
+        calc(var(--tile-size) * 1.2) calc(var(--tile-size) * 1.2),
+        calc(var(--tile-size) * 1) calc(var(--tile-size) * 1),
+        calc(var(--tile-size) * 1.6) calc(var(--tile-size) * 1.6);
+      mix-blend-mode: multiply;
+    }
+    .canvas-layer { position: relative; z-index: 2; min-height: 780px; }
+    .editor-item {
+      position: absolute;
+      left: calc(var(--x) * var(--grid-size));
+      top: calc(var(--y) * var(--grid-size));
+      width: calc(var(--w) * var(--grid-size));
+      min-height: calc(var(--h) * var(--grid-size));
+      padding: 0.6rem;
+      border-radius: 16px;
+    }
+    .design-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.6rem 1.1rem;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--canvas-line);
+      border-radius: 14px;
+    }
+    .design-logo {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .design-nav {
+      display: flex;
+      gap: 1.2rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--canvas-muted);
+    }
+    .design-kicker {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--canvas-muted);
+      margin: 0 0 0.6rem;
+    }
+    .design-title {
+      margin: 0 0 0.8rem;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      line-height: 1.1;
+    }
+    .design-subtitle {
+      margin: 0 0 1.4rem;
+      color: var(--canvas-muted);
+      max-width: 520px;
+      font-size: 1rem;
+    }
+    .design-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      background: transparent;
+      color: var(--canvas-accent);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      text-decoration: none;
+      width: fit-content;
+    }
+    .design-card,
+    .design-note {
+      border: 1px solid var(--canvas-line);
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .design-card h3,
+    .design-note h4 {
+      margin: 0 0 0.4rem;
+      font-size: 1rem;
+    }
+    .design-card p,
+    .design-note p {
+      margin: 0;
+      color: var(--canvas-muted);
+    }
+    .design-divider,
+    .design-spacer {
+      background: transparent;
+      border-color: transparent;
+      padding: 0.4rem;
+    }
+    .design-divider .divider-line {
+      height: 1px;
+      background: var(--canvas-line);
+    }
+    .design-spacer .spacer-line {
+      height: 22px;
+      border-radius: 12px;
+      border: 1px dashed var(--canvas-line);
+      background: transparent;
+    }
+    .mosaic-text {
+      color: transparent;
+      background-image: var(--mosaic-texture);
+      background-size: var(--mosaic-scale);
+      background-position: center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-shadow: 0 1px 0 var(--glass-lead);
+    }
+  </style>
+</head>
+<body>
+  <section class="design-surface template-${escapeHtml(state.templateId)}">
+    <div class="glass-art"></div>
+    <div class="glass-windows">
+      <div class="glass-window window-left">
+        <svg viewBox="0 0 220 320" aria-hidden="true">
+          <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+          <rect class="pane" x="40" y="120" width="60" height="60" rx="8" />
+          <rect class="pane-alt" x="120" y="120" width="60" height="60" rx="8" />
+          <rect class="pane-alt" x="40" y="190" width="60" height="60" rx="8" />
+          <rect class="pane" x="120" y="190" width="60" height="60" rx="8" />
+        </svg>
+      </div>
+      <div class="glass-window window-center">
+        <svg viewBox="0 0 220 320" aria-hidden="true">
+          <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+          <rect class="pane-alt" x="50" y="110" width="120" height="80" rx="10" />
+          <rect class="pane" x="50" y="200" width="120" height="80" rx="10" />
+        </svg>
+      </div>
+      <div class="glass-window window-right">
+        <svg viewBox="0 0 220 320" aria-hidden="true">
+          <path class="outline" d="M20,300 L20,120 Q20,40 110,20 Q200,40 200,120 L200,300 Z" />
+          <rect class="pane" x="40" y="120" width="60" height="60" rx="8" />
+          <rect class="pane-alt" x="120" y="120" width="60" height="60" rx="8" />
+          <rect class="pane-alt" x="40" y="190" width="60" height="60" rx="8" />
+          <rect class="pane" x="120" y="190" width="60" height="60" rx="8" />
+        </svg>
+      </div>
+    </div>
+    <div class="canvas-layer">
+      ${items}
+    </div>
+  </section>
+</body>
+</html>`;
+    };
 
     window.addEventListener("resize", updateToolbarOffset);
 
