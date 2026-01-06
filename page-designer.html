@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page Designer | RS</title>
+  <link rel="icon" href="/logos/RSlogoUPDATED.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --studio-bg: #f4ede3;
+      --studio-white: #ffffff;
+      --studio-ink: #1b1a17;
+      --studio-muted: rgba(27, 26, 23, 0.6);
+      --studio-line: rgba(27, 26, 23, 0.12);
+      --studio-accent: #0f5b5b;
+      --nav-height: 72px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(15, 91, 91, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 0%, rgba(170, 115, 86, 0.1), transparent 45%),
+        var(--studio-bg);
+      color: var(--studio-ink);
+      font-family: "Archivo", sans-serif;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .designer-page nav {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border-bottom: 1px solid var(--studio-line) !important;
+      box-shadow: none !important;
+    }
+    .designer-page nav .logo-link,
+    .designer-page nav .nav-links a {
+      color: var(--studio-ink) !important;
+      text-shadow: none !important;
+    }
+    .designer-page nav .nav-links a:hover {
+      color: var(--studio-accent) !important;
+    }
+
+    main {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: calc(var(--nav-height) + 2rem) 6vw 5rem;
+    }
+
+    .studio-hero {
+      background: var(--studio-white);
+      border: 1px solid var(--studio-line);
+      padding: clamp(1.6rem, 4vw, 2.6rem);
+      border-radius: 24px;
+      display: grid;
+      gap: 1.2rem;
+      animation: float-in 0.7s ease both;
+    }
+    .studio-hero h1 {
+      margin: 0;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(2.3rem, 5vw, 3.6rem);
+      letter-spacing: 0.01em;
+    }
+    .studio-hero p {
+      margin: 0;
+      color: var(--studio-muted);
+      max-width: 560px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--studio-muted);
+    }
+    .hero-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--studio-accent);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+    .section-head p {
+      margin: 0;
+      max-width: 480px;
+      color: var(--studio-muted);
+    }
+
+    .default-options {
+      margin-top: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--studio-line);
+      animation: float-in 0.8s ease both;
+    }
+    .option-list {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid var(--studio-line);
+    }
+    .option-card {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--studio-line);
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      cursor: pointer;
+      color: inherit;
+      text-align: left;
+      transition: color 0.2s ease;
+      animation: float-in 0.6s ease both;
+      animation-delay: var(--delay, 0ms);
+    }
+    .option-card:hover,
+    .option-card.active {
+      color: var(--studio-accent);
+    }
+    .option-preview {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      border: 1px solid var(--studio-line);
+      position: relative;
+      overflow: hidden;
+    }
+    .option-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(0, 0, 0, 0.08));
+      opacity: 0.35;
+    }
+    .preview-mosaic {
+      background:
+        conic-gradient(from 90deg at 10px 10px, #d6b694 0 90deg, #f1dbc4 0 180deg, #ccb08f 0 270deg, #e7c9ab 0),
+        conic-gradient(from 90deg at 30px 30px, #f1dbc4 0 90deg, #e7c9ab 0 180deg, #d6b694 0 270deg, #ccb08f 0);
+      background-size: 28px 28px;
+    }
+    .preview-linework {
+      background:
+        linear-gradient(90deg, rgba(27, 26, 23, 0.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(27, 26, 23, 0.08) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(27, 26, 23, 0.06), transparent 60%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+      background-color: #f7f2ea;
+    }
+    .preview-aurora {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(12, 92, 122, 0.35), transparent 45%),
+        radial-gradient(circle at 80% 10%, rgba(199, 112, 82, 0.35), transparent 50%),
+        #f7f2ea;
+    }
+    .option-content h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .option-content p {
+      margin: 0;
+      color: var(--studio-muted);
+      font-size: 0.92rem;
+    }
+    .option-action {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .editor {
+      margin-top: 3rem;
+      animation: float-in 0.9s ease both;
+    }
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid var(--studio-line);
+      color: var(--studio-muted);
+    }
+    .mode-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--studio-accent);
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: 2.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .preview-frame {
+      border: 1px solid var(--studio-line);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.6);
+      padding: clamp(1.2rem, 2vw, 1.8rem);
+    }
+
+    .design-canvas {
+      --canvas-bg: #f3e8dc;
+      --header-bg: #ffffff;
+      --canvas-ink: #1e1c1a;
+      --canvas-muted: rgba(30, 28, 26, 0.6);
+      --canvas-accent: #0f5b5b;
+      --canvas-line: rgba(30, 28, 26, 0.12);
+      --tile-size: 42px;
+      --mosaic-1: #d6b694;
+      --mosaic-2: #f1dbc4;
+      --mosaic-3: #ccb08f;
+      --mosaic-4: #e7c9ab;
+      border-radius: 22px;
+      border: 1px solid var(--canvas-line);
+      background: var(--canvas-bg);
+      color: var(--canvas-ink);
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    .canvas-art {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .canvas-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.6rem;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--canvas-line);
+    }
+    .canvas-logo {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .canvas-nav {
+      display: flex;
+      gap: 1.4rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--canvas-muted);
+    }
+
+    .canvas-main {
+      position: relative;
+      z-index: 2;
+      padding: 2.6rem 2.2rem 3rem;
+      display: grid;
+      gap: 2rem;
+    }
+    .canvas-kicker {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--canvas-muted);
+      margin: 0;
+    }
+    .canvas-title {
+      margin: 0;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+    }
+    .canvas-subtitle {
+      margin: 0;
+      color: var(--canvas-muted);
+      max-width: 460px;
+      font-size: 1rem;
+    }
+    .canvas-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      background: transparent;
+      color: var(--canvas-accent);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      text-decoration: none;
+      width: fit-content;
+    }
+
+    .canvas-list {
+      display: grid;
+      gap: 1rem;
+      border-top: 1px solid var(--canvas-line);
+      padding-top: 1.4rem;
+    }
+    .canvas-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--canvas-line);
+      padding-bottom: 0.75rem;
+    }
+    .canvas-list li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .canvas-list span {
+      color: var(--canvas-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .template-mosaic .canvas-art {
+      background:
+        conic-gradient(from 90deg at 10px 10px, var(--mosaic-1) 0 90deg, var(--mosaic-2) 0 180deg, var(--mosaic-3) 0 270deg, var(--mosaic-4) 0),
+        conic-gradient(from 90deg at 30px 30px, var(--mosaic-2) 0 90deg, var(--mosaic-4) 0 180deg, var(--mosaic-1) 0 270deg, var(--mosaic-3) 0);
+      background-size: var(--tile-size) var(--tile-size);
+      opacity: 0.35;
+    }
+    .template-mosaic .canvas-title {
+      background:
+        conic-gradient(from 90deg at 10px 10px, var(--mosaic-1) 0 90deg, var(--mosaic-2) 0 180deg, var(--mosaic-3) 0 270deg, var(--mosaic-4) 0),
+        conic-gradient(from 90deg at 30px 30px, var(--mosaic-2) 0 90deg, var(--mosaic-4) 0 180deg, var(--mosaic-1) 0 270deg, var(--mosaic-3) 0);
+      background-size: calc(var(--tile-size) * 0.7) calc(var(--tile-size) * 0.7);
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .template-linework .canvas-art {
+      background:
+        linear-gradient(90deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(27, 26, 23, 0.08), transparent 60%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+      opacity: 0.25;
+    }
+
+    .template-aurora .canvas-art {
+      background:
+        radial-gradient(circle at 20% 25%, rgba(12, 92, 122, 0.35), transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(199, 112, 82, 0.35), transparent 60%),
+        radial-gradient(circle at 45% 80%, rgba(119, 89, 162, 0.25), transparent 60%);
+      opacity: 0.5;
+    }
+
+    .template-linework .canvas-title,
+    .template-aurora .canvas-title {
+      color: var(--canvas-ink);
+    }
+
+    .control-panel {
+      padding: 1.8rem;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid var(--studio-line);
+      display: grid;
+      gap: 1.4rem;
+    }
+    .control-panel h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .control-form {
+      display: grid;
+      gap: 1rem;
+    }
+    .control-group label {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      margin-bottom: 0.35rem;
+      color: var(--studio-muted);
+    }
+    .control-group input[type="text"],
+    .control-group textarea,
+    .control-group select {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--studio-line);
+      padding: 0.6rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      background: var(--studio-white);
+      color: var(--studio-ink);
+    }
+    .control-group textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .control-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+    }
+    .control-row input[type="color"] {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--studio-line);
+      background: var(--studio-white);
+      border-radius: 10px;
+      padding: 0.2rem;
+    }
+    .control-row input[type="range"] {
+      width: 100%;
+    }
+
+    .export-panel {
+      border-top: 1px solid var(--studio-line);
+      padding-top: 1.2rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+    .export-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .export-actions button {
+      border-radius: 999px;
+      border: 1px solid var(--studio-line);
+      padding: 0.6rem 1.2rem;
+      background: var(--studio-white);
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      cursor: pointer;
+      color: var(--studio-ink);
+    }
+    .export-actions button.primary {
+      border-color: var(--studio-accent);
+      color: var(--studio-accent);
+    }
+    .export-output {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--studio-line);
+      padding: 0.75rem;
+      font-family: "Courier New", monospace;
+      font-size: 0.75rem;
+      min-height: 180px;
+      background: #fff;
+      color: #1f1f1f;
+    }
+
+    footer {
+      padding: 3rem 6vw 4rem;
+      max-width: 1150px;
+      margin: 0 auto;
+      color: rgba(27, 26, 23, 0.5);
+      font-size: 0.85rem;
+    }
+
+    @keyframes float-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+
+    @media (max-width: 900px) {
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+      .option-card {
+        grid-template-columns: 72px 1fr;
+      }
+      .option-action {
+        display: none;
+      }
+      .canvas-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+      .canvas-nav {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body class="designer-page">
+  <script src="navigation.js" defer></script>
+
+  <main>
+    <section class="studio-hero">
+      <h1>Page Designer</h1>
+      <p>Build and export design-forward pages that do not fit on the main site. Choose a default option, switch to edit mode, and customize every element before exporting the code.</p>
+      <div class="hero-meta">
+        <span><span class="hero-dot"></span> White header by default</span>
+        <span><span class="hero-dot"></span> Cream canvas with mosaic art</span>
+        <span><span class="hero-dot"></span> Export-ready HTML + CSS</span>
+      </div>
+    </section>
+
+    <section class="default-options" aria-labelledby="default-options">
+      <div class="section-head">
+        <h2 id="default-options">Default options</h2>
+        <p>Select a preset layout to enter edit mode and reveal the controls.</p>
+      </div>
+      <div class="option-list" role="list">
+        <button class="option-card active" type="button" data-template="mosaic" aria-pressed="true" style="--delay:0ms">
+          <span class="option-preview preview-mosaic"></span>
+          <span class="option-content">
+            <h3>Mosaic Studio</h3>
+            <p>Cream canvas, white header, mosaic art and mosaic title.</p>
+          </span>
+          <span class="option-action">Edit</span>
+        </button>
+        <button class="option-card" type="button" data-template="linework" aria-pressed="false" style="--delay:80ms">
+          <span class="option-preview preview-linework"></span>
+          <span class="option-content">
+            <h3>Linework Ledger</h3>
+            <p>Grid textures with minimalist typography and clear hierarchy.</p>
+          </span>
+          <span class="option-action">Edit</span>
+        </button>
+        <button class="option-card" type="button" data-template="aurora" aria-pressed="false" style="--delay:160ms">
+          <span class="option-preview preview-aurora"></span>
+          <span class="option-content">
+            <h3>Aurora Field</h3>
+            <p>Soft color blooms and open spacing for story-driven pages.</p>
+          </span>
+          <span class="option-action">Edit</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="editor" id="editor" aria-labelledby="editor-title">
+      <div class="section-head">
+        <div>
+          <p class="mode-pill"><span class="dot"></span><span id="modeLabel">Edit mode: Mosaic Studio</span></p>
+          <h2 id="editor-title">Customize the page</h2>
+        </div>
+        <p>Adjust copy, colors, and background treatments. Export the code when ready.</p>
+      </div>
+
+      <div class="editor-grid">
+        <div class="preview-frame">
+          <div class="design-canvas template-mosaic" id="designCanvas" data-template="mosaic">
+            <div class="canvas-art"></div>
+            <header class="canvas-header">
+              <div class="canvas-logo" id="canvasLogo">RS Studio</div>
+              <nav class="canvas-nav">
+                <span id="canvasNav1">Work</span>
+                <span id="canvasNav2">Studio</span>
+                <span id="canvasNav3">Contact</span>
+              </nav>
+            </header>
+            <main class="canvas-main">
+              <div>
+                <p class="canvas-kicker" id="canvasKicker">Curated sessions</p>
+                <h1 class="canvas-title" id="canvasTitle">Mosaic pages for modern ateliers</h1>
+                <p class="canvas-subtitle" id="canvasSubtitle">Bring your brand to life with a textural backdrop, a clean header, and confident editorial type.</p>
+                <a class="canvas-button" href="#" id="canvasButton">Request a layout</a>
+              </div>
+              <ul class="canvas-list">
+                <li>
+                  <strong id="canvasList1Title">Section one</strong>
+                  <span id="canvasList1Meta">Projects</span>
+                </li>
+                <li>
+                  <strong id="canvasList2Title">Section two</strong>
+                  <span id="canvasList2Meta">Services</span>
+                </li>
+                <li>
+                  <strong id="canvasList3Title">Section three</strong>
+                  <span id="canvasList3Meta">Stories</span>
+                </li>
+              </ul>
+            </main>
+          </div>
+        </div>
+
+        <aside class="control-panel">
+          <h3>Designer controls</h3>
+          <form class="control-form" id="controlForm">
+            <div class="control-group">
+              <label for="logoInput">Logo text</label>
+              <input type="text" id="logoInput" value="RS Studio" />
+            </div>
+            <div class="control-row">
+              <div class="control-group">
+                <label for="navOne">Nav one</label>
+                <input type="text" id="navOne" value="Work" />
+              </div>
+              <div class="control-group">
+                <label for="navTwo">Nav two</label>
+                <input type="text" id="navTwo" value="Studio" />
+              </div>
+              <div class="control-group">
+                <label for="navThree">Nav three</label>
+                <input type="text" id="navThree" value="Contact" />
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="titleInput">Hero title</label>
+              <input type="text" id="titleInput" value="Mosaic pages for modern ateliers" />
+            </div>
+            <div class="control-group">
+              <label for="subtitleInput">Hero subtitle</label>
+              <textarea id="subtitleInput">Bring your brand to life with a textural backdrop, a clean header, and confident editorial type.</textarea>
+            </div>
+            <div class="control-group">
+              <label for="kickerInput">Kicker</label>
+              <input type="text" id="kickerInput" value="Curated sessions" />
+            </div>
+            <div class="control-group">
+              <label for="buttonInput">Button label</label>
+              <input type="text" id="buttonInput" value="Request a layout" />
+            </div>
+
+            <div class="control-row">
+              <div class="control-group">
+                <label for="listOneTitle">List 1 title</label>
+                <input type="text" id="listOneTitle" value="Section one" />
+              </div>
+              <div class="control-group">
+                <label for="listOneMeta">List 1 meta</label>
+                <input type="text" id="listOneMeta" value="Projects" />
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-group">
+                <label for="listTwoTitle">List 2 title</label>
+                <input type="text" id="listTwoTitle" value="Section two" />
+              </div>
+              <div class="control-group">
+                <label for="listTwoMeta">List 2 meta</label>
+                <input type="text" id="listTwoMeta" value="Services" />
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-group">
+                <label for="listThreeTitle">List 3 title</label>
+                <input type="text" id="listThreeTitle" value="Section three" />
+              </div>
+              <div class="control-group">
+                <label for="listThreeMeta">List 3 meta</label>
+                <input type="text" id="listThreeMeta" value="Stories" />
+              </div>
+            </div>
+
+            <div class="control-row">
+              <div class="control-group">
+                <label for="headerColor">Header color</label>
+                <input type="color" id="headerColor" value="#ffffff" />
+              </div>
+              <div class="control-group">
+                <label for="backgroundColor">Page background</label>
+                <input type="color" id="backgroundColor" value="#f3e8dc" />
+              </div>
+            </div>
+
+            <div class="control-row">
+              <div class="control-group">
+                <label for="accentColor">Accent color</label>
+                <input type="color" id="accentColor" value="#0f5b5b" />
+              </div>
+              <div class="control-group">
+                <label for="textColor">Text color</label>
+                <input type="color" id="textColor" value="#1e1c1a" />
+              </div>
+            </div>
+
+            <div class="control-row" id="mosaicControls">
+              <div class="control-group">
+                <label for="mosaicBase">Mosaic base</label>
+                <input type="color" id="mosaicBase" value="#d6b694" />
+              </div>
+              <div class="control-group">
+                <label for="mosaicAccent">Mosaic accent</label>
+                <input type="color" id="mosaicAccent" value="#ccb08f" />
+              </div>
+              <div class="control-group">
+                <label for="tileSize">Tile size</label>
+                <input type="range" id="tileSize" min="26" max="70" value="42" />
+              </div>
+            </div>
+          </form>
+
+          <div class="export-panel">
+            <div class="export-actions">
+              <button class="primary" type="button" id="exportButton">Export HTML + CSS</button>
+              <button type="button" id="copyButton">Copy</button>
+            </div>
+            <textarea class="export-output" id="exportOutput" readonly>Exported code will appear here.</textarea>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    (c) 2025 RS. Page Designer in progress.
+  </footer>
+
+  <script>
+    const templates = {
+      mosaic: {
+        label: "Mosaic Studio",
+        vars: {
+          headerBg: "#ffffff",
+          canvasBg: "#f3e8dc",
+          accent: "#0f5b5b",
+          ink: "#1e1c1a",
+          tileSize: 42,
+          mosaicBase: "#d6b694",
+          mosaicAccent: "#ccb08f"
+        },
+        content: {
+          logo: "RS Studio",
+          nav1: "Work",
+          nav2: "Studio",
+          nav3: "Contact",
+          title: "Mosaic pages for modern ateliers",
+          subtitle: "Bring your brand to life with a textural backdrop, a clean header, and confident editorial type.",
+          kicker: "Curated sessions",
+          button: "Request a layout",
+          list1Title: "Section one",
+          list1Meta: "Projects",
+          list2Title: "Section two",
+          list2Meta: "Services",
+          list3Title: "Section three",
+          list3Meta: "Stories"
+        }
+      },
+      linework: {
+        label: "Linework Ledger",
+        vars: {
+          headerBg: "#ffffff",
+          canvasBg: "#f7f2ea",
+          accent: "#1f4e63",
+          ink: "#1b1a17",
+          tileSize: 36,
+          mosaicBase: "#d6b694",
+          mosaicAccent: "#ccb08f"
+        },
+        content: {
+          logo: "RS Studio",
+          nav1: "Work",
+          nav2: "Studio",
+          nav3: "Contact",
+          title: "Linework pages with confident rhythm",
+          subtitle: "Structured layouts, subtle grid texture, and calm typography for clear storytelling.",
+          kicker: "Studio blueprint",
+          button: "Open the dossier",
+          list1Title: "Section one",
+          list1Meta: "Projects",
+          list2Title: "Section two",
+          list2Meta: "Services",
+          list3Title: "Section three",
+          list3Meta: "Stories"
+        }
+      },
+      aurora: {
+        label: "Aurora Field",
+        vars: {
+          headerBg: "#ffffff",
+          canvasBg: "#f6efe6",
+          accent: "#8a3f2b",
+          ink: "#1f1916",
+          tileSize: 46,
+          mosaicBase: "#d6b694",
+          mosaicAccent: "#ccb08f"
+        },
+        content: {
+          logo: "RS Studio",
+          nav1: "Work",
+          nav2: "Studio",
+          nav3: "Contact",
+          title: "Aurora pages for story-led launches",
+          subtitle: "Soft color washes, open spacing, and a crisp header to spotlight your narrative.",
+          kicker: "Editorial release",
+          button: "Launch the story",
+          list1Title: "Section one",
+          list1Meta: "Projects",
+          list2Title: "Section two",
+          list2Meta: "Services",
+          list3Title: "Section three",
+          list3Meta: "Stories"
+        }
+      }
+    };
+
+    const designCanvas = document.getElementById("designCanvas");
+    const canvasLogo = document.getElementById("canvasLogo");
+    const canvasNav1 = document.getElementById("canvasNav1");
+    const canvasNav2 = document.getElementById("canvasNav2");
+    const canvasNav3 = document.getElementById("canvasNav3");
+    const canvasTitle = document.getElementById("canvasTitle");
+    const canvasSubtitle = document.getElementById("canvasSubtitle");
+    const canvasKicker = document.getElementById("canvasKicker");
+    const canvasButton = document.getElementById("canvasButton");
+    const canvasList1Title = document.getElementById("canvasList1Title");
+    const canvasList1Meta = document.getElementById("canvasList1Meta");
+    const canvasList2Title = document.getElementById("canvasList2Title");
+    const canvasList2Meta = document.getElementById("canvasList2Meta");
+    const canvasList3Title = document.getElementById("canvasList3Title");
+    const canvasList3Meta = document.getElementById("canvasList3Meta");
+    const modeLabel = document.getElementById("modeLabel");
+
+    const inputs = {
+      logo: document.getElementById("logoInput"),
+      navOne: document.getElementById("navOne"),
+      navTwo: document.getElementById("navTwo"),
+      navThree: document.getElementById("navThree"),
+      title: document.getElementById("titleInput"),
+      subtitle: document.getElementById("subtitleInput"),
+      kicker: document.getElementById("kickerInput"),
+      button: document.getElementById("buttonInput"),
+      listOneTitle: document.getElementById("listOneTitle"),
+      listOneMeta: document.getElementById("listOneMeta"),
+      listTwoTitle: document.getElementById("listTwoTitle"),
+      listTwoMeta: document.getElementById("listTwoMeta"),
+      listThreeTitle: document.getElementById("listThreeTitle"),
+      listThreeMeta: document.getElementById("listThreeMeta"),
+      headerColor: document.getElementById("headerColor"),
+      backgroundColor: document.getElementById("backgroundColor"),
+      accentColor: document.getElementById("accentColor"),
+      textColor: document.getElementById("textColor"),
+      mosaicBase: document.getElementById("mosaicBase"),
+      mosaicAccent: document.getElementById("mosaicAccent"),
+      tileSize: document.getElementById("tileSize")
+    };
+
+    const mosaicControls = document.getElementById("mosaicControls");
+    const exportOutput = document.getElementById("exportOutput");
+    const exportButton = document.getElementById("exportButton");
+    const copyButton = document.getElementById("copyButton");
+
+    const state = {
+      templateId: "mosaic",
+      vars: { ...templates.mosaic.vars },
+      content: { ...templates.mosaic.content }
+    };
+
+    const clamp = (value) => Math.max(0, Math.min(255, value));
+
+    const adjustColor = (hex, amount) => {
+      const clean = hex.replace("#", "");
+      const num = parseInt(clean, 16);
+      const r = clamp((num >> 16) + amount);
+      const g = clamp(((num >> 8) & 0x00ff) + amount);
+      const b = clamp((num & 0x0000ff) + amount);
+      return `#${[r, g, b].map((val) => val.toString(16).padStart(2, "0")).join("")}`;
+    };
+
+    const hexToRgb = (hex) => {
+      const clean = hex.replace("#", "");
+      const num = parseInt(clean, 16);
+      return {
+        r: (num >> 16) & 0xff,
+        g: (num >> 8) & 0xff,
+        b: num & 0xff
+      };
+    };
+
+    const toRgba = (hex, alpha) => {
+      const { r, g, b } = hexToRgb(hex);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const applyMosaicPalette = (base, accent) => {
+      designCanvas.style.setProperty("--mosaic-1", base);
+      designCanvas.style.setProperty("--mosaic-2", adjustColor(base, 16));
+      designCanvas.style.setProperty("--mosaic-3", accent);
+      designCanvas.style.setProperty("--mosaic-4", adjustColor(accent, 20));
+    };
+
+    const applyVars = () => {
+      const muted = toRgba(state.vars.ink, 0.6);
+      const line = toRgba(state.vars.ink, 0.12);
+      designCanvas.style.setProperty("--header-bg", state.vars.headerBg);
+      designCanvas.style.setProperty("--canvas-bg", state.vars.canvasBg);
+      designCanvas.style.setProperty("--canvas-accent", state.vars.accent);
+      designCanvas.style.setProperty("--canvas-ink", state.vars.ink);
+      designCanvas.style.setProperty("--canvas-muted", muted);
+      designCanvas.style.setProperty("--canvas-line", line);
+      designCanvas.style.setProperty("--tile-size", `${state.vars.tileSize}px`);
+      applyMosaicPalette(state.vars.mosaicBase, state.vars.mosaicAccent);
+      document.documentElement.style.setProperty("--studio-accent", state.vars.accent);
+      document.documentElement.style.setProperty("--studio-bg", state.vars.canvasBg);
+    };
+
+    const applyContent = () => {
+      canvasLogo.textContent = state.content.logo;
+      canvasNav1.textContent = state.content.nav1;
+      canvasNav2.textContent = state.content.nav2;
+      canvasNav3.textContent = state.content.nav3;
+      canvasTitle.textContent = state.content.title;
+      canvasSubtitle.textContent = state.content.subtitle;
+      canvasKicker.textContent = state.content.kicker;
+      canvasButton.textContent = state.content.button;
+      canvasList1Title.textContent = state.content.list1Title;
+      canvasList1Meta.textContent = state.content.list1Meta;
+      canvasList2Title.textContent = state.content.list2Title;
+      canvasList2Meta.textContent = state.content.list2Meta;
+      canvasList3Title.textContent = state.content.list3Title;
+      canvasList3Meta.textContent = state.content.list3Meta;
+    };
+
+    const updateInputs = () => {
+      inputs.logo.value = state.content.logo;
+      inputs.navOne.value = state.content.nav1;
+      inputs.navTwo.value = state.content.nav2;
+      inputs.navThree.value = state.content.nav3;
+      inputs.title.value = state.content.title;
+      inputs.subtitle.value = state.content.subtitle;
+      inputs.kicker.value = state.content.kicker;
+      inputs.button.value = state.content.button;
+      inputs.listOneTitle.value = state.content.list1Title;
+      inputs.listOneMeta.value = state.content.list1Meta;
+      inputs.listTwoTitle.value = state.content.list2Title;
+      inputs.listTwoMeta.value = state.content.list2Meta;
+      inputs.listThreeTitle.value = state.content.list3Title;
+      inputs.listThreeMeta.value = state.content.list3Meta;
+      inputs.headerColor.value = state.vars.headerBg;
+      inputs.backgroundColor.value = state.vars.canvasBg;
+      inputs.accentColor.value = state.vars.accent;
+      inputs.textColor.value = state.vars.ink;
+      inputs.mosaicBase.value = state.vars.mosaicBase;
+      inputs.mosaicAccent.value = state.vars.mosaicAccent;
+      inputs.tileSize.value = state.vars.tileSize;
+    };
+
+    const updateModeLabel = () => {
+      modeLabel.textContent = `Edit mode: ${templates[state.templateId].label}`;
+    };
+
+    const setActiveOption = (id) => {
+      document.querySelectorAll(".option-card").forEach((button) => {
+        const active = button.dataset.template === id;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    };
+
+    const toggleMosaicControls = () => {
+      mosaicControls.style.display = state.templateId === "mosaic" ? "grid" : "none";
+    };
+
+    const applyTemplate = (id, shouldScroll = true) => {
+      const template = templates[id];
+      if (!template) return;
+      state.templateId = id;
+      state.vars = { ...template.vars };
+      state.content = { ...template.content };
+      designCanvas.className = `design-canvas template-${id}`;
+      applyVars();
+      applyContent();
+      updateInputs();
+      updateModeLabel();
+      setActiveOption(id);
+      toggleMosaicControls();
+      if (shouldScroll) {
+        document.getElementById("editor").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+
+    document.querySelectorAll(".option-card").forEach((button) => {
+      button.addEventListener("click", () => applyTemplate(button.dataset.template));
+    });
+
+    inputs.logo.addEventListener("input", (event) => {
+      state.content.logo = event.target.value;
+      applyContent();
+    });
+    inputs.navOne.addEventListener("input", (event) => {
+      state.content.nav1 = event.target.value;
+      applyContent();
+    });
+    inputs.navTwo.addEventListener("input", (event) => {
+      state.content.nav2 = event.target.value;
+      applyContent();
+    });
+    inputs.navThree.addEventListener("input", (event) => {
+      state.content.nav3 = event.target.value;
+      applyContent();
+    });
+    inputs.title.addEventListener("input", (event) => {
+      state.content.title = event.target.value;
+      applyContent();
+    });
+    inputs.subtitle.addEventListener("input", (event) => {
+      state.content.subtitle = event.target.value;
+      applyContent();
+    });
+    inputs.kicker.addEventListener("input", (event) => {
+      state.content.kicker = event.target.value;
+      applyContent();
+    });
+    inputs.button.addEventListener("input", (event) => {
+      state.content.button = event.target.value;
+      applyContent();
+    });
+    inputs.listOneTitle.addEventListener("input", (event) => {
+      state.content.list1Title = event.target.value;
+      applyContent();
+    });
+    inputs.listOneMeta.addEventListener("input", (event) => {
+      state.content.list1Meta = event.target.value;
+      applyContent();
+    });
+    inputs.listTwoTitle.addEventListener("input", (event) => {
+      state.content.list2Title = event.target.value;
+      applyContent();
+    });
+    inputs.listTwoMeta.addEventListener("input", (event) => {
+      state.content.list2Meta = event.target.value;
+      applyContent();
+    });
+    inputs.listThreeTitle.addEventListener("input", (event) => {
+      state.content.list3Title = event.target.value;
+      applyContent();
+    });
+    inputs.listThreeMeta.addEventListener("input", (event) => {
+      state.content.list3Meta = event.target.value;
+      applyContent();
+    });
+    inputs.headerColor.addEventListener("input", (event) => {
+      state.vars.headerBg = event.target.value;
+      applyVars();
+    });
+    inputs.backgroundColor.addEventListener("input", (event) => {
+      state.vars.canvasBg = event.target.value;
+      applyVars();
+    });
+    inputs.accentColor.addEventListener("input", (event) => {
+      state.vars.accent = event.target.value;
+      applyVars();
+    });
+    inputs.textColor.addEventListener("input", (event) => {
+      state.vars.ink = event.target.value;
+      applyVars();
+    });
+    inputs.mosaicBase.addEventListener("input", (event) => {
+      state.vars.mosaicBase = event.target.value;
+      applyVars();
+    });
+    inputs.mosaicAccent.addEventListener("input", (event) => {
+      state.vars.mosaicAccent = event.target.value;
+      applyVars();
+    });
+    inputs.tileSize.addEventListener("input", (event) => {
+      state.vars.tileSize = parseInt(event.target.value, 10);
+      applyVars();
+    });
+
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    const buildExport = () => {
+      const content = state.content;
+      const vars = state.vars;
+      const templateClass = `template-${state.templateId}`;
+      const muted = toRgba(vars.ink, 0.6);
+      const line = toRgba(vars.ink, 0.12);
+      const safe = {
+        logo: escapeHtml(content.logo),
+        nav1: escapeHtml(content.nav1),
+        nav2: escapeHtml(content.nav2),
+        nav3: escapeHtml(content.nav3),
+        title: escapeHtml(content.title),
+        subtitle: escapeHtml(content.subtitle),
+        kicker: escapeHtml(content.kicker),
+        button: escapeHtml(content.button),
+        list1Title: escapeHtml(content.list1Title),
+        list1Meta: escapeHtml(content.list1Meta),
+        list2Title: escapeHtml(content.list2Title),
+        list2Meta: escapeHtml(content.list2Meta),
+        list3Title: escapeHtml(content.list3Title),
+        list3Meta: escapeHtml(content.list3Meta)
+      };
+      const mosaicStyles = state.templateId === "mosaic" ? `
+      .template-mosaic .canvas-art {
+        background:
+          conic-gradient(from 90deg at 10px 10px, ${vars.mosaicBase} 0 90deg, ${adjustColor(vars.mosaicBase, 16)} 0 180deg, ${vars.mosaicAccent} 0 270deg, ${adjustColor(vars.mosaicAccent, 20)} 0),
+          conic-gradient(from 90deg at 30px 30px, ${adjustColor(vars.mosaicBase, 16)} 0 90deg, ${adjustColor(vars.mosaicAccent, 20)} 0 180deg, ${vars.mosaicBase} 0 270deg, ${vars.mosaicAccent} 0);
+        background-size: ${vars.tileSize}px ${vars.tileSize}px;
+        opacity: 0.35;
+      }
+      .template-mosaic .canvas-title {
+        background:
+          conic-gradient(from 90deg at 10px 10px, ${vars.mosaicBase} 0 90deg, ${adjustColor(vars.mosaicBase, 16)} 0 180deg, ${vars.mosaicAccent} 0 270deg, ${adjustColor(vars.mosaicAccent, 20)} 0),
+          conic-gradient(from 90deg at 30px 30px, ${adjustColor(vars.mosaicBase, 16)} 0 90deg, ${adjustColor(vars.mosaicAccent, 20)} 0 180deg, ${vars.mosaicBase} 0 270deg, ${vars.mosaicAccent} 0);
+        background-size: ${Math.round(vars.tileSize * 0.7)}px ${Math.round(vars.tileSize * 0.7)}px;
+        color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+      }` : "";
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exported Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --canvas-bg: ${vars.canvasBg};
+      --header-bg: ${vars.headerBg};
+      --canvas-ink: ${vars.ink};
+      --canvas-muted: ${muted};
+      --canvas-accent: ${vars.accent};
+      --canvas-line: ${line};
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Archivo", sans-serif;
+      background: var(--canvas-bg);
+      color: var(--canvas-ink);
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 6vw 4rem;
+    }
+    .canvas {
+      border-radius: 24px;
+      border: 1px solid var(--canvas-line);
+      background: var(--canvas-bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .canvas-art {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 1.6rem;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--canvas-line);
+    }
+    .canvas-logo {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .canvas-nav {
+      display: flex;
+      gap: 1.4rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--canvas-muted);
+    }
+    .canvas-main {
+      padding: 2.6rem 2.2rem 3rem;
+      display: grid;
+      gap: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+    .canvas-kicker {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--canvas-muted);
+      margin: 0;
+    }
+    .canvas-title {
+      margin: 0;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+    }
+    .canvas-subtitle {
+      margin: 0;
+      color: var(--canvas-muted);
+      max-width: 460px;
+    }
+    .canvas-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      background: transparent;
+      color: var(--canvas-accent);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      text-decoration: none;
+      width: fit-content;
+    }
+    .canvas-list {
+      display: grid;
+      gap: 1rem;
+      border-top: 1px solid var(--canvas-line);
+      padding-top: 1.4rem;
+      list-style: none;
+      margin: 0;
+      padding-left: 0;
+    }
+    .canvas-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--canvas-line);
+      padding-bottom: 0.75rem;
+    }
+    .canvas-list li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .canvas-list span {
+      color: var(--canvas-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+    .template-linework .canvas-art {
+      background:
+        linear-gradient(90deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(27, 26, 23, 0.1) 1px, transparent 1px),
+        linear-gradient(120deg, rgba(27, 26, 23, 0.08), transparent 60%);
+      background-size: 18px 18px, 18px 18px, 100% 100%;
+      opacity: 0.25;
+    }
+    .template-aurora .canvas-art {
+      background:
+        radial-gradient(circle at 20% 25%, rgba(12, 92, 122, 0.35), transparent 55%),
+        radial-gradient(circle at 80% 20%, rgba(199, 112, 82, 0.35), transparent 60%),
+        radial-gradient(circle at 45% 80%, rgba(119, 89, 162, 0.25), transparent 60%);
+      opacity: 0.5;
+    }
+    ${mosaicStyles}
+    @media (max-width: 900px) {
+      .canvas-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+      .canvas-nav {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="canvas ${templateClass}">
+      <div class="canvas-art"></div>
+      <header class="canvas-header">
+        <div class="canvas-logo">${safe.logo}</div>
+        <div class="canvas-nav">
+          <span>${safe.nav1}</span>
+          <span>${safe.nav2}</span>
+          <span>${safe.nav3}</span>
+        </div>
+      </header>
+      <main class="canvas-main">
+        <div>
+          <p class="canvas-kicker">${safe.kicker}</p>
+          <h1 class="canvas-title">${safe.title}</h1>
+          <p class="canvas-subtitle">${safe.subtitle}</p>
+          <a class="canvas-button" href="#">${safe.button}</a>
+        </div>
+        <ul class="canvas-list">
+          <li><strong>${safe.list1Title}</strong><span>${safe.list1Meta}</span></li>
+          <li><strong>${safe.list2Title}</strong><span>${safe.list2Meta}</span></li>
+          <li><strong>${safe.list3Title}</strong><span>${safe.list3Meta}</span></li>
+        </ul>
+      </main>
+    </div>
+  </div>
+</body>
+</html>`;
+    };
+
+    exportButton.addEventListener("click", () => {
+      exportOutput.value = buildExport();
+    });
+
+    copyButton.addEventListener("click", async () => {
+      if (!exportOutput.value || exportOutput.value === "Exported code will appear here.") {
+        exportOutput.value = buildExport();
+      }
+      exportOutput.select();
+      exportOutput.setSelectionRange(0, exportOutput.value.length);
+      try {
+        await navigator.clipboard.writeText(exportOutput.value);
+        copyButton.textContent = "Copied";
+        setTimeout(() => {
+          copyButton.textContent = "Copy";
+        }, 1600);
+      } catch (error) {
+        document.execCommand("copy");
+      }
+    });
+
+    applyTemplate("mosaic", false);
+  </script>
+</body>
+</html>
