@@ -7,51 +7,50 @@
   <link rel="icon" href="/logos/RSlogoUPDATED.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500;700&family=Sora:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #080b12;
-      --bg-2: #0f1624;
-      --ink: #ecf2ff;
-      --muted: rgba(236, 242, 255, 0.64);
-      --accent: #7fe7ff;
-      --accent-2: #ff9bd6;
-      --panel: rgba(12, 18, 32, 0.88);
-      --panel-border: rgba(127, 231, 255, 0.3);
-      --shadow: 0 30px 80px rgba(2, 4, 10, 0.55);
+      --bg: #f6f2ed;
+      --bg-2: #fdfaf7;
+      --ink: #151515;
+      --muted: rgba(21, 21, 21, 0.62);
+      --line: rgba(21, 21, 21, 0.12);
+      --accent: #0b4f6c;
+      --accent-2: #c0643b;
       --nav-height: 72px;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       background:
-        radial-gradient(circle at 20% 15%, rgba(127, 231, 255, 0.12), transparent 45%),
-        radial-gradient(circle at 80% 5%, rgba(255, 155, 214, 0.12), transparent 42%),
+        radial-gradient(circle at 20% 20%, rgba(11, 79, 108, 0.08), transparent 45%),
+        radial-gradient(circle at 80% 0%, rgba(192, 100, 59, 0.1), transparent 40%),
         linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
       color: var(--ink);
       font-family: "Sora", sans-serif;
       min-height: 100vh;
+      line-height: 1.6;
       overflow-x: hidden;
     }
 
     nav {
-      position: fixed;
+      position: sticky;
       top: 0;
       width: 100%;
-      z-index: 40;
-      background: #000;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      height: var(--nav-height);
+      z-index: 50;
+      background: rgba(246, 242, 237, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
     }
     .nav-content {
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 0 6vw;
-      height: 100%;
+      padding: 0.85rem 6vw;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 1rem;
     }
     .logo-link {
@@ -59,361 +58,278 @@
       align-items: center;
       gap: 0.75rem;
       text-decoration: none;
+      color: inherit;
     }
     .logo-image {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
     }
     .full-name {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #fff;
     }
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 1.4rem;
+      gap: 1.2rem;
       list-style: none;
       margin: 0;
       padding: 0;
     }
     .nav-links a {
       text-decoration: none;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #fff;
+      color: inherit;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      opacity: 0;
+      transform: scaleX(0.4);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links .active a::after {
+      opacity: 1;
+      transform: scaleX(1);
     }
     .dropdown {
       position: relative;
     }
     .dropdown-menu {
       position: absolute;
-      top: calc(100% + 0.45rem);
+      top: calc(100% + 0.6rem);
       left: 0;
       min-width: 210px;
       padding: 0.7rem 0.9rem;
       margin: 0;
       list-style: none;
-      background: rgba(4, 6, 12, 0.96);
-      border-radius: 12px;
-      border: 1px solid rgba(127, 231, 255, 0.2);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
       display: none;
-      z-index: 5;
     }
     .dropdown-menu li + li {
       margin-top: 0.35rem;
     }
     .dropdown-menu a {
-      color: #fff;
-      letter-spacing: 0.08em;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
     }
     .dropdown:hover .dropdown-menu,
     .dropdown:focus-within .dropdown-menu {
       display: block;
     }
-    .dropdown-menu::before {
-      content: "";
-      position: absolute;
-      top: -10px;
-      left: 0;
-      right: 0;
-      height: 10px;
-    }
-
-    .portfolio-page nav {
-      background: #000 !important;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: none !important;
-    }
-    .portfolio-page nav .logo-link,
-    .portfolio-page nav .nav-links a {
-      color: #fff !important;
-      text-shadow: none !important;
-    }
-    .portfolio-page nav .nav-links a {
-      position: relative;
-      overflow: visible;
-      display: inline-flex;
-      align-items: center;
-    }
-    .portfolio-page nav .nav-links a:hover {
-      color: var(--accent) !important;
-    }
-
-    .butterfly-spark {
-      position: absolute;
-      left: var(--spark-x);
-      top: var(--spark-y);
-      width: 18px;
-      height: 18px;
-      pointer-events: none;
-      transform-origin: center;
-      animation: butterfly-float 1.2s ease-out forwards;
-      filter: drop-shadow(0 0 6px rgba(127, 231, 255, 0.6));
-      z-index: 5;
-    }
-    .butterfly-spark svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-    .butterfly-wing {
-      fill: #6bd6ff;
-    }
-    .butterfly-body {
-      stroke: #9aa4b1;
-      stroke-width: 1.6;
-      stroke-linecap: round;
-    }
-    @keyframes butterfly-float {
-      0% {
-        opacity: 0;
-        transform: translate(0, 0) scale(var(--spark-scale, 0.8)) rotate(var(--spark-rot-start, 0deg));
-      }
-      15% {
-        opacity: 1;
-      }
-      100% {
-        opacity: 0;
-        transform: translate(var(--spark-x-drift), var(--spark-y-drift))
-          scale(calc(var(--spark-scale, 0.8) + 0.2)) rotate(var(--spark-rot-end, 45deg));
-      }
-    }
 
     main {
-      padding-top: var(--nav-height);
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: calc(var(--nav-height) + 2.5rem) 6vw 5rem;
     }
 
-    .scroll-stage {
-      position: relative;
-      height: 220vh;
-      padding: 0;
+    .hero {
+      display: grid;
+      gap: 1.5rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--line);
+      animation: rise-in 0.7s ease both;
     }
-    .sticky-frame {
-      position: sticky;
-      top: var(--nav-height);
-      height: calc(100vh - var(--nav-height));
-      border-radius: 0;
-      overflow: visible;
-      background: transparent;
-      box-shadow: none;
-      border: none;
-      width: 100vw;
-      margin-left: calc(50% - 50vw);
-    }
-    .video-surface {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      background: #000;
-      z-index: 1;
-    }
-    .sticky-frame video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      pointer-events: none;
-    }
-    .frame-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(8, 11, 18, 0.25) 0%, rgba(8, 11, 18, 0.65) 75%);
-      pointer-events: none;
-    }
-    .video-glass {
-      position: absolute;
-      top: clamp(2.5rem, 6vw, 5rem);
-      left: clamp(1.5rem, 5vw, 4rem);
-      padding: 1.1rem 1.6rem;
-      border-radius: 18px;
-      background: rgba(15, 22, 36, 0.35);
-      border: 1px solid rgba(127, 231, 255, 0.3);
-      backdrop-filter: blur(10px);
-      color: rgba(236, 242, 255, 0.85);
-      z-index: 2;
-      max-width: min(520px, 90vw);
-    }
-    .video-glass h1 {
-      font-family: "Fraunces", serif;
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      margin: 0 0 0.6rem;
-      letter-spacing: 0.03em;
-    }
-    .video-glass p {
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 0.7rem;
+      color: var(--muted);
       margin: 0;
-      color: rgba(236, 242, 255, 0.7);
-      line-height: 1.6;
-      font-size: 0.95rem;
     }
-    .pull-project {
-      position: absolute;
-      left: 50%;
-      bottom: -420px;
-      transform: translateX(-50%);
-      width: min(520px, 92vw);
-      z-index: 3;
-      pointer-events: auto;
+    .hero h1 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 600;
+      letter-spacing: 0.01em;
     }
-    body.show-projects .pull-project {
-      bottom: -120px;
-      transition: bottom 0.8s ease;
+    .hero p {
+      margin: 0;
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 1rem;
     }
-    .pull-project .project-window {
-      min-height: 360px;
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+    }
+    .hero-actions a {
+      text-decoration: none;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ink);
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid currentColor;
+    }
+    .hero-actions a.primary {
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
-    .projects-reveal {
-      position: relative;
-      margin-top: -8vh;
-      padding: clamp(3rem, 7vw, 6rem) 6vw 8rem;
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      pointer-events: none;
+    section {
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--line);
     }
-    body.show-projects .projects-reveal {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .projects-head {
+    .section-head {
       display: flex;
-      justify-content: space-between;
       align-items: flex-end;
+      justify-content: space-between;
       gap: 2rem;
       flex-wrap: wrap;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
-    .projects-head h3 {
-      font-family: "Fraunces", serif;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
+    .section-head h2 {
       margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.6rem, 3vw, 2.3rem);
+      font-weight: 600;
     }
-    .projects-head p {
+    .section-head p {
+      margin: 0;
+      max-width: 420px;
+      color: var(--muted);
+    }
+
+    .project-list {
+      display: grid;
+      gap: 0;
+    }
+    .project-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 2rem;
+      padding: 1.6rem 0;
+      border-top: 1px solid var(--line);
+      animation: rise-in 0.7s ease both;
+    }
+    .project-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+    .project-main h3 {
+      margin: 0 0 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .project-main p {
       margin: 0;
       color: var(--muted);
-      max-width: 520px;
-      line-height: 1.6;
     }
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: clamp(1.5rem, 4vw, 2.5rem);
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 0.9rem;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
     }
-
-    .project-window {
-      background: var(--panel);
-      border-radius: 20px;
-      border: 1px solid var(--panel-border);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .project-links {
       display: flex;
       flex-direction: column;
-      min-height: 360px;
-      backdrop-filter: blur(10px);
+      align-items: flex-end;
+      gap: 0.8rem;
     }
-    .window-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(8, 12, 22, 0.8);
-    }
-    .window-dots {
-      display: flex;
-      gap: 0.35rem;
-    }
-    .window-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-    }
-    .window-title {
-      margin-left: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--muted);
-      flex: 1;
-    }
-    .window-action {
-      font-size: 0.75rem;
-      color: var(--accent);
+    .project-links a {
       text-decoration: none;
-      letter-spacing: 0.08em;
+      color: var(--accent);
       text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      padding-bottom: 0.2rem;
+      border-bottom: 1px solid transparent;
     }
-    .window-body {
-      flex: 1;
-      background: #0a101b;
-      position: relative;
+    .project-links a:hover {
+      border-color: currentColor;
     }
-    .window-body iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
+
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.9rem;
     }
-    .window-caption {
-      padding: 1rem 1.2rem 1.4rem;
+    .link-list li {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.9rem;
+    }
+    .link-list li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .link-list a {
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .link-list span {
       color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
     }
 
     footer {
-      padding: 2rem 6vw 4rem;
-      color: rgba(236, 242, 255, 0.5);
+      padding: 3rem 6vw 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      color: rgba(21, 21, 21, 0.5);
       font-size: 0.85rem;
     }
 
-    @media (max-width: 720px) {
-      nav {
-        position: sticky;
-        height: auto;
-      }
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+
+    @media (max-width: 780px) {
       .nav-content {
         flex-wrap: wrap;
         justify-content: center;
-        gap: 0.5rem 1.2rem;
-        padding: 0.8rem 6vw;
       }
       .nav-links {
         flex-wrap: wrap;
         justify-content: center;
       }
       main {
-        padding-top: 0;
+        padding-top: calc(var(--nav-height) + 1.5rem);
       }
-      .scroll-stage {
-        height: 200vh;
-      }
-      .sticky-frame {
-        top: 0;
-        height: 70vh;
-      }
-      .video-glass {
-        padding: 0.9rem 1.1rem;
-      }
-      .pull-project {
-        bottom: -140px;
-      }
-      .projects-head {
-        flex-direction: column;
+      .section-head {
         align-items: flex-start;
       }
-      .project-window {
-        min-height: 320px;
+      .project-row {
+        grid-template-columns: 1fr;
       }
-      .window-body {
-        min-height: 220px;
+      .project-links {
+        align-items: flex-start;
+        flex-direction: row;
       }
     }
   </style>
@@ -422,163 +338,94 @@
   <script src="navigation.js" defer></script>
 
   <main>
-    <section class="scroll-stage" id="butterflyStage">
-      <div class="sticky-frame">
-        <div class="video-surface">
-          <video id="butterflyVideo" playsinline muted preload="auto" poster="/logos/RSlogoUPDATED.png">
-            <source src="butterfly.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          <div class="frame-overlay"></div>
-          <div class="video-glass">
-            <h1>Studio Portfolio</h1>
-            <p>Scroll to pilot the butterfly and surface the projects it carries.</p>
+    <header class="hero">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Quiet, minimal interfaces for curious people.</h1>
+      <p>A focused selection of interactive builds, data experiments, and learning tools.</p>
+      <div class="hero-actions">
+        <a class="primary" href="projects.html">View all projects</a>
+        <a href="index.html#contact">Start a collaboration</a>
+      </div>
+    </header>
+
+    <section aria-labelledby="selected-work">
+      <div class="section-head">
+        <h2 id="selected-work">Selected work</h2>
+        <p>Small, intentional experiences that emphasize clarity over ornament.</p>
+      </div>
+      <div class="project-list">
+        <article class="project-row">
+          <div class="project-main">
+            <h3>LinguaBloom</h3>
+            <p>Language learning flow with gentle pacing, visual progress, and guided practice.</p>
+            <div class="project-meta">
+              <span>Product concept</span>
+              <span>Education</span>
+            </div>
           </div>
-        </div>
-        <div class="pull-project">
-          <article class="project-window">
-            <div class="window-bar">
-              <div class="window-dots">
-                <span class="window-dot"></span>
-                <span class="window-dot"></span>
-                <span class="window-dot"></span>
-              </div>
-              <div class="window-title">LinguaBloom — Language Learning</div>
-              <a class="window-action" href="Language%20Learning/language-learning.html" target="_blank" rel="noopener">Open</a>
+          <div class="project-links">
+            <a href="Language%20Learning/language-learning.html" target="_blank" rel="noopener">Open</a>
+          </div>
+        </article>
+
+        <article class="project-row">
+          <div class="project-main">
+            <h3>Journal Studio</h3>
+            <p>Minimal writing space with focus-first typography and structured prompts.</p>
+            <div class="project-meta">
+              <span>Web app</span>
+              <span>Reflection</span>
             </div>
-            <div class="window-body">
-              <iframe src="Language%20Learning/language-learning.html" title="Language Learning App" loading="lazy"></iframe>
+          </div>
+          <div class="project-links">
+            <a href="journal.html" target="_blank" rel="noopener">Open</a>
+          </div>
+        </article>
+
+        <article class="project-row">
+          <div class="project-main">
+            <h3>Interactive Data Analysis</h3>
+            <p>Guided data exploration with interactive plots and annotated insight moments.</p>
+            <div class="project-meta">
+              <span>Research</span>
+              <span>Data</span>
             </div>
-            <div class="window-caption">[Placeholder description for the language learning app.]</div>
-          </article>
-        </div>
+          </div>
+          <div class="project-links">
+            <a href="data-analysis.html" target="_blank" rel="noopener">Open</a>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="projects-reveal" id="projectShowcase">
-      <div class="projects-head">
-        <h3>Live Project Windows</h3>
-        <p>These are embedded canvases. Click inside to interact, or pop them out to explore the full experience.</p>
+    <section aria-labelledby="more-experiments">
+      <div class="section-head">
+        <h2 id="more-experiments">More experiments</h2>
+        <p>Utility pieces and small builds that solve one clear problem.</p>
       </div>
-
-      <div class="project-grid">
-        <article class="project-window">
-          <div class="window-bar">
-            <div class="window-dots">
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-              <span class="window-dot"></span>
-            </div>
-            <div class="window-title">Journal Project</div>
-            <a class="window-action" href="journal.html" target="_blank" rel="noopener">Open</a>
-          </div>
-          <div class="window-body">
-            <iframe src="journal.html" title="Journal App" loading="lazy"></iframe>
-          </div>
-          <div class="window-caption">[Placeholder description for the journal project.]</div>
-        </article>
-      </div>
+      <ul class="link-list">
+        <li>
+          <a href="qr-generator.html" target="_blank" rel="noopener">QR Code Generator</a>
+          <span>Fast output for sharing links and assets.</span>
+        </li>
+        <li>
+          <a href="bg-remover.html" target="_blank" rel="noopener">Background Remover</a>
+          <span>Clean cutouts with minimal steps.</span>
+        </li>
+        <li>
+          <a href="image-converter.html" target="_blank" rel="noopener">Image Converter</a>
+          <span>Batch export between core formats.</span>
+        </li>
+        <li>
+          <a href="link-shortener.html" target="_blank" rel="noopener">Link Shortener</a>
+          <span>Trim long URLs without distractions.</span>
+        </li>
+      </ul>
     </section>
   </main>
 
   <footer>
-    © 2025 RS — Portfolio experiments in motion.
+    (c) 2025 RS. Portfolio in progress.
   </footer>
-
-  <script>
-    const stage = document.getElementById("butterflyStage");
-    const video = document.getElementById("butterflyVideo");
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let videoDuration = 0;
-    let ticking = false;
-
-    const syncVideo = () => {
-      ticking = false;
-      if (!videoDuration || !stage) return;
-      const rect = stage.getBoundingClientRect();
-      const maxScroll = Math.max(1, stage.offsetHeight - window.innerHeight);
-      const progress = Math.min(Math.max(-rect.top / maxScroll, 0), 1);
-      const targetTime = progress * videoDuration;
-      if (Math.abs(video.currentTime - targetTime) > 0.04) {
-        video.currentTime = targetTime;
-      }
-      document.body.classList.toggle("show-projects", progress >= 0.98);
-    };
-
-    const requestSync = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(syncVideo);
-    };
-
-    if (video) {
-      video.addEventListener("loadedmetadata", () => {
-        videoDuration = video.duration || 0;
-        video.pause();
-        syncVideo();
-      });
-
-      if (!prefersReducedMotion.matches) {
-        video.play().then(() => video.pause()).catch(() => {});
-        window.addEventListener("scroll", requestSync, { passive: true });
-        window.addEventListener("resize", requestSync);
-      } else {
-        document.body.classList.add("show-projects");
-      }
-    }
-
-    const butterflySvg = `
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <line class="butterfly-body" x1="12" y1="6" x2="12" y2="18"></line>
-        <polygon class="butterfly-wing" points="12,12 4,7 6,17"></polygon>
-        <polygon class="butterfly-wing" points="12,12 18,7 16,17"></polygon>
-      </svg>
-    `;
-
-    const spawnButterflies = (link, event) => {
-      const rect = link.getBoundingClientRect();
-      const originX = event?.clientX ? event.clientX - rect.left : rect.width * 0.5;
-      const originY = rect.height * 0.7;
-      for (let i = 0; i < 3; i += 1) {
-        const spark = document.createElement("span");
-        spark.className = "butterfly-spark";
-        spark.innerHTML = butterflySvg;
-        const jitterX = (Math.random() - 0.5) * 10;
-        const jitterY = (Math.random() - 0.5) * 6;
-        const driftX = (Math.random() - 0.5) * 60;
-        const driftY = -35 - Math.random() * 50;
-        const scale = 0.7 + Math.random() * 0.5;
-        const rotStart = `${Math.random() * 40 - 20}deg`;
-        const rotEnd = `${Math.random() * 120 - 60}deg`;
-        spark.style.setProperty("--spark-x", `${originX + jitterX}px`);
-        spark.style.setProperty("--spark-y", `${originY + jitterY}px`);
-        spark.style.setProperty("--spark-x-drift", `${driftX}px`);
-        spark.style.setProperty("--spark-y-drift", `${driftY}px`);
-        spark.style.setProperty("--spark-scale", scale);
-        spark.style.setProperty("--spark-rot-start", rotStart);
-        spark.style.setProperty("--spark-rot-end", rotEnd);
-        spark.addEventListener("animationend", () => spark.remove());
-        link.appendChild(spark);
-      }
-    };
-
-    const initNavButterflies = () => {
-      const nav = document.querySelector("nav");
-      if (!nav) return false;
-      const links = nav.querySelectorAll(".nav-links a");
-      if (!links.length) return false;
-      links.forEach((link) => {
-        link.addEventListener("mouseenter", (event) => spawnButterflies(link, event));
-      });
-      return true;
-    };
-
-    if (!initNavButterflies()) {
-      const observer = new MutationObserver(() => {
-        if (initNavButterflies()) observer.disconnect();
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
-  </script>
 </body>
 </html>
