@@ -1,0 +1,6 @@
+{
+  "appId": "com.icantspeakit.app",
+  "appName": "I cant speak it",
+  "webDir": "app",
+  "bundledWebRuntime": false
+}

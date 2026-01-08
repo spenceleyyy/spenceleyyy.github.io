@@ -1,0 +1,19 @@
+{
+  "name": "icant-speak-it",
+  "version": "0.1.0",
+  "private": true,
+  "description": "I cant speak it - iOS wrapper for the Lens Translator UI",
+  "scripts": {
+    "cap:init": "cap init \"I cant speak it\" com.icantspeakit.app",
+    "cap:add-ios": "cap add ios",
+    "cap:sync": "cap sync ios",
+    "cap:open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
+  }
+}
