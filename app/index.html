@@ -1058,6 +1058,22 @@
       return luminance < 135 ? "#ffffff" : "#1c1914";
     };
 
+    const pickFontWeight = (height) => {
+      if (height >= canvas.height * 0.05) {
+        return 700;
+      }
+      if (height >= canvas.height * 0.03) {
+        return 600;
+      }
+      return 500;
+    };
+
+    const isCenteredBlock = (block) => {
+      const center = block.x + block.width / 2;
+      const withinCenter = Math.abs(center - canvas.width / 2) < canvas.width * 0.08;
+      return withinCenter && block.width > canvas.width * 0.35;
+    };
+
     const buildLines = (context, text, maxWidth) => {
       const useChars = !text.includes(" ");
       const words = useChars ? text.split("") : text.split(" ");
@@ -1096,6 +1112,19 @@
       context.font = `${minSize}px "Space Grotesk", sans-serif`;
       lines = buildLines(context, text, maxWidth);
       return { fontSize: minSize, lineHeight: minSize * 1.18, lines };
+    };
+
+    const fitSingleLine = (context, text, maxWidth, maxHeight, weight) => {
+      let fontSize = Math.max(10, Math.min(52, maxHeight * 0.9));
+      const minSize = 10;
+      while (fontSize >= minSize) {
+        context.font = `${weight} ${fontSize}px "Space Grotesk", sans-serif`;
+        if (context.measureText(text).width <= maxWidth) {
+          return fontSize;
+        }
+        fontSize -= 1;
+      }
+      return minSize;
     };
 
     const ocrWithTesseract = async () => {
@@ -1209,38 +1238,36 @@
       }
       ctx.putImageData(state.baseImageData, 0, 0);
 
-      ctx.textBaseline = "top";
-      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
 
       blocks.forEach((block) => {
         if (!block.translated) {
           return;
         }
-        const padding = Math.max(2, Math.min(8, block.height * 0.12));
         const boxX = clampValue(block.x, 0, canvas.width - 1);
         const boxY = clampValue(block.y, 0, canvas.height - 1);
         const boxWidth = clampValue(block.width, 12, canvas.width - boxX);
         const boxHeight = clampValue(block.height, 12, canvas.height - boxY);
 
         const bg = sampleBackgroundColor(state.baseImageData, boxX, boxY, boxWidth, boxHeight);
-        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.88)`;
+        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.94)`;
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-        const textX = boxX + padding;
-        const textY = boxY + padding;
-        const textWidth = Math.max(10, boxWidth - padding * 2);
-        const textHeight = Math.max(10, boxHeight - padding * 2);
-        const fit = fitTextToBox(ctx, block.translated, textWidth, textHeight);
-        ctx.font = `${fit.fontSize}px "Space Grotesk", sans-serif`;
+        const textWidth = Math.max(10, boxWidth - 2);
+        const textHeight = Math.max(10, boxHeight - 2);
+        const fontWeight = pickFontWeight(boxHeight);
+        const fontSize = fitSingleLine(ctx, block.translated, textWidth, textHeight, fontWeight);
+        const centered = isCenteredBlock(block);
+        const textX = centered ? boxX + boxWidth / 2 : boxX + 1;
+        const textY = boxY + boxHeight / 2;
+        ctx.textAlign = centered ? "center" : "left";
+        ctx.font = `${fontWeight} ${fontSize}px "Space Grotesk", sans-serif`;
         const textColor = pickTextColor(bg);
         ctx.fillStyle = textColor;
         ctx.strokeStyle = textColor === "#ffffff" ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.35)";
-        ctx.lineWidth = Math.max(1, fit.fontSize * 0.08);
-        fit.lines.forEach((line, index) => {
-          const y = textY + index * fit.lineHeight;
-          ctx.strokeText(line, textX, y);
-          ctx.fillText(line, textX, y);
-        });
+        ctx.lineWidth = Math.max(1, fontSize * 0.08);
+        ctx.strokeText(block.translated, textX, textY);
+        ctx.fillText(block.translated, textX, textY);
       });
     };
 
