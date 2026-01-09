@@ -1008,6 +1008,56 @@
       return deduped;
     };
 
+    const clampValue = (value, min, max) => Math.max(min, Math.min(max, value));
+
+    const sampleBackgroundColor = (imageData, x, y, width, height) => {
+      if (!imageData) {
+        return { r: 255, g: 255, b: 255 };
+      }
+      const { data, width: imgW, height: imgH } = imageData;
+      const border = 3;
+      const startX = clampValue(Math.floor(x - border), 0, imgW - 1);
+      const startY = clampValue(Math.floor(y - border), 0, imgH - 1);
+      const endX = clampValue(Math.floor(x + width + border), 0, imgW - 1);
+      const endY = clampValue(Math.floor(y + height + border), 0, imgH - 1);
+      const step = Math.max(4, Math.floor(Math.min(width, height) / 10));
+
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let count = 0;
+      const samplePoint = (px, py) => {
+        const idx = (py * imgW + px) * 4;
+        r += data[idx];
+        g += data[idx + 1];
+        b += data[idx + 2];
+        count += 1;
+      };
+
+      for (let px = startX; px <= endX; px += step) {
+        samplePoint(px, startY);
+        samplePoint(px, endY);
+      }
+      for (let py = startY; py <= endY; py += step) {
+        samplePoint(startX, py);
+        samplePoint(endX, py);
+      }
+
+      if (!count) {
+        return { r: 255, g: 255, b: 255 };
+      }
+      return {
+        r: Math.round(r / count),
+        g: Math.round(g / count),
+        b: Math.round(b / count),
+      };
+    };
+
+    const pickTextColor = (bg) => {
+      const luminance = 0.299 * bg.r + 0.587 * bg.g + 0.114 * bg.b;
+      return luminance < 135 ? "#ffffff" : "#1c1914";
+    };
+
     const buildLines = (context, text, maxWidth) => {
       const useChars = !text.includes(" ");
       const words = useChars ? text.split("") : text.split(" ");
@@ -1159,7 +1209,6 @@
       }
       ctx.putImageData(state.baseImageData, 0, 0);
 
-      const inset = Math.max(6, canvas.width * 0.01);
       ctx.textBaseline = "top";
       ctx.textAlign = "left";
 
@@ -1167,43 +1216,30 @@
         if (!block.translated) {
           return;
         }
-        const padding = Math.max(8, block.height * 0.2);
-        let boxX = Math.max(inset, block.x - padding);
-        let boxY = Math.max(inset, block.y - padding);
-        let boxWidth = block.width + padding * 2;
-        let boxHeight = block.height + padding * 2;
+        const padding = Math.max(2, Math.min(8, block.height * 0.12));
+        const boxX = clampValue(block.x, 0, canvas.width - 1);
+        const boxY = clampValue(block.y, 0, canvas.height - 1);
+        const boxWidth = clampValue(block.width, 12, canvas.width - boxX);
+        const boxHeight = clampValue(block.height, 12, canvas.height - boxY);
 
-        if (boxX + boxWidth > canvas.width - inset) {
-          boxWidth = canvas.width - inset - boxX;
-        }
-        if (boxY + boxHeight > canvas.height - inset) {
-          boxHeight = canvas.height - inset - boxY;
-        }
-        if (boxWidth < 30 || boxHeight < 18) {
-          return;
-        }
-
-        ctx.save();
-        ctx.shadowColor = "rgba(13, 79, 82, 0.18)";
-        ctx.shadowBlur = 12;
-        ctx.shadowOffsetY = 4;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+        const bg = sampleBackgroundColor(state.baseImageData, boxX, boxY, boxWidth, boxHeight);
+        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.88)`;
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-        ctx.restore();
-
-        ctx.strokeStyle = "rgba(13, 79, 82, 0.2)";
-        ctx.lineWidth = Math.max(1, boxHeight * 0.04);
-        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
         const textX = boxX + padding;
         const textY = boxY + padding;
-        const textWidth = Math.max(20, boxWidth - padding * 2);
-        const textHeight = Math.max(16, boxHeight - padding * 2);
+        const textWidth = Math.max(10, boxWidth - padding * 2);
+        const textHeight = Math.max(10, boxHeight - padding * 2);
         const fit = fitTextToBox(ctx, block.translated, textWidth, textHeight);
         ctx.font = `${fit.fontSize}px "Space Grotesk", sans-serif`;
-        ctx.fillStyle = "#1c1914";
+        const textColor = pickTextColor(bg);
+        ctx.fillStyle = textColor;
+        ctx.strokeStyle = textColor === "#ffffff" ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.35)";
+        ctx.lineWidth = Math.max(1, fit.fontSize * 0.08);
         fit.lines.forEach((line, index) => {
-          ctx.fillText(line, textX, textY + index * fit.lineHeight);
+          const y = textY + index * fit.lineHeight;
+          ctx.strokeText(line, textX, y);
+          ctx.fillText(line, textX, y);
         });
       });
     };
