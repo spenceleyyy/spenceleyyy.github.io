@@ -757,6 +757,7 @@
       mode: "camera",
       target: targetLanguage.value,
     };
+    const overlayMode = "word";
 
     const languageSignals = [
       { code: "es", label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
@@ -1130,6 +1131,23 @@
     };
 
 
+    const buildWordBlocks = (words) => {
+      const minHeight = canvas.height * 0.012;
+      const minWidth = canvas.width * 0.01;
+      return words
+        .map((word) => ({
+          text: cleanText(word.text || ""),
+          x: word.bbox?.x0 ?? word.x0 ?? 0,
+          y: word.bbox?.y0 ?? word.y0 ?? 0,
+          width: (word.bbox?.x1 ?? word.x1 ?? 0) - (word.bbox?.x0 ?? word.x0 ?? 0),
+          height: (word.bbox?.y1 ?? word.y1 ?? 0) - (word.bbox?.y0 ?? word.y0 ?? 0),
+          confidence: word.confidence ?? 0,
+        }))
+        .filter((word) => word.text && !isNoiseText(word.text))
+        .filter((word) => (typeof word.confidence === "number" ? word.confidence >= 60 : true))
+        .filter((word) => word.width >= minWidth && word.height >= minHeight);
+    };
+
     const ocrWithTesseract = async () => {
       try {
         const worker = await getOcrWorker();
@@ -1137,18 +1155,8 @@
           return [];
         }
         const result = await worker.recognize(canvas);
-        const lines = result.data?.lines || [];
-        return lines
-          .filter((line) => line.text && line.text.trim().length > 1)
-          .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 60 : true))
-          .map((line) => ({
-            text: line.text.trim(),
-            x: line.bbox.x0,
-            y: line.bbox.y0,
-            width: line.bbox.x1 - line.bbox.x0,
-            height: line.bbox.y1 - line.bbox.y0,
-            confidence: line.confidence,
-          }));
+        const words = result.data?.words || [];
+        return buildWordBlocks(words);
       } catch (error) {
         console.warn("Tesseract OCR failed", error);
         return [];
@@ -1156,6 +1164,10 @@
     };
 
     const getTextBlocks = async () => {
+      const tesseractBlocks = await ocrWithTesseract();
+      if (tesseractBlocks.length) {
+        return overlayMode === "word" ? tesseractBlocks : normalizeBlocks(tesseractBlocks);
+      }
       if ("TextDetector" in window) {
         try {
           const detector = new window.TextDetector();
@@ -1172,14 +1184,13 @@
             }))
             .filter((item) => item.text.length > 1);
           if (blocks.length) {
-            return normalizeBlocks(blocks);
+            return overlayMode === "word" ? blocks : normalizeBlocks(blocks);
           }
         } catch (error) {
           console.warn("TextDetector unavailable", error);
         }
       }
-      const tesseractBlocks = await ocrWithTesseract();
-      return normalizeBlocks(tesseractBlocks);
+      return [];
     };
 
     const translateText = async (text, target, source) => {
@@ -1251,30 +1262,25 @@
         const boxHeight = clampValue(block.height, 12, canvas.height - boxY);
 
         const bg = sampleBackgroundColor(state.baseImageData, boxX, boxY, boxWidth, boxHeight);
-        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.94)`;
+        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 1)`;
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
         const fontWeight = pickFontWeight(boxHeight);
-        const maxWidth = Math.max(12, boxWidth - 2);
-        const baseText = block.text || block.translated;
-        const fontSize = fitFontSizeToBox(ctx, baseText, maxWidth, boxHeight - 2, fontWeight);
+        const fontSize = Math.max(8, boxHeight * 0.9);
         ctx.font = `${fontWeight} ${fontSize}px "Space Grotesk", sans-serif`;
         const rawWidth = ctx.measureText(block.translated).width || 1;
-        const scaleX = rawWidth > maxWidth ? Math.max(0.6, maxWidth / rawWidth) : 1;
+        const scaleX = rawWidth > boxWidth ? Math.max(0.5, boxWidth / rawWidth) : 1;
         const centered = isCenteredBlock(block);
-        const drawX = centered ? boxWidth / 2 : 1;
-        const drawY = boxHeight / 2;
+        const drawX = centered ? boxWidth / 2 : 0;
+        const drawY = 0;
         ctx.textAlign = centered ? "center" : "left";
-        ctx.textBaseline = "middle";
+        ctx.textBaseline = "top";
         const textColor = pickTextColor(bg);
         ctx.fillStyle = textColor;
-        ctx.strokeStyle = textColor === "#ffffff" ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.35)";
-        ctx.lineWidth = Math.max(1, fontSize * 0.08);
         ctx.save();
         ctx.translate(boxX, boxY);
         ctx.scale(scaleX, 1);
-        const scaledX = centered ? drawX / scaleX : drawX / scaleX;
-        ctx.strokeText(block.translated, scaledX, drawY);
+        const scaledX = drawX / scaleX;
         ctx.fillText(block.translated, scaledX, drawY);
         ctx.restore();
       });
