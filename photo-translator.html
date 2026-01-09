@@ -1277,8 +1277,6 @@
         const fontWeight = pickFontWeight(boxHeight);
         const fontSize = Math.max(8, boxHeight * 0.9);
         ctx.font = `${fontWeight} ${fontSize}px "Space Grotesk", sans-serif`;
-        const rawWidth = ctx.measureText(block.translated).width || 1;
-        const scaleX = rawWidth > boxWidth ? Math.max(0.5, boxWidth / rawWidth) : 1;
         const centered = isCenteredBlock(block);
         const drawX = centered ? boxWidth / 2 : 0;
         const baselineY =
@@ -1292,9 +1290,10 @@
         ctx.fillStyle = textColor;
         ctx.save();
         ctx.translate(boxX, boxY);
-        ctx.scale(scaleX, 1);
-        const scaledX = drawX / scaleX;
-        ctx.fillText(block.translated, scaledX, drawY);
+        ctx.beginPath();
+        ctx.rect(0, 0, boxWidth, boxHeight);
+        ctx.clip();
+        ctx.fillText(block.translated, drawX, drawY);
         ctx.restore();
       });
     };
