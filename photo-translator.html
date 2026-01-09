@@ -1055,6 +1055,35 @@
 
     const clampValue = (value, min, max) => Math.max(min, Math.min(max, value));
 
+    // Rectangle helpers for overlap avoidance.
+    const rectsOverlap = (a, b, pad = 0) => {
+      return !(
+        a.x + a.w + pad <= b.x ||
+        b.x + b.w + pad <= a.x ||
+        a.y + a.h + pad <= b.y ||
+        b.y + b.h + pad <= a.y
+      );
+    };
+
+    const nudgeToAvoidOverlaps = (rect, occupied, maxY) => {
+      // Simple vertical nudging to avoid overlaps with previously rendered blocks.
+      // Keeps x fixed and moves y down until no overlap or we hit maxY.
+      const out = { ...rect };
+      const step = 3;
+      let guard = 0;
+      while (guard < 250) {
+        const hit = occupied.find((r) => rectsOverlap(out, r, 2));
+        if (!hit) break;
+        out.y = hit.y + hit.h + step;
+        if (out.y + out.h > maxY) {
+          // If we can't fit by nudging down, return original.
+          return rect;
+        }
+        guard += 1;
+      }
+      return out;
+    };
+
     const sampleBackgroundColor = (imageData, x, y, width, height) => {
       if (!imageData) {
         return { r: 255, g: 255, b: 255 };
@@ -1355,70 +1384,101 @@
       }
       ctx.putImageData(state.baseImageData, 0, 0);
 
-      blocks.forEach((block) => {
+      const occupied = [];
+
+      // Render top-to-bottom for more stable overlap avoidance.
+      const ordered = [...blocks].sort((a, b) => a.y - b.y || a.x - b.x);
+
+      ordered.forEach((block) => {
         if (!block.translated) {
           return;
         }
 
-        // Expand the box slightly to give translated text room without breaking layout.
-        const pad = Math.max(4, Math.round(Math.min(block.width, block.height) * 0.10));
-        const boxX = clampValue(block.x - pad, 0, canvas.width - 1);
-        const boxY = clampValue(block.y - pad, 0, canvas.height - 1);
-        const boxWidth = clampValue(block.width + pad * 2, 16, canvas.width - boxX);
-        const boxHeight = clampValue(block.height + pad * 2, 16, canvas.height - boxY);
-
-        // Paint background (solid sample) BEFORE drawing text.
-        const bg = sampleBackgroundColor(state.baseImageData, boxX, boxY, boxWidth, boxHeight);
-        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 1)`;
-        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+        // Smaller padding (big pads were causing blocks to collide and cover content).
+        const pad = Math.max(2, Math.round(Math.min(block.width, block.height) * 0.05));
+        const baseX = clampValue(block.x - pad, 0, canvas.width - 1);
+        const baseY = clampValue(block.y - pad, 0, canvas.height - 1);
+        const baseW = clampValue(block.width + pad * 2, 16, canvas.width - baseX);
+        const baseH = clampValue(block.height + pad * 2, 16, canvas.height - baseY);
 
         const text = block.translated;
         const fontFamily = pickFontFamily(block);
         const fontWeight = pickFontWeight(block.height);
 
-        // Determine alignment: headline-like centered, price-like right-aligned, otherwise left.
+        // Alignment rules.
         const centered = isCenteredBlock(block);
         const rightAligned = isPriceLikeText(text) && isRightColumnBlock(block);
 
-        const insetX = Math.max(6, Math.round(boxWidth * 0.04));
-        const insetY = Math.max(5, Math.round(boxHeight * 0.10));
-        const maxTextWidth = Math.max(10, boxWidth - insetX * 2);
-        const maxTextHeight = Math.max(10, boxHeight - insetY * 2);
+        // Inner insets.
+        const insetX = Math.max(6, Math.round(baseW * 0.04));
+        const insetY = Math.max(5, Math.round(baseH * 0.10));
+        const maxTextWidth = Math.max(10, baseW - insetX * 2);
+        const maxTextHeight = Math.max(10, baseH - insetY * 2);
 
-        // Fit + wrap text within the box.
+        // Fit + wrap.
         const fit = fitTextToBox(ctx, text, maxTextWidth, maxTextHeight, fontWeight, fontFamily);
 
-        // Baseline-start Y: top + inset, then line-by-line.
-        const startY = boxY + insetY;
+        // Measure fitted lines to create a *tight* background box (prevents large opaque overlays).
+        ctx.font = `${fontWeight} ${fit.fontSize}px ${fontFamily}`;
+        const lineWidths = fit.lines.map((line) => ctx.measureText(line).width);
+        const maxLineWidth = Math.max(0, ...lineWidths);
+        const textH = fit.lines.length * fit.lineHeight;
 
-        // Choose text color based on local background luminance.
+        const bgW = clampValue(Math.ceil(maxLineWidth + insetX * 2), 16, baseW);
+        const bgH = clampValue(Math.ceil(textH + insetY * 2), 16, baseH);
+
+        // Position the tight bg box inside the original region.
+        let bgX = baseX;
+        if (rightAligned) {
+          bgX = baseX + baseW - bgW;
+        } else if (centered) {
+          bgX = baseX + (baseW - bgW) / 2;
+        } else {
+          bgX = baseX;
+        }
+
+        // Favor keeping within the detected region; center vertically when we have extra space.
+        let bgY = baseY + Math.max(0, (baseH - bgH) / 2);
+
+        // Avoid overlaps by nudging down a bit if needed.
+        const placed = nudgeToAvoidOverlaps({ x: bgX, y: bgY, w: bgW, h: bgH }, occupied, canvas.height);
+
+        // Sample background around the placed rect (not the original large box).
+        const bg = sampleBackgroundColor(state.baseImageData, placed.x, placed.y, placed.w, placed.h);
+
+        // Slight transparency looks cleaner than fully opaque fills.
+        ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.92)`;
+        ctx.fillRect(placed.x, placed.y, placed.w, placed.h);
+
+        // Text styling.
         ctx.fillStyle = pickTextColor(bg);
         ctx.textBaseline = "top";
         ctx.textAlign = rightAligned ? "right" : centered ? "center" : "left";
 
-        // Clip drawing to the padded box.
+        const textX = rightAligned
+          ? placed.x + placed.w - insetX
+          : centered
+          ? placed.x + placed.w / 2
+          : placed.x + insetX;
+        const textStartY = placed.y + insetY;
+
+        // Clip to the placed background rect.
         ctx.save();
         ctx.beginPath();
-        ctx.rect(boxX, boxY, boxWidth, boxHeight);
+        ctx.rect(placed.x, placed.y, placed.w, placed.h);
         ctx.clip();
 
-        // Set font (fitTextToBox sets it while searching; set final here for safety).
+        // Draw lines.
         ctx.font = `${fontWeight} ${fit.fontSize}px ${fontFamily}`;
-
-        const x = rightAligned
-          ? boxX + boxWidth - insetX
-          : centered
-          ? boxX + boxWidth / 2
-          : boxX + insetX;
-
-        // If the block is a single OCR line, favor keeping it as one line when possible.
-        // fitTextToBox already wraps only when necessary.
         fit.lines.forEach((line, i) => {
-          const y = startY + i * fit.lineHeight;
-          ctx.fillText(line, x, y);
+          const y = textStartY + i * fit.lineHeight;
+          ctx.fillText(line, textX, y);
         });
 
         ctx.restore();
+
+        // Track occupied rect.
+        occupied.push(placed);
       });
     };
 
