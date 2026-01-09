@@ -554,7 +554,11 @@
     const ctx = canvas.getContext("2d");
     let stream = null;
 
-    const libreTranslateBase = "https://libretranslate.de";
+    const libreTranslateBases = [
+      "https://libretranslate.de",
+      "https://translate.terraprint.co",
+    ];
+    const myMemoryBase = "https://api.mymemory.translated.net/get";
     const libreTranslateApiKey = "";
     const ocrLanguages = "eng+spa+fra+deu+ita+por+jpn";
     const languageLabels = {
@@ -575,20 +579,21 @@
       baseImageData: null,
       blocks: [],
       detected: "Auto",
+      detectedCode: "",
       target: targetLanguage.value,
     };
 
     const languageSignals = [
-      { label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
-      { label: "French", regex: /[\u00e0\u00e2\u00e7\u00e8\u00e9\u00ea\u00eb\u00ee\u00ef\u00f4\u00fb\u00fc]/i },
-      { label: "German", regex: /[\u00e4\u00f6\u00fc\u00df]/i },
-      { label: "Portuguese", regex: /[\u00e3\u00f5\u00e7]/i },
-      { label: "Italian", regex: /[\u00e0\u00e8\u00ec\u00f2\u00f9]/i },
-      { label: "Japanese", regex: /[\u3040-\u30ff]/ },
-      { label: "Chinese", regex: /[\u4e00-\u9fff]/ },
-      { label: "Korean", regex: /[\uac00-\ud7af]/ },
-      { label: "Arabic", regex: /[\u0600-\u06ff]/ },
-      { label: "Russian", regex: /[\u0400-\u04ff]/ },
+      { code: "es", label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
+      { code: "fr", label: "French", regex: /[\u00e0\u00e2\u00e7\u00e8\u00e9\u00ea\u00eb\u00ee\u00ef\u00f4\u00fb\u00fc]/i },
+      { code: "de", label: "German", regex: /[\u00e4\u00f6\u00fc\u00df]/i },
+      { code: "pt", label: "Portuguese", regex: /[\u00e3\u00f5\u00e7]/i },
+      { code: "it", label: "Italian", regex: /[\u00e0\u00e8\u00ec\u00f2\u00f9]/i },
+      { code: "ja", label: "Japanese", regex: /[\u3040-\u30ff]/ },
+      { code: "zh", label: "Chinese", regex: /[\u4e00-\u9fff]/ },
+      { code: "ko", label: "Korean", regex: /[\uac00-\ud7af]/ },
+      { code: "ar", label: "Arabic", regex: /[\u0600-\u06ff]/ },
+      { code: "ru", label: "Russian", regex: /[\u0400-\u04ff]/ },
     ];
 
     const setStatus = (text, stateValue = "ready") => {
@@ -603,7 +608,7 @@
 
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    const labelForLanguage = (value) => {
+    const labelForLanguageCode = (value) => {
       if (!value) {
         return "Unknown";
       }
@@ -613,37 +618,43 @@
 
     const detectLanguageHeuristic = (text) => {
       if (!text) {
-        return "Unknown";
+        return { code: "", label: "Unknown" };
       }
       const normalized = text.toLowerCase();
       const match = languageSignals.find((signal) => signal.regex.test(normalized));
-      return match ? match.label : "English";
+      if (match) {
+        return { code: match.code, label: match.label };
+      }
+      return { code: "en", label: "English" };
     };
 
     const detectLanguageFromApi = async (text) => {
       if (!text) {
         return null;
       }
-      try {
-        const response = await fetch(`${libreTranslateBase}/detect`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            q: text,
-            api_key: libreTranslateApiKey || undefined,
-          }),
-        });
-        if (!response.ok) {
-          return null;
+      for (const base of libreTranslateBases) {
+        try {
+          const response = await fetch(`${base}/detect`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              q: text,
+              api_key: libreTranslateApiKey || undefined,
+            }),
+          });
+          if (!response.ok) {
+            continue;
+          }
+          const data = await response.json();
+          if (Array.isArray(data) && data.length) {
+            const code = data[0].language;
+            return { code, label: labelForLanguageCode(code) };
+          }
+        } catch (error) {
+          console.warn("Language detection failed", error);
         }
-        const data = await response.json();
-        if (Array.isArray(data) && data.length) {
-          return labelForLanguage(data[0].language);
-        }
-      } catch (error) {
-        console.warn("Language detection failed", error);
       }
       return null;
     };
@@ -680,6 +691,7 @@
         const lines = result.data?.lines || [];
         return lines
           .filter((line) => line.text && line.text.trim().length > 1)
+          .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 55 : true))
           .map((line) => ({
             text: line.text.trim(),
             x: line.bbox.x0,
