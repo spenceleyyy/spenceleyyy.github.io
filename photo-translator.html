@@ -556,7 +556,11 @@
     const ctx = canvas.getContext("2d");
     let stream = null;
 
-    const libreTranslateBase = "https://libretranslate.de";
+    const libreTranslateBases = [
+      "https://libretranslate.de",
+      "https://translate.terraprint.co",
+    ];
+    const myMemoryBase = "https://api.mymemory.translated.net/get";
     const libreTranslateApiKey = "";
     const ocrLanguages = "eng+spa+fra+deu+ita+por+jpn";
     const languageLabels = {
@@ -577,20 +581,28 @@
       baseImageData: null,
       blocks: [],
       detected: "Auto",
+      detectedCode: "",
       target: targetLanguage.value,
     };
 
     const languageSignals = [
-      { label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
-      { label: "French", regex: /[\u00e0\u00e2\u00e7\u00e8\u00e9\u00ea\u00eb\u00ee\u00ef\u00f4\u00fb\u00fc]/i },
-      { label: "German", regex: /[\u00e4\u00f6\u00fc\u00df]/i },
-      { label: "Portuguese", regex: /[\u00e3\u00f5\u00e7]/i },
-      { label: "Italian", regex: /[\u00e0\u00e8\u00ec\u00f2\u00f9]/i },
-      { label: "Japanese", regex: /[\u3040-\u30ff]/ },
-      { label: "Chinese", regex: /[\u4e00-\u9fff]/ },
-      { label: "Korean", regex: /[\uac00-\ud7af]/ },
-      { label: "Arabic", regex: /[\u0600-\u06ff]/ },
-      { label: "Russian", regex: /[\u0400-\u04ff]/ },
+      { code: "es", label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
+      { code: "fr", label: "French", regex: /[\u00e0\u00e2\u00e7\u00e8\u00e9\u00ea\u00eb\u00ee\u00ef\u00f4\u00fb\u00fc]/i },
+      { code: "de", label: "German", regex: /[\u00e4\u00f6\u00fc\u00df]/i },
+      { code: "pt", label: "Portuguese", regex: /[\u00e3\u00f5\u00e7]/i },
+      { code: "it", label: "Italian", regex: /[\u00e0\u00e8\u00ec\u00f2\u00f9]/i },
+      { code: "ja", label: "Japanese", regex: /[\u3040-\u30ff]/ },
+      { code: "zh", label: "Chinese", regex: /[\u4e00-\u9fff]/ },
+      { code: "ko", label: "Korean", regex: /[\uac00-\ud7af]/ },
+      { code: "ar", label: "Arabic", regex: /[\u0600-\u06ff]/ },
+      { code: "ru", label: "Russian", regex: /[\u0400-\u04ff]/ },
+    ];
+    const languageWordHints = [
+      { code: "es", label: "Spanish", words: ["el", "la", "los", "las", "de", "y", "con", "para", "un", "una", "menu", "desayunos"] },
+      { code: "fr", label: "French", words: ["le", "la", "les", "des", "et", "avec", "pour", "menu"] },
+      { code: "de", label: "German", words: ["der", "die", "das", "und", "mit", "fur", "menu"] },
+      { code: "it", label: "Italian", words: ["il", "la", "lo", "gli", "e", "con", "per", "menu"] },
+      { code: "pt", label: "Portuguese", words: ["o", "a", "os", "as", "e", "com", "para", "menu"] },
     ];
 
     const setStatus = (text, stateValue = "ready") => {
@@ -604,8 +616,20 @@
     };
 
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const fetchJson = async (url, options) => {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          return null;
+        }
+        return await response.json();
+      } catch (error) {
+        console.warn("Network error", error);
+        return null;
+      }
+    };
 
-    const labelForLanguage = (value) => {
+    const labelForLanguageCode = (value) => {
       if (!value) {
         return "Unknown";
       }
@@ -615,19 +639,39 @@
 
     const detectLanguageHeuristic = (text) => {
       if (!text) {
-        return "Unknown";
+        return { code: "", label: "Unknown" };
       }
       const normalized = text.toLowerCase();
       const match = languageSignals.find((signal) => signal.regex.test(normalized));
-      return match ? match.label : "English";
+      if (match) {
+        return { code: match.code, label: match.label };
+      }
+      let best = { code: "en", label: "English", score: 0 };
+      for (const hint of languageWordHints) {
+        let score = 0;
+        for (const word of hint.words) {
+          const regex = new RegExp(`\\b${word}\\b`, "g");
+          const matches = normalized.match(regex);
+          if (matches) {
+            score += matches.length;
+          }
+        }
+        if (score > best.score) {
+          best = { code: hint.code, label: hint.label, score };
+        }
+      }
+      if (best.score >= 2) {
+        return { code: best.code, label: best.label };
+      }
+      return { code: "en", label: "English" };
     };
 
     const detectLanguageFromApi = async (text) => {
       if (!text) {
         return null;
       }
-      try {
-        const response = await fetch(`${libreTranslateBase}/detect`, {
+      for (const base of libreTranslateBases) {
+        const data = await fetchJson(`${base}/detect`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -637,15 +681,10 @@
             api_key: libreTranslateApiKey || undefined,
           }),
         });
-        if (!response.ok) {
-          return null;
-        }
-        const data = await response.json();
         if (Array.isArray(data) && data.length) {
-          return labelForLanguage(data[0].language);
+          const code = data[0].language;
+          return { code, label: labelForLanguageCode(code) };
         }
-      } catch (error) {
-        console.warn("Language detection failed", error);
       }
       return null;
     };
@@ -720,15 +759,14 @@
       return ocrWithTesseract();
     };
 
-    const translateText = async (text, target) => {
+    const translateText = async (text, target, source) => {
       if (!text) {
         return { text: "", ok: true };
       }
-      if (target === "en") {
-        return { text, ok: true };
-      }
-      try {
-        const response = await fetch(`${libreTranslateBase}/translate`, {
+      const resolvedSource = source || "auto";
+
+      for (const base of libreTranslateBases) {
+        const data = await fetchJson(`${base}/translate`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -741,22 +779,28 @@
             api_key: libreTranslateApiKey || undefined,
           }),
         });
-        if (!response.ok) {
-          throw new Error("Translation failed");
+        if (data && data.translatedText) {
+          return { text: data.translatedText, ok: true };
         }
-        const data = await response.json();
-        return { text: data.translatedText || text, ok: true };
-      } catch (error) {
-        console.warn("Translation unavailable", error);
-        return { text, ok: false };
       }
+
+      if (resolvedSource && resolvedSource !== "auto") {
+        const url = `${myMemoryBase}?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(`${resolvedSource}|${target}`)}`;
+        const data = await fetchJson(url);
+        const translatedText = data?.responseData?.translatedText;
+        if (translatedText) {
+          return { text: translatedText, ok: true };
+        }
+      }
+
+      return { text, ok: false };
     };
 
-    const translateBlocks = async (blocks, target) => {
+    const translateBlocks = async (blocks, target, source) => {
       let failed = false;
       const translated = [];
       for (const block of blocks) {
-        const result = await translateText(block.text, target);
+        const result = await translateText(block.text, target, source);
         if (!result.ok) {
           failed = true;
         }
@@ -845,6 +889,8 @@
 
       const blocks = await getTextBlocks();
       if (!blocks.length) {
+        state.detected = "Unknown";
+        state.detectedCode = "";
         setDetected("Unknown", "ready");
         setStatus("No text found", "warning");
         updatePanels([]);
@@ -855,11 +901,14 @@
 
       const fullText = blocks.map((block) => block.text).join(" ");
       const detectedFromApi = await detectLanguageFromApi(fullText);
-      state.detected = detectedFromApi || detectLanguageHeuristic(fullText);
+      const fallbackDetection = detectLanguageHeuristic(fullText);
+      const resolvedDetection = detectedFromApi || fallbackDetection;
+      state.detected = resolvedDetection.label;
+      state.detectedCode = resolvedDetection.code || fallbackDetection.code;
       setDetected(state.detected, "ready");
       setStatus("Translating", "busy");
 
-      const { translated, failed } = await translateBlocks(blocks, state.target);
+      const { translated, failed } = await translateBlocks(blocks, state.target, state.detectedCode || "auto");
       state.blocks = translated;
       renderTranslation(state.blocks);
       updatePanels(state.blocks);
@@ -978,7 +1027,7 @@
         return;
       }
       setStatus("Translating", "busy");
-      const { translated, failed } = await translateBlocks(state.blocks, state.target);
+      const { translated, failed } = await translateBlocks(state.blocks, state.target, state.detectedCode || "auto");
       state.blocks = translated;
       renderTranslation(state.blocks);
       updatePanels(state.blocks);
