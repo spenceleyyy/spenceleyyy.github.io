@@ -1114,9 +1114,9 @@
       return { fontSize: minSize, lineHeight: minSize * 1.18, lines };
     };
 
-    const fitSingleLine = (context, text, maxWidth, maxHeight, weight) => {
-      let fontSize = Math.max(10, Math.min(52, maxHeight * 0.9));
-      const minSize = 10;
+    const fitFontSizeToBox = (context, text, maxWidth, maxHeight, weight) => {
+      let fontSize = Math.max(10, maxHeight * 0.92);
+      const minSize = 8;
       while (fontSize >= minSize) {
         context.font = `${weight} ${fontSize}px "Space Grotesk", sans-serif`;
         if (context.measureText(text).width <= maxWidth) {
@@ -1126,6 +1126,7 @@
       }
       return minSize;
     };
+
 
     const ocrWithTesseract = async () => {
       try {
@@ -1238,8 +1239,6 @@
       }
       ctx.putImageData(state.baseImageData, 0, 0);
 
-      ctx.textBaseline = "middle";
-
       blocks.forEach((block) => {
         if (!block.translated) {
           return;
@@ -1253,21 +1252,29 @@
         ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 0.94)`;
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-        const textWidth = Math.max(10, boxWidth - 2);
-        const textHeight = Math.max(10, boxHeight - 2);
         const fontWeight = pickFontWeight(boxHeight);
-        const fontSize = fitSingleLine(ctx, block.translated, textWidth, textHeight, fontWeight);
-        const centered = isCenteredBlock(block);
-        const textX = centered ? boxX + boxWidth / 2 : boxX + 1;
-        const textY = boxY + boxHeight / 2;
-        ctx.textAlign = centered ? "center" : "left";
+        const maxWidth = Math.max(12, boxWidth - 2);
+        const baseText = block.text || block.translated;
+        const fontSize = fitFontSizeToBox(ctx, baseText, maxWidth, boxHeight - 2, fontWeight);
         ctx.font = `${fontWeight} ${fontSize}px "Space Grotesk", sans-serif`;
+        const rawWidth = ctx.measureText(block.translated).width || 1;
+        const scaleX = rawWidth > maxWidth ? Math.max(0.6, maxWidth / rawWidth) : 1;
+        const centered = isCenteredBlock(block);
+        const drawX = centered ? boxWidth / 2 : 1;
+        const drawY = boxHeight / 2;
+        ctx.textAlign = centered ? "center" : "left";
+        ctx.textBaseline = "middle";
         const textColor = pickTextColor(bg);
         ctx.fillStyle = textColor;
         ctx.strokeStyle = textColor === "#ffffff" ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.35)";
         ctx.lineWidth = Math.max(1, fontSize * 0.08);
-        ctx.strokeText(block.translated, textX, textY);
-        ctx.fillText(block.translated, textX, textY);
+        ctx.save();
+        ctx.translate(boxX, boxY);
+        ctx.scale(scaleX, 1);
+        const scaledX = centered ? drawX / scaleX : drawX / scaleX;
+        ctx.strokeText(block.translated, scaledX, drawY);
+        ctx.fillText(block.translated, scaledX, drawY);
+        ctx.restore();
       });
     };
 
