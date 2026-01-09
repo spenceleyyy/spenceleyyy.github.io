@@ -189,6 +189,91 @@
       display: grid;
       gap: 0;
     }
+
+    .travel-buddy-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .demo-frame {
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
+      aspect-ratio: 9 / 16;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #000000;
+      box-shadow: 0 22px 40px rgba(0, 0, 0, 0.16);
+    }
+
+    .demo-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .travel-details h3 {
+      margin: 0 0 0.7rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .travel-details p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin: 1.4rem 0 1.6rem;
+    }
+
+    .cta-button {
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      padding: 0.65rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .cta-button.primary {
+      border-color: var(--accent);
+      color: #ffffff;
+      background: var(--accent);
+    }
+
+    .instruction-card {
+      margin-bottom: 1rem;
+      padding: 1.1rem 1.2rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+    }
+
+    .instruction-card h4 {
+      margin: 0 0 0.6rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .instruction-list {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: var(--ink);
+      font-size: 0.92rem;
+    }
     .project-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -307,6 +392,12 @@
         align-items: flex-start;
         flex-direction: row;
       }
+      .travel-buddy-grid {
+        grid-template-columns: 1fr;
+      }
+      .demo-frame {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -323,6 +414,46 @@
         <a href="index.html#contact">Start a collaboration</a>
       </div>
     </header>
+
+    <section aria-labelledby="travel-buddy">
+      <div class="section-head">
+        <h2 id="travel-buddy">Travel Buddy</h2>
+        <p>Camera-first translator that reflows new language directly on top of the photo.</p>
+      </div>
+      <div class="travel-buddy-grid">
+        <div class="demo-frame">
+          <iframe src="photo-translator.html" title="Travel Buddy photo translator demo" loading="lazy" allow="camera; microphone; clipboard-write"></iframe>
+        </div>
+        <div class="travel-details">
+          <h3>Photo, voice, and typed translations in one flow.</h3>
+          <p>Built for travelers: point the camera, detect the language, translate on top of the image, and save the result.</p>
+          <div class="project-meta">
+            <span>iOS-ready</span>
+            <span>On-device OCR</span>
+            <span>Offline cache</span>
+          </div>
+          <div class="cta-row">
+            <a class="cta-button primary" href="photo-translator.html" target="_blank" rel="noopener">Open demo</a>
+            <a class="cta-button" href="photo-translator.html" download="travel-buddy.html">Download demo</a>
+          </div>
+          <div class="instruction-card">
+            <h4>Make it an iPhone app</h4>
+            <ol class="instruction-list">
+              <li>Install Node.js, then run `npm install` in this repo.</li>
+              <li>Copy `photo-translator.html` into `app/index.html` (Capacitor web root).</li>
+              <li>Run `npx cap add ios` once, then `npx cap copy ios` after changes.</li>
+              <li>Open Xcode with `npx cap open ios` and set the bundle ID + signing team.</li>
+              <li>Add camera usage text in `Info.plist` (NSCameraUsageDescription).</li>
+              <li>Build to device: Product > Run, then trust the developer profile.</li>
+            </ol>
+          </div>
+          <div class="instruction-card">
+            <h4>Offline mode</h4>
+            <p>Travel Buddy caches recent translations locally. For true offline translation, build the iOS app and download language packs in iOS Settings > Translate so the on-device engine can run without Wi-Fi.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section aria-labelledby="selected-work">
       <div class="section-head">

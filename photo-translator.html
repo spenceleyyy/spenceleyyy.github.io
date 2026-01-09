@@ -927,6 +927,44 @@
         return null;
       }
     };
+
+    const cacheKeyFor = (text, target, source) => `${source || "auto"}|${target}|${text}`;
+    const translationCache = (() => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem("tb-translation-cache") || "{}");
+        if (parsed && typeof parsed === "object" && parsed.entries && parsed.order) {
+          return parsed;
+        }
+      } catch (error) {
+        console.warn("Cache load failed", error);
+      }
+      return { entries: {}, order: [] };
+    })();
+    const cacheLimit = 200;
+
+    const getCachedTranslation = (text, target, source) => {
+      const key = cacheKeyFor(text, target, source);
+      return translationCache.entries[key];
+    };
+
+    const storeCachedTranslation = (text, target, source, translated) => {
+      const key = cacheKeyFor(text, target, source);
+      if (!translationCache.entries[key]) {
+        translationCache.order.push(key);
+        if (translationCache.order.length > cacheLimit) {
+          const removed = translationCache.order.shift();
+          if (removed) {
+            delete translationCache.entries[removed];
+          }
+        }
+      }
+      translationCache.entries[key] = translated;
+      try {
+        localStorage.setItem("tb-translation-cache", JSON.stringify(translationCache));
+      } catch (error) {
+        console.warn("Cache save failed", error);
+      }
+    };
     const updateBaseImageCache = () => {
       if (!state.baseImageData) {
         return;
@@ -1421,6 +1459,15 @@
         return { text: "", ok: true };
       }
       const resolvedSource = source || "auto";
+      const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+
+      if (offline) {
+        const cached = getCachedTranslation(text, target, resolvedSource);
+        if (cached) {
+          return { text: cached, ok: true, cached: true, offline: true };
+        }
+        return { text, ok: false, offline: true };
+      }
 
       for (const base of libreTranslateBases) {
         const data = await fetchJson(`${base}/translate`, {
@@ -1437,6 +1484,7 @@
           }),
         });
         if (data && data.translatedText) {
+          storeCachedTranslation(text, target, resolvedSource, data.translatedText);
           return { text: data.translatedText, ok: true };
         }
       }
@@ -1446,6 +1494,7 @@
         const data = await fetchJson(url);
         const translatedText = data?.responseData?.translatedText;
         if (translatedText) {
+          storeCachedTranslation(text, target, resolvedSource, translatedText);
           return { text: translatedText, ok: true };
         }
       }
@@ -1455,18 +1504,26 @@
 
     const translateBlocks = async (blocks, target, source) => {
       let failed = false;
+      let usedCache = false;
+      let offline = false;
       const translated = [];
       for (const block of blocks) {
         const result = await translateText(block.text, target, source);
         if (!result.ok) {
           failed = true;
         }
+        if (result.cached) {
+          usedCache = true;
+        }
+        if (result.offline) {
+          offline = true;
+        }
         translated.push({
           ...block,
           translated: result.text,
         });
       }
-      return { translated, failed };
+      return { translated, failed, usedCache, offline };
     };
 
     const renderTranslation = (blocks) => {
@@ -1585,7 +1642,13 @@
       updateDetectedLabel(state.detected, state.detectedCode);
       const result = await translateText(text, state.target, state.detectedCode || "auto");
       targetOutput.value = result.text || "";
-      setStatus(result.ok ? "Translated" : "Translation offline", result.ok ? "ready" : "warning");
+      if (result.offline && result.cached) {
+        setStatus("Offline (cached)", "warning");
+      } else if (result.offline) {
+        setStatus("Offline: no cache", "warning");
+      } else {
+        setStatus(result.ok ? "Translated" : "Translation offline", result.ok ? "ready" : "warning");
+      }
     };
 
     const scheduleInputTranslate = () => {
@@ -1638,7 +1701,11 @@
       updateDetectedLabel(state.detected, state.detectedCode);
       setStatus("Translating", "busy");
 
-      const { translated, failed } = await translateBlocks(blocks, state.target, state.detectedCode || "auto");
+      const { translated, failed, usedCache, offline } = await translateBlocks(
+        blocks,
+        state.target,
+        state.detectedCode || "auto"
+      );
       state.blocks = translated;
       renderTranslation(state.blocks);
       updatePanels(state.blocks);
@@ -1646,7 +1713,13 @@
       await wait(300);
       scanOverlay.classList.remove("active");
       captureBtn.classList.remove("is-busy");
-      setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      if (offline && usedCache) {
+        setStatus("Offline (cached)", "warning");
+      } else if (offline && failed) {
+        setStatus("Offline: no cache", "warning");
+      } else {
+        setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      }
 
       if (state.autoSavePending) {
         state.autoSavePending = false;
@@ -1869,11 +1942,21 @@
         return;
       }
       setStatus("Translating", "busy");
-      const { translated, failed } = await translateBlocks(state.blocks, state.target, state.detectedCode || "auto");
+      const { translated, failed, usedCache, offline } = await translateBlocks(
+        state.blocks,
+        state.target,
+        state.detectedCode || "auto"
+      );
       state.blocks = translated;
       renderTranslation(state.blocks);
       updatePanels(state.blocks);
-      setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      if (offline && usedCache) {
+        setStatus("Offline (cached)", "warning");
+      } else if (offline && failed) {
+        setStatus("Offline: no cache", "warning");
+      } else {
+        setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      }
     });
 
     targetLanguageQuick.addEventListener("change", async () => {
@@ -1887,11 +1970,21 @@
         return;
       }
       setStatus("Translating", "busy");
-      const { translated, failed } = await translateBlocks(state.blocks, state.target, state.detectedCode || "auto");
+      const { translated, failed, usedCache, offline } = await translateBlocks(
+        state.blocks,
+        state.target,
+        state.detectedCode || "auto"
+      );
       state.blocks = translated;
       renderTranslation(state.blocks);
       updatePanels(state.blocks);
-      setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      if (offline && usedCache) {
+        setStatus("Offline (cached)", "warning");
+      } else if (offline && failed) {
+        setStatus("Offline: no cache", "warning");
+      } else {
+        setStatus(failed ? "Translation offline" : "Translated", failed ? "warning" : "ready");
+      }
     });
 
     saveBtn.addEventListener("click", () => {
