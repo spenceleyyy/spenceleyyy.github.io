@@ -757,7 +757,7 @@
       mode: "camera",
       target: targetLanguage.value,
     };
-    const overlayMode = "word";
+    const overlayMode = "line";
 
     const languageSignals = [
       { code: "es", label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
@@ -894,6 +894,10 @@
       });
       await ocrWorker.loadLanguage(ocrLanguages);
       await ocrWorker.initialize(ocrLanguages);
+      await ocrWorker.setParameters({
+        tessedit_pageseg_mode: "6",
+        preserve_interword_spaces: "1",
+      });
       ocrReady = true;
       return ocrWorker;
     };
@@ -1131,21 +1135,22 @@
     };
 
 
-    const buildWordBlocks = (words) => {
+    const buildLineBlocks = (lines) => {
       const minHeight = canvas.height * 0.012;
-      const minWidth = canvas.width * 0.01;
-      return words
-        .map((word) => ({
-          text: cleanText(word.text || ""),
-          x: word.bbox?.x0 ?? word.x0 ?? 0,
-          y: word.bbox?.y0 ?? word.y0 ?? 0,
-          width: (word.bbox?.x1 ?? word.x1 ?? 0) - (word.bbox?.x0 ?? word.x0 ?? 0),
-          height: (word.bbox?.y1 ?? word.y1 ?? 0) - (word.bbox?.y0 ?? word.y0 ?? 0),
-          confidence: word.confidence ?? 0,
+      const minWidth = canvas.width * 0.04;
+      return lines
+        .map((line) => ({
+          text: cleanText(line.text || ""),
+          x: line.bbox?.x0 ?? line.x0 ?? 0,
+          y: line.bbox?.y0 ?? line.y0 ?? 0,
+          width: (line.bbox?.x1 ?? line.x1 ?? 0) - (line.bbox?.x0 ?? line.x0 ?? 0),
+          height: (line.bbox?.y1 ?? line.y1 ?? 0) - (line.bbox?.y0 ?? line.y0 ?? 0),
+          confidence: line.confidence ?? 0,
+          baselineY: line.baseline?.y0 ?? null,
         }))
-        .filter((word) => word.text && !isNoiseText(word.text))
-        .filter((word) => (typeof word.confidence === "number" ? word.confidence >= 60 : true))
-        .filter((word) => word.width >= minWidth && word.height >= minHeight);
+        .filter((line) => line.text && !isNoiseText(line.text))
+        .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 80 : true))
+        .filter((line) => line.width >= minWidth || line.height >= minHeight);
     };
 
     const ocrWithTesseract = async () => {
@@ -1155,8 +1160,8 @@
           return [];
         }
         const result = await worker.recognize(canvas);
-        const words = result.data?.words || [];
-        return buildWordBlocks(words);
+        const lines = result.data?.lines || [];
+        return buildLineBlocks(lines);
       } catch (error) {
         console.warn("Tesseract OCR failed", error);
         return [];
@@ -1166,25 +1171,29 @@
     const getTextBlocks = async () => {
       const tesseractBlocks = await ocrWithTesseract();
       if (tesseractBlocks.length) {
-        return overlayMode === "word" ? tesseractBlocks : normalizeBlocks(tesseractBlocks);
+        return overlayMode === "line" ? tesseractBlocks : normalizeBlocks(tesseractBlocks);
       }
       if ("TextDetector" in window) {
         try {
           const detector = new window.TextDetector();
           const results = await detector.detect(canvas);
+          const minHeight = canvas.height * 0.012;
+          const minWidth = canvas.width * 0.04;
           const blocks = results
             .filter((item) => item.rawValue)
             .map((item) => ({
-              text: item.rawValue.trim(),
+              text: cleanText(item.rawValue.trim()),
               x: item.boundingBox.x,
               y: item.boundingBox.y,
               width: item.boundingBox.width,
               height: item.boundingBox.height,
               confidence: 80,
             }))
-            .filter((item) => item.text.length > 1);
+            .filter((item) => item.text.length > 1 && !isNoiseText(item.text))
+            .filter((item) => item.width >= minWidth || item.height >= minHeight);
           if (blocks.length) {
-            return overlayMode === "word" ? blocks : normalizeBlocks(blocks);
+            const sorted = blocks.sort((a, b) => a.y - b.y || a.x - b.x);
+            return overlayMode === "line" ? sorted : normalizeBlocks(sorted);
           }
         } catch (error) {
           console.warn("TextDetector unavailable", error);
@@ -1272,9 +1281,13 @@
         const scaleX = rawWidth > boxWidth ? Math.max(0.5, boxWidth / rawWidth) : 1;
         const centered = isCenteredBlock(block);
         const drawX = centered ? boxWidth / 2 : 0;
-        const drawY = 0;
+        const baselineY =
+          typeof block.baselineY === "number"
+            ? clampValue(block.baselineY, boxY, boxY + boxHeight)
+            : boxY + boxHeight * 0.85;
+        const drawY = baselineY - boxY;
         ctx.textAlign = centered ? "center" : "left";
-        ctx.textBaseline = "top";
+        ctx.textBaseline = "alphabetic";
         const textColor = pickTextColor(bg);
         ctx.fillStyle = textColor;
         ctx.save();
