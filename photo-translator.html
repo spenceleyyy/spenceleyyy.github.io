@@ -711,6 +711,159 @@
       return ocrWorker;
     };
 
+    const cleanText = (text) => text.replace(/\s+/g, " ").replace(/[|]+/g, "").trim();
+
+    const isNoiseText = (text) => {
+      const compact = text.replace(/\s+/g, "");
+      if (compact.length < 2) {
+        return true;
+      }
+      const alphaNum = compact.replace(/[^a-z0-9]/gi, "");
+      const ratio = alphaNum.length / compact.length;
+      if (ratio < 0.35) {
+        return true;
+      }
+      const uniqueChars = new Set(compact.toLowerCase()).size;
+      if (compact.length > 6 && uniqueChars <= 2) {
+        return true;
+      }
+      if (/^[^a-z0-9]+$/i.test(compact)) {
+        return true;
+      }
+      return false;
+    };
+
+    const getIoU = (a, b) => {
+      const x1 = Math.max(a.x, b.x);
+      const y1 = Math.max(a.y, b.y);
+      const x2 = Math.min(a.x + a.width, b.x + b.width);
+      const y2 = Math.min(a.y + a.height, b.y + b.height);
+      const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+      const union = a.width * a.height + b.width * b.height - inter;
+      return union ? inter / union : 0;
+    };
+
+    const normalizeBlocks = (blocks) => {
+      if (!blocks.length) {
+        return [];
+      }
+      const cleaned = blocks
+        .map((block) => ({
+          ...block,
+          text: cleanText(block.text || ""),
+        }))
+        .filter((block) => block.text && !isNoiseText(block.text));
+
+      if (!cleaned.length) {
+        return [];
+      }
+
+      const sorted = cleaned.sort((a, b) => a.y - b.y || a.x - b.x);
+      const rows = [];
+
+      sorted.forEach((block) => {
+        const yCenter = block.y + block.height / 2;
+        const lastRow = rows[rows.length - 1];
+        if (
+          lastRow &&
+          Math.abs(yCenter - lastRow.yCenter) <= Math.max(lastRow.height, block.height) * 0.6
+        ) {
+          lastRow.blocks.push(block);
+          lastRow.yCenter = (lastRow.yCenter + yCenter) / 2;
+          lastRow.height = Math.max(lastRow.height, block.height);
+        } else {
+          rows.push({
+            yCenter,
+            height: block.height,
+            blocks: [block],
+          });
+        }
+      });
+
+      const merged = rows.map((row) => {
+        const rowBlocks = row.blocks.sort((a, b) => a.x - b.x);
+        const text = rowBlocks.map((block) => block.text).join(" ");
+        const minX = Math.min(...rowBlocks.map((block) => block.x));
+        const minY = Math.min(...rowBlocks.map((block) => block.y));
+        const maxX = Math.max(...rowBlocks.map((block) => block.x + block.width));
+        const maxY = Math.max(...rowBlocks.map((block) => block.y + block.height));
+        const confidence =
+          rowBlocks.reduce((acc, block) => acc + (block.confidence || 60), 0) / rowBlocks.length;
+        return {
+          text,
+          x: minX,
+          y: minY,
+          width: maxX - minX,
+          height: maxY - minY,
+          confidence,
+        };
+      });
+
+      const minHeight = canvas.height * 0.014;
+      const minWidth = canvas.width * 0.04;
+      const filtered = merged.filter(
+        (block) => !(block.height < minHeight && block.width < minWidth)
+      );
+
+      const deduped = [];
+      filtered.forEach((block) => {
+        const existingIndex = deduped.findIndex((item) => getIoU(item, block) > 0.65);
+        if (existingIndex === -1) {
+          deduped.push(block);
+          return;
+        }
+        const current = deduped[existingIndex];
+        const keep =
+          (block.confidence || 0) >= (current.confidence || 0) ||
+          block.width * block.height > current.width * current.height
+            ? block
+            : current;
+        deduped[existingIndex] = keep;
+      });
+
+      return deduped;
+    };
+
+    const buildLines = (context, text, maxWidth) => {
+      const useChars = !text.includes(" ");
+      const words = useChars ? text.split("") : text.split(" ");
+      const joiner = useChars ? "" : " ";
+      let line = "";
+      const lines = [];
+      words.forEach((word) => {
+        const testLine = line ? `${line}${joiner}${word}` : word;
+        const width = context.measureText(testLine).width;
+        if (width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = testLine;
+        }
+      });
+      if (line) {
+        lines.push(line);
+      }
+      return lines;
+    };
+
+    const fitTextToBox = (context, text, maxWidth, maxHeight) => {
+      let fontSize = Math.max(14, Math.min(42, maxHeight * 0.7));
+      const minSize = 12;
+      let lines = [];
+      while (fontSize >= minSize) {
+        context.font = `${fontSize}px "Space Grotesk", sans-serif`;
+        lines = buildLines(context, text, maxWidth);
+        const lineHeight = fontSize * 1.18;
+        if (lines.length * lineHeight <= maxHeight) {
+          return { fontSize, lineHeight, lines };
+        }
+        fontSize -= 1;
+      }
+      context.font = `${minSize}px "Space Grotesk", sans-serif`;
+      lines = buildLines(context, text, maxWidth);
+      return { fontSize: minSize, lineHeight: minSize * 1.18, lines };
+    };
+
     const ocrWithTesseract = async () => {
       try {
         const worker = await getOcrWorker();
@@ -721,12 +874,14 @@
         const lines = result.data?.lines || [];
         return lines
           .filter((line) => line.text && line.text.trim().length > 1)
+          .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 60 : true))
           .map((line) => ({
             text: line.text.trim(),
             x: line.bbox.x0,
             y: line.bbox.y0,
             width: line.bbox.x1 - line.bbox.x0,
             height: line.bbox.y1 - line.bbox.y0,
+            confidence: line.confidence,
           }));
       } catch (error) {
         console.warn("Tesseract OCR failed", error);
@@ -747,16 +902,18 @@
               y: item.boundingBox.y,
               width: item.boundingBox.width,
               height: item.boundingBox.height,
+              confidence: 80,
             }))
             .filter((item) => item.text.length > 1);
           if (blocks.length) {
-            return blocks;
+            return normalizeBlocks(blocks);
           }
         } catch (error) {
           console.warn("TextDetector unavailable", error);
         }
       }
-      return ocrWithTesseract();
+      const tesseractBlocks = await ocrWithTesseract();
+      return normalizeBlocks(tesseractBlocks);
     };
 
     const translateText = async (text, target, source) => {
@@ -812,54 +969,58 @@
       return { translated, failed };
     };
 
-    const wrapText = (context, text, x, y, maxWidth, lineHeight) => {
-      const useChars = !text.includes(" ");
-      const words = useChars ? text.split("") : text.split(" ");
-      const joiner = useChars ? "" : " ";
-      let line = "";
-      const lines = [];
-      words.forEach((word) => {
-        const testLine = line ? `${line}${joiner}${word}` : word;
-        const width = context.measureText(testLine).width;
-        if (width > maxWidth && line) {
-          lines.push(line);
-          line = word;
-        } else {
-          line = testLine;
-        }
-      });
-      if (line) {
-        lines.push(line);
-      }
-      lines.forEach((value, index) => {
-        context.fillText(value, x, y + index * lineHeight);
-      });
-    };
-
     const renderTranslation = (blocks) => {
       if (!state.baseImageData) {
         return;
       }
       ctx.putImageData(state.baseImageData, 0, 0);
 
-      blocks.forEach((block) => {
-        const padding = Math.max(6, block.height * 0.12);
-        const boxX = block.x - padding;
-        const boxY = block.y - padding;
-        const boxWidth = block.width + padding * 2;
-        const boxHeight = block.height + padding * 2;
-        const fontSize = Math.max(16, block.height * 0.6);
-        const lineHeight = fontSize * 1.15;
+      const inset = Math.max(6, canvas.width * 0.01);
+      ctx.textBaseline = "top";
+      ctx.textAlign = "left";
 
-        ctx.fillStyle = "rgba(252, 248, 243, 0.88)";
+      blocks.forEach((block) => {
+        if (!block.translated) {
+          return;
+        }
+        const padding = Math.max(8, block.height * 0.2);
+        let boxX = Math.max(inset, block.x - padding);
+        let boxY = Math.max(inset, block.y - padding);
+        let boxWidth = block.width + padding * 2;
+        let boxHeight = block.height + padding * 2;
+
+        if (boxX + boxWidth > canvas.width - inset) {
+          boxWidth = canvas.width - inset - boxX;
+        }
+        if (boxY + boxHeight > canvas.height - inset) {
+          boxHeight = canvas.height - inset - boxY;
+        }
+        if (boxWidth < 30 || boxHeight < 18) {
+          return;
+        }
+
+        ctx.save();
+        ctx.shadowColor = "rgba(13, 79, 82, 0.18)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-        ctx.strokeStyle = "rgba(13, 79, 82, 0.35)";
-        ctx.lineWidth = Math.max(1, fontSize * 0.07);
+        ctx.restore();
+
+        ctx.strokeStyle = "rgba(13, 79, 82, 0.2)";
+        ctx.lineWidth = Math.max(1, boxHeight * 0.04);
         ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
 
+        const textX = boxX + padding;
+        const textY = boxY + padding;
+        const textWidth = Math.max(20, boxWidth - padding * 2);
+        const textHeight = Math.max(16, boxHeight - padding * 2);
+        const fit = fitTextToBox(ctx, block.translated, textWidth, textHeight);
+        ctx.font = `${fit.fontSize}px "Space Grotesk", sans-serif`;
         ctx.fillStyle = "#1c1914";
-        ctx.font = `${fontSize}px "Space Grotesk", sans-serif`;
-        wrapText(ctx, block.translated, block.x, block.y + fontSize, block.width, lineHeight);
+        fit.lines.forEach((line, index) => {
+          ctx.fillText(line, textX, textY + index * fit.lineHeight);
+        });
       });
     };
 
