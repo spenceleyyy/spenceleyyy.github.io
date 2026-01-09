@@ -1,10 +1,10 @@
 {
-  "name": "icant-speak-it",
+  "name": "travel-buddy",
   "version": "0.1.0",
   "private": true,
-  "description": "I cant speak it - iOS wrapper for the Lens Translator UI",
+  "description": "Travel Buddy - iOS wrapper for the translator UI",
   "scripts": {
-    "cap:init": "cap init \"I cant speak it\" com.icantspeakit.app",
+    "cap:init": "cap init \"Travel Buddy\" com.icantspeakit.app",
     "cap:add-ios": "cap add ios",
     "cap:sync": "cap sync ios",
     "cap:open": "cap open ios"
