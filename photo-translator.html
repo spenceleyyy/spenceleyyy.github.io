@@ -914,6 +914,30 @@
       translatorSheet.setAttribute("aria-hidden", "true");
     };
 
+    const getNativeTranslatePlugin = () => {
+      if (typeof window === "undefined") {
+        return null;
+      }
+      return window.Capacitor?.Plugins?.TravelBuddyTranslate || null;
+    };
+
+    const translateWithNative = async (text, target, source) => {
+      const plugin = getNativeTranslatePlugin();
+      if (!plugin) {
+        return null;
+      }
+      try {
+        const response = await plugin.translate({ text, target, source });
+        if (response && response.text) {
+          return { text: response.text, ok: true, native: true };
+        }
+        return { text, ok: false, native: true };
+      } catch (error) {
+        console.warn("Native translate failed", error);
+        return { text, ok: false, native: true };
+      }
+    };
+
     const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const fetchJson = async (url, options) => {
       try {
@@ -1459,6 +1483,11 @@
         return { text: "", ok: true };
       }
       const resolvedSource = source || "auto";
+      const nativeResult = await translateWithNative(text, target, resolvedSource);
+      if (nativeResult && nativeResult.ok) {
+        storeCachedTranslation(text, target, resolvedSource, nativeResult.text);
+        return nativeResult;
+      }
       const offline = typeof navigator !== "undefined" && navigator.onLine === false;
 
       if (offline) {
