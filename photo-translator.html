@@ -713,6 +713,11 @@
     const downloadBtn = document.getElementById("downloadBtn");
 
     const ctx = canvas.getContext("2d");
+    const sourceCanvas = document.createElement("canvas");
+    const sourceCtx = sourceCanvas.getContext("2d");
+    const ocrCanvas = document.createElement("canvas");
+    const ocrCtx = ocrCanvas.getContext("2d");
+    const ocrScale = 2;
     let stream = null;
 
     const libreTranslateBases = [
@@ -757,7 +762,7 @@
       mode: "camera",
       target: targetLanguage.value,
     };
-    const overlayMode = "line";
+    const overlayMode = "block";
 
     const languageSignals = [
       { code: "es", label: "Spanish", regex: /[\u00a1\u00bf\u00f1\u00f3\u00e9\u00ed\u00fa]/i },
@@ -801,6 +806,39 @@
         console.warn("Network error", error);
         return null;
       }
+    };
+    const updateBaseImageCache = () => {
+      if (!state.baseImageData) {
+        return;
+      }
+      sourceCanvas.width = canvas.width;
+      sourceCanvas.height = canvas.height;
+      sourceCtx.putImageData(state.baseImageData, 0, 0);
+    };
+
+    const prepareOcrCanvas = () => {
+      if (!state.baseImageData || !sourceCanvas.width) {
+        return null;
+      }
+      ocrCanvas.width = sourceCanvas.width * ocrScale;
+      ocrCanvas.height = sourceCanvas.height * ocrScale;
+      ocrCtx.drawImage(sourceCanvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
+      const imageData = ocrCtx.getImageData(0, 0, ocrCanvas.width, ocrCanvas.height);
+      const data = imageData.data;
+      const contrast = 1.35;
+      const intercept = 128 * (1 - contrast);
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        const adj = clampValue(lum * contrast + intercept, 0, 255);
+        data[i] = adj;
+        data[i + 1] = adj;
+        data[i + 2] = adj;
+      }
+      ocrCtx.putImageData(imageData, 0, 0);
+      return ocrCanvas;
     };
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
@@ -895,8 +933,8 @@
       await ocrWorker.loadLanguage(ocrLanguages);
       await ocrWorker.initialize(ocrLanguages);
       await ocrWorker.setParameters({
-        tessedit_pageseg_mode: "6",
         preserve_interword_spaces: "1",
+        user_defined_dpi: "300",
       });
       ocrReady = true;
       return ocrWorker;
@@ -1081,6 +1119,28 @@
       return withinCenter && block.width > canvas.width * 0.35;
     };
 
+    const isPriceLikeText = (text) => {
+      if (!text) return false;
+      const t = text.trim();
+      // Common menu price patterns: $35, 35, $35.00
+      return /^\$?\s*\d{1,4}(?:[\.,]\d{1,2})?$/.test(t);
+    };
+
+    const isRightColumnBlock = (block) => {
+      const rightEdge = block.x + block.width;
+      return rightEdge > canvas.width * 0.86 && block.width < canvas.width * 0.22;
+    };
+
+    const pickFontFamily = (block) => {
+      // Use the serif display face for big, centered headline-like lines; sans for everything else.
+      const big = block.height >= canvas.height * 0.045;
+      const centered = isCenteredBlock(block);
+      if (big && centered) {
+        return '"Fraunces", serif';
+      }
+      return '"Space Grotesk", sans-serif';
+    };
+
     const buildLines = (context, text, maxWidth) => {
       const useChars = !text.includes(" ");
       const words = useChars ? text.split("") : text.split(" ");
@@ -1103,12 +1163,14 @@
       return lines;
     };
 
-    const fitTextToBox = (context, text, maxWidth, maxHeight) => {
-      let fontSize = Math.max(14, Math.min(42, maxHeight * 0.7));
-      const minSize = 12;
+    const fitTextToBox = (context, text, maxWidth, maxHeight, weight = 500, family = '"Space Grotesk", sans-serif') => {
+      // Fits text into a box by (1) wrapping and (2) shrinking font size until it fits.
+      // Returns { fontSize, lineHeight, lines }.
+      let fontSize = Math.max(10, Math.min(64, maxHeight * 0.82));
+      const minSize = 8;
       let lines = [];
       while (fontSize >= minSize) {
-        context.font = `${fontSize}px "Space Grotesk", sans-serif`;
+        context.font = `${weight} ${fontSize}px ${family}`;
         lines = buildLines(context, text, maxWidth);
         const lineHeight = fontSize * 1.18;
         if (lines.length * lineHeight <= maxHeight) {
@@ -1116,7 +1178,7 @@
         }
         fontSize -= 1;
       }
-      context.font = `${minSize}px "Space Grotesk", sans-serif`;
+      context.font = `${weight} ${minSize}px ${family}`;
       lines = buildLines(context, text, maxWidth);
       return { fontSize: minSize, lineHeight: minSize * 1.18, lines };
     };
@@ -1135,33 +1197,65 @@
     };
 
 
-    const buildLineBlocks = (lines) => {
+    const buildLineBlocks = (lines, scale) => {
       const minHeight = canvas.height * 0.012;
       const minWidth = canvas.width * 0.04;
+      const safeScale = scale || 1;
       return lines
         .map((line) => ({
           text: cleanText(line.text || ""),
-          x: line.bbox?.x0 ?? line.x0 ?? 0,
-          y: line.bbox?.y0 ?? line.y0 ?? 0,
-          width: (line.bbox?.x1 ?? line.x1 ?? 0) - (line.bbox?.x0 ?? line.x0 ?? 0),
-          height: (line.bbox?.y1 ?? line.y1 ?? 0) - (line.bbox?.y0 ?? line.y0 ?? 0),
+          x: (line.bbox?.x0 ?? line.x0 ?? 0) / safeScale,
+          y: (line.bbox?.y0 ?? line.y0 ?? 0) / safeScale,
+          width: ((line.bbox?.x1 ?? line.x1 ?? 0) - (line.bbox?.x0 ?? line.x0 ?? 0)) / safeScale,
+          height: ((line.bbox?.y1 ?? line.y1 ?? 0) - (line.bbox?.y0 ?? line.y0 ?? 0)) / safeScale,
           confidence: line.confidence ?? 0,
-          baselineY: line.baseline?.y0 ?? null,
+          baselineY: line.baseline?.y0 ? line.baseline.y0 / safeScale : null,
         }))
         .filter((line) => line.text && !isNoiseText(line.text))
         .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 80 : true))
         .filter((line) => line.width >= minWidth || line.height >= minHeight);
     };
 
+    const scoreBlocks = (blocks) => {
+      if (!blocks.length) {
+        return 0;
+      }
+      const avgConf =
+        blocks.reduce((sum, block) => sum + (block.confidence || 0), 0) / blocks.length;
+      const textLen = blocks.reduce((sum, block) => sum + block.text.length, 0);
+      return avgConf + Math.min(20, textLen / 8);
+    };
+
+    const runOcrWithPsm = async (psm) => {
+      const worker = await getOcrWorker();
+      const ocrImage = prepareOcrCanvas();
+      if (!worker || !ocrImage) {
+        return [];
+      }
+      await worker.setParameters({
+        tessedit_pageseg_mode: String(psm),
+        preserve_interword_spaces: "1",
+        user_defined_dpi: "300",
+      });
+      const result = await worker.recognize(ocrImage);
+      const lines = result.data?.lines || [];
+      return buildLineBlocks(lines, ocrScale);
+    };
+
     const ocrWithTesseract = async () => {
       try {
-        const worker = await getOcrWorker();
-        if (!worker) {
-          return [];
+        const candidates = [6, 3];
+        let bestBlocks = [];
+        let bestScore = -1;
+        for (const psm of candidates) {
+          const blocks = await runOcrWithPsm(psm);
+          const score = scoreBlocks(blocks);
+          if (score > bestScore) {
+            bestScore = score;
+            bestBlocks = blocks;
+          }
         }
-        const result = await worker.recognize(canvas);
-        const lines = result.data?.lines || [];
-        return buildLineBlocks(lines);
+        return bestBlocks;
       } catch (error) {
         console.warn("Tesseract OCR failed", error);
         return [];
@@ -1265,35 +1359,65 @@
         if (!block.translated) {
           return;
         }
-        const boxX = clampValue(block.x, 0, canvas.width - 1);
-        const boxY = clampValue(block.y, 0, canvas.height - 1);
-        const boxWidth = clampValue(block.width, 12, canvas.width - boxX);
-        const boxHeight = clampValue(block.height, 12, canvas.height - boxY);
 
+        // Expand the box slightly to give translated text room without breaking layout.
+        const pad = Math.max(4, Math.round(Math.min(block.width, block.height) * 0.10));
+        const boxX = clampValue(block.x - pad, 0, canvas.width - 1);
+        const boxY = clampValue(block.y - pad, 0, canvas.height - 1);
+        const boxWidth = clampValue(block.width + pad * 2, 16, canvas.width - boxX);
+        const boxHeight = clampValue(block.height + pad * 2, 16, canvas.height - boxY);
+
+        // Paint background (solid sample) BEFORE drawing text.
         const bg = sampleBackgroundColor(state.baseImageData, boxX, boxY, boxWidth, boxHeight);
         ctx.fillStyle = `rgba(${bg.r}, ${bg.g}, ${bg.b}, 1)`;
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-        const fontWeight = pickFontWeight(boxHeight);
-        const fontSize = Math.max(8, boxHeight * 0.9);
-        ctx.font = `${fontWeight} ${fontSize}px "Space Grotesk", sans-serif`;
+        const text = block.translated;
+        const fontFamily = pickFontFamily(block);
+        const fontWeight = pickFontWeight(block.height);
+
+        // Determine alignment: headline-like centered, price-like right-aligned, otherwise left.
         const centered = isCenteredBlock(block);
-        const drawX = centered ? boxWidth / 2 : 0;
-        const baselineY =
-          typeof block.baselineY === "number"
-            ? clampValue(block.baselineY, boxY, boxY + boxHeight)
-            : boxY + boxHeight * 0.85;
-        const drawY = baselineY - boxY;
-        ctx.textAlign = centered ? "center" : "left";
-        ctx.textBaseline = "alphabetic";
-        const textColor = pickTextColor(bg);
-        ctx.fillStyle = textColor;
+        const rightAligned = isPriceLikeText(text) && isRightColumnBlock(block);
+
+        const insetX = Math.max(6, Math.round(boxWidth * 0.04));
+        const insetY = Math.max(5, Math.round(boxHeight * 0.10));
+        const maxTextWidth = Math.max(10, boxWidth - insetX * 2);
+        const maxTextHeight = Math.max(10, boxHeight - insetY * 2);
+
+        // Fit + wrap text within the box.
+        const fit = fitTextToBox(ctx, text, maxTextWidth, maxTextHeight, fontWeight, fontFamily);
+
+        // Baseline-start Y: top + inset, then line-by-line.
+        const startY = boxY + insetY;
+
+        // Choose text color based on local background luminance.
+        ctx.fillStyle = pickTextColor(bg);
+        ctx.textBaseline = "top";
+        ctx.textAlign = rightAligned ? "right" : centered ? "center" : "left";
+
+        // Clip drawing to the padded box.
         ctx.save();
-        ctx.translate(boxX, boxY);
         ctx.beginPath();
-        ctx.rect(0, 0, boxWidth, boxHeight);
+        ctx.rect(boxX, boxY, boxWidth, boxHeight);
         ctx.clip();
-        ctx.fillText(block.translated, drawX, drawY);
+
+        // Set font (fitTextToBox sets it while searching; set final here for safety).
+        ctx.font = `${fontWeight} ${fit.fontSize}px ${fontFamily}`;
+
+        const x = rightAligned
+          ? boxX + boxWidth - insetX
+          : centered
+          ? boxX + boxWidth / 2
+          : boxX + insetX;
+
+        // If the block is a single OCR line, favor keeping it as one line when possible.
+        // fitTextToBox already wraps only when necessary.
+        fit.lines.forEach((line, i) => {
+          const y = startY + i * fit.lineHeight;
+          ctx.fillText(line, x, y);
+        });
+
         ctx.restore();
       });
     };
@@ -1403,6 +1527,7 @@
       canvas.height = camera.videoHeight;
       ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
       state.baseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      updateBaseImageCache();
       viewer.classList.add("is-captured");
       leftAction.dataset.mode = "retake";
       leftAction.textContent = "Retake";
@@ -1432,6 +1557,7 @@
           canvas.height = image.height;
           ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
           state.baseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          updateBaseImageCache();
           state.blocks = [];
           viewer.classList.add("is-captured");
           leftAction.dataset.mode = "retake";

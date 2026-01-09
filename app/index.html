@@ -711,6 +711,11 @@
     const downloadBtn = document.getElementById("downloadBtn");
 
     const ctx = canvas.getContext("2d");
+    const sourceCanvas = document.createElement("canvas");
+    const sourceCtx = sourceCanvas.getContext("2d");
+    const ocrCanvas = document.createElement("canvas");
+    const ocrCtx = ocrCanvas.getContext("2d");
+    const ocrScale = 2;
     let stream = null;
 
     const libreTranslateBases = [
@@ -799,6 +804,39 @@
         console.warn("Network error", error);
         return null;
       }
+    };
+    const updateBaseImageCache = () => {
+      if (!state.baseImageData) {
+        return;
+      }
+      sourceCanvas.width = canvas.width;
+      sourceCanvas.height = canvas.height;
+      sourceCtx.putImageData(state.baseImageData, 0, 0);
+    };
+
+    const prepareOcrCanvas = () => {
+      if (!state.baseImageData || !sourceCanvas.width) {
+        return null;
+      }
+      ocrCanvas.width = sourceCanvas.width * ocrScale;
+      ocrCanvas.height = sourceCanvas.height * ocrScale;
+      ocrCtx.drawImage(sourceCanvas, 0, 0, ocrCanvas.width, ocrCanvas.height);
+      const imageData = ocrCtx.getImageData(0, 0, ocrCanvas.width, ocrCanvas.height);
+      const data = imageData.data;
+      const contrast = 1.35;
+      const intercept = 128 * (1 - contrast);
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        const adj = clampValue(lum * contrast + intercept, 0, 255);
+        data[i] = adj;
+        data[i + 1] = adj;
+        data[i + 2] = adj;
+      }
+      ocrCtx.putImageData(imageData, 0, 0);
+      return ocrCanvas;
     };
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
@@ -893,8 +931,8 @@
       await ocrWorker.loadLanguage(ocrLanguages);
       await ocrWorker.initialize(ocrLanguages);
       await ocrWorker.setParameters({
-        tessedit_pageseg_mode: "6",
         preserve_interword_spaces: "1",
+        user_defined_dpi: "300",
       });
       ocrReady = true;
       return ocrWorker;
@@ -1133,33 +1171,65 @@
     };
 
 
-    const buildLineBlocks = (lines) => {
+    const buildLineBlocks = (lines, scale) => {
       const minHeight = canvas.height * 0.012;
       const minWidth = canvas.width * 0.04;
+      const safeScale = scale || 1;
       return lines
         .map((line) => ({
           text: cleanText(line.text || ""),
-          x: line.bbox?.x0 ?? line.x0 ?? 0,
-          y: line.bbox?.y0 ?? line.y0 ?? 0,
-          width: (line.bbox?.x1 ?? line.x1 ?? 0) - (line.bbox?.x0 ?? line.x0 ?? 0),
-          height: (line.bbox?.y1 ?? line.y1 ?? 0) - (line.bbox?.y0 ?? line.y0 ?? 0),
+          x: (line.bbox?.x0 ?? line.x0 ?? 0) / safeScale,
+          y: (line.bbox?.y0 ?? line.y0 ?? 0) / safeScale,
+          width: ((line.bbox?.x1 ?? line.x1 ?? 0) - (line.bbox?.x0 ?? line.x0 ?? 0)) / safeScale,
+          height: ((line.bbox?.y1 ?? line.y1 ?? 0) - (line.bbox?.y0 ?? line.y0 ?? 0)) / safeScale,
           confidence: line.confidence ?? 0,
-          baselineY: line.baseline?.y0 ?? null,
+          baselineY: line.baseline?.y0 ? line.baseline.y0 / safeScale : null,
         }))
         .filter((line) => line.text && !isNoiseText(line.text))
         .filter((line) => (typeof line.confidence === "number" ? line.confidence >= 80 : true))
         .filter((line) => line.width >= minWidth || line.height >= minHeight);
     };
 
+    const scoreBlocks = (blocks) => {
+      if (!blocks.length) {
+        return 0;
+      }
+      const avgConf =
+        blocks.reduce((sum, block) => sum + (block.confidence || 0), 0) / blocks.length;
+      const textLen = blocks.reduce((sum, block) => sum + block.text.length, 0);
+      return avgConf + Math.min(20, textLen / 8);
+    };
+
+    const runOcrWithPsm = async (psm) => {
+      const worker = await getOcrWorker();
+      const ocrImage = prepareOcrCanvas();
+      if (!worker || !ocrImage) {
+        return [];
+      }
+      await worker.setParameters({
+        tessedit_pageseg_mode: String(psm),
+        preserve_interword_spaces: "1",
+        user_defined_dpi: "300",
+      });
+      const result = await worker.recognize(ocrImage);
+      const lines = result.data?.lines || [];
+      return buildLineBlocks(lines, ocrScale);
+    };
+
     const ocrWithTesseract = async () => {
       try {
-        const worker = await getOcrWorker();
-        if (!worker) {
-          return [];
+        const candidates = [6, 3];
+        let bestBlocks = [];
+        let bestScore = -1;
+        for (const psm of candidates) {
+          const blocks = await runOcrWithPsm(psm);
+          const score = scoreBlocks(blocks);
+          if (score > bestScore) {
+            bestScore = score;
+            bestBlocks = blocks;
+          }
         }
-        const result = await worker.recognize(canvas);
-        const lines = result.data?.lines || [];
-        return buildLineBlocks(lines);
+        return bestBlocks;
       } catch (error) {
         console.warn("Tesseract OCR failed", error);
         return [];
@@ -1401,6 +1471,7 @@
       canvas.height = camera.videoHeight;
       ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
       state.baseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      updateBaseImageCache();
       viewer.classList.add("is-captured");
       leftAction.dataset.mode = "retake";
       leftAction.textContent = "Retake";
@@ -1430,6 +1501,7 @@
           canvas.height = image.height;
           ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
           state.baseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          updateBaseImageCache();
           state.blocks = [];
           viewer.classList.add("is-captured");
           leftAction.dataset.mode = "retake";
