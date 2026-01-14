@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Quest | Gym Companion</title>
+  <link rel="icon" href="logos/RSlogoUPDATED.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Red+Hat+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --midnight: #0a0d12;
+      --deep: #101925;
+      --storm: #172332;
+      --ink: #eef2f2;
+      --muted: #97a5b3;
+      --acid: #c7ff4f;
+      --sun: #ffb347;
+      --aqua: #68d8ff;
+      --coral: #ff6f61;
+      --glass: rgba(255, 255, 255, 0.08);
+      --stroke: rgba(255, 255, 255, 0.12);
+      --shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Red Hat Display", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 15% 20%, #1d2a3a 0%, transparent 45%),
+        radial-gradient(circle at 85% 10%, rgba(255, 179, 71, 0.22) 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(104, 216, 255, 0.18) 0%, transparent 45%),
+        linear-gradient(160deg, #0a0d12 0%, #0b141e 40%, #0a0d12 100%);
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03) 1px, transparent 1px, transparent 10px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 32px clamp(18px, 3vw, 48px) 60px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero-intro {
+      padding: 26px 28px;
+      border-radius: 26px;
+      background: linear-gradient(140deg, rgba(16, 25, 37, 0.92) 0%, rgba(23, 35, 50, 0.92) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-intro::after {
+      content: "";
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(199, 255, 79, 0.35), transparent 70%);
+      opacity: 0.6;
+      filter: blur(2px);
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .hero-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: clamp(2.6rem, 4vw, 4.4rem);
+      margin: 12px 0 8px;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-subtitle {
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.6;
+      max-width: 42ch;
+    }
+
+    .hero-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .primary-button,
+    .ghost-button {
+      border-radius: 999px;
+      padding: 0.7rem 1.4rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .primary-button {
+      background: var(--acid);
+      color: #101925;
+      border-color: rgba(199, 255, 79, 0.6);
+    }
+
+    .ghost-button {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .quest-card {
+      border-radius: 22px;
+      padding: 20px;
+      background: rgba(10, 13, 18, 0.85);
+      border: 1px solid var(--stroke);
+      display: grid;
+      gap: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .quest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quest-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .streak {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--acid);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 72%;
+      background: linear-gradient(90deg, var(--acid), var(--sun));
+    }
+
+    .quest-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-chip {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .metric-chip span {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .metric-chip strong {
+      font-size: 1.2rem;
+      letter-spacing: 0.04em;
+    }
+
+    .summary-grid {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(16, 25, 37, 0.86);
+      border: 1px solid var(--stroke);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .card h4 {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .stat-row strong {
+      font-size: 2rem;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-row span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .macro-bars {
+      display: grid;
+      gap: 10px;
+    }
+
+    .macro {
+      display: grid;
+      gap: 6px;
+    }
+
+    .macro label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .macro-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .macro-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .macro-fill.protein {
+      width: 68%;
+      background: linear-gradient(90deg, var(--acid), var(--sun));
+    }
+
+    .macro-fill.carbs {
+      width: 52%;
+      background: linear-gradient(90deg, var(--aqua), var(--acid));
+    }
+
+    .macro-fill.fat {
+      width: 41%;
+      background: linear-gradient(90deg, var(--coral), var(--sun));
+    }
+
+    .photo-log {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .photo-drop {
+      border-radius: 26px;
+      padding: 22px;
+      background: linear-gradient(135deg, rgba(23, 35, 50, 0.92), rgba(16, 25, 37, 0.92));
+      border: 1px solid var(--stroke);
+      min-height: 260px;
+      display: grid;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-drop::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(104, 216, 255, 0.18), transparent 55%);
+      opacity: 0.7;
+    }
+
+    .photo-drop > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .drop-title {
+      font-family: "Bebas Neue", sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+
+    .drop-subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .photo-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .photo-button {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 0.6rem 1rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+    }
+
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .photo-tile {
+      border-radius: 18px;
+      min-height: 120px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(130deg, rgba(199, 255, 79, 0.25), transparent 55%);
+      opacity: 0.6;
+    }
+
+    .photo-tile span {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink);
+    }
+
+    .workout-grid {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 20px;
+    }
+
+    .body-card,
+    .plan-card {
+      border-radius: 26px;
+      background: rgba(10, 13, 18, 0.86);
+      border: 1px solid var(--stroke);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+    }
+
+    .body-map {
+      width: 100%;
+      height: 260px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 70%);
+    }
+
+    .body-map svg {
+      width: 180px;
+      height: auto;
+    }
+
+    .region {
+      fill: rgba(255, 255, 255, 0.08);
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 2px;
+      transition: fill 0.3s ease, stroke 0.3s ease;
+    }
+
+    .body-map.focus-upper .region-upper,
+    .body-map.focus-core .region-core,
+    .body-map.focus-glutes .region-glutes,
+    .body-map.focus-legs .region-legs {
+      fill: rgba(199, 255, 79, 0.75);
+      stroke: rgba(199, 255, 79, 0.9);
+    }
+
+    .focus-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .focus-chip {
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .focus-chip.active {
+      background: rgba(199, 255, 79, 0.2);
+      border-color: rgba(199, 255, 79, 0.7);
+      color: var(--acid);
+    }
+
+    .plan-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+    }
+
+    .plan-card li {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--ink);
+    }
+
+    .coach-grid {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .coach-card {
+      border-radius: 26px;
+      background: rgba(16, 25, 37, 0.9);
+      border: 1px solid var(--stroke);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 16px;
+    }
+
+    .scan-preview {
+      width: 100%;
+      min-height: 210px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+      overflow: hidden;
+    }
+
+    .scan-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scan-input {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    .coach-metrics {
+      display: grid;
+      gap: 12px;
+    }
+
+    .coach-metrics div {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .mission-board {
+      margin-top: 30px;
+      border-radius: 28px;
+      background: rgba(10, 13, 18, 0.9);
+      border: 1px solid var(--stroke);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      gap: 20px;
+    }
+
+    .ring {
+      width: 160px;
+      height: 160px;
+      margin: 0 auto;
+    }
+
+    .ring circle {
+      fill: none;
+      stroke-width: 12;
+      stroke-linecap: round;
+    }
+
+    .ring .track {
+      stroke: rgba(255, 255, 255, 0.08);
+    }
+
+    .ring .meter {
+      stroke: var(--aqua);
+      stroke-dasharray: 320;
+      stroke-dashoffset: 92;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .badge {
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+    }
+
+    .badge strong {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--sun);
+    }
+
+    .badge span {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: revealUp 0.8s ease forwards;
+    }
+
+    .reveal:nth-of-type(2) { animation-delay: 0.1s; }
+    .reveal:nth-of-type(3) { animation-delay: 0.2s; }
+    .reveal:nth-of-type(4) { animation-delay: 0.3s; }
+    .reveal:nth-of-type(5) { animation-delay: 0.4s; }
+
+    @keyframes revealUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .photo-log,
+      .workout-grid,
+      .coach-grid,
+      .mission-board {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        grid-template-rows: auto;
+      }
+
+      .quest-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .badge-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero reveal">
+      <div class="hero-intro">
+        <div class="eyebrow">Gym Adventure HQ</div>
+        <h1 class="hero-title">Atlas Quest</h1>
+        <p class="hero-subtitle">Track weight, calories, macros, and workouts with photo-first logging. Let the ML coach guide your next lift and shape targets without typing a single ingredient.</p>
+        <div class="hero-actions">
+          <button class="primary-button" type="button">Start Today</button>
+          <button class="ghost-button" type="button">View Progress</button>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="quest-card">
+          <div class="quest-header">
+            <h3>Daily Quest</h3>
+            <div class="streak">Streak 12 days</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="quest-metrics">
+            <div class="metric-chip">
+              <span>Lift Score</span>
+              <strong>83</strong>
+            </div>
+            <div class="metric-chip">
+              <span>Meal Scans</span>
+              <strong>5</strong>
+            </div>
+            <div class="metric-chip">
+              <span>Water</span>
+              <strong>2.4L</strong>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Today Snapshot</h4>
+          <div class="stat-row">
+            <strong>178.4</strong>
+            <span>lbs</span>
+          </div>
+          <div class="macro-bars">
+            <div class="macro">
+              <label>Protein</label>
+              <div class="macro-track">
+                <div class="macro-fill protein"></div>
+              </div>
+            </div>
+            <div class="macro">
+              <label>Carbs</label>
+              <div class="macro-track">
+                <div class="macro-fill carbs"></div>
+              </div>
+            </div>
+            <div class="macro">
+              <label>Fat</label>
+              <div class="macro-track">
+                <div class="macro-fill fat"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-grid reveal">
+      <div class="card">
+        <h4>Weight Track</h4>
+        <div class="stat-row">
+          <strong>-2.1</strong>
+          <span>lbs this week</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 64%;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Calories</h4>
+        <div class="stat-row">
+          <strong>1,940</strong>
+          <span>target 2,200</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 88%;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Workout Load</h4>
+        <div class="stat-row">
+          <strong>47</strong>
+          <span>sets logged</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 76%;"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Recovery</h4>
+        <div class="stat-row">
+          <strong>7.6</strong>
+          <span>hours sleep</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width: 72%;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="photo-log reveal">
+      <div class="photo-drop">
+        <h2 class="drop-title">Meal Vision</h2>
+        <p class="drop-subtitle">Snap plates, snacks, and shakes. The visual tracker builds calories and macros automatically.</p>
+        <div class="photo-actions">
+          <button class="photo-button" type="button">Open Camera</button>
+          <button class="photo-button" type="button">Import Gallery</button>
+          <button class="photo-button" type="button">Scan Barcode</button>
+        </div>
+      </div>
+      <div class="photo-gallery">
+        <div class="photo-tile"><span>Breakfast</span></div>
+        <div class="photo-tile"><span>Post Lift</span></div>
+        <div class="photo-tile"><span>Lunch</span></div>
+        <div class="photo-tile"><span>Night Snack</span></div>
+      </div>
+    </section>
+
+    <section class="workout-grid reveal">
+      <div class="body-card">
+        <h4>Physique Map</h4>
+        <div class="body-map focus-upper" id="bodyMap">
+          <svg viewBox="0 0 200 320" aria-hidden="true">
+            <circle class="region" cx="100" cy="32" r="20"></circle>
+            <rect class="region region-upper" x="55" y="60" width="90" height="70" rx="22"></rect>
+            <rect class="region region-core" x="62" y="138" width="76" height="55" rx="20"></rect>
+            <rect class="region region-glutes" x="60" y="198" width="80" height="45" rx="18"></rect>
+            <rect class="region region-legs" x="70" y="248" width="60" height="90" rx="24"></rect>
+          </svg>
+        </div>
+        <div class="focus-chips">
+          <button class="focus-chip active" type="button" data-focus="upper">Upper</button>
+          <button class="focus-chip" type="button" data-focus="core">Core</button>
+          <button class="focus-chip" type="button" data-focus="glutes">Glutes</button>
+          <button class="focus-chip" type="button" data-focus="legs">Legs</button>
+        </div>
+      </div>
+      <div class="plan-card">
+        <h4>Focus Plan</h4>
+        <h3 id="planTitle">Upper Sculpt</h3>
+        <ul id="planList">
+          <li>Pull-ups ladder sets with slow eccentric focus.</li>
+          <li>Incline dumbbell press with 2 second pauses.</li>
+          <li>Rear delt flyes and face pulls circuit.</li>
+          <li>Farmers carry finisher for grip.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="coach-grid reveal">
+      <div class="coach-card">
+        <h4>ML Coach Scan</h4>
+        <div class="scan-preview" id="scanPreview">Drop a physique photo</div>
+        <label class="scan-input">
+          Upload Scan
+          <input id="scanInput" type="file" accept="image/*" hidden />
+        </label>
+      </div>
+      <div class="coach-card">
+        <h4>Adaptive Guidance</h4>
+        <div class="coach-metrics" id="coachMetrics">
+          <div>Current model focus: lean mass on shoulders and lats.</div>
+          <div>Macro suggestion: +25g protein, -18g carbs.</div>
+          <div>Cardio blend: 2x zone 2 rides, 1x sprint finisher.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mission-board reveal">
+      <div>
+        <h4>Weekly Mission</h4>
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="track" cx="60" cy="60" r="50"></circle>
+          <circle class="meter" cx="60" cy="60" r="50"></circle>
+        </svg>
+        <div class="stat-row">
+          <strong>8/12</strong>
+          <span>quests done</span>
+        </div>
+      </div>
+      <div>
+        <h4>Badges</h4>
+        <div class="badge-grid">
+          <div class="badge">
+            <strong>HR</strong>
+            <span>Heart</span>
+          </div>
+          <div class="badge">
+            <strong>PR</strong>
+            <span>Personal</span>
+          </div>
+          <div class="badge">
+            <strong>MX</strong>
+            <span>Mix</span>
+          </div>
+          <div class="badge">
+            <strong>WL</strong>
+            <span>Weight</span>
+          </div>
+          <div class="badge">
+            <strong>ST</strong>
+            <span>Streak</span>
+          </div>
+          <div class="badge">
+            <strong>GN</strong>
+            <span>Gain</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const focusData = {
+      upper: {
+        title: "Upper Sculpt",
+        items: [
+          "Pull-ups ladder sets with slow eccentric focus.",
+          "Incline dumbbell press with 2 second pauses.",
+          "Rear delt flyes and face pulls circuit.",
+          "Farmers carry finisher for grip."
+        ]
+      },
+      core: {
+        title: "Core Armor",
+        items: [
+          "Hanging knee raises with tempo control.",
+          "Anti-rotation press with band tension.",
+          "Cable woodchops across three angles.",
+          "Loaded carries for trunk stability."
+        ]
+      },
+      glutes: {
+        title: "Glute Engine",
+        items: [
+          "Hip thrusts with 1.5 rep tempo.",
+          "Single leg RDLs with reach and pause.",
+          "Cable kickbacks to full extension.",
+          "Sled pushes for power drive."
+        ]
+      },
+      legs: {
+        title: "Leg Forge",
+        items: [
+          "Front squat clusters at mid range.",
+          "Bulgarian split squats with slow lowering.",
+          "Hamstring curls with long stretch.",
+          "Calf raises with 2 second squeeze."
+        ]
+      }
+    };
+
+    const focusChips = document.querySelectorAll(".focus-chip");
+    const planTitle = document.getElementById("planTitle");
+    const planList = document.getElementById("planList");
+    const bodyMap = document.getElementById("bodyMap");
+
+    focusChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        focusChips.forEach((item) => item.classList.remove("active"));
+        chip.classList.add("active");
+        const focus = chip.dataset.focus;
+        bodyMap.className = `body-map focus-${focus}`;
+        const data = focusData[focus];
+        planTitle.textContent = data.title;
+        planList.innerHTML = data.items.map((item) => `<li>${item}</li>`).join("");
+      });
+    });
+
+    const scanInput = document.getElementById("scanInput");
+    const scanPreview = document.getElementById("scanPreview");
+    const coachMetrics = document.getElementById("coachMetrics");
+
+    scanInput.addEventListener("change", () => {
+      const file = scanInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        scanPreview.innerHTML = `<img src="${event.target.result}" alt="Physique scan preview" />`;
+        coachMetrics.innerHTML = `
+          <div>Scan processed: symmetry improving, keep shoulders and lats priority.</div>
+          <div>Macro suggestion: +15g protein, +8g carbs on lift days.</div>
+          <div>Mobility focus: 8 min thoracic and hip flow daily.</div>
+        `;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
