@@ -75,6 +75,9 @@
       padding: 1rem 5% 0;
       color: var(--color-text-body);
       font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
 
     @media (max-width: 720px) {
@@ -101,7 +104,10 @@
     <section class="cv-frame">
       <iframe class="cv-object" id="cv-viewer" title="CV preview" loading="lazy"></iframe>
     </section>
-    <p class="cv-note">If the preview does not load, use the download link above.</p>
+    <p class="cv-note">
+      <span>If the preview does not load, use the download link above.</span>
+      <span id="cv-updated">Last updated: --</span>
+    </p>
   </main>
 
   <script src="navigation.js"></script>
@@ -110,6 +116,24 @@
     const fileName = 'Spenceley_CV2025.docx';
     const fileUrl = new URL(fileName, window.location.href).href;
     viewer.src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+
+    const updatedLabel = document.getElementById('cv-updated');
+    fetch(fileName, { method: 'HEAD' })
+      .then((response) => {
+        const lastModified = response.headers.get('Last-Modified');
+        if (!lastModified) {
+          throw new Error('Missing Last-Modified header');
+        }
+        const formatted = new Date(lastModified).toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        updatedLabel.textContent = `Last updated: ${formatted}`;
+      })
+      .catch(() => {
+        updatedLabel.textContent = 'Last updated: unavailable';
+      });
   </script>
 </body>
 </html>
