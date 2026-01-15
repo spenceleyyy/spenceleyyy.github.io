@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Quest | Login</title>
+  <link rel="icon" href="logos/RSlogoUPDATED.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Style+Script&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #172d33;
+      --navy-secondary: #47304f;
+      --pink: #e890be;
+      --pale: #fffbeb;
+      --ink: #ffffed;
+      --muted: #a294a6;
+      --berry: #641e4f;
+      --line: rgba(255, 255, 255, 0.18);
+      --overlay: rgba(10, 18, 20, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      background: var(--navy);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .auth-view {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      text-align: center;
+    }
+
+    .auth-shell {
+      width: min(360px, 100%);
+      display: grid;
+      gap: 18px;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .logo-mark {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .logo-word {
+      font-family: "Style Script", cursive;
+      font-size: 2rem;
+    }
+
+    .auth-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .auth-toggle button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 6px 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .auth-toggle button.active {
+      color: var(--ink);
+      border-color: var(--pink);
+    }
+
+    .auth-toggle span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .auth-panels {
+      position: relative;
+      min-height: 240px;
+    }
+
+    .auth-panel {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .auth-panel.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .panel-title {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .panel-copy {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .field {
+      text-align: left;
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .field input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 0.6rem 0;
+      color: var(--ink);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .primary-button {
+      justify-self: start;
+      border: none;
+      background: var(--pink);
+      color: var(--navy);
+      padding: 0.7rem 1.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .primary-button:active {
+      transform: scale(0.98);
+    }
+
+    .ghost-button {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      cursor: pointer;
+    }
+
+    .status {
+      min-height: 18px;
+      font-size: 0.8rem;
+      color: var(--pale);
+    }
+
+    .status.error {
+      color: #ffb4c6;
+    }
+
+    .status.success {
+      color: #c9f6c6;
+    }
+
+    .app-view {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+
+    .app-shell {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(14px + env(safe-area-inset-bottom, 0px));
+      gap: 12px;
+      position: relative;
+    }
+
+    .app-header {
+      display: grid;
+      grid-template-columns: 60px 1fr 36px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-button {
+      background: none;
+      border: none;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.65rem;
+      cursor: pointer;
+      text-align: left;
+      padding: 6px 0;
+    }
+
+    .back-button[hidden] {
+      visibility: hidden;
+    }
+
+    .header-copy {
+      text-align: center;
+    }
+
+    .header-copy span {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      font-size: 0.6rem;
+      color: var(--muted);
+    }
+
+    .header-copy h1 {
+      margin: 4px 0 0;
+      font-size: 1.5rem;
+    }
+
+    .user-chip {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 0.85rem;
+      color: var(--pale);
+    }
+
+    .app-content {
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeSlide 0.4s ease forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .section-block {
+      padding: 12px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stat-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stat-row span {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .stat-row strong {
+      font-size: 1.2rem;
+      color: var(--pale);
+    }
+
+    .trend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      font-size: 0.95rem;
+    }
+
+    .trend-row span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .ml-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+      color: var(--pale);
+      font-size: 0.95rem;
+    }
+
+    .calorie-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .calorie-remaining span {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.6rem;
+      color: var(--muted);
+    }
+
+    .calorie-remaining strong {
+      font-size: 2rem;
+    }
+
+    .calorie-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .form-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .input-row {
+      display: grid;
+      gap: 6px;
+    }
+
+    .input-row label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .input-row input,
+    .input-row select {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 0.6rem 0;
+      color: var(--ink);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .menu-item {
+      width: 100%;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: color 0.25s ease, transform 0.25s ease;
+      text-align: left;
+    }
+
+    .menu-item span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .menu-item .chevron {
+      color: var(--pink);
+      font-size: 1rem;
+    }
+
+    .menu-item:hover {
+      transform: translateX(6px);
+      color: var(--pale);
+    }
+
+    .search-bar {
+      display: grid;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 0.6rem 0;
+      color: var(--ink);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .food-tile {
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .food-photo {
+      border-radius: 14px;
+      height: 120px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .food-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .food-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(232, 144, 190, 0.18), transparent 60%);
+    }
+
+    .food-name {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    .food-brand {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .food-tile.create .food-photo {
+      border: 1px dashed rgba(255, 255, 255, 0.5);
+      background: transparent;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+    }
+
+    .detail-photo {
+      height: 160px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      overflow: hidden;
+    }
+
+    .detail-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-button {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: border-color 0.25s ease, color 0.25s ease;
+    }
+
+    .tag-button.active {
+      color: var(--ink);
+      border-color: var(--pink);
+    }
+
+    .entry-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .entry-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+      color: var(--pale);
+      font-size: 0.9rem;
+    }
+
+    .entry-list span {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .ingredient-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ingredient-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    .ingredient-row strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .ingredient-row span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .ingredient-input {
+      width: 70px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      text-align: right;
+      padding: 4px 0;
+    }
+
+    .ingredient-note {
+      width: 120px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      text-align: right;
+      padding: 4px 0;
+    }
+
+    .remove-button {
+      background: none;
+      border: none;
+      color: var(--pink);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.6rem;
+      cursor: pointer;
+    }
+
+    .meal-preview {
+      border: 1px dashed var(--line);
+      min-height: 140px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      overflow: hidden;
+    }
+
+    .meal-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .exercise-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .exercise-item {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+
+    .exercise-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 4px;
+    }
+
+    .exercise-item.active {
+      border-color: var(--pink);
+      transform: translateX(4px);
+    }
+
+    .scale-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .scale-row input[type="range"] {
+      width: 100%;
+    }
+
+    .label-scan {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .label-preview {
+      border: 1px dashed var(--line);
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      overflow: hidden;
+    }
+
+    .label-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tabbar {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: center;
+      gap: 6px;
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .tab-button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.6rem;
+      cursor: pointer;
+      padding: 6px 0;
+      transition: color 0.25s ease;
+    }
+
+    .tab-button.active {
+      color: var(--pale);
+    }
+
+    .add-button {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: var(--pink);
+      color: var(--navy);
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(232, 144, 190, 0.35);
+      transform: translateY(-18px);
+    }
+
+    .quick-add {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      z-index: 20;
+    }
+
+    .quick-add.hidden {
+      display: none;
+    }
+
+    .quick-add-backdrop {
+      position: absolute;
+      inset: 0;
+      background: var(--overlay);
+    }
+
+    .quick-add-panel {
+      position: relative;
+      background: var(--navy-secondary);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .quick-add-panel h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .quick-add-item {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .logout-button {
+      border: 1px solid var(--pink);
+      background: none;
+      color: var(--pink);
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    @media (max-width: 420px) {
+      .ingredient-row {
+        grid-template-columns: 1fr auto;
+        grid-auto-rows: auto;
+      }
+
+      .ingredient-note {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-view" id="authView">
+    <div class="auth-shell">
+      <a class="logo" href="#" aria-label="Atlas Quest">
+        <div class="logo-mark">RS</div>
+        <div class="logo-word">Atlas Quest</div>
+      </a>
+
+      <div class="auth-toggle" aria-label="Login switch">
+        <button class="active" type="button" data-auth="login">Log In</button>
+        <span>/</span>
+        <button type="button" data-auth="signup">Sign Up</button>
+      </div>
+
+      <div class="auth-panels">
+        <form class="auth-panel active" data-auth="login" id="loginForm">
+          <h2 class="panel-title">Welcome back.</h2>
+          <p class="panel-copy">Log in to keep your progress synced on this device.</p>
+          <div class="field">
+            <label for="login-name">Name</label>
+            <input id="login-name" name="login-name" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" name="login-password" autocomplete="current-password" required />
+          </div>
+          <button class="primary-button" type="submit">Log In</button>
+          <div class="status" id="login-status"></div>
+        </form>
+
+        <form class="auth-panel" data-auth="signup" id="signupForm">
+          <h2 class="panel-title">Start your quest.</h2>
+          <p class="panel-copy">Your name is unique and tied to your progress.</p>
+          <div class="field">
+            <label for="signup-name">Name</label>
+            <input id="signup-name" name="signup-name" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <input id="signup-password" type="password" name="signup-password" autocomplete="new-password" required />
+          </div>
+          <button class="primary-button" type="submit">Create Account</button>
+          <div class="status" id="signup-status"></div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <main class="app-view hidden" id="appView">
+    <div class="app-shell">
+      <header class="app-header">
+        <button class="back-button" id="backButton" type="button" hidden>Back</button>
+        <div class="header-copy">
+          <span>Atlas Quest</span>
+          <h1 id="screenTitle">Home</h1>
+        </div>
+        <div class="user-chip" id="userChip">RS</div>
+      </header>
+
+      <section class="app-content">
+        <div class="screen active" data-screen="home">
+          <div class="section-block">
+            <h2 class="section-title">Progress</h2>
+            <div class="stat-grid">
+              <div class="stat-row">
+                <span>Latest weight</span>
+                <strong id="homeWeight">--</strong>
+              </div>
+              <div class="stat-row">
+                <span>Weekly change</span>
+                <strong id="homeWeightChange">--</strong>
+              </div>
+              <div class="stat-row">
+                <span>Workouts (7d)</span>
+                <strong id="homeWorkouts">0</strong>
+              </div>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Trends</h2>
+            <div class="trend-row">
+              Calories remaining today
+              <span id="homeCaloriesRemaining">--</span>
+            </div>
+            <div class="trend-row">
+              Meals logged (7d)
+              <span id="homeMealsWeekly">0</span>
+            </div>
+            <div class="trend-row">
+              Workout minutes (7d)
+              <span id="homeWorkoutMinutes">0</span>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">ML Summary</h2>
+            <ul class="ml-list" id="mlSummary"></ul>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="setup">
+          <div class="section-block">
+            <h2 class="section-title">Model setup</h2>
+            <p class="panel-copy">explaination text here</p>
+          </div>
+          <div class="section-block">
+            <form class="form-stack" id="profileForm">
+              <div class="input-row">
+                <label for="profileSex">Gender</label>
+                <select id="profileSex" required>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="input-row">
+                <label for="profileAge">Age</label>
+                <input id="profileAge" type="number" min="13" max="99" required />
+              </div>
+              <div class="input-row">
+                <label for="profileActivity">Activity level</label>
+                <select id="profileActivity" required>
+                  <option value="1.2">Sedentary</option>
+                  <option value="1.375">Light activity</option>
+                  <option value="1.55" selected>Moderate activity</option>
+                  <option value="1.725">Heavy training</option>
+                  <option value="1.9">Athlete</option>
+                </select>
+              </div>
+              <button class="primary-button" type="submit">Save profile</button>
+              <div class="status" id="profileStatus"></div>
+            </form>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="food">
+          <div class="calorie-hero">
+            <div class="calorie-remaining">
+              <span>Calories remaining</span>
+              <strong id="caloriesRemaining">--</strong>
+              <div class="calorie-meta">Target <span id="caloriesTarget">--</span> - Consumed <span id="caloriesConsumed">--</span></div>
+            </div>
+            <button class="ghost-button" id="editCalories" type="button">Edit target</button>
+          </div>
+
+          <div class="section-block" id="calorieSetup">
+            <h2 class="section-title">Calorie setup</h2>
+            <form class="form-stack" id="calorieForm">
+              <div class="input-row">
+                <label for="calorieSex">Sex</label>
+                <select id="calorieSex" required>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                </select>
+              </div>
+              <div class="input-row">
+                <label for="calorieAge">Age</label>
+                <input id="calorieAge" type="number" min="13" max="99" required />
+              </div>
+              <div class="input-row">
+                <label for="calorieHeight">Height (inches)</label>
+                <input id="calorieHeight" type="number" step="0.1" required />
+              </div>
+              <div class="input-row">
+                <label for="calorieWeight">Current weight (lbs)</label>
+                <input id="calorieWeight" type="number" step="0.1" required />
+              </div>
+              <div class="input-row">
+                <label for="calorieActivity">Activity level</label>
+                <select id="calorieActivity" required>
+                  <option value="1.2">Sedentary</option>
+                  <option value="1.375">Light activity</option>
+                  <option value="1.55" selected>Moderate activity</option>
+                  <option value="1.725">Heavy training</option>
+                  <option value="1.9">Athlete</option>
+                </select>
+              </div>
+              <div class="input-row">
+                <label for="goalWeight">Goal weight (lbs)</label>
+                <input id="goalWeight" type="number" step="0.1" required />
+              </div>
+              <div class="input-row">
+                <label for="weeklyLoss">Weekly loss goal</label>
+                <select id="weeklyLoss" required>
+                  <option value="0">Maintain</option>
+                  <option value="0.5">0.5 lbs/week</option>
+                  <option value="1">1 lb/week</option>
+                  <option value="1.5">1.5 lbs/week</option>
+                  <option value="2">2 lbs/week</option>
+                </select>
+              </div>
+              <button class="primary-button" type="submit">Set calories</button>
+              <div class="status" id="calorieStatus"></div>
+            </form>
+          </div>
+
+          <div class="section-block hidden" id="foodLog">
+            <div class="stat-row">
+              <span>Today macros</span>
+              <strong id="foodMacros">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Entries today</span>
+              <strong id="foodEntries">0</strong>
+            </div>
+            <div class="section-block">
+              <div class="stat-row">
+                <span>Log</span>
+                <button class="ghost-button" id="addFoodFromTab" type="button">Add food</button>
+              </div>
+              <ul class="entry-list" id="foodLogList"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="add-food">
+          <div class="section-block">
+            <h2 class="section-title">Add food</h2>
+            <button class="menu-item" type="button" data-food-mode="Meal">
+              Meal
+              <span>Build a meal</span>
+              <span class="chevron">></span>
+            </button>
+            <button class="menu-item" type="button" data-food-mode="Snack">
+              Snack
+              <span>Quick add</span>
+              <span class="chevron">></span>
+            </button>
+            <button class="menu-item" type="button" id="openVision">
+              Vision scan
+              <span>Auto detect foods</span>
+              <span class="chevron">></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="food-library">
+          <div class="search-bar">
+            <label class="section-title" for="foodSearch">Search foods</label>
+            <input id="foodSearch" type="search" placeholder="Search foods and brands" />
+          </div>
+          <div class="stat-row">
+            <span>Mode</span>
+            <strong id="foodModeLabel">Meal</strong>
+          </div>
+          <div class="food-grid" id="foodGrid"></div>
+        </div>
+
+        <div class="screen" data-screen="food-detail">
+          <div class="section-block">
+            <div class="detail-photo" id="foodDetailPhoto">Food</div>
+            <div class="stat-row">
+              <span>Name</span>
+              <strong id="foodDetailName">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Brand</span>
+              <strong id="foodDetailBrand">--</strong>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Per serving</h2>
+            <div class="stat-row">
+              <span>Calories</span>
+              <strong id="foodDetailCalories">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Protein</span>
+              <strong id="foodDetailProtein">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Carbs</span>
+              <strong id="foodDetailCarbs">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Fat</span>
+              <strong id="foodDetailFat">--</strong>
+            </div>
+          </div>
+          <div class="section-block">
+            <div class="input-row">
+              <label for="foodDetailServings">Servings</label>
+              <input id="foodDetailServings" type="number" step="0.1" value="1" />
+            </div>
+            <div class="stat-row">
+              <span>Total calories</span>
+              <strong id="foodDetailTotal">--</strong>
+            </div>
+            <button class="primary-button" id="foodDetailAdd" type="button">Add to log</button>
+            <div class="status" id="foodDetailStatus"></div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="create-meal">
+          <div class="section-block">
+            <h2 class="section-title">Create meal</h2>
+            <div class="input-row">
+              <label for="mealName">Meal name</label>
+              <input id="mealName" type="text" placeholder="Your signature meal" />
+            </div>
+            <div class="input-row">
+              <label for="mealCover">Cover photo</label>
+              <input id="mealCover" type="file" accept="image/*" capture="environment" />
+            </div>
+            <div class="meal-preview" id="mealCoverPreview">No cover selected</div>
+          </div>
+          <div class="section-block">
+            <div class="label-scan">
+              <h2 class="section-title">Label detection</h2>
+              <div class="input-row">
+                <label for="labelScan">Upload label photo</label>
+                <input id="labelScan" type="file" accept="image/*" capture="environment" />
+              </div>
+              <div class="label-preview" id="labelPreview">No label selected</div>
+              <button class="ghost-button" id="labelDetectButton" type="button">Detect label</button>
+              <div class="status" id="labelStatus"></div>
+            </div>
+            <div class="search-bar">
+              <label class="section-title" for="ingredientSearch">Ingredients</label>
+              <input id="ingredientSearch" type="search" placeholder="Search ingredients" />
+            </div>
+            <div class="food-grid" id="ingredientGrid"></div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Selected ingredients</h2>
+            <div class="ingredient-list" id="ingredientList"></div>
+            <div class="stat-row">
+              <span>Total calories</span>
+              <strong id="mealTotalCalories">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Macros</span>
+              <strong id="mealTotalMacros">0P / 0C / 0F</strong>
+            </div>
+            <button class="primary-button" id="saveMealButton" type="button">Save meal</button>
+            <div class="status" id="createMealStatus"></div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="food-vision">
+          <div class="section-block">
+            <h2 class="section-title">Vision scan</h2>
+            <div class="input-row">
+              <label for="visionPhoto">Upload food photo</label>
+              <input id="visionPhoto" type="file" accept="image/*" capture="environment" />
+            </div>
+            <div class="meal-preview" id="visionPreview">No photo selected</div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Detected foods</h2>
+            <div class="tag-row" id="visionMode">
+              <button class="tag-button active" type="button" data-vision="Meal">Meal</button>
+              <button class="tag-button" type="button" data-vision="Snack">Snack</button>
+            </div>
+            <div class="ingredient-list" id="visionList"></div>
+            <button class="primary-button" id="visionAddButton" type="button">Add to log</button>
+            <div class="status" id="visionStatus"></div>
+            <button class="ghost-button" id="visionAddMore" type="button">Add more foods</button>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="workout">
+          <div class="section-block">
+            <h2 class="section-title">Categories</h2>
+            <div class="tag-row" id="workoutCategories">
+              <button class="tag-button active" type="button" data-category="Chest">Chest</button>
+              <button class="tag-button" type="button" data-category="Arms">Arms</button>
+              <button class="tag-button" type="button" data-category="Back">Back</button>
+              <button class="tag-button" type="button" data-category="Shoulders">Shoulders</button>
+              <button class="tag-button" type="button" data-category="Legs">Legs</button>
+              <button class="tag-button" type="button" data-category="Cardio">Cardio</button>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Exercises</h2>
+            <div class="exercise-list" id="exerciseList"></div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Log exercise</h2>
+            <div class="stat-row">
+              <span>Selected</span>
+              <strong id="exerciseName">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Last weight</span>
+              <strong id="exerciseLast">--</strong>
+            </div>
+            <div class="input-row">
+              <label for="exerciseSets">Sets</label>
+              <input id="exerciseSets" type="number" min="1" step="1" placeholder="4" />
+            </div>
+            <div class="input-row">
+              <label for="exerciseWeights">Weights (comma separated)</label>
+              <input id="exerciseWeights" type="text" placeholder="135, 135, 125" />
+            </div>
+            <div class="input-row">
+              <label for="exerciseFeel">How it felt</label>
+              <div class="scale-row">
+                <input id="exerciseFeel" type="range" min="1" max="10" value="7" />
+                <strong id="exerciseFeelValue">7/10</strong>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="exerciseNotes">Notes</label>
+              <input id="exerciseNotes" type="text" placeholder="Tempo, rest, cues" />
+            </div>
+            <button class="primary-button" id="addExerciseButton" type="button">Add to workout</button>
+            <div class="status" id="exerciseStatus"></div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Current workout</h2>
+            <ul class="entry-list" id="currentWorkoutList"></ul>
+            <button class="primary-button hidden" id="finishWorkoutButton" type="button">Finish workout</button>
+          </div>
+          <div class="section-block hidden" id="workoutSummary">
+            <h2 class="section-title">Workout summary</h2>
+            <div class="stat-row">
+              <span>Total sets</span>
+              <strong id="summarySets">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Total volume</span>
+              <strong id="summaryVolume">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Compared to last</span>
+              <strong id="summaryCompare">--</strong>
+            </div>
+            <ul class="entry-list" id="summaryList"></ul>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="profile">
+          <div class="section-block">
+            <h2 class="section-title">Profile</h2>
+            <div class="stat-row">
+              <span>Name</span>
+              <strong id="profileName">--</strong>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Calories</h2>
+            <div class="stat-row">
+              <span>Target</span>
+              <strong id="profileTarget">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Maintenance</span>
+              <strong id="profileMaintenance">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Goal weight</span>
+              <strong id="profileGoal">--</strong>
+            </div>
+            <button class="ghost-button" id="resetCalories" type="button">Reset calories</button>
+          </div>
+          <div class="section-block">
+            <button class="logout-button" id="logoutButton" type="button">Log Out</button>
+          </div>
+        </div>
+      </section>
+
+      <nav class="tabbar" aria-label="Bottom navigation">
+        <button class="tab-button active" type="button" data-tab="home">Home</button>
+        <button class="tab-button" type="button" data-tab="food">Food</button>
+        <button class="add-button" id="addButton" type="button" aria-label="Add">+</button>
+        <button class="tab-button" type="button" data-tab="workout">Workout</button>
+        <button class="tab-button" type="button" data-tab="profile">Profile</button>
+      </nav>
+    </div>
+  </main>
+
+  <div class="quick-add hidden" id="quickAdd">
+    <div class="quick-add-backdrop" id="quickAddBackdrop"></div>
+    <div class="quick-add-panel">
+      <h2>Quick add</h2>
+      <button class="quick-add-item" type="button" data-quick="add-food">Food</button>
+      <button class="quick-add-item" type="button" data-quick="workout">Workout</button>
+    </div>
+  </div>
+
+  <script>
+    const USER_KEY = "atlasUsers";
+    const PROGRESS_KEY = "atlasProgress";
+    const SESSION_KEY = "atlasSession";
+
+    const authView = document.getElementById("authView");
+    const appView = document.getElementById("appView");
+    const authButtons = document.querySelectorAll(".auth-toggle button");
+    const authPanels = document.querySelectorAll(".auth-panel");
+    const loginStatus = document.getElementById("login-status");
+    const signupStatus = document.getElementById("signup-status");
+
+    const screenTitle = document.getElementById("screenTitle");
+    const backButton = document.getElementById("backButton");
+    const userChip = document.getElementById("userChip");
+
+    const screens = document.querySelectorAll(".screen");
+    const tabButtons = document.querySelectorAll(".tab-button");
+
+    const homeWeight = document.getElementById("homeWeight");
+    const homeWeightChange = document.getElementById("homeWeightChange");
+    const homeWorkouts = document.getElementById("homeWorkouts");
+    const homeCaloriesRemaining = document.getElementById("homeCaloriesRemaining");
+    const homeMealsWeekly = document.getElementById("homeMealsWeekly");
+    const homeWorkoutMinutes = document.getElementById("homeWorkoutMinutes");
+    const mlSummary = document.getElementById("mlSummary");
+
+    const profileForm = document.getElementById("profileForm");
+    const profileSex = document.getElementById("profileSex");
+    const profileAge = document.getElementById("profileAge");
+    const profileActivity = document.getElementById("profileActivity");
+    const profileStatus = document.getElementById("profileStatus");
+
+    const caloriesRemaining = document.getElementById("caloriesRemaining");
+    const caloriesTarget = document.getElementById("caloriesTarget");
+    const caloriesConsumed = document.getElementById("caloriesConsumed");
+    const calorieSetup = document.getElementById("calorieSetup");
+    const calorieForm = document.getElementById("calorieForm");
+    const calorieStatus = document.getElementById("calorieStatus");
+    const calorieSex = document.getElementById("calorieSex");
+    const calorieAge = document.getElementById("calorieAge");
+    const calorieActivity = document.getElementById("calorieActivity");
+    const foodLog = document.getElementById("foodLog");
+    const editCalories = document.getElementById("editCalories");
+    const resetCalories = document.getElementById("resetCalories");
+    const addFoodFromTab = document.getElementById("addFoodFromTab");
+    const foodLogList = document.getElementById("foodLogList");
+    const foodMacros = document.getElementById("foodMacros");
+    const foodEntries = document.getElementById("foodEntries");
+
+    const foodModeLabel = document.getElementById("foodModeLabel");
+    const foodGrid = document.getElementById("foodGrid");
+    const foodSearch = document.getElementById("foodSearch");
+
+    const foodDetailPhoto = document.getElementById("foodDetailPhoto");
+    const foodDetailName = document.getElementById("foodDetailName");
+    const foodDetailBrand = document.getElementById("foodDetailBrand");
+    const foodDetailCalories = document.getElementById("foodDetailCalories");
+    const foodDetailProtein = document.getElementById("foodDetailProtein");
+    const foodDetailCarbs = document.getElementById("foodDetailCarbs");
+    const foodDetailFat = document.getElementById("foodDetailFat");
+    const foodDetailServings = document.getElementById("foodDetailServings");
+    const foodDetailTotal = document.getElementById("foodDetailTotal");
+    const foodDetailAdd = document.getElementById("foodDetailAdd");
+    const foodDetailStatus = document.getElementById("foodDetailStatus");
+
+    const mealName = document.getElementById("mealName");
+    const mealCover = document.getElementById("mealCover");
+    const mealCoverPreview = document.getElementById("mealCoverPreview");
+    const labelScan = document.getElementById("labelScan");
+    const labelPreview = document.getElementById("labelPreview");
+    const labelDetectButton = document.getElementById("labelDetectButton");
+    const labelStatus = document.getElementById("labelStatus");
+    const ingredientSearch = document.getElementById("ingredientSearch");
+    const ingredientGrid = document.getElementById("ingredientGrid");
+    const ingredientList = document.getElementById("ingredientList");
+    const mealTotalCalories = document.getElementById("mealTotalCalories");
+    const mealTotalMacros = document.getElementById("mealTotalMacros");
+    const saveMealButton = document.getElementById("saveMealButton");
+    const createMealStatus = document.getElementById("createMealStatus");
+
+    const visionPhoto = document.getElementById("visionPhoto");
+    const visionPreview = document.getElementById("visionPreview");
+    const visionList = document.getElementById("visionList");
+    const visionStatus = document.getElementById("visionStatus");
+    const visionAddButton = document.getElementById("visionAddButton");
+    const visionAddMore = document.getElementById("visionAddMore");
+
+    const workoutCategories = document.getElementById("workoutCategories");
+    const exerciseList = document.getElementById("exerciseList");
+    const exerciseName = document.getElementById("exerciseName");
+    const exerciseLast = document.getElementById("exerciseLast");
+    const exerciseSets = document.getElementById("exerciseSets");
+    const exerciseWeights = document.getElementById("exerciseWeights");
+    const exerciseFeel = document.getElementById("exerciseFeel");
+    const exerciseFeelValue = document.getElementById("exerciseFeelValue");
+    const exerciseNotes = document.getElementById("exerciseNotes");
+    const addExerciseButton = document.getElementById("addExerciseButton");
+    const exerciseStatus = document.getElementById("exerciseStatus");
+    const currentWorkoutList = document.getElementById("currentWorkoutList");
+    const finishWorkoutButton = document.getElementById("finishWorkoutButton");
+    const workoutSummary = document.getElementById("workoutSummary");
+    const summarySets = document.getElementById("summarySets");
+    const summaryVolume = document.getElementById("summaryVolume");
+    const summaryCompare = document.getElementById("summaryCompare");
+    const summaryList = document.getElementById("summaryList");
+
+    const profileName = document.getElementById("profileName");
+    const profileTarget = document.getElementById("profileTarget");
+    const profileMaintenance = document.getElementById("profileMaintenance");
+    const profileGoal = document.getElementById("profileGoal");
+
+    const addButton = document.getElementById("addButton");
+    const quickAdd = document.getElementById("quickAdd");
+    const quickAddBackdrop = document.getElementById("quickAddBackdrop");
+    const quickAddItems = document.querySelectorAll("[data-quick]");
+    const logoutButton = document.getElementById("logoutButton");
+
+    let currentUserKey = null;
+    let activeCategory = "Chest";
+    let selectedExercise = null;
+    let currentWorkout = [];
+    let lastWorkoutSummary = null;
+    let foodMode = "Meal";
+    let selectedFoodItem = null;
+    let mealCoverData = "";
+    let ingredientSelection = [];
+    let visionItems = [];
+    let visionMode = "Meal";
+    let labelScanData = "";
+
+    const foodCatalog = [
+      { id: "chobani-greek", name: "Greek Yogurt", brand: "Chobani", calories: 130, protein: 13, carbs: 12, fat: 4 },
+      { id: "oikos-zero", name: "Triple Zero", brand: "Oikos", calories: 110, protein: 15, carbs: 9, fat: 0 },
+      { id: "rxbar-chocolate", name: "Chocolate Sea Salt Bar", brand: "RXBAR", calories: 210, protein: 12, carbs: 24, fat: 9 },
+      { id: "quest-chips", name: "Protein Chips", brand: "Quest", calories: 140, protein: 19, carbs: 5, fat: 4 },
+      { id: "fairlife-core", name: "Core Power Shake", brand: "Fairlife", calories: 230, protein: 42, carbs: 9, fat: 4 },
+      { id: "daves-bread", name: "Seed Bread Slice", brand: "Daves Killer", calories: 110, protein: 5, carbs: 22, fat: 2 },
+      { id: "jif-pb", name: "Natural Peanut Butter", brand: "Jif", calories: 190, protein: 7, carbs: 8, fat: 16 },
+      { id: "barilla-protein", name: "Protein Pasta", brand: "Barilla", calories: 190, protein: 10, carbs: 38, fat: 2 },
+      { id: "tyson-chicken", name: "Grilled Chicken", brand: "Tyson", calories: 110, protein: 23, carbs: 1, fat: 1 },
+      { id: "tj-cauliflower", name: "Cauliflower Rice", brand: "Trader Joes", calories: 30, protein: 2, carbs: 6, fat: 0 },
+      { id: "starbucks-egg", name: "Egg Bites", brand: "Starbucks", calories: 170, protein: 12, carbs: 11, fat: 8 },
+      { id: "almonds", name: "Roasted Almonds", brand: "Blue Diamond", calories: 170, protein: 6, carbs: 6, fat: 15 },
+      { id: "kind-butter", name: "Almond Butter Bar", brand: "Kind", calories: 190, protein: 5, carbs: 16, fat: 12 },
+      { id: "chipotle-bowl", name: "Burrito Bowl", brand: "Chipotle", calories: 620, protein: 38, carbs: 67, fat: 20 },
+      { id: "gatorade-zero", name: "Zero Sports Drink", brand: "Gatorade", calories: 0, protein: 0, carbs: 0, fat: 0 }
+    ];
+
+    const foodTones = [
+      "linear-gradient(145deg, rgba(232, 144, 190, 0.5), rgba(255, 251, 235, 0.1))",
+      "linear-gradient(145deg, rgba(255, 251, 235, 0.25), rgba(232, 144, 190, 0.15))",
+      "linear-gradient(145deg, rgba(100, 30, 79, 0.5), rgba(23, 45, 51, 0.2))",
+      "linear-gradient(145deg, rgba(71, 48, 79, 0.5), rgba(255, 251, 235, 0.1))"
+    ];
+
+    const workoutCatalog = {
+      Chest: ["Bench Press", "Incline Dumbbell Press", "Chest Fly", "Push-ups"],
+      Arms: ["Bicep Curl", "Hammer Curl", "Tricep Pushdown", "Skull Crushers"],
+      Back: ["Pull-ups", "Lat Pulldown", "Barbell Row", "Seated Cable Row"],
+      Shoulders: ["Overhead Press", "Lateral Raise", "Rear Delt Fly", "Arnold Press"],
+      Legs: ["Squat", "Romanian Deadlift", "Leg Press", "Calf Raises"],
+      Cardio: ["Running", "Cycling", "Rowing", "Stair Climber"]
+    };
+
+    const screenMeta = {
+      home: { title: "Home", tab: "home" },
+      setup: { title: "Setup" },
+      food: { title: "Food", tab: "food" },
+      workout: { title: "Workout", tab: "workout" },
+      profile: { title: "Profile", tab: "profile" },
+      "add-food": { title: "Add food", tab: "food", back: "food" },
+      "food-library": { title: "Food library", tab: "food", back: "add-food" },
+      "food-detail": { title: "Food details", tab: "food", back: "food-library" },
+      "create-meal": { title: "Create meal", tab: "food", back: "food-library" },
+      "food-vision": { title: "Vision scan", tab: "food", back: "add-food" }
+    };
+
+    const readStore = (key, fallback) => {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    };
+
+    const writeStore = (key, value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    };
+
+    const normalizeName = (value) => value.trim().toLowerCase();
+
+    const hashPassword = async (value) => {
+      const data = new TextEncoder().encode(value);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    };
+
+    const ensureProgressSlot = (nameKey) => {
+      const progress = readStore(PROGRESS_KEY, {});
+      if (!progress[nameKey]) {
+        progress[nameKey] = {
+          weight: [],
+          meals: [],
+          workouts: [],
+          customMeals: [],
+          profile: null,
+          nutrition: null,
+          mlSummary: [
+            "Focus on upper back volume for symmetry.",
+            "Add 10 minutes of zone 2 cardio twice per week.",
+            "Keep protein high on training days."
+          ]
+        };
+        writeStore(PROGRESS_KEY, progress);
+      }
+    };
+
+    const setAuthMode = (mode) => {
+      authButtons.forEach((button) => button.classList.toggle("active", button.dataset.auth === mode));
+      authPanels.forEach((panel) => panel.classList.toggle("active", panel.dataset.auth === mode));
+    };
+
+    const showScreen = (screen) => {
+      const meta = screenMeta[screen] || screenMeta.home;
+      screens.forEach((panel) => panel.classList.toggle("active", panel.dataset.screen === screen));
+      tabButtons.forEach((button) => button.classList.toggle("active", meta.tab && button.dataset.tab === meta.tab));
+      screenTitle.textContent = meta.title;
+      if (meta.back) {
+        backButton.hidden = false;
+        backButton.dataset.back = meta.back;
+      } else {
+        backButton.hidden = true;
+        backButton.dataset.back = "";
+      }
+    };
+
+    const enterApp = (nameKey) => {
+      const users = readStore(USER_KEY, {});
+      const user = users[nameKey];
+      if (!user) return;
+      currentUserKey = nameKey;
+      const progress = getProgress();
+      const initials = user.displayName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+      userChip.textContent = initials || "RS";
+      profileName.textContent = user.displayName;
+      authView.classList.add("hidden");
+      appView.classList.remove("hidden");
+      applyProfileDefaults(progress);
+      showScreen(progress.profile ? "home" : "setup");
+      renderAll();
+    };
+
+    const exitApp = () => {
+      writeStore(SESSION_KEY, null);
+      currentUserKey = null;
+      currentWorkout = [];
+      lastWorkoutSummary = null;
+      selectedExercise = null;
+      appView.classList.add("hidden");
+      authView.classList.remove("hidden");
+    };
+
+    const getProgress = () => {
+      const progress = readStore(PROGRESS_KEY, {});
+      return progress[currentUserKey] || { weight: [], meals: [], workouts: [], customMeals: [], profile: null, nutrition: null, mlSummary: [] };
+    };
+
+    const saveProgress = (updated) => {
+      const progress = readStore(PROGRESS_KEY, {});
+      progress[currentUserKey] = updated;
+      writeStore(PROGRESS_KEY, progress);
+    };
+
+    const applyProfileDefaults = (progress) => {
+      if (!progress || !progress.profile) return;
+      const { sex, age, activity } = progress.profile;
+      if (sex && profileSex) {
+        profileSex.value = sex;
+      }
+      if (age && profileAge) {
+        profileAge.value = age;
+      }
+      if (activity && profileActivity) {
+        profileActivity.value = activity;
+      }
+      if (sex && (sex === "female" || sex === "male")) {
+        calorieSex.value = sex;
+      }
+      if (age) {
+        calorieAge.value = age;
+      }
+      if (activity) {
+        calorieActivity.value = activity;
+      }
+    };
+
+    const todayKey = () => new Date().toDateString();
+    const sameDay = (date) => new Date(date).toDateString() === todayKey();
+    const withinDays = (date, days) => (Date.now() - new Date(date).getTime()) <= days * 86400000;
+
+    const formatDate = (iso) => {
+      const date = new Date(iso);
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    };
+
+    const formatTime = (iso) => {
+      const date = new Date(iso);
+      return date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    };
+
+    const calcCalories = (progress) => {
+      const nutrition = progress.nutrition;
+      const todayMeals = progress.meals.filter((meal) => sameDay(meal.date));
+      const consumed = todayMeals.reduce((sum, meal) => sum + (meal.calories || 0), 0);
+      if (!nutrition || !nutrition.target) {
+        return { target: null, consumed, remaining: null };
+      }
+      const remaining = Math.round(nutrition.target - consumed);
+      return { target: nutrition.target, consumed, remaining };
+    };
+
+    const parseWeights = (value) => (
+      value
+        .split(",")
+        .map((item) => parseFloat(item.trim()))
+        .filter((item) => !Number.isNaN(item))
+    );
+
+    const computeWorkoutTotals = (entries) => {
+      const totalSets = entries.reduce((sum, entry) => sum + (entry.sets || 0), 0);
+      const totalVolume = entries.reduce((sum, entry) => sum + (entry.weights || []).reduce((acc, weight) => acc + weight, 0), 0);
+      return { totalSets, totalVolume: Math.round(totalVolume) };
+    };
+
+    const getCatalogItems = (progress) => {
+      const custom = (progress.customMeals || []).map((meal) => ({
+        id: meal.id,
+        name: meal.name,
+        brand: "Custom",
+        calories: meal.calories,
+        protein: meal.protein,
+        carbs: meal.carbs,
+        fat: meal.fat,
+        photo: meal.coverPhoto || "",
+        isCustom: true,
+        ingredients: meal.ingredients || []
+      }));
+      return [...custom, ...foodCatalog];
+    };
+
+    const findFoodItem = (id) => {
+      const progress = getProgress();
+      const items = getCatalogItems(progress);
+      return items.find((item) => item.id === id);
+    };
+
+    const renderHome = (progress) => {
+      const weightWeek = progress.weight.filter((entry) => withinDays(entry.date, 7));
+      const latestWeight = progress.weight[0];
+      homeWeight.textContent = latestWeight ? `${latestWeight.value} lbs` : "--";
+      if (weightWeek.length > 1) {
+        const change = weightWeek[0].value - weightWeek[weightWeek.length - 1].value;
+        const sign = change > 0 ? "+" : "";
+        homeWeightChange.textContent = `${sign}${change.toFixed(1)} lbs`;
+      } else {
+        homeWeightChange.textContent = "--";
+      }
+      const workoutsWeek = progress.workouts.filter((entry) => withinDays(entry.date, 7));
+      homeWorkouts.textContent = workoutsWeek.length;
+      const mealsWeek = progress.meals.filter((entry) => withinDays(entry.date, 7));
+      const workoutMinutes = workoutsWeek.reduce((sum, entry) => sum + (entry.minutes || (entry.totalSets ? entry.totalSets * 2 : 0)), 0);
+      homeMealsWeekly.textContent = mealsWeek.length;
+      homeWorkoutMinutes.textContent = workoutMinutes;
+      const calories = calcCalories(progress);
+      homeCaloriesRemaining.textContent = calories.target ? `${calories.remaining} kcal` : "Set target";
+      mlSummary.innerHTML = "";
+      const summary = progress.mlSummary && progress.mlSummary.length ? progress.mlSummary : [
+        "Awaiting scan data from your next upload.",
+        "Keep protein steady for recovery.",
+        "Stay hydrated for better training output."
+      ];
+      summary.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        mlSummary.appendChild(li);
+      });
+    };
+
+    const renderFood = (progress) => {
+      const calories = calcCalories(progress);
+      caloriesRemaining.textContent = calories.target ? `${calories.remaining} kcal` : "--";
+      caloriesTarget.textContent = calories.target ? `${Math.round(calories.target)} kcal` : "--";
+      caloriesConsumed.textContent = calories.target ? `${Math.round(calories.consumed)} kcal` : "--";
+      const hasTarget = Boolean(progress.nutrition && progress.nutrition.target);
+      calorieSetup.classList.toggle("hidden", hasTarget);
+      foodLog.classList.toggle("hidden", !hasTarget);
+      const todayMeals = progress.meals.filter((meal) => sameDay(meal.date));
+      foodEntries.textContent = todayMeals.length;
+      const protein = todayMeals.reduce((sum, meal) => sum + (meal.protein || 0), 0);
+      const carbs = todayMeals.reduce((sum, meal) => sum + (meal.carbs || 0), 0);
+      const fat = todayMeals.reduce((sum, meal) => sum + (meal.fat || 0), 0);
+      foodMacros.textContent = `${Math.round(protein)}P / ${Math.round(carbs)}C / ${Math.round(fat)}F`;
+      if (!todayMeals.length) {
+        foodLogList.innerHTML = "<li><span>No meals logged</span><strong>--</strong></li>";
+      } else {
+        foodLogList.innerHTML = todayMeals.map((meal) => {
+          const entryType = meal.type || "Meal";
+          const entryName = meal.name || meal.tag || "Food";
+          return `<li><span>${entryType} - ${entryName} - ${formatTime(meal.date)}</span><strong>${meal.calories || 0} kcal</strong></li>`;
+        }).join("");
+      }
+    };
+
+    const getLastExerciseEntry = (exercise) => {
+      const progress = getProgress();
+      for (const session of progress.workouts) {
+        if (!session.exercises) continue;
+        const found = session.exercises.find((item) => item.name === exercise);
+        if (found) return found;
+      }
+      return null;
+    };
+
+    const renderExerciseList = () => {
+      const exercises = workoutCatalog[activeCategory] || [];
+      exerciseList.innerHTML = "";
+      exercises.forEach((exercise) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "exercise-item";
+        button.textContent = exercise;
+        button.dataset.exercise = exercise;
+        if (selectedExercise === exercise) {
+          button.classList.add("active");
+        }
+        const lastEntry = getLastExerciseEntry(exercise);
+        if (lastEntry) {
+          const detail = document.createElement("span");
+          const lastWeight = lastEntry.weights && lastEntry.weights.length
+            ? lastEntry.weights.join(", ")
+            : (lastEntry.weight ? `${lastEntry.weight}` : "--");
+          detail.textContent = lastWeight === "--" ? "Last: --" : `Last: ${lastWeight} lbs`;
+          button.appendChild(detail);
+        }
+        exerciseList.appendChild(button);
+      });
+      if (!exercises.length) {
+        exerciseList.innerHTML = "<div class=\"stat-row\"><span>No exercises yet</span><strong>--</strong></div>";
+      }
+    };
+
+    const updateExercisePanel = () => {
+      if (!selectedExercise) {
+        exerciseName.textContent = "--";
+        exerciseLast.textContent = "--";
+        return;
+      }
+      exerciseName.textContent = selectedExercise;
+      const lastEntry = getLastExerciseEntry(selectedExercise);
+      if (lastEntry) {
+        const lastWeight = lastEntry.weights && lastEntry.weights.length
+          ? lastEntry.weights.join(", ")
+          : (lastEntry.weight ? `${lastEntry.weight}` : "--");
+        exerciseLast.textContent = lastWeight === "--" ? "--" : `${lastWeight} lbs`;
+      } else {
+        exerciseLast.textContent = "New";
+      }
+    };
+
+    const renderCurrentWorkout = () => {
+      if (!currentWorkout.length) {
+        currentWorkoutList.innerHTML = "<li><span>No exercises logged</span><strong>--</strong></li>";
+        finishWorkoutButton.classList.add("hidden");
+        return;
+      }
+      currentWorkoutList.innerHTML = currentWorkout.map((entry) => (
+        `<li><span>${entry.name} - ${entry.sets} sets</span><strong>${entry.weights.join(", ")} lbs</strong></li>`
+      )).join("");
+      finishWorkoutButton.classList.remove("hidden");
+    };
+
+    const renderWorkoutSummary = () => {
+      if (!lastWorkoutSummary) {
+        workoutSummary.classList.add("hidden");
+        return;
+      }
+      summarySets.textContent = lastWorkoutSummary.totalSets;
+      summaryVolume.textContent = `${lastWorkoutSummary.totalVolume} lbs`;
+      summaryCompare.textContent = lastWorkoutSummary.compareText;
+      summaryList.innerHTML = lastWorkoutSummary.entries.map((entry) => (
+        `<li><span>${entry.name} - ${entry.sets} sets</span><strong>${entry.weights.join(", ")} lbs</strong></li>`
+      )).join("");
+      workoutSummary.classList.remove("hidden");
+    };
+
+    const renderWorkoutScreen = () => {
+      renderExerciseList();
+      updateExercisePanel();
+      renderCurrentWorkout();
+      renderWorkoutSummary();
+    };
+
+    const renderProfile = (progress) => {
+      const nutrition = progress.nutrition;
+      profileTarget.textContent = nutrition && nutrition.target ? `${Math.round(nutrition.target)} kcal` : "--";
+      profileMaintenance.textContent = nutrition && nutrition.maintenance ? `${Math.round(nutrition.maintenance)} kcal` : "--";
+      profileGoal.textContent = nutrition && nutrition.goalWeight ? `${nutrition.goalWeight} lbs` : "--";
+    };
+
+    const renderFoodLibrary = () => {
+      if (!currentUserKey) return;
+      const progress = getProgress();
+      const query = foodSearch.value.trim().toLowerCase();
+      const items = getCatalogItems(progress).filter((item) => {
+        if (!query) return true;
+        return `${item.name} ${item.brand}`.toLowerCase().includes(query);
+      });
+      foodModeLabel.textContent = foodMode;
+      foodGrid.innerHTML = "";
+      const createTile = document.createElement("button");
+      createTile.type = "button";
+      createTile.className = "food-tile create";
+      createTile.dataset.action = "create-meal";
+      createTile.innerHTML = `
+        <div class="food-photo">Create</div>
+        <span class="food-name">Create meal</span>
+        <span class="food-brand">Custom</span>
+      `;
+      foodGrid.appendChild(createTile);
+
+      items.forEach((item, index) => {
+        const tile = document.createElement("button");
+        tile.type = "button";
+        tile.className = "food-tile";
+        tile.dataset.id = item.id;
+        const photoHtml = item.photo
+          ? `<img src="${item.photo}" alt="${item.name} photo" />`
+          : "";
+        tile.innerHTML = `
+          <div class="food-photo">${photoHtml}</div>
+          <span class="food-name">${item.name}</span>
+          <span class="food-brand">${item.brand}</span>
+        `;
+        const photo = tile.querySelector(".food-photo");
+        if (!item.photo) {
+          photo.style.background = foodTones[index % foodTones.length];
+        }
+        foodGrid.appendChild(tile);
+      });
+    };
+
+    const renderFoodDetail = () => {
+      if (!selectedFoodItem) return;
+      foodDetailName.textContent = selectedFoodItem.name;
+      foodDetailBrand.textContent = selectedFoodItem.brand;
+      foodDetailCalories.textContent = `${selectedFoodItem.calories} kcal`;
+      foodDetailProtein.textContent = `${selectedFoodItem.protein} g`;
+      foodDetailCarbs.textContent = `${selectedFoodItem.carbs} g`;
+      foodDetailFat.textContent = `${selectedFoodItem.fat} g`;
+      foodDetailServings.value = "1";
+      foodDetailStatus.textContent = "";
+      foodDetailPhoto.textContent = "Food";
+      if (selectedFoodItem.photo) {
+        foodDetailPhoto.innerHTML = `<img src="${selectedFoodItem.photo}" alt="${selectedFoodItem.name} photo" />`;
+      } else {
+        foodDetailPhoto.innerHTML = "";
+      }
+      updateFoodDetailTotals();
+    };
+
+    const updateFoodDetailTotals = () => {
+      if (!selectedFoodItem) return;
+      const servings = parseFloat(foodDetailServings.value) || 0;
+      const totalCalories = Math.round(selectedFoodItem.calories * servings);
+      foodDetailTotal.textContent = `${totalCalories} kcal`;
+    };
+
+    const addFoodEntry = (item, servings, entryType) => {
+      const progress = getProgress();
+      const entry = {
+        id: item.id,
+        name: item.name,
+        type: entryType,
+        servings,
+        calories: Math.round(item.calories * servings),
+        protein: Math.round(item.protein * servings),
+        carbs: Math.round(item.carbs * servings),
+        fat: Math.round(item.fat * servings),
+        date: new Date().toISOString()
+      };
+      progress.meals.unshift(entry);
+      saveProgress(progress);
+      renderAll();
+    };
+
+    const renderIngredientGrid = () => {
+      const query = ingredientSearch.value.trim().toLowerCase();
+      const items = foodCatalog.filter((item) => {
+        if (!query) return true;
+        return `${item.name} ${item.brand}`.toLowerCase().includes(query);
+      });
+      ingredientGrid.innerHTML = "";
+      items.forEach((item, index) => {
+        const tile = document.createElement("button");
+        tile.type = "button";
+        tile.className = "food-tile";
+        tile.dataset.id = item.id;
+        tile.innerHTML = `
+          <div class="food-photo"></div>
+          <span class="food-name">${item.name}</span>
+          <span class="food-brand">${item.brand}</span>
+        `;
+        const photo = tile.querySelector(".food-photo");
+        photo.style.background = foodTones[index % foodTones.length];
+        ingredientGrid.appendChild(tile);
+      });
+    };
+
+    const renderIngredientList = () => {
+      ingredientList.innerHTML = "";
+      let totalCalories = 0;
+      let totalProtein = 0;
+      let totalCarbs = 0;
+      let totalFat = 0;
+      ingredientSelection.forEach((item) => {
+        totalCalories += item.calories * item.servings;
+        totalProtein += item.protein * item.servings;
+        totalCarbs += item.carbs * item.servings;
+        totalFat += item.fat * item.servings;
+        const row = document.createElement("div");
+        row.className = "ingredient-row";
+        row.dataset.id = item.id;
+        row.innerHTML = `
+          <div>
+            <strong>${item.name}</strong>
+            <span>${item.brand} - ${item.calories} kcal per serving</span>
+          </div>
+          <input class="ingredient-input" type="number" step="0.1" value="${item.servings}" />
+          <div>
+            <input class="ingredient-note" type="text" placeholder="Amount notes" value="${item.note || ""}" />
+            <button class="remove-button" type="button">Remove</button>
+          </div>
+        `;
+        ingredientList.appendChild(row);
+      });
+      mealTotalCalories.textContent = Math.round(totalCalories);
+      mealTotalMacros.textContent = `${Math.round(totalProtein)}P / ${Math.round(totalCarbs)}C / ${Math.round(totalFat)}F`;
+    };
+
+    const renderVisionList = () => {
+      visionList.innerHTML = "";
+      if (!visionItems.length) {
+        visionList.innerHTML = "<div class=\"stat-row\"><span>No foods detected yet</span><strong>--</strong></div>";
+        return;
+      }
+      visionItems.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "ingredient-row";
+        row.dataset.id = item.id;
+        row.innerHTML = `
+          <div>
+            <strong>${item.name}</strong>
+            <span>${item.brand} - ${item.calories} kcal per serving</span>
+          </div>
+          <input class="ingredient-input" type="number" step="0.1" value="${item.servings}" />
+          <button class="remove-button" type="button">Remove</button>
+        `;
+        visionList.appendChild(row);
+      });
+    };
+
+    const renderAll = () => {
+      if (!currentUserKey) return;
+      const progress = getProgress();
+      renderHome(progress);
+      renderFood(progress);
+      renderWorkoutScreen();
+      renderProfile(progress);
+      renderFoodLibrary();
+      renderIngredientGrid();
+      renderIngredientList();
+    };
+
+    authButtons.forEach((button) => {
+      button.addEventListener("click", () => setAuthMode(button.dataset.auth));
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginStatus.textContent = "";
+      loginStatus.className = "status";
+      const name = document.getElementById("login-name").value.trim();
+      const password = document.getElementById("login-password").value.trim();
+      if (!name || !password) {
+        loginStatus.textContent = "Enter your name and password.";
+        loginStatus.classList.add("error");
+        return;
+      }
+      const users = readStore(USER_KEY, {});
+      const nameKey = normalizeName(name);
+      const user = users[nameKey];
+      if (!user) {
+        loginStatus.textContent = "No account found for that name.";
+        loginStatus.classList.add("error");
+        return;
+      }
+      const hash = await hashPassword(password);
+      if (hash !== user.hash) {
+        loginStatus.textContent = "Incorrect password.";
+        loginStatus.classList.add("error");
+        return;
+      }
+      writeStore(SESSION_KEY, { nameKey, loginAt: new Date().toISOString() });
+      ensureProgressSlot(nameKey);
+      loginStatus.textContent = `Welcome back, ${user.displayName}.`;
+      loginStatus.classList.add("success");
+      enterApp(nameKey);
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      signupStatus.textContent = "";
+      signupStatus.className = "status";
+      const name = document.getElementById("signup-name").value.trim();
+      const password = document.getElementById("signup-password").value.trim();
+      if (!name || !password) {
+        signupStatus.textContent = "Add a name and password.";
+        signupStatus.classList.add("error");
+        return;
+      }
+      const users = readStore(USER_KEY, {});
+      const nameKey = normalizeName(name);
+      if (users[nameKey]) {
+        signupStatus.textContent = "That name is already taken.";
+        signupStatus.classList.add("error");
+        return;
+      }
+      const hash = await hashPassword(password);
+      users[nameKey] = { displayName: name, hash, createdAt: new Date().toISOString() };
+      writeStore(USER_KEY, users);
+      ensureProgressSlot(nameKey);
+      writeStore(SESSION_KEY, { nameKey, loginAt: new Date().toISOString() });
+      signupStatus.textContent = "Account created.";
+      signupStatus.classList.add("success");
+      enterApp(nameKey);
+    });
+
+    profileForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      profileStatus.textContent = "";
+      profileStatus.className = "status";
+      const sex = profileSex.value;
+      const age = parseInt(profileAge.value, 10);
+      const activity = parseFloat(profileActivity.value);
+      if (!age || !activity) {
+        profileStatus.textContent = "Fill out all fields.";
+        profileStatus.classList.add("error");
+        return;
+      }
+      const progress = getProgress();
+      progress.profile = {
+        sex,
+        age,
+        activity,
+        updatedAt: new Date().toISOString()
+      };
+      saveProgress(progress);
+      applyProfileDefaults(progress);
+      profileStatus.textContent = "Profile saved.";
+      profileStatus.classList.add("success");
+      showScreen("home");
+      renderAll();
+    });
+
+    backButton.addEventListener("click", () => {
+      if (backButton.dataset.back) {
+        showScreen(backButton.dataset.back);
+      }
+    });
+
+    tabButtons.forEach((button) => {
+      button.addEventListener("click", () => showScreen(button.dataset.tab));
+    });
+
+    addButton.addEventListener("click", () => {
+      quickAdd.classList.remove("hidden");
+    });
+
+    quickAddBackdrop.addEventListener("click", () => {
+      quickAdd.classList.add("hidden");
+    });
+
+    quickAddItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        quickAdd.classList.add("hidden");
+        showScreen(item.dataset.quick);
+      });
+    });
+
+    addFoodFromTab.addEventListener("click", () => {
+      showScreen("add-food");
+    });
+
+    document.querySelectorAll("[data-food-mode]").forEach((button) => {
+      button.addEventListener("click", () => {
+        foodMode = button.dataset.foodMode;
+        showScreen("food-library");
+        renderFoodLibrary();
+      });
+    });
+
+    document.getElementById("openVision").addEventListener("click", () => {
+      showScreen("food-vision");
+    });
+
+    foodSearch.addEventListener("input", renderFoodLibrary);
+
+    foodGrid.addEventListener("click", (event) => {
+      const tile = event.target.closest(".food-tile");
+      if (!tile) return;
+      if (tile.dataset.action === "create-meal") {
+        showScreen("create-meal");
+        return;
+      }
+      const id = tile.dataset.id;
+      const item = findFoodItem(id);
+      if (!item) return;
+      selectedFoodItem = item;
+      showScreen("food-detail");
+      renderFoodDetail();
+    });
+
+    foodDetailServings.addEventListener("input", updateFoodDetailTotals);
+
+    foodDetailAdd.addEventListener("click", () => {
+      if (!selectedFoodItem) return;
+      const servings = parseFloat(foodDetailServings.value) || 0;
+      if (!servings) {
+        foodDetailStatus.textContent = "Add servings first.";
+        foodDetailStatus.className = "status error";
+        return;
+      }
+      addFoodEntry(selectedFoodItem, servings, foodMode);
+      foodDetailStatus.textContent = "Added to log.";
+      foodDetailStatus.className = "status success";
+      showScreen("food");
+    });
+
+    ingredientSearch.addEventListener("input", renderIngredientGrid);
+
+    ingredientGrid.addEventListener("click", (event) => {
+      const tile = event.target.closest(".food-tile");
+      if (!tile) return;
+      const item = foodCatalog.find((food) => food.id === tile.dataset.id);
+      if (!item) return;
+      const existing = ingredientSelection.find((entry) => entry.id === item.id);
+      if (existing) {
+        existing.servings += 1;
+      } else {
+        ingredientSelection.push({ ...item, servings: 1, note: "" });
+      }
+      renderIngredientList();
+    });
+
+    ingredientList.addEventListener("input", (event) => {
+      const row = event.target.closest(".ingredient-row");
+      if (!row) return;
+      const item = ingredientSelection.find((entry) => entry.id === row.dataset.id);
+      if (!item) return;
+      if (event.target.classList.contains("ingredient-input")) {
+        item.servings = parseFloat(event.target.value) || 0;
+      }
+      if (event.target.classList.contains("ingredient-note")) {
+        item.note = event.target.value;
+      }
+      renderIngredientList();
+    });
+
+    ingredientList.addEventListener("click", (event) => {
+      if (!event.target.classList.contains("remove-button")) return;
+      const row = event.target.closest(".ingredient-row");
+      ingredientSelection = ingredientSelection.filter((entry) => entry.id !== row.dataset.id);
+      renderIngredientList();
+    });
+
+    mealCover.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        mealCoverData = "";
+        mealCoverPreview.textContent = "No cover selected";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        mealCoverData = readerEvent.target.result;
+        mealCoverPreview.innerHTML = `<img src="${mealCoverData}" alt="Meal cover preview" />`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    labelScan.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      labelStatus.textContent = "";
+      labelStatus.className = "status";
+      if (!file) {
+        labelScanData = "";
+        labelPreview.textContent = "No label selected";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        labelScanData = readerEvent.target.result;
+        labelPreview.innerHTML = `<img src="${labelScanData}" alt="Label scan preview" />`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    labelDetectButton.addEventListener("click", () => {
+      labelStatus.textContent = "";
+      labelStatus.className = "status";
+      if (!labelScan.files.length) {
+        labelStatus.textContent = "Upload a label photo first.";
+        labelStatus.classList.add("error");
+        return;
+      }
+      const fileName = labelScan.files[0].name.toLowerCase();
+      const tokens = fileName.replace(/\.[^/.]+$/, "").split(/[^a-z0-9]+/).filter((token) => token.length > 2);
+      let detected = foodCatalog.find((item) => (
+        tokens.some((token) => `${item.name} ${item.brand} ${item.id}`.toLowerCase().includes(token))
+      ));
+      if (!detected) {
+        detected = foodCatalog[Math.floor(Math.random() * foodCatalog.length)];
+      }
+      const existing = ingredientSelection.find((entry) => entry.id === detected.id);
+      if (existing) {
+        existing.servings += 1;
+      } else {
+        ingredientSelection.push({ ...detected, servings: 1, note: "Label scan" });
+      }
+      renderIngredientList();
+      labelStatus.textContent = `${detected.name} added. Set the amount below.`;
+      labelStatus.classList.add("success");
+    });
+
+    saveMealButton.addEventListener("click", () => {
+      createMealStatus.textContent = "";
+      createMealStatus.className = "status";
+      const name = mealName.value.trim();
+      if (!name) {
+        createMealStatus.textContent = "Add a meal name.";
+        createMealStatus.classList.add("error");
+        return;
+      }
+      if (!ingredientSelection.length) {
+        createMealStatus.textContent = "Add ingredients to save.";
+        createMealStatus.classList.add("error");
+        return;
+      }
+      const totalCalories = ingredientSelection.reduce((sum, item) => sum + (item.calories * item.servings), 0);
+      const totalProtein = ingredientSelection.reduce((sum, item) => sum + (item.protein * item.servings), 0);
+      const totalCarbs = ingredientSelection.reduce((sum, item) => sum + (item.carbs * item.servings), 0);
+      const totalFat = ingredientSelection.reduce((sum, item) => sum + (item.fat * item.servings), 0);
+      const progress = getProgress();
+      const newMeal = {
+        id: `custom-${Date.now()}`,
+        name,
+        calories: Math.round(totalCalories),
+        protein: Math.round(totalProtein),
+        carbs: Math.round(totalCarbs),
+        fat: Math.round(totalFat),
+        coverPhoto: mealCoverData,
+        ingredients: ingredientSelection.map((item) => ({
+          id: item.id,
+          name: item.name,
+          brand: item.brand,
+          servings: item.servings,
+          note: item.note
+        }))
+      };
+      progress.customMeals.unshift(newMeal);
+      saveProgress(progress);
+      ingredientSelection = [];
+      mealCoverData = "";
+      mealCoverPreview.textContent = "No cover selected";
+      mealName.value = "";
+      mealCover.value = "";
+      labelScan.value = "";
+      labelScanData = "";
+      labelPreview.textContent = "No label selected";
+      renderFoodLibrary();
+      renderIngredientList();
+      createMealStatus.textContent = "Meal saved to your library.";
+      createMealStatus.classList.add("success");
+      showScreen("food-library");
+    });
+
+    document.querySelectorAll("#visionMode .tag-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("#visionMode .tag-button").forEach((tag) => tag.classList.remove("active"));
+        button.classList.add("active");
+        visionMode = button.dataset.vision;
+      });
+    });
+
+    visionPhoto.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        visionPreview.textContent = "No photo selected";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        visionPreview.innerHTML = `<img src="${readerEvent.target.result}" alt="Food scan preview" />`;
+      };
+      reader.readAsDataURL(file);
+      visionItems = foodCatalog.slice(0, 3).map((item) => ({ ...item, servings: 1 }));
+      renderVisionList();
+    });
+
+    visionList.addEventListener("input", (event) => {
+      const row = event.target.closest(".ingredient-row");
+      if (!row) return;
+      const item = visionItems.find((entry) => entry.id === row.dataset.id);
+      if (!item) return;
+      if (event.target.classList.contains("ingredient-input")) {
+        item.servings = parseFloat(event.target.value) || 0;
+      }
+    });
+
+    visionList.addEventListener("click", (event) => {
+      if (!event.target.classList.contains("remove-button")) return;
+      const row = event.target.closest(".ingredient-row");
+      visionItems = visionItems.filter((entry) => entry.id !== row.dataset.id);
+      renderVisionList();
+    });
+
+    visionAddButton.addEventListener("click", () => {
+      visionStatus.textContent = "";
+      visionStatus.className = "status";
+      if (!visionItems.length) {
+        visionStatus.textContent = "Add foods to log.";
+        visionStatus.classList.add("error");
+        return;
+      }
+      visionItems.forEach((item) => {
+        addFoodEntry(item, item.servings, visionMode);
+      });
+      visionStatus.textContent = "Foods added to log.";
+      visionStatus.classList.add("success");
+      showScreen("food");
+    });
+
+    visionAddMore.addEventListener("click", () => {
+      showScreen("food-library");
+    });
+
+    calorieForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      calorieStatus.textContent = "";
+      calorieStatus.className = "status";
+      const sex = calorieSex.value;
+      const age = parseInt(calorieAge.value, 10);
+      const heightIn = parseFloat(document.getElementById("calorieHeight").value);
+      const weightLbs = parseFloat(document.getElementById("calorieWeight").value);
+      const activity = parseFloat(calorieActivity.value);
+      const goalWeight = parseFloat(document.getElementById("goalWeight").value);
+      const weeklyLoss = parseFloat(document.getElementById("weeklyLoss").value);
+      if (!age || !heightIn || !weightLbs || !goalWeight) {
+        calorieStatus.textContent = "Fill out all fields.";
+        calorieStatus.classList.add("error");
+        return;
+      }
+      const weightKg = weightLbs * 0.453592;
+      const heightCm = heightIn * 2.54;
+      const bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age) + (sex === "male" ? 5 : -161);
+      const maintenance = bmr * activity;
+      const dailyDeficit = goalWeight < weightLbs ? (weeklyLoss * 3500) / 7 : 0;
+      const minTarget = sex === "male" ? 1500 : 1200;
+      const targetRaw = maintenance - dailyDeficit;
+      const target = Math.max(Math.round(targetRaw), minTarget);
+      const progress = getProgress();
+      progress.nutrition = {
+        sex,
+        age,
+        heightIn,
+        weightLbs,
+        goalWeight,
+        weeklyLoss,
+        activity,
+        maintenance: Math.round(maintenance),
+        target,
+        updatedAt: new Date().toISOString()
+      };
+      saveProgress(progress);
+      calorieStatus.textContent = `Target set to ${target} kcal.`;
+      calorieStatus.classList.add("success");
+      renderAll();
+    });
+
+    editCalories.addEventListener("click", () => {
+      calorieSetup.classList.remove("hidden");
+      foodLog.classList.add("hidden");
+    });
+
+    resetCalories.addEventListener("click", () => {
+      const progress = getProgress();
+      progress.nutrition = null;
+      saveProgress(progress);
+      renderAll();
+      showScreen("food");
+    });
+
+    workoutCategories.addEventListener("click", (event) => {
+      const button = event.target.closest(".tag-button");
+      if (!button) return;
+      workoutCategories.querySelectorAll(".tag-button").forEach((tag) => tag.classList.remove("active"));
+      button.classList.add("active");
+      activeCategory = button.dataset.category;
+      selectedExercise = null;
+      renderWorkoutScreen();
+    });
+
+    exerciseList.addEventListener("click", (event) => {
+      const button = event.target.closest(".exercise-item");
+      if (!button) return;
+      selectedExercise = button.dataset.exercise;
+      renderExerciseList();
+      updateExercisePanel();
+    });
+
+    exerciseFeel.addEventListener("input", () => {
+      exerciseFeelValue.textContent = `${exerciseFeel.value}/10`;
+    });
+
+    addExerciseButton.addEventListener("click", () => {
+      exerciseStatus.textContent = "";
+      exerciseStatus.className = "status";
+      if (!selectedExercise) {
+        exerciseStatus.textContent = "Select an exercise first.";
+        exerciseStatus.classList.add("error");
+        return;
+      }
+      const weights = parseWeights(exerciseWeights.value);
+      let setsValue = parseInt(exerciseSets.value, 10);
+      if (!setsValue && weights.length) {
+        setsValue = weights.length;
+      }
+      if (!setsValue) {
+        exerciseStatus.textContent = "Add sets or weights.";
+        exerciseStatus.classList.add("error");
+        return;
+      }
+      if (!weights.length) {
+        exerciseStatus.textContent = "Add weights for each set.";
+        exerciseStatus.classList.add("error");
+        return;
+      }
+      let finalWeights = weights;
+      if (finalWeights.length === 1 && setsValue > 1) {
+        finalWeights = Array.from({ length: setsValue }, () => weights[0]);
+      }
+      if (finalWeights.length !== setsValue) {
+        setsValue = finalWeights.length;
+      }
+      if (!currentWorkout.length) {
+        lastWorkoutSummary = null;
+      }
+      currentWorkout.unshift({
+        name: selectedExercise,
+        category: activeCategory,
+        sets: setsValue,
+        weights: finalWeights,
+        feel: parseInt(exerciseFeel.value, 10),
+        notes: exerciseNotes.value.trim(),
+        date: new Date().toISOString()
+      });
+      exerciseSets.value = "";
+      exerciseWeights.value = "";
+      exerciseNotes.value = "";
+      exerciseFeel.value = "7";
+      exerciseFeelValue.textContent = "7/10";
+      exerciseStatus.textContent = "Added to workout.";
+      exerciseStatus.classList.add("success");
+      renderWorkoutScreen();
+    });
+
+    finishWorkoutButton.addEventListener("click", () => {
+      if (!currentWorkout.length) return;
+      const totals = computeWorkoutTotals(currentWorkout);
+      const progress = getProgress();
+      const lastSession = progress.workouts.find((entry) => entry.exercises && entry.exercises.length);
+      let compareText = "First workout logged";
+      if (lastSession) {
+        const lastTotals = computeWorkoutTotals(lastSession.exercises);
+        const diff = totals.totalVolume - lastTotals.totalVolume;
+        if (diff === 0) {
+          compareText = "Same volume as last time";
+        } else {
+          const sign = diff > 0 ? "+" : "";
+          compareText = `${sign}${diff} lbs vs last`;
+        }
+      }
+      const session = {
+        date: new Date().toISOString(),
+        exercises: currentWorkout,
+        totalSets: totals.totalSets,
+        totalVolume: totals.totalVolume
+      };
+      progress.workouts.unshift(session);
+      saveProgress(progress);
+      lastWorkoutSummary = {
+        entries: currentWorkout,
+        totalSets: totals.totalSets,
+        totalVolume: totals.totalVolume,
+        compareText
+      };
+      currentWorkout = [];
+      renderAll();
+      showScreen("workout");
+    });
+
+    logoutButton.addEventListener("click", exitApp);
+
+    const session = readStore(SESSION_KEY, null);
+    const users = readStore(USER_KEY, {});
+    if (session && session.nameKey && users[session.nameKey]) {
+      enterApp(session.nameKey);
+    }
+  </script>
+</body>
+</html>

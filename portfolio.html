@@ -102,11 +102,37 @@
       opacity: 1;
       transform: scaleX(1);
     }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-toggle {
+      cursor: pointer;
+    }
     .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
       background: rgba(255, 255, 255, 0.98);
       border: 1px solid var(--line);
       border-radius: 10px;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 0.5rem 0;
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    }
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a::after {
+      display: none;
     }
 
     main {
@@ -415,10 +441,6 @@
       <p class="eyebrow">Portfolio</p>
       <h1>Quiet, minimal interfaces for curious people.</h1>
       <p>A focused selection of interactive builds, data experiments, and learning tools.</p>
-      <div class="hero-actions">
-        <a class="primary" href="projects.html">View all projects</a>
-        <a href="index.html#contact">Start a collaboration</a>
-      </div>
     </header>
 
     <section aria-labelledby="travel-buddy">
