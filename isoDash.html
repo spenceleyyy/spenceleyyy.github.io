@@ -300,7 +300,7 @@
       pointer-events: auto;
     }
     .objective-panel {
-      top: 18px;
+      top: 96px;
       left: 18px;
     }
     .direction-panel {
@@ -492,7 +492,7 @@
         padding: 14px;
       }
       .objective-panel {
-        top: 14px;
+        top: 76px;
         left: 14px;
       }
       .direction-panel {
@@ -519,7 +519,29 @@
   <div class="hud">
     <div class="objective-panel">
       <div class="panel-title">Objectives</div>
-      <ul class="objective-list" id="objectiveList"></ul>
+      <ul class="objective-list" id="objectiveList">
+        <li class="objective-item">
+          <button class="objective-button" type="button" data-objective-id="signal-archive">
+            <span class="objective-index">01</span>
+            <span class="objective-name">Signal Archive</span>
+            <span class="objective-sub">EEG baseline file</span>
+          </button>
+        </li>
+        <li class="objective-item">
+          <button class="objective-button" type="button" data-objective-id="lab-terminal">
+            <span class="objective-index">02</span>
+            <span class="objective-name">Lab Terminal</span>
+            <span class="objective-sub">Mentor notes index</span>
+          </button>
+        </li>
+        <li class="objective-item">
+          <button class="objective-button" type="button" data-objective-id="insight-hub">
+            <span class="objective-index">03</span>
+            <span class="objective-name">Insight Hub</span>
+            <span class="objective-sub">Resource library map</span>
+          </button>
+        </li>
+      </ul>
     </div>
     <div class="coin-counter">
       <div class="coin-label">Coins</div>
@@ -735,10 +757,14 @@
     const maxObjectives = 3;
     const objectiveMarkers = [];
     const objectiveReachRadius = 1.15;
-    const objectiveLineHeight = 0.08;
+    const objectivePathRadius = 0.3;
+    const objectivePathHeight = 0.16;
+    const objectivePathSamples = 140;
     let activeObjective = null;
-    let objectiveLine = null;
-    let objectiveLinePositions = null;
+    let objectivePathMesh = null;
+    let objectivePathMaterial = null;
+    const objectivePathOrigin = new THREE.Vector3();
+    let objectivePathPending = false;
     let objectivePulse = 0;
     let objectiveInRange = false;
     const coins = [];
@@ -833,8 +859,16 @@
       if (!next) return;
       activeObjective = next;
       objectivePulse = 0;
+      objectivePathOrigin.set(charPos.x, 0, charPos.z);
       updateObjectiveSelectionUI();
       updateObjectiveMarkers();
+      if (activeObjective.position) {
+        buildObjectivePath(objectivePathOrigin, activeObjective.position, activeObjective.color);
+        objectivePathPending = false;
+      } else {
+        objectivePathPending = true;
+        if (objectivePathMesh) objectivePathMesh.visible = false;
+      }
       updateObjectiveTracking(0);
     }
 
@@ -2254,31 +2288,135 @@ out body geom;
         objective.marker = null;
         objective.position = null;
       });
-      if (objectiveLine) {
-        objectiveLine.visible = false;
+      if (objectivePathMesh) {
+        objectivePathMesh.parent?.remove(objectivePathMesh);
+        objectivePathMesh.geometry?.dispose?.();
+        objectivePathMesh = null;
+      }
+      if (activeObjective) {
+        objectivePathPending = true;
       }
     };
 
-    const ensureObjectiveLine = () => {
-      if (!cityGroup) return;
-      if (!objectiveLine) {
-        const geom = new THREE.BufferGeometry();
-        objectiveLinePositions = new Float32Array(6);
-        geom.setAttribute("position", new THREE.BufferAttribute(objectiveLinePositions, 3));
-        const material = new THREE.LineBasicMaterial({
-          color: 0x5de2ff,
-          transparent: true,
-          opacity: 0.8,
+    const ensureObjectivePathMaterial = () => {
+      if (objectivePathMaterial) return;
+      objectivePathMaterial = new THREE.MeshBasicMaterial({
+        color: 0x5de2ff,
+        transparent: true,
+        opacity: 0.9,
+        blending: THREE.AdditiveBlending,
+      });
+      objectivePathMaterial.depthTest = false;
+    };
+
+    const measurePathLength = (points) => {
+      if (!points || points.length < 2) return 0;
+      let length = 0;
+      for (let i = 1; i < points.length; i += 1) {
+        length += points[i].distanceTo(points[i - 1]);
+      }
+      return length;
+    };
+
+    const findClosestPointIndex = (points, pos) => {
+      let bestIndex = 0;
+      let bestDist = Infinity;
+      points.forEach((point, idx) => {
+        const dx = point.x - pos.x;
+        const dz = point.z - pos.z;
+        const dist = dx * dx + dz * dz;
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIndex = idx;
+        }
+      });
+      return bestIndex;
+    };
+
+    const sliceCurvePoints = (points, startIdx, endIdx) => {
+      if (startIdx <= endIdx) {
+        return points.slice(startIdx, endIdx + 1);
+      }
+      return points.slice(endIdx, startIdx + 1).reverse();
+    };
+
+    const dedupePathPoints = (points) => {
+      if (!points.length) return points;
+      const result = [points[0]];
+      for (let i = 1; i < points.length; i += 1) {
+        if (points[i].distanceTo(result[result.length - 1]) > 0.05) {
+          result.push(points[i]);
+        }
+      }
+      return result;
+    };
+
+    const buildObjectivePath = (fromPos, toPos, tone) => {
+      if (!cityGroup || !fromPos || !toPos) return;
+      const start = new THREE.Vector3(fromPos.x, objectivePathHeight, fromPos.z);
+      const end = new THREE.Vector3(toPos.x, objectivePathHeight, toPos.z);
+
+      let bestSegment = null;
+      let bestCost = Infinity;
+      roadCurves.forEach((curve) => {
+        const samples = curve.getPoints(objectivePathSamples);
+        if (samples.length < 2) return;
+        const startIdx = findClosestPointIndex(samples, start);
+        const endIdx = findClosestPointIndex(samples, end);
+        const segment = sliceCurvePoints(samples, startIdx, endIdx);
+        const segmentLength = measurePathLength(segment);
+        const cost = start.distanceTo(segment[0]) + end.distanceTo(segment[segment.length - 1]) + segmentLength;
+        if (cost < bestCost) {
+          bestCost = cost;
+          bestSegment = segment;
+        }
+      });
+
+      let pathPoints = [];
+      if (bestSegment && bestSegment.length) {
+        const snapStart = new THREE.Vector3(bestSegment[0].x, objectivePathHeight, bestSegment[0].z);
+        const snapEnd = new THREE.Vector3(
+          bestSegment[bestSegment.length - 1].x,
+          objectivePathHeight,
+          bestSegment[bestSegment.length - 1].z
+        );
+        pathPoints.push(start, snapStart);
+        bestSegment.forEach((point, idx) => {
+          if (idx === 0) return;
+          pathPoints.push(new THREE.Vector3(point.x, objectivePathHeight, point.z));
         });
-        material.depthTest = false;
-        objectiveLine = new THREE.Line(geom, material);
-        objectiveLine.visible = false;
-        objectiveLine.renderOrder = 3;
+        pathPoints.push(snapEnd, end);
+      } else {
+        pathPoints = [start, end];
       }
-      if (objectiveLine.parent !== cityGroup) {
-        objectiveLine.parent?.remove(objectiveLine);
-        cityGroup.add(objectiveLine);
+
+      pathPoints = dedupePathPoints(pathPoints);
+      if (pathPoints.length < 2) return;
+
+      const curve = new THREE.CatmullRomCurve3(pathPoints);
+      const geom = new THREE.TubeGeometry(
+        curve,
+        Math.max(100, pathPoints.length * 12),
+        objectivePathRadius,
+        16,
+        false
+      );
+      ensureObjectivePathMaterial();
+      if (tone) {
+        objectivePathMaterial.color.set(tone);
       }
+      if (!objectivePathMesh) {
+        objectivePathMesh = new THREE.Mesh(geom, objectivePathMaterial);
+        objectivePathMesh.renderOrder = 2;
+      } else {
+        objectivePathMesh.geometry.dispose();
+        objectivePathMesh.geometry = geom;
+      }
+      if (objectivePathMesh.parent !== cityGroup) {
+        objectivePathMesh.parent?.remove(objectivePathMesh);
+        cityGroup.add(objectivePathMesh);
+      }
+      objectivePathMesh.visible = true;
     };
 
     const createObjectiveMarkers = () => {
@@ -2290,24 +2428,30 @@ out body geom;
         const baseColor = new THREE.Color(objective.color ?? "#5de2ff");
         const activeColor = new THREE.Color("#ffd166");
         const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.5, 0.09, 8, 24),
+          new THREE.TorusGeometry(0.75, 0.14, 10, 32),
           new THREE.MeshBasicMaterial({
             color: baseColor,
             transparent: true,
-            opacity: 0.85,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending,
           })
         );
+        ring.material.depthTest = false;
+        ring.renderOrder = 4;
         ring.rotation.x = Math.PI / 2;
-        ring.position.y = 0.12;
+        ring.position.y = 0.16;
         const beam = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.08, 0.08, 1.6, 12, 1, true),
+          new THREE.CylinderGeometry(0.12, 0.12, 2.6, 16, 1, true),
           new THREE.MeshBasicMaterial({
             color: baseColor,
             transparent: true,
-            opacity: 0.45,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending,
           })
         );
-        beam.position.y = 0.95;
+        beam.material.depthTest = false;
+        beam.renderOrder = 3;
+        beam.position.y = 1.4;
         const marker = new THREE.Group();
         marker.add(ring, beam);
         marker.position.copy(objective.position);
@@ -2321,8 +2465,11 @@ out body geom;
         objectiveMarkers.push(marker);
         objective.marker = marker;
       });
-      ensureObjectiveLine();
       updateObjectiveMarkers();
+      if (objectivePathPending && activeObjective?.position) {
+        buildObjectivePath(objectivePathOrigin, activeObjective.position, activeObjective.color);
+        objectivePathPending = false;
+      }
     };
 
     const updateObjectiveMarkers = () => {
@@ -2333,7 +2480,7 @@ out body geom;
         const color = isActive ? marker.userData.activeColor : marker.userData.baseColor;
         if (ring?.material?.color) ring.material.color.copy(color);
         if (beam?.material?.color) beam.material.color.copy(color);
-        marker.userData.baseScale = isActive ? 1.08 : 0.96;
+        marker.userData.baseScale = isActive ? 1.25 : 1.05;
         marker.scale.setScalar(marker.userData.baseScale);
       });
     };
@@ -2345,7 +2492,7 @@ out body geom;
         directionArrow.style.transform = "rotate(0deg)";
         poiPrompt.classList.remove("active");
         objectiveInRange = false;
-        if (objectiveLine) objectiveLine.visible = false;
+        if (objectivePathMesh) objectivePathMesh.visible = false;
         return;
       }
       if (!activeObjective.position) {
@@ -2353,7 +2500,7 @@ out body geom;
         directionArrow.style.transform = "rotate(0deg)";
         poiPrompt.classList.remove("active");
         objectiveInRange = false;
-        if (objectiveLine) objectiveLine.visible = false;
+        if (objectivePathMesh) objectivePathMesh.visible = false;
         return;
       }
       const target = activeObjective.position;
@@ -2376,17 +2523,6 @@ out body geom;
         poiPrompt.classList.add("active");
       } else {
         poiPrompt.classList.remove("active");
-      }
-
-      if (objectiveLine && objectiveLinePositions) {
-        objectiveLine.visible = true;
-        objectiveLinePositions[0] = charPos.x;
-        objectiveLinePositions[1] = objectiveLineHeight;
-        objectiveLinePositions[2] = charPos.z;
-        objectiveLinePositions[3] = target.x;
-        objectiveLinePositions[4] = objectiveLineHeight;
-        objectiveLinePositions[5] = target.z;
-        objectiveLine.geometry.attributes.position.needsUpdate = true;
       }
 
       if (activeObjective.marker) {
