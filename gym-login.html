@@ -10,15 +10,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Style+Script&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy: #172d33;
-      --navy-secondary: #47304f;
-      --pink: #e890be;
-      --pale: #fffbeb;
-      --ink: #ffffed;
-      --muted: #a294a6;
-      --berry: #641e4f;
-      --line: rgba(255, 255, 255, 0.18);
-      --overlay: rgba(10, 18, 20, 0.7);
+      --navy: #1c2f38;
+      --navy-secondary: #345162;
+      --pink: #f59ac6;
+      --pale: #fff4d6;
+      --ink: #1c2f38;
+      --muted: #7b6f7d;
+      --berry: #c95c8c;
+      --line: rgba(28, 47, 56, 0.14);
+      --overlay: rgba(28, 47, 56, 0.4);
+      --surface: rgba(255, 255, 255, 0.8);
+      --surface-strong: rgba(28, 47, 56, 0.12);
+      --shadow: 0 20px 45px rgba(28, 47, 56, 0.18);
     }
 
     * {
@@ -29,8 +32,13 @@
       margin: 0;
       min-height: 100vh;
       font-family: "Space Grotesk", sans-serif;
-      background: var(--navy);
+      background:
+        radial-gradient(circle at 16% 12%, rgba(245, 154, 198, 0.35), transparent 55%),
+        radial-gradient(circle at 82% 8%, rgba(255, 244, 214, 0.9), transparent 60%),
+        radial-gradient(circle at 12% 82%, rgba(28, 47, 56, 0.08), transparent 60%),
+        var(--pale);
       color: var(--ink);
+      scroll-behavior: smooth;
     }
 
     button,
@@ -40,7 +48,7 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     .auth-view {
@@ -50,12 +58,47 @@
       justify-content: center;
       padding: 48px 20px;
       text-align: center;
+      position: relative;
+    }
+
+    .auth-view::before,
+    .auth-view::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .auth-view::before {
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(245, 154, 198, 0.45), rgba(245, 154, 198, 0));
+      top: -60px;
+      right: -60px;
+    }
+
+    .auth-view::after {
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(28, 47, 56, 0.12), rgba(28, 47, 56, 0));
+      bottom: -80px;
+      left: -60px;
+    }
+
+    @media (max-height: 760px) {
+      .auth-view {
+        align-items: flex-start;
+        padding-top: 32px;
+      }
     }
 
     .auth-shell {
       width: min(360px, 100%);
       display: grid;
       gap: 18px;
+      position: relative;
+      z-index: 1;
     }
 
     .logo {
@@ -114,25 +157,18 @@
     }
 
     .auth-panels {
-      position: relative;
-      min-height: 240px;
+      display: grid;
+      gap: 16px;
     }
 
     .auth-panel {
-      position: absolute;
-      inset: 0;
-      display: grid;
+      display: none;
       gap: 14px;
-      opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
     .auth-panel.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+      display: grid;
+      animation: fadeSlide 0.35s ease;
     }
 
     .panel-title {
@@ -168,6 +204,65 @@
       outline: none;
     }
 
+    .field select {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 0.6rem 0;
+      color: var(--ink);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .signup-details {
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .signup-details summary {
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+      color: var(--muted);
+      list-style: none;
+    }
+
+    .signup-details summary::after {
+      content: "+";
+      float: right;
+      color: var(--pink);
+      font-size: 0.85rem;
+    }
+
+    .signup-details[open] summary::after {
+      content: "-";
+    }
+
+    .signup-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .details-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    @media (min-width: 420px) {
+      .details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .field input::placeholder,
+    .input-row input::placeholder {
+      color: var(--muted);
+    }
+
     .primary-button {
       justify-self: start;
       border: none;
@@ -199,7 +294,7 @@
     .status {
       min-height: 18px;
       font-size: 0.8rem;
-      color: var(--pale);
+      color: var(--ink);
     }
 
     .status.error {
@@ -214,6 +309,38 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(245, 154, 198, 0.3), transparent 55%),
+        radial-gradient(circle at 85% 10%, rgba(255, 244, 214, 0.85), transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(28, 47, 56, 0.08), transparent 55%),
+        var(--pale);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-view::before,
+    .app-view::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-view::before {
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(245, 154, 198, 0.35), rgba(245, 154, 198, 0));
+      top: -70px;
+      right: -60px;
+    }
+
+    .app-view::after {
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(255, 244, 214, 0.9), rgba(255, 244, 214, 0));
+      bottom: -90px;
+      left: -70px;
     }
 
     .app-shell {
@@ -222,8 +349,40 @@
       display: grid;
       grid-template-rows: auto 1fr auto;
       padding: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(14px + env(safe-area-inset-bottom, 0px));
-      gap: 12px;
+      gap: 16px;
       position: relative;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(28, 47, 56, 0.08);
+      border-radius: 28px;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .app-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(245, 154, 198, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 100%, rgba(28, 47, 56, 0.08), transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: inherit;
+    }
+
+    .app-shell > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 540px) {
+      .app-shell {
+        border-radius: 0;
+        box-shadow: none;
+        border: none;
+      }
     }
 
     .app-header {
@@ -274,12 +433,15 @@
       display: grid;
       place-items: center;
       font-size: 0.85rem;
-      color: var(--pale);
+      color: var(--ink);
     }
 
     .app-content {
       overflow-y: auto;
       padding-right: 4px;
+      display: grid;
+      gap: 16px;
+      min-height: 0;
     }
 
     .screen {
@@ -300,13 +462,67 @@
       margin: 0 0 12px;
       text-transform: uppercase;
       letter-spacing: 0.2em;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--muted);
     }
 
     .section-block {
-      padding: 12px 0 18px;
-      border-bottom: 1px solid var(--line);
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--surface-strong);
+      background: var(--surface);
+      box-shadow: 0 12px 30px rgba(28, 47, 56, 0.12);
+      display: grid;
+      gap: 12px;
+    }
+
+    .section-block.open {
+      border-color: rgba(232, 144, 190, 0.4);
+      box-shadow: 0 18px 40px rgba(28, 47, 56, 0.18);
+    }
+
+    .section-toggle {
+      border: none;
+      background: none;
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .section-toggle .toggle-text {
+      color: var(--muted);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+    }
+
+    .section-toggle::after {
+      content: "+";
+      color: var(--pink);
+      font-size: 0.85rem;
+      margin-left: 10px;
+    }
+
+    .section-block.open .section-toggle::after {
+      content: "-";
+    }
+
+    .section-body {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sub-block {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px dashed rgba(28, 47, 56, 0.2);
+      border-radius: 14px;
+      padding: 12px;
     }
 
     .stat-grid {
@@ -328,7 +544,7 @@
 
     .stat-row strong {
       font-size: 1.2rem;
-      color: var(--pale);
+      color: var(--ink);
     }
 
     .trend-row {
@@ -351,7 +567,7 @@
       padding-left: 18px;
       display: grid;
       gap: 8px;
-      color: var(--pale);
+      color: var(--ink);
       font-size: 0.95rem;
     }
 
@@ -360,8 +576,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--line);
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--surface-strong);
+      box-shadow: 0 12px 30px rgba(28, 47, 56, 0.12);
     }
 
     .calorie-remaining span {
@@ -401,21 +620,28 @@
 
     .input-row input,
     .input-row select {
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--line);
-      padding: 0.6rem 0;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
       color: var(--ink);
       font-size: 1rem;
       outline: none;
     }
 
+    .input-row input[type="range"],
+    .input-row input[type="file"] {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
     .menu-item {
       width: 100%;
-      background: none;
-      border: none;
-      border-bottom: 1px solid var(--line);
-      padding: 14px 0;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--surface-strong);
+      border-radius: 14px;
+      padding: 14px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -439,21 +665,36 @@
 
     .menu-item:hover {
       transform: translateX(6px);
-      color: var(--pale);
+      color: var(--ink);
+    }
+
+    .menu-item:focus-visible,
+    .tag-button:focus-visible,
+    .primary-button:focus-visible,
+    .ghost-button:focus-visible,
+    .section-toggle:focus-visible,
+    .exercise-item:focus-visible,
+    .food-tile:focus-visible,
+    .tab-button:focus-visible,
+    .add-button:focus-visible {
+      outline: 2px solid rgba(232, 144, 190, 0.7);
+      outline-offset: 3px;
     }
 
     .search-bar {
       display: grid;
       gap: 8px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--surface-strong);
     }
 
     .search-bar input {
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--line);
-      padding: 0.6rem 0;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
       color: var(--ink);
       font-size: 1rem;
       outline: none;
@@ -472,13 +713,18 @@
       text-align: left;
       cursor: pointer;
       color: var(--ink);
+      transition: transform 0.2s ease;
+    }
+
+    .food-tile:hover {
+      transform: translateY(-2px);
     }
 
     .food-photo {
       border-radius: 14px;
       height: 120px;
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--line);
       position: relative;
       overflow: hidden;
     }
@@ -523,7 +769,7 @@
     .detail-photo {
       height: 160px;
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid var(--line);
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
       display: grid;
       place-items: center;
@@ -577,9 +823,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 8px;
-      color: var(--pale);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(28, 47, 56, 0.12);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--ink);
       font-size: 0.9rem;
     }
 
@@ -598,8 +846,10 @@
       grid-template-columns: 1fr auto auto;
       gap: 12px;
       align-items: center;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(28, 47, 56, 0.12);
+      border-radius: 12px;
+      padding: 10px 12px;
     }
 
     .ingredient-row strong {
@@ -615,22 +865,22 @@
 
     .ingredient-input {
       width: 70px;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 10px;
       color: var(--ink);
       text-align: right;
-      padding: 4px 0;
+      padding: 6px 8px;
     }
 
     .ingredient-note {
       width: 120px;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 10px;
       color: var(--ink);
       text-align: right;
-      padding: 4px 0;
+      padding: 6px 8px;
     }
 
     .remove-button {
@@ -663,30 +913,91 @@
 
     .exercise-list {
       display: grid;
-      gap: 10px;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .exercise-item {
       border: 1px solid var(--line);
-      background: transparent;
+      background: rgba(255, 255, 255, 0.7);
       color: var(--ink);
-      border-radius: 14px;
-      padding: 12px;
+      border-radius: 16px;
+      padding: 0;
       text-align: left;
       cursor: pointer;
-      transition: border-color 0.25s ease, transform 0.25s ease;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden;
+      display: grid;
+      gap: 6px;
     }
 
-    .exercise-item span {
+    .exercise-thumb {
+      height: 120px;
+      display: grid;
+      place-items: center;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+    }
+
+    .exercise-thumb svg {
+      width: 78px;
+      height: auto;
+      opacity: 0.95;
+    }
+
+    .exercise-thumb img {
+      width: 78px;
+      height: auto;
+      display: block;
+    }
+
+    .exercise-name {
+      font-size: 0.85rem;
+      padding: 0 12px;
+    }
+
+    .exercise-meta {
       display: block;
       color: var(--muted);
-      font-size: 0.75rem;
-      margin-top: 4px;
+      font-size: 0.7rem;
+      padding: 0 12px 12px;
     }
 
     .exercise-item.active {
       border-color: var(--pink);
       transform: translateX(4px);
+      box-shadow: 0 10px 24px rgba(232, 144, 190, 0.18);
+    }
+
+    .exercise-item[data-category="Chest"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(232, 144, 190, 0.3), rgba(255, 251, 235, 0.08));
+      color: #f3c1db;
+    }
+
+    .exercise-item[data-category="Arms"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(100, 30, 79, 0.35), rgba(255, 251, 235, 0.08));
+      color: #f6c2d8;
+    }
+
+    .exercise-item[data-category="Back"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(23, 45, 51, 0.4), rgba(255, 251, 235, 0.08));
+      color: #d7f0ff;
+    }
+
+    .exercise-item[data-category="Shoulders"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(71, 48, 79, 0.4), rgba(255, 251, 235, 0.08));
+      color: #eed5ff;
+    }
+
+    .exercise-item[data-category="Legs"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(24, 64, 52, 0.35), rgba(255, 251, 235, 0.08));
+      color: #d8ffec;
+    }
+
+    .exercise-item[data-category="Cardio"] .exercise-thumb {
+      background: linear-gradient(145deg, rgba(11, 79, 108, 0.35), rgba(255, 251, 235, 0.08));
+      color: #d0f2ff;
     }
 
     .scale-row {
@@ -698,6 +1009,192 @@
 
     .scale-row input[type="range"] {
       width: 100%;
+    }
+
+    .coach-chat {
+      display: grid;
+      gap: 12px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .coach-bubble {
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      max-width: 90%;
+      white-space: pre-line;
+      animation: bubbleIn 0.35s ease both;
+    }
+
+    .coach-bubble.user {
+      justify-self: end;
+      background: rgba(232, 144, 190, 0.2);
+      border: 1px solid rgba(232, 144, 190, 0.4);
+    }
+
+    .coach-bubble.bot {
+      justify-self: start;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--line);
+    }
+
+    .coach-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .coach-plan {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.75);
+      display: grid;
+      gap: 12px;
+      animation: bubbleIn 0.45s ease both;
+    }
+
+    .coach-plan h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .coach-plan ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: grid;
+      gap: 6px;
+    }
+
+    .plan-meta {
+      display: grid;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--ink);
+    }
+
+    .plan-split {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .photo-tile {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.75);
+      aspect-ratio: 4 / 5;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .photo-tile.selected-before {
+      border-color: rgba(232, 144, 190, 0.8);
+      box-shadow: 0 8px 20px rgba(232, 144, 190, 0.2);
+    }
+
+    .photo-tile.selected-after {
+      border-color: rgba(154, 215, 255, 0.8);
+      box-shadow: 0 8px 20px rgba(154, 215, 255, 0.2);
+    }
+
+    .photo-tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .photo-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-date {
+      position: absolute;
+      left: 10px;
+      bottom: 8px;
+      background: rgba(10, 18, 20, 0.65);
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--pale);
+    }
+
+    .compare-frame {
+      position: relative;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.75);
+      min-height: 220px;
+      overflow: hidden;
+    }
+
+    .compare-base,
+    .compare-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .compare-overlay {
+      width: 50%;
+      overflow: hidden;
+      border-right: 1px solid rgba(255, 255, 255, 0.4);
+      transition: width 0.2s ease;
+    }
+
+    .compare-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .compare-slider {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+    }
+
+    .compare-empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      background: rgba(10, 18, 20, 0.35);
+    }
+
+    .compare-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 10px;
     }
 
     .label-scan {
@@ -727,11 +1224,38 @@
 
     .tabbar {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       align-items: center;
+      justify-items: center;
       gap: 6px;
-      border-top: 1px solid var(--line);
-      padding-top: 8px;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(28, 47, 56, 0.12);
+      box-shadow: 0 16px 32px rgba(28, 47, 56, 0.16);
+    }
+
+    .tab-spacer {
+      height: 1px;
+      pointer-events: none;
+    }
+
+    .screen.active .section-block {
+      animation: fadeUp 0.45s ease both;
+    }
+
+    .screen.active .section-block:nth-of-type(2) { animation-delay: 0.05s; }
+    .screen.active .section-block:nth-of-type(3) { animation-delay: 0.1s; }
+    .screen.active .section-block:nth-of-type(4) { animation-delay: 0.15s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .tab-button {
@@ -739,27 +1263,29 @@
       border: none;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      font-size: 0.55rem;
       cursor: pointer;
       padding: 6px 0;
+      font-weight: 600;
+      justify-self: center;
       transition: color 0.25s ease;
     }
 
     .tab-button.active {
-      color: var(--pale);
+      color: var(--ink);
     }
 
     .add-button {
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      border: none;
-      background: var(--pink);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: linear-gradient(140deg, #f59ac6, #ffe0bb);
       color: var(--navy);
       font-size: 1.6rem;
       cursor: pointer;
-      box-shadow: 0 12px 30px rgba(232, 144, 190, 0.35);
+      box-shadow: 0 14px 26px rgba(245, 154, 198, 0.32);
       transform: translateY(-18px);
     }
 
@@ -783,12 +1309,12 @@
 
     .quick-add-panel {
       position: relative;
-      background: var(--navy-secondary);
+      background: rgba(255, 255, 255, 0.96);
       border-radius: 20px 20px 0 0;
       padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0px));
       display: grid;
       gap: 12px;
-      box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 -20px 50px rgba(28, 47, 56, 0.2);
     }
 
     .quick-add-panel h2 {
@@ -870,6 +1396,63 @@
             <label for="signup-password">Password</label>
             <input id="signup-password" type="password" name="signup-password" autocomplete="new-password" required />
           </div>
+          <details class="signup-details" open>
+            <summary>Account details</summary>
+            <div class="details-grid">
+              <div class="field">
+                <label for="signup-email">Email</label>
+                <input id="signup-email" type="email" name="signup-email" autocomplete="email" placeholder="you@email.com" />
+              </div>
+              <div class="field">
+                <label for="signup-goal">Primary goal</label>
+                <select id="signup-goal" name="signup-goal">
+                  <option value="">Select</option>
+                  <option value="fat-loss">Lose fat</option>
+                  <option value="muscle">Build muscle</option>
+                  <option value="performance">Improve performance</option>
+                  <option value="maintain">Maintain</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="signup-focus">Focus area</label>
+                <select id="signup-focus" name="signup-focus">
+                  <option value="">Select</option>
+                  <option value="upper">Upper body</option>
+                  <option value="lower">Lower body</option>
+                  <option value="full">Full body</option>
+                  <option value="core">Core</option>
+                  <option value="conditioning">Conditioning</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="signup-days">Training days/week</label>
+                <input id="signup-days" type="number" min="1" max="7" placeholder="4" />
+              </div>
+              <div class="field">
+                <label for="signup-height">Height (inches)</label>
+                <input id="signup-height" type="number" step="0.1" placeholder="70" />
+              </div>
+              <div class="field">
+                <label for="signup-weight">Current weight (lbs)</label>
+                <input id="signup-weight" type="number" step="0.1" placeholder="180" />
+              </div>
+              <div class="field">
+                <label for="signup-goal-weight">Goal weight (lbs)</label>
+                <input id="signup-goal-weight" type="number" step="0.1" placeholder="165" />
+              </div>
+              <div class="field">
+                <label for="signup-weekly-loss">Weekly change goal</label>
+                <select id="signup-weekly-loss">
+                  <option value="">Select</option>
+                  <option value="0">Maintain</option>
+                  <option value="0.5">0.5 lbs/week</option>
+                  <option value="1">1 lb/week</option>
+                  <option value="1.5">1.5 lbs/week</option>
+                  <option value="2">2 lbs/week</option>
+                </select>
+              </div>
+            </div>
+          </details>
           <button class="primary-button" type="submit">Create Account</button>
           <div class="status" id="signup-status"></div>
         </form>
@@ -933,7 +1516,7 @@
             <h2 class="section-title">Model setup</h2>
             <p class="panel-copy">explaination text here</p>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
             <form class="form-stack" id="profileForm">
               <div class="input-row">
                 <label for="profileSex">Gender</label>
@@ -1024,7 +1607,8 @@
             </form>
           </div>
 
-          <div class="section-block hidden" id="foodLog">
+          <div class="section-block hidden" id="foodLog" data-open="true">
+            <h2 class="section-title">Today</h2>
             <div class="stat-row">
               <span>Today macros</span>
               <strong id="foodMacros">--</strong>
@@ -1033,7 +1617,7 @@
               <span>Entries today</span>
               <strong id="foodEntries">0</strong>
             </div>
-            <div class="section-block">
+            <div class="sub-block">
               <div class="stat-row">
                 <span>Log</span>
                 <button class="ghost-button" id="addFoodFromTab" type="button">Add food</button>
@@ -1078,6 +1662,7 @@
 
         <div class="screen" data-screen="food-detail">
           <div class="section-block">
+            <h2 class="section-title">Overview</h2>
             <div class="detail-photo" id="foodDetailPhoto">Food</div>
             <div class="stat-row">
               <span>Name</span>
@@ -1107,7 +1692,8 @@
               <strong id="foodDetailFat">--</strong>
             </div>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Log servings</h2>
             <div class="input-row">
               <label for="foodDetailServings">Servings</label>
               <input id="foodDetailServings" type="number" step="0.1" value="1" />
@@ -1134,7 +1720,8 @@
             </div>
             <div class="meal-preview" id="mealCoverPreview">No cover selected</div>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Ingredients</h2>
             <div class="label-scan">
               <h2 class="section-title">Label detection</h2>
               <div class="input-row">
@@ -1176,7 +1763,7 @@
             </div>
             <div class="meal-preview" id="visionPreview">No photo selected</div>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
             <h2 class="section-title">Detected foods</h2>
             <div class="tag-row" id="visionMode">
               <button class="tag-button active" type="button" data-vision="Meal">Meal</button>
@@ -1202,10 +1789,14 @@
             </div>
           </div>
           <div class="section-block">
+            <h2 class="section-title">Warm Ups</h2>
+            <div class="exercise-list" id="warmupList"></div>
+          </div>
+          <div class="section-block" data-open="true">
             <h2 class="section-title">Exercises</h2>
             <div class="exercise-list" id="exerciseList"></div>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
             <h2 class="section-title">Log exercise</h2>
             <div class="stat-row">
               <span>Selected</span>
@@ -1237,12 +1828,12 @@
             <button class="primary-button" id="addExerciseButton" type="button">Add to workout</button>
             <div class="status" id="exerciseStatus"></div>
           </div>
-          <div class="section-block">
+          <div class="section-block" data-open="true">
             <h2 class="section-title">Current workout</h2>
             <ul class="entry-list" id="currentWorkoutList"></ul>
             <button class="primary-button hidden" id="finishWorkoutButton" type="button">Finish workout</button>
           </div>
-          <div class="section-block hidden" id="workoutSummary">
+          <div class="section-block hidden" id="workoutSummary" data-open="true">
             <h2 class="section-title">Workout summary</h2>
             <div class="stat-row">
               <span>Total sets</span>
@@ -1260,12 +1851,93 @@
           </div>
         </div>
 
+        <div class="screen" data-screen="coach">
+          <div class="section-block">
+            <h2 class="section-title">Coach</h2>
+            <p class="panel-copy">Personalized plans use your gender, age, and activity level.</p>
+          </div>
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Conversation</h2>
+            <div class="coach-chat" id="coachChat"></div>
+          </div>
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Ask the coach</h2>
+            <div class="tag-row">
+              <button class="tag-button" type="button" data-coach-chip="Build muscle plan">Build muscle plan</button>
+              <button class="tag-button" type="button" data-coach-chip="Fat loss plan">Fat loss plan</button>
+              <button class="tag-button" type="button" data-coach-chip="Fix weak shoulders">Fix weak shoulders</button>
+            </div>
+            <div class="coach-input-row">
+              <input id="coachInput" type="text" placeholder="Ask the coach about your plan" />
+              <button class="primary-button" id="coachSend" type="button">Send</button>
+            </div>
+            <div class="status" id="coachStatus"></div>
+          </div>
+        </div>
+
+        <div class="screen" data-screen="photo-timeline">
+          <div class="section-block">
+            <h2 class="section-title">Progress timeline</h2>
+            <div class="tag-row" id="photoFilters">
+              <button class="tag-button active" type="button" data-filter="all">All</button>
+              <button class="tag-button" type="button" data-filter="7">7D</button>
+              <button class="tag-button" type="button" data-filter="30">30D</button>
+              <button class="tag-button" type="button" data-filter="90">90D</button>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Compare</h2>
+            <div class="compare-frame" id="compareFrame">
+              <div class="compare-base">
+                <img id="compareAfter" alt="After progress photo" />
+              </div>
+              <div class="compare-overlay" id="compareBeforeWrap">
+                <img id="compareBefore" alt="Before progress photo" />
+              </div>
+              <div class="compare-empty" id="compareEmpty">Pick two photos</div>
+              <input class="compare-slider" id="compareSlider" type="range" min="0" max="100" value="50" />
+            </div>
+            <div class="compare-meta" id="compareMeta">Tap a photo to set before/after.</div>
+          </div>
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Timeline</h2>
+            <div class="photo-grid" id="timelineGrid"></div>
+          </div>
+        </div>
+
         <div class="screen" data-screen="profile">
           <div class="section-block">
             <h2 class="section-title">Profile</h2>
             <div class="stat-row">
               <span>Name</span>
               <strong id="profileName">--</strong>
+            </div>
+          </div>
+          <div class="section-block">
+            <h2 class="section-title">Account details</h2>
+            <div class="stat-row">
+              <span>Email</span>
+              <strong id="profileEmail">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Goal</span>
+              <strong id="profileGoalType">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Focus</span>
+              <strong id="profileFocus">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Training days</span>
+              <strong id="profileDays">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Height</span>
+              <strong id="profileHeight">--</strong>
+            </div>
+            <div class="stat-row">
+              <span>Weight</span>
+              <strong id="profileWeight">--</strong>
             </div>
           </div>
           <div class="section-block">
@@ -1284,6 +1956,15 @@
             </div>
             <button class="ghost-button" id="resetCalories" type="button">Reset calories</button>
           </div>
+          <div class="section-block" data-open="true">
+            <h2 class="section-title">Progress photos</h2>
+            <div class="input-row">
+              <label for="progressPhoto">Upload photo</label>
+              <input id="progressPhoto" type="file" accept="image/*" capture="environment" />
+            </div>
+            <div class="photo-grid" id="progressPhotoGrid"></div>
+            <button class="ghost-button" id="openPhotoTimeline" type="button">View timeline</button>
+          </div>
           <div class="section-block">
             <button class="logout-button" id="logoutButton" type="button">Log Out</button>
           </div>
@@ -1293,8 +1974,10 @@
       <nav class="tabbar" aria-label="Bottom navigation">
         <button class="tab-button active" type="button" data-tab="home">Home</button>
         <button class="tab-button" type="button" data-tab="food">Food</button>
+        <span class="tab-spacer" aria-hidden="true"></span>
         <button class="add-button" id="addButton" type="button" aria-label="Add">+</button>
         <button class="tab-button" type="button" data-tab="workout">Workout</button>
+        <button class="tab-button" type="button" data-tab="coach">Coach</button>
         <button class="tab-button" type="button" data-tab="profile">Profile</button>
       </nav>
     </div>
@@ -1351,6 +2034,10 @@
     const calorieSex = document.getElementById("calorieSex");
     const calorieAge = document.getElementById("calorieAge");
     const calorieActivity = document.getElementById("calorieActivity");
+    const calorieHeight = document.getElementById("calorieHeight");
+    const calorieWeight = document.getElementById("calorieWeight");
+    const goalWeightInput = document.getElementById("goalWeight");
+    const weeklyLossInput = document.getElementById("weeklyLoss");
     const foodLog = document.getElementById("foodLog");
     const editCalories = document.getElementById("editCalories");
     const resetCalories = document.getElementById("resetCalories");
@@ -1399,6 +2086,7 @@
 
     const workoutCategories = document.getElementById("workoutCategories");
     const exerciseList = document.getElementById("exerciseList");
+    const warmupList = document.getElementById("warmupList");
     const exerciseName = document.getElementById("exerciseName");
     const exerciseLast = document.getElementById("exerciseLast");
     const exerciseSets = document.getElementById("exerciseSets");
@@ -1416,10 +2104,34 @@
     const summaryCompare = document.getElementById("summaryCompare");
     const summaryList = document.getElementById("summaryList");
 
+    const coachChat = document.getElementById("coachChat");
+    const coachInput = document.getElementById("coachInput");
+    const coachSend = document.getElementById("coachSend");
+    const coachStatus = document.getElementById("coachStatus");
+    const coachChips = document.querySelectorAll("[data-coach-chip]");
+
     const profileName = document.getElementById("profileName");
+    const profileEmail = document.getElementById("profileEmail");
+    const profileGoalType = document.getElementById("profileGoalType");
+    const profileFocus = document.getElementById("profileFocus");
+    const profileDays = document.getElementById("profileDays");
+    const profileHeight = document.getElementById("profileHeight");
+    const profileWeight = document.getElementById("profileWeight");
     const profileTarget = document.getElementById("profileTarget");
     const profileMaintenance = document.getElementById("profileMaintenance");
     const profileGoal = document.getElementById("profileGoal");
+    const progressPhoto = document.getElementById("progressPhoto");
+    const progressPhotoGrid = document.getElementById("progressPhotoGrid");
+    const openPhotoTimeline = document.getElementById("openPhotoTimeline");
+    const photoFilters = document.getElementById("photoFilters");
+    const timelineGrid = document.getElementById("timelineGrid");
+    const compareFrame = document.getElementById("compareFrame");
+    const compareBefore = document.getElementById("compareBefore");
+    const compareAfter = document.getElementById("compareAfter");
+    const compareBeforeWrap = document.getElementById("compareBeforeWrap");
+    const compareEmpty = document.getElementById("compareEmpty");
+    const compareSlider = document.getElementById("compareSlider");
+    const compareMeta = document.getElementById("compareMeta");
 
     const addButton = document.getElementById("addButton");
     const quickAdd = document.getElementById("quickAdd");
@@ -1428,10 +2140,13 @@
     const logoutButton = document.getElementById("logoutButton");
 
     let currentUserKey = null;
+    let currentUser = null;
     let activeCategory = "Chest";
     let selectedExercise = null;
+    let selectedExerciseCategory = null;
     let currentWorkout = [];
     let lastWorkoutSummary = null;
+    let lastExerciseEntry = null;
     let foodMode = "Meal";
     let selectedFoodItem = null;
     let mealCoverData = "";
@@ -1439,6 +2154,9 @@
     let visionItems = [];
     let visionMode = "Meal";
     let labelScanData = "";
+    let activePhotoFilter = "all";
+    let selectedPhotoBeforeIndex = null;
+    let selectedPhotoAfterIndex = null;
 
     const foodCatalog = [
       { id: "chobani-greek", name: "Greek Yogurt", brand: "Chobani", calories: 130, protein: 13, carbs: 12, fat: 4 },
@@ -1474,12 +2192,26 @@
       Cardio: ["Running", "Cycling", "Rowing", "Stair Climber"]
     };
 
+    const warmupCatalog = ["Skipping", "Hip Openers", "Ankle Bounces", "Chest Stretch", "Walking Lunge", "Arm Circles"];
+
+    const exerciseImages = {
+      Chest: "assets/exercises/chest.svg",
+      Arms: "assets/exercises/arms.svg",
+      Back: "assets/exercises/back.svg",
+      Shoulders: "assets/exercises/shoulders.svg",
+      Legs: "assets/exercises/legs.svg",
+      Cardio: "assets/exercises/cardio.svg",
+      "Warm Ups": "assets/exercises/warmup.svg"
+    };
+
     const screenMeta = {
       home: { title: "Home", tab: "home" },
       setup: { title: "Setup" },
       food: { title: "Food", tab: "food" },
       workout: { title: "Workout", tab: "workout" },
+      coach: { title: "Coach", tab: "coach" },
       profile: { title: "Profile", tab: "profile" },
+      "photo-timeline": { title: "Progress", tab: "profile", back: "profile" },
       "add-food": { title: "Add food", tab: "food", back: "food" },
       "food-library": { title: "Food library", tab: "food", back: "add-food" },
       "food-detail": { title: "Food details", tab: "food", back: "food-library" },
@@ -1501,12 +2233,32 @@
     };
 
     const normalizeName = (value) => value.trim().toLowerCase();
+    const titleCase = (value) => value
+      .split("-")
+      .map((part) => (part ? part[0].toUpperCase() + part.slice(1) : ""))
+      .join(" ");
+
+    const fallbackHash = (value) => {
+      let hash = 2166136261;
+      for (let i = 0; i < value.length; i += 1) {
+        hash ^= value.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(16).padStart(8, "0");
+    };
 
     const hashPassword = async (value) => {
-      const data = new TextEncoder().encode(value);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      if (window.crypto && window.crypto.subtle) {
+        try {
+          const data = new TextEncoder().encode(value);
+          const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+        } catch (error) {
+          return fallbackHash(value);
+        }
+      }
+      return fallbackHash(value);
     };
 
     const ensureProgressSlot = (nameKey) => {
@@ -1517,6 +2269,8 @@
           meals: [],
           workouts: [],
           customMeals: [],
+          coachLog: [],
+          progressPhotos: [],
           profile: null,
           nutrition: null,
           mlSummary: [
@@ -1532,6 +2286,52 @@
     const setAuthMode = (mode) => {
       authButtons.forEach((button) => button.classList.toggle("active", button.dataset.auth === mode));
       authPanels.forEach((panel) => panel.classList.toggle("active", panel.dataset.auth === mode));
+    };
+
+    const initDetailsOnDemand = () => {
+      document.querySelectorAll(".screen").forEach((screen) => {
+        const blocks = Array.from(screen.children).filter(
+          (child) => child.classList && child.classList.contains("section-block")
+        );
+        blocks.forEach((block, index) => {
+          if (block.dataset.collapse === "false" || block.classList.contains("detail-ready")) return;
+          const title = Array.from(block.children).find(
+            (child) => child.classList && child.classList.contains("section-title")
+          );
+          if (!title) return;
+          block.classList.add("detail-ready");
+          const body = document.createElement("div");
+          body.className = "section-body";
+          Array.from(block.children).forEach((child) => {
+            if (child === title) return;
+            body.appendChild(child);
+          });
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "section-toggle";
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.innerHTML = `<span>${title.textContent}</span><span class="toggle-text">Details</span>`;
+          title.replaceWith(toggle);
+          block.appendChild(body);
+          const shouldOpen = block.dataset.open === "true" || index === 0;
+          if (shouldOpen) {
+            block.classList.add("open");
+            body.style.display = "grid";
+            toggle.setAttribute("aria-expanded", "true");
+            const toggleText = toggle.querySelector(".toggle-text");
+            if (toggleText) toggleText.textContent = "Hide";
+          } else {
+            body.style.display = "none";
+          }
+          toggle.addEventListener("click", () => {
+            const isOpen = block.classList.toggle("open");
+            body.style.display = isOpen ? "grid" : "none";
+            toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            const toggleText = toggle.querySelector(".toggle-text");
+            if (toggleText) toggleText.textContent = isOpen ? "Hide" : "Details";
+          });
+        });
+      });
     };
 
     const showScreen = (screen) => {
@@ -1553,13 +2353,14 @@
       const user = users[nameKey];
       if (!user) return;
       currentUserKey = nameKey;
+      currentUser = user;
       const progress = getProgress();
       const initials = user.displayName.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
       userChip.textContent = initials || "RS";
       profileName.textContent = user.displayName;
       authView.classList.add("hidden");
       appView.classList.remove("hidden");
-      applyProfileDefaults(progress);
+      applyProfileDefaults(progress, user);
       showScreen(progress.profile ? "home" : "setup");
       renderAll();
     };
@@ -1567,6 +2368,7 @@
     const exitApp = () => {
       writeStore(SESSION_KEY, null);
       currentUserKey = null;
+      currentUser = null;
       currentWorkout = [];
       lastWorkoutSummary = null;
       selectedExercise = null;
@@ -1576,7 +2378,7 @@
 
     const getProgress = () => {
       const progress = readStore(PROGRESS_KEY, {});
-      return progress[currentUserKey] || { weight: [], meals: [], workouts: [], customMeals: [], profile: null, nutrition: null, mlSummary: [] };
+      return progress[currentUserKey] || { weight: [], meals: [], workouts: [], customMeals: [], coachLog: [], progressPhotos: [], profile: null, nutrition: null, mlSummary: [] };
     };
 
     const saveProgress = (updated) => {
@@ -1585,26 +2387,42 @@
       writeStore(PROGRESS_KEY, progress);
     };
 
-    const applyProfileDefaults = (progress) => {
-      if (!progress || !progress.profile) return;
-      const { sex, age, activity } = progress.profile;
-      if (sex && profileSex) {
-        profileSex.value = sex;
+    const applyProfileDefaults = (progress, user) => {
+      if (progress && progress.profile) {
+        const { sex, age, activity } = progress.profile;
+        if (sex && profileSex) {
+          profileSex.value = sex;
+        }
+        if (age && profileAge) {
+          profileAge.value = age;
+        }
+        if (activity && profileActivity) {
+          profileActivity.value = activity;
+        }
+        if (sex && (sex === "female" || sex === "male")) {
+          calorieSex.value = sex;
+        }
+        if (age) {
+          calorieAge.value = age;
+        }
+        if (activity) {
+          calorieActivity.value = activity;
+        }
       }
-      if (age && profileAge) {
-        profileAge.value = age;
-      }
-      if (activity && profileActivity) {
-        profileActivity.value = activity;
-      }
-      if (sex && (sex === "female" || sex === "male")) {
-        calorieSex.value = sex;
-      }
-      if (age) {
-        calorieAge.value = age;
-      }
-      if (activity) {
-        calorieActivity.value = activity;
+      if (user && user.details) {
+        const { heightIn, weightLbs, goalWeight, weeklyLoss } = user.details;
+        if (heightIn && calorieHeight) {
+          calorieHeight.value = heightIn;
+        }
+        if (weightLbs && calorieWeight) {
+          calorieWeight.value = weightLbs;
+        }
+        if (goalWeight && goalWeightInput) {
+          goalWeightInput.value = goalWeight;
+        }
+        if (weeklyLossInput && Number.isFinite(weeklyLoss)) {
+          weeklyLossInput.value = `${weeklyLoss}`;
+        }
       }
     };
 
@@ -1644,6 +2462,14 @@
       const totalSets = entries.reduce((sum, entry) => sum + (entry.sets || 0), 0);
       const totalVolume = entries.reduce((sum, entry) => sum + (entry.weights || []).reduce((acc, weight) => acc + weight, 0), 0);
       return { totalSets, totalVolume: Math.round(totalVolume) };
+    };
+
+    const activityLabels = {
+      "1.2": "sedentary",
+      "1.375": "lightly active",
+      "1.55": "moderately active",
+      "1.725": "very active",
+      "1.9": "athlete"
     };
 
     const getCatalogItems = (progress) => {
@@ -1688,11 +2514,15 @@
       const calories = calcCalories(progress);
       homeCaloriesRemaining.textContent = calories.target ? `${calories.remaining} kcal` : "Set target";
       mlSummary.innerHTML = "";
-      const summary = progress.mlSummary && progress.mlSummary.length ? progress.mlSummary : [
+      const summary = progress.mlSummary && progress.mlSummary.length ? [...progress.mlSummary] : [
         "Awaiting scan data from your next upload.",
         "Keep protein steady for recovery.",
         "Stay hydrated for better training output."
       ];
+      if (progress.profile) {
+        const label = activityLabels[progress.profile.activity] || "active";
+        summary.unshift(`Model inputs: ${progress.profile.sex}, age ${progress.profile.age}, ${label}.`);
+      }
       summary.forEach((item) => {
         const li = document.createElement("li");
         li.textContent = item;
@@ -1738,24 +2568,38 @@
     const renderExerciseList = () => {
       const exercises = workoutCatalog[activeCategory] || [];
       exerciseList.innerHTML = "";
-      exercises.forEach((exercise) => {
+      exercises.forEach((exercise, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "exercise-item";
-        button.textContent = exercise;
+        button.style.animation = "fadeUp 0.35s ease both";
+        button.style.animationDelay = `${Math.min(index * 0.04, 0.2)}s`;
+        button.dataset.category = activeCategory;
+        const thumb = document.createElement("div");
+        thumb.className = "exercise-thumb";
+        const imgSrc = exerciseImages[activeCategory] || exerciseImages["Warm Ups"];
+        thumb.innerHTML = `<img src="${imgSrc}" alt="${activeCategory} exercise illustration" />`;
+        const name = document.createElement("span");
+        name.className = "exercise-name";
+        name.textContent = exercise;
+        const meta = document.createElement("span");
+        meta.className = "exercise-meta";
         button.dataset.exercise = exercise;
         if (selectedExercise === exercise) {
           button.classList.add("active");
         }
         const lastEntry = getLastExerciseEntry(exercise);
         if (lastEntry) {
-          const detail = document.createElement("span");
           const lastWeight = lastEntry.weights && lastEntry.weights.length
             ? lastEntry.weights.join(", ")
             : (lastEntry.weight ? `${lastEntry.weight}` : "--");
-          detail.textContent = lastWeight === "--" ? "Last: --" : `Last: ${lastWeight} lbs`;
-          button.appendChild(detail);
+          meta.textContent = lastWeight === "--" ? "Last: --" : `Last: ${lastWeight} lbs`;
+        } else {
+          meta.textContent = "No previous entry";
         }
+        button.appendChild(thumb);
+        button.appendChild(name);
+        button.appendChild(meta);
         exerciseList.appendChild(button);
       });
       if (!exercises.length) {
@@ -1763,22 +2607,82 @@
       }
     };
 
+    const renderWarmups = () => {
+      warmupList.innerHTML = "";
+      warmupCatalog.forEach((warmup, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "exercise-item";
+        button.style.animation = "fadeUp 0.35s ease both";
+        button.style.animationDelay = `${Math.min(index * 0.04, 0.2)}s`;
+        button.dataset.category = "Warm Ups";
+        button.dataset.exercise = warmup;
+        if (selectedExercise === warmup && selectedExerciseCategory === "Warm Ups") {
+          button.classList.add("active");
+        }
+        const thumb = document.createElement("div");
+        thumb.className = "exercise-thumb";
+        thumb.innerHTML = `<img src="${exerciseImages["Warm Ups"]}" alt="Warm up illustration" />`;
+        const name = document.createElement("span");
+        name.className = "exercise-name";
+        name.textContent = warmup;
+        const meta = document.createElement("span");
+        meta.className = "exercise-meta";
+        const lastEntry = getLastExerciseEntry(warmup);
+        if (lastEntry) {
+          const lastWeight = lastEntry.weights && lastEntry.weights.length
+            ? lastEntry.weights.join(", ")
+            : (lastEntry.weight ? `${lastEntry.weight}` : "--");
+          meta.textContent = lastWeight === "--" ? "Last: --" : `Last: ${lastWeight} lbs`;
+        } else {
+          meta.textContent = "Warm-up";
+        }
+        button.appendChild(thumb);
+        button.appendChild(name);
+        button.appendChild(meta);
+        warmupList.appendChild(button);
+      });
+      if (!warmupCatalog.length) {
+        warmupList.innerHTML = "<div class=\"stat-row\"><span>No warm ups yet</span><strong>--</strong></div>";
+      }
+    };
+
     const updateExercisePanel = () => {
       if (!selectedExercise) {
         exerciseName.textContent = "--";
         exerciseLast.textContent = "--";
+        exerciseSets.placeholder = "Sets";
+        exerciseWeights.placeholder = "Weights";
+        exerciseNotes.placeholder = "Notes";
+        exerciseFeel.value = "7";
+        exerciseFeelValue.textContent = "7/10";
+        lastExerciseEntry = null;
         return;
       }
       exerciseName.textContent = selectedExercise;
       const lastEntry = getLastExerciseEntry(selectedExercise);
+      lastExerciseEntry = lastEntry;
       if (lastEntry) {
         const lastWeight = lastEntry.weights && lastEntry.weights.length
           ? lastEntry.weights.join(", ")
           : (lastEntry.weight ? `${lastEntry.weight}` : "--");
         exerciseLast.textContent = lastWeight === "--" ? "--" : `${lastWeight} lbs`;
+        exerciseSets.placeholder = lastEntry.sets ? `${lastEntry.sets}` : "Sets";
+        exerciseWeights.placeholder = lastWeight === "--" ? "Weights" : lastWeight;
+        exerciseNotes.placeholder = lastEntry.notes || "Notes";
+        exerciseFeel.value = lastEntry.feel || "7";
+        exerciseFeelValue.textContent = `${exerciseFeel.value}/10`;
       } else {
         exerciseLast.textContent = "New";
+        exerciseSets.placeholder = "Sets";
+        exerciseWeights.placeholder = "Weights";
+        exerciseNotes.placeholder = "Notes";
+        exerciseFeel.value = "7";
+        exerciseFeelValue.textContent = "7/10";
       }
+      exerciseSets.value = "";
+      exerciseWeights.value = "";
+      exerciseNotes.value = "";
     };
 
     const renderCurrentWorkout = () => {
@@ -1801,13 +2705,18 @@
       summarySets.textContent = lastWorkoutSummary.totalSets;
       summaryVolume.textContent = `${lastWorkoutSummary.totalVolume} lbs`;
       summaryCompare.textContent = lastWorkoutSummary.compareText;
-      summaryList.innerHTML = lastWorkoutSummary.entries.map((entry) => (
-        `<li><span>${entry.name} - ${entry.sets} sets</span><strong>${entry.weights.join(", ")} lbs</strong></li>`
-      )).join("");
+      summaryList.innerHTML = lastWorkoutSummary.entries.map((entry) => {
+        const diff = entry.hasLast ? entry.diff : null;
+        const diffText = diff === null
+          ? "New"
+          : (diff === 0 ? "Even" : `${diff > 0 ? "+" : ""}${diff} lbs`);
+        return `<li><span>${entry.name} - ${entry.sets} sets</span><strong>${entry.weights.join(", ")} lbs (${diffText})</strong></li>`;
+      }).join("");
       workoutSummary.classList.remove("hidden");
     };
 
     const renderWorkoutScreen = () => {
+      renderWarmups();
       renderExerciseList();
       updateExercisePanel();
       renderCurrentWorkout();
@@ -1819,6 +2728,238 @@
       profileTarget.textContent = nutrition && nutrition.target ? `${Math.round(nutrition.target)} kcal` : "--";
       profileMaintenance.textContent = nutrition && nutrition.maintenance ? `${Math.round(nutrition.maintenance)} kcal` : "--";
       profileGoal.textContent = nutrition && nutrition.goalWeight ? `${nutrition.goalWeight} lbs` : "--";
+      const details = currentUser && currentUser.details ? currentUser.details : {};
+      profileEmail.textContent = details.email || "--";
+      profileGoalType.textContent = details.goal ? titleCase(details.goal) : "--";
+      profileFocus.textContent = details.focus ? titleCase(details.focus) : "--";
+      profileDays.textContent = details.trainingDays ? `${details.trainingDays} days` : "--";
+      profileHeight.textContent = details.heightIn ? `${details.heightIn} in` : "--";
+      profileWeight.textContent = details.weightLbs ? `${details.weightLbs} lbs` : "--";
+      renderProgressPhotos(progress);
+    };
+
+    const renderProgressPhotos = (progress) => {
+      if (!progressPhotoGrid) return;
+      const photos = progress.progressPhotos || [];
+      if (!photos.length) {
+        progressPhotoGrid.innerHTML = "<div class=\"photo-tile\">No photos</div>";
+        return;
+      }
+      progressPhotoGrid.innerHTML = photos.slice(0, 6).map((photo) => (
+        `<div class="photo-tile"><img src="${photo.data}" alt="Progress photo" /><span class="photo-date">${formatDate(photo.date)}</span></div>`
+      )).join("");
+    };
+
+    const filterPhotosByRange = (photos) => {
+      if (activePhotoFilter === "all") return photos;
+      const days = parseInt(activePhotoFilter, 10);
+      return photos.filter((photo) => withinDays(photo.date, days));
+    };
+
+    const renderPhotoTimeline = (progress) => {
+      if (!timelineGrid) return;
+      const photosWithIndex = (progress.progressPhotos || []).map((photo, idx) => ({ ...photo, idx }));
+      const photos = filterPhotosByRange(photosWithIndex);
+      if (!photos.length) {
+        timelineGrid.innerHTML = "<div class=\"photo-tile\">No photos</div>";
+        updateCompareView(progress);
+        return;
+      }
+      timelineGrid.innerHTML = photos.map((photo, index) => {
+        const isBefore = selectedPhotoBeforeIndex === photo.idx;
+        const isAfter = selectedPhotoAfterIndex === photo.idx;
+        const activeClass = isBefore ? " selected-before" : (isAfter ? " selected-after" : "");
+        return `
+          <div class="photo-tile${activeClass}" data-index="${photo.idx}" style="animation: fadeUp 0.35s ease ${Math.min(index * 0.03, 0.2)}s both;">
+            <img src="${photo.data}" alt="Progress photo" />
+            <span class="photo-date">${formatDate(photo.date)}</span>
+          </div>
+        `;
+      }).join("");
+      updateCompareView(progress);
+    };
+
+    const updateCompareView = (progress) => {
+      if (!compareFrame) return;
+      const photos = progress.progressPhotos || [];
+      const before = selectedPhotoBeforeIndex != null ? photos[selectedPhotoBeforeIndex] : null;
+      const after = selectedPhotoAfterIndex != null ? photos[selectedPhotoAfterIndex] : null;
+      const hasBoth = Boolean(before && after);
+      compareEmpty.classList.toggle("hidden", hasBoth);
+      compareSlider.disabled = !hasBoth;
+      compareSlider.style.opacity = hasBoth ? "1" : "0.4";
+      if (!hasBoth) {
+        compareBefore.removeAttribute("src");
+        compareAfter.removeAttribute("src");
+        compareMeta.textContent = "Tap a photo to set before/after.";
+        return;
+      }
+      compareBefore.src = before.data;
+      compareAfter.src = after.data;
+      compareBeforeWrap.style.width = `${compareSlider.value}%`;
+      compareMeta.textContent = `Before: ${formatDate(before.date)} • After: ${formatDate(after.date)}`;
+    };
+
+    const buildCoachIntro = (progress) => {
+      if (!progress.profile) {
+        return "Set up your profile so I can personalize your plan.";
+      }
+      return "Tell me your goal, available days, and any weak areas to build.";
+    };
+
+    const buildCoachReply = (message, progress) => {
+      if (!progress.profile) {
+        return "Finish the setup screen so I can use your age, gender, and activity level.";
+      }
+      const { sex, age, activity } = progress.profile;
+      const activityLabel = activityLabels[activity] || "active";
+      const plan = buildCoachPlan(message, progress);
+      return plan ? plan.text : "Tell me your goal and how many days you can train.";
+    };
+
+    const buildCoachPlan = (message, progress) => {
+      if (!progress.profile) return null;
+      const { sex, age, activity } = progress.profile;
+      const activityLabel = activityLabels[activity] || "active";
+      const goalKeywords = {
+        muscle: ["muscle", "gain", "bulk", "hypertrophy", "size"],
+        fat: ["fat", "cut", "lean", "lose", "weight loss"],
+        strength: ["strength", "power", "max", "pr"],
+        endurance: ["endurance", "cardio", "run", "cycle", "stamina"]
+      };
+      const focusKeywords = {
+        chest: ["chest", "pec"],
+        back: ["back", "lats"],
+        shoulders: ["shoulder", "delts"],
+        legs: ["legs", "glutes", "quads", "hamstrings"],
+        arms: ["arms", "biceps", "triceps"],
+        cardio: ["cardio", "conditioning"]
+      };
+      const normalized = message.toLowerCase();
+      const detectMatch = (map) => (
+        Object.entries(map).find(([, keys]) => keys.some((key) => normalized.includes(key)))
+      );
+      const goalMatch = detectMatch(goalKeywords);
+      const focusMatch = detectMatch(focusKeywords);
+      const goal = goalMatch ? goalMatch[0] : "balanced";
+      const focus = focusMatch ? focusMatch[0] : "balanced";
+
+      const dayMatch = normalized.match(/(\d)\s*(day|days|x)/);
+      let days = dayMatch ? parseInt(dayMatch[1], 10) : null;
+      if (!days) {
+        if (activity >= 1.725) {
+          days = 5;
+        } else if (activity >= 1.55) {
+          days = 4;
+        } else {
+          days = 3;
+        }
+      }
+      days = Math.min(Math.max(days, 3), 6);
+      const splitMap = {
+        3: ["Full Body A", "Full Body B", "Full Body C"],
+        4: ["Upper (strength)", "Lower (strength)", "Upper (volume)", "Lower (volume)"],
+        5: ["Push", "Pull", "Legs", "Upper", "Lower + Core"],
+        6: ["Push", "Pull", "Legs", "Push", "Pull", "Legs"]
+      };
+      const split = splitMap[days] || splitMap[4];
+      const volumeRange = sex === "female" ? "12-18" : "10-16";
+      const intensity = age >= 45 ? "moderate with longer rest" : "progressive overload";
+      const focusLine = focus === "balanced"
+        ? "Balanced emphasis across all muscle groups."
+        : `Focus block: ${focus} priority twice per week.`;
+
+      const repMap = {
+        muscle: "6-12 reps",
+        fat: "8-15 reps",
+        strength: "3-6 reps",
+        endurance: "12-20 reps",
+        balanced: "6-12 reps"
+      };
+      const cardioLine = goal === "fat"
+        ? "Cardio: 2x zone 2 + 1x interval session."
+        : (goal === "endurance" ? "Cardio: 3x steady state, 1x tempo." : "Cardio: 1-2x easy zone 2.");
+      const progression = [
+        "Week 1: baseline loads, leave 2 reps in reserve.",
+        "Week 2: add 1 set to primary moves.",
+        "Week 3: add 2.5-5% load on main lifts.",
+        "Week 4: deload to 70-80% volume."
+      ];
+      const warmup = "Warm-up: 5-8 min pulse + 2 ramp sets per lift.";
+      const lastSession = progress.workouts.find((entry) => entry.exercises && entry.exercises.length);
+      const lastLine = lastSession
+        ? `Last session: ${lastSession.totalSets || 0} sets, ${lastSession.totalVolume || 0} lbs total.`
+        : "Last session: none logged yet.";
+
+      const text = [
+        `Local plan for ${sex}, age ${age}, ${activityLabel} activity.`,
+        `Goal: ${goal}. ${focusLine}`,
+        `Weekly split (${days} days):`,
+        ...split.map((day, index) => `- Day ${index + 1}: ${day}`),
+        `Rep target: ${repMap[goal]}. Volume: ${volumeRange} sets per muscle/week.`,
+        `Intensity: ${intensity}. ${cardioLine}`,
+        warmup,
+        "Progression:",
+        ...progression.map((item) => `- ${item}`),
+        lastLine
+      ].join("\n");
+
+      return {
+        text,
+        summary: `Goal: ${goal}. ${focusLine}`,
+        days,
+        split,
+        repTarget: repMap[goal],
+        volumeRange,
+        intensity,
+        cardioLine,
+        warmup,
+        progression,
+        lastLine
+      };
+    };
+
+    const renderCoach = (progress) => {
+      if (!coachChat) return;
+      coachChat.innerHTML = "";
+      const log = progress.coachLog && progress.coachLog.length
+        ? progress.coachLog
+        : [{ role: "coach", text: buildCoachIntro(progress) }];
+      log.forEach((entry, index) => {
+        if (entry.type === "plan" && entry.plan) {
+          const card = document.createElement("div");
+          card.className = "coach-plan";
+          card.style.animationDelay = `${Math.min(index * 0.03, 0.2)}s`;
+          card.innerHTML = `
+            <h3>Weekly Plan</h3>
+            <div class="plan-meta">
+              <div>${entry.plan.summary}</div>
+              <div>${entry.plan.lastLine}</div>
+            </div>
+            <div class="plan-split">
+              ${entry.plan.split.map((day, index) => `<div>Day ${index + 1}: ${day}</div>`).join("")}
+            </div>
+            <div class="plan-meta">
+              <div>Reps: ${entry.plan.repTarget}</div>
+              <div>Volume: ${entry.plan.volumeRange} sets/week</div>
+              <div>Intensity: ${entry.plan.intensity}</div>
+              <div>${entry.plan.cardioLine}</div>
+              <div>${entry.plan.warmup}</div>
+            </div>
+            <ul>
+              ${entry.plan.progression.map((line) => `<li>${line}</li>`).join("")}
+            </ul>
+          `;
+          coachChat.appendChild(card);
+          return;
+        }
+        const bubble = document.createElement("div");
+        bubble.className = `coach-bubble ${entry.role === "user" ? "user" : "bot"}`;
+        bubble.textContent = entry.text;
+        bubble.style.animationDelay = `${Math.min(index * 0.03, 0.2)}s`;
+        coachChat.appendChild(bubble);
+      });
+      coachChat.scrollTop = coachChat.scrollHeight;
     };
 
     const renderFoodLibrary = () => {
@@ -1989,10 +3130,31 @@
       renderHome(progress);
       renderFood(progress);
       renderWorkoutScreen();
+      renderCoach(progress);
       renderProfile(progress);
+      renderPhotoTimeline(progress);
       renderFoodLibrary();
       renderIngredientGrid();
       renderIngredientList();
+    };
+
+    const sendCoachMessage = (text) => {
+      if (!text) return;
+      const progress = getProgress();
+      const log = progress.coachLog || [];
+      if (!log.length) {
+        log.push({ role: "coach", text: buildCoachIntro(progress), date: new Date().toISOString() });
+      }
+      log.push({ role: "user", text, date: new Date().toISOString() });
+      const plan = buildCoachPlan(text, progress);
+      const reply = buildCoachReply(text, progress);
+      log.push({ role: "coach", text: reply, date: new Date().toISOString() });
+      if (plan) {
+        log.push({ role: "coach", type: "plan", plan, date: new Date().toISOString() });
+      }
+      progress.coachLog = log;
+      saveProgress(progress);
+      renderCoach(progress);
     };
 
     authButtons.forEach((button) => {
@@ -2037,6 +3199,14 @@
       signupStatus.className = "status";
       const name = document.getElementById("signup-name").value.trim();
       const password = document.getElementById("signup-password").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const goal = document.getElementById("signup-goal").value;
+      const focus = document.getElementById("signup-focus").value;
+      const trainingDays = parseInt(document.getElementById("signup-days").value, 10);
+      const heightIn = parseFloat(document.getElementById("signup-height").value);
+      const weightLbs = parseFloat(document.getElementById("signup-weight").value);
+      const goalWeight = parseFloat(document.getElementById("signup-goal-weight").value);
+      const weeklyLoss = parseFloat(document.getElementById("signup-weekly-loss").value);
       if (!name || !password) {
         signupStatus.textContent = "Add a name and password.";
         signupStatus.classList.add("error");
@@ -2050,7 +3220,21 @@
         return;
       }
       const hash = await hashPassword(password);
-      users[nameKey] = { displayName: name, hash, createdAt: new Date().toISOString() };
+      users[nameKey] = {
+        displayName: name,
+        hash,
+        createdAt: new Date().toISOString(),
+        details: {
+          email: email || "",
+          goal: goal || "",
+          focus: focus || "",
+          trainingDays: Number.isFinite(trainingDays) ? trainingDays : null,
+          heightIn: Number.isFinite(heightIn) ? heightIn : null,
+          weightLbs: Number.isFinite(weightLbs) ? weightLbs : null,
+          goalWeight: Number.isFinite(goalWeight) ? goalWeight : null,
+          weeklyLoss: Number.isFinite(weeklyLoss) ? weeklyLoss : null
+        }
+      };
       writeStore(USER_KEY, users);
       ensureProgressSlot(nameKey);
       writeStore(SESSION_KEY, { nameKey, loginAt: new Date().toISOString() });
@@ -2084,6 +3268,98 @@
       profileStatus.classList.add("success");
       showScreen("home");
       renderAll();
+    });
+
+    coachSend.addEventListener("click", () => {
+      coachStatus.textContent = "";
+      coachStatus.className = "status";
+      const message = coachInput.value.trim();
+      if (!message) {
+        coachStatus.textContent = "Add a prompt to send.";
+        coachStatus.classList.add("error");
+        return;
+      }
+      coachInput.value = "";
+      sendCoachMessage(message);
+    });
+
+    coachInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        coachSend.click();
+      }
+    });
+
+    coachChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        coachInput.value = chip.dataset.coachChip;
+        coachSend.click();
+      });
+    });
+
+    if (openPhotoTimeline) {
+      openPhotoTimeline.addEventListener("click", () => {
+        showScreen("photo-timeline");
+      });
+    }
+
+    if (photoFilters) {
+      photoFilters.addEventListener("click", (event) => {
+        const button = event.target.closest(".tag-button");
+        if (!button) return;
+        photoFilters.querySelectorAll(".tag-button").forEach((tag) => tag.classList.remove("active"));
+        button.classList.add("active");
+        activePhotoFilter = button.dataset.filter;
+        renderPhotoTimeline(getProgress());
+      });
+    }
+
+    if (timelineGrid) {
+      timelineGrid.addEventListener("click", (event) => {
+        const tile = event.target.closest(".photo-tile");
+        if (!tile || !tile.dataset.index) return;
+        const index = parseInt(tile.dataset.index, 10);
+        if (selectedPhotoBeforeIndex === index) {
+          selectedPhotoBeforeIndex = null;
+        } else if (selectedPhotoAfterIndex === index) {
+          selectedPhotoAfterIndex = null;
+        } else if (selectedPhotoBeforeIndex == null) {
+          selectedPhotoBeforeIndex = index;
+        } else if (selectedPhotoAfterIndex == null) {
+          selectedPhotoAfterIndex = index;
+        } else {
+          selectedPhotoBeforeIndex = index;
+        }
+        renderPhotoTimeline(getProgress());
+      });
+    }
+
+    if (compareSlider) {
+      compareSlider.addEventListener("input", () => {
+        if (compareBeforeWrap) {
+          compareBeforeWrap.style.width = `${compareSlider.value}%`;
+        }
+      });
+    }
+
+    progressPhoto.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        const progress = getProgress();
+        const photos = progress.progressPhotos || [];
+        photos.unshift({
+          id: `photo-${Date.now()}`,
+          data: readerEvent.target.result,
+          date: new Date().toISOString()
+        });
+        progress.progressPhotos = photos.slice(0, 12);
+        saveProgress(progress);
+        progressPhoto.value = "";
+        renderProgressPhotos(progress);
+      };
+      reader.readAsDataURL(file);
     });
 
     backButton.addEventListener("click", () => {
@@ -2374,11 +3650,11 @@
       calorieStatus.className = "status";
       const sex = calorieSex.value;
       const age = parseInt(calorieAge.value, 10);
-      const heightIn = parseFloat(document.getElementById("calorieHeight").value);
-      const weightLbs = parseFloat(document.getElementById("calorieWeight").value);
+      const heightIn = parseFloat(calorieHeight.value);
+      const weightLbs = parseFloat(calorieWeight.value);
       const activity = parseFloat(calorieActivity.value);
-      const goalWeight = parseFloat(document.getElementById("goalWeight").value);
-      const weeklyLoss = parseFloat(document.getElementById("weeklyLoss").value);
+      const goalWeight = parseFloat(goalWeightInput.value);
+      const weeklyLoss = parseFloat(weeklyLossInput.value);
       if (!age || !heightIn || !weightLbs || !goalWeight) {
         calorieStatus.textContent = "Fill out all fields.";
         calorieStatus.classList.add("error");
@@ -2406,6 +3682,19 @@
         updatedAt: new Date().toISOString()
       };
       saveProgress(progress);
+      const users = readStore(USER_KEY, {});
+      if (currentUserKey && users[currentUserKey]) {
+        const details = users[currentUserKey].details || {};
+        users[currentUserKey].details = {
+          ...details,
+          heightIn,
+          weightLbs,
+          goalWeight,
+          weeklyLoss
+        };
+        writeStore(USER_KEY, users);
+        currentUser = users[currentUserKey];
+      }
       calorieStatus.textContent = `Target set to ${target} kcal.`;
       calorieStatus.classList.add("success");
       renderAll();
@@ -2431,6 +3720,7 @@
       button.classList.add("active");
       activeCategory = button.dataset.category;
       selectedExercise = null;
+      selectedExerciseCategory = null;
       renderWorkoutScreen();
     });
 
@@ -2438,7 +3728,17 @@
       const button = event.target.closest(".exercise-item");
       if (!button) return;
       selectedExercise = button.dataset.exercise;
+      selectedExerciseCategory = activeCategory;
       renderExerciseList();
+      updateExercisePanel();
+    });
+
+    warmupList.addEventListener("click", (event) => {
+      const button = event.target.closest(".exercise-item");
+      if (!button) return;
+      selectedExercise = button.dataset.exercise;
+      selectedExerciseCategory = "Warm Ups";
+      renderWarmups();
       updateExercisePanel();
     });
 
@@ -2454,8 +3754,14 @@
         exerciseStatus.classList.add("error");
         return;
       }
-      const weights = parseWeights(exerciseWeights.value);
+      let weights = parseWeights(exerciseWeights.value);
       let setsValue = parseInt(exerciseSets.value, 10);
+      if (!weights.length && lastExerciseEntry && lastExerciseEntry.weights && lastExerciseEntry.weights.length) {
+        weights = [...lastExerciseEntry.weights];
+      }
+      if (!setsValue && lastExerciseEntry && lastExerciseEntry.sets) {
+        setsValue = lastExerciseEntry.sets;
+      }
       if (!setsValue && weights.length) {
         setsValue = weights.length;
       }
@@ -2481,11 +3787,11 @@
       }
       currentWorkout.unshift({
         name: selectedExercise,
-        category: activeCategory,
+        category: selectedExerciseCategory || activeCategory,
         sets: setsValue,
         weights: finalWeights,
         feel: parseInt(exerciseFeel.value, 10),
-        notes: exerciseNotes.value.trim(),
+        notes: exerciseNotes.value.trim() || (lastExerciseEntry ? lastExerciseEntry.notes : ""),
         date: new Date().toISOString()
       });
       exerciseSets.value = "";
@@ -2504,6 +3810,25 @@
       const progress = getProgress();
       const lastSession = progress.workouts.find((entry) => entry.exercises && entry.exercises.length);
       let compareText = "First workout logged";
+      const compareEntries = currentWorkout.map((entry) => {
+        const currentVolume = (entry.weights || []).reduce((sum, weight) => sum + weight, 0);
+        let lastVolume = 0;
+        let hasLast = false;
+        if (lastSession) {
+          const lastEntry = lastSession.exercises.find((item) => item.name === entry.name);
+          if (lastEntry && lastEntry.weights) {
+            lastVolume = lastEntry.weights.reduce((sum, weight) => sum + weight, 0);
+            hasLast = true;
+          }
+        }
+        return {
+          ...entry,
+          currentVolume,
+          lastVolume,
+          hasLast,
+          diff: currentVolume - lastVolume
+        };
+      });
       if (lastSession) {
         const lastTotals = computeWorkoutTotals(lastSession.exercises);
         const diff = totals.totalVolume - lastTotals.totalVolume;
@@ -2511,7 +3836,7 @@
           compareText = "Same volume as last time";
         } else {
           const sign = diff > 0 ? "+" : "";
-          compareText = `${sign}${diff} lbs vs last`;
+          compareText = `${sign}${diff} lbs vs last session`;
         }
       }
       const session = {
@@ -2523,7 +3848,7 @@
       progress.workouts.unshift(session);
       saveProgress(progress);
       lastWorkoutSummary = {
-        entries: currentWorkout,
+        entries: compareEntries,
         totalSets: totals.totalSets,
         totalVolume: totals.totalVolume,
         compareText
@@ -2534,6 +3859,8 @@
     });
 
     logoutButton.addEventListener("click", exitApp);
+
+    initDetailsOnDemand();
 
     const session = readStore(SESSION_KEY, null);
     const users = readStore(USER_KEY, {});

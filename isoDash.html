@@ -281,6 +281,198 @@
       opacity: 1;
       pointer-events: auto;
     }
+    .hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .objective-panel,
+    .direction-panel {
+      position: absolute;
+      width: min(320px, 85vw);
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(10, 16, 30, 0.82);
+      border: 1px solid rgba(93, 226, 255, 0.35);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+    }
+    .objective-panel {
+      top: 18px;
+      left: 18px;
+    }
+    .direction-panel {
+      right: 18px;
+      bottom: 18px;
+    }
+    .panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: rgba(223, 232, 255, 0.7);
+      margin-bottom: 12px;
+    }
+    .objective-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .objective-item {
+      margin: 0;
+    }
+    .objective-button {
+      width: 100%;
+      display: grid;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(93, 226, 255, 0.2);
+      background: rgba(9, 12, 24, 0.7);
+      color: inherit;
+      font-family: inherit;
+      font-size: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .objective-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(93, 226, 255, 0.5);
+      box-shadow: 0 10px 18px rgba(93, 226, 255, 0.12);
+    }
+    .objective-item.active .objective-button {
+      border-color: rgba(255, 209, 102, 0.8);
+      box-shadow: 0 0 16px rgba(255, 209, 102, 0.25);
+      background: rgba(24, 18, 10, 0.85);
+    }
+    .objective-index {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 209, 102, 0.8);
+    }
+    .objective-name {
+      font-size: 11px;
+    }
+    .objective-sub {
+      font-size: 9px;
+      color: rgba(223, 232, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .direction-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .direction-arrow {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(93, 226, 255, 0.6);
+      position: relative;
+      transition: transform 0.2s ease;
+      background: rgba(6, 10, 20, 0.6);
+    }
+    .direction-arrow::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 13px solid #dfe8ff;
+      transform: translate(-50%, -68%);
+    }
+    .direction-text {
+      font-size: 10px;
+      line-height: 1.5;
+      max-width: 190px;
+    }
+    .poi-prompt {
+      position: absolute;
+      left: 50%;
+      bottom: 90px;
+      transform: translate(-50%, 10px);
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 209, 102, 0.6);
+      background: rgba(26, 18, 8, 0.85);
+      color: #ffd166;
+      font-size: 10px;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .poi-prompt.active {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .resource-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 8, 16, 0.92);
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 7;
+      transition: opacity 0.3s ease;
+    }
+    .resource-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .resource-card {
+      width: min(720px, 90vw);
+      padding: 28px 30px;
+      border-radius: 18px;
+      background: rgba(12, 18, 32, 0.9);
+      border: 1px solid rgba(93, 226, 255, 0.4);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      text-align: left;
+    }
+    .resource-title {
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+      color: #7fe7ff;
+    }
+    .resource-body {
+      font-size: 10px;
+      line-height: 1.7;
+      color: rgba(223, 232, 255, 0.8);
+      margin-bottom: 18px;
+    }
+    .resource-hint {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(223, 232, 255, 0.6);
+    }
+    @media (max-width: 720px) {
+      .objective-panel,
+      .direction-panel {
+        width: min(280px, 92vw);
+        padding: 14px;
+      }
+      .objective-panel {
+        top: 14px;
+        left: 14px;
+      }
+      .direction-panel {
+        right: 14px;
+        bottom: 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -292,6 +484,27 @@
   </div>
   <div class="zoom-control">
     <input type="range" id="zoomSlider" min="10" max="50" value="20" step="1" />
+  </div>
+  <div class="hud">
+    <div class="objective-panel">
+      <div class="panel-title">Objectives</div>
+      <ul class="objective-list" id="objectiveList"></ul>
+    </div>
+    <div class="direction-panel" id="directionPanel">
+      <div class="panel-title">Directions</div>
+      <div class="direction-info">
+        <div class="direction-arrow" id="directionArrow"></div>
+        <div class="direction-text" id="directionText">Select an objective.</div>
+      </div>
+    </div>
+    <div class="poi-prompt" id="poiPrompt">Press Enter to view resource</div>
+  </div>
+  <div class="resource-modal" id="resourceModal" aria-hidden="true">
+    <div class="resource-card">
+      <div class="resource-title" id="resourceTitle">Resource</div>
+      <div class="resource-body" id="resourceBody">Placeholder resource details go here.</div>
+      <div class="resource-hint">Press Enter to close</div>
+    </div>
   </div>
   <div class="game-over-screen" id="gameOver">
     <div class="game-over-card">
@@ -321,6 +534,14 @@
     const isoBoard = document.querySelector(".iso-board");
     const threeLayer = document.getElementById("threeLayer");
     const respawnBtn = document.getElementById("respawnBtn");
+    const objectiveListEl = document.getElementById("objectiveList");
+    const directionPanel = document.getElementById("directionPanel");
+    const directionArrow = document.getElementById("directionArrow");
+    const directionText = document.getElementById("directionText");
+    const poiPrompt = document.getElementById("poiPrompt");
+    const resourceModal = document.getElementById("resourceModal");
+    const resourceTitle = document.getElementById("resourceTitle");
+    const resourceBody = document.getElementById("resourceBody");
 
     const tiles = [];
     const charPos = new THREE.Vector3(0, 0, 0);
@@ -418,6 +639,72 @@
     let carVariantCursor = 0;
     let boatVariantCursor = 0;
     const degToRad = Math.PI / 180;
+    const objectives = [
+      {
+        id: "signal-archive",
+        title: "Signal Archive",
+        subtitle: "EEG baseline file",
+        anchor: { u: 0.2, v: 0.2 },
+        resource: {
+          title: "Signal Archive",
+          body: "Placeholder resource entry for EEG baseline notes and raw signal files.",
+        },
+        color: "#5de2ff",
+      },
+      {
+        id: "lab-terminal",
+        title: "Lab Terminal",
+        subtitle: "Mentor notes index",
+        anchor: { u: 0.78, v: 0.32 },
+        resource: {
+          title: "Lab Terminal",
+          body: "Placeholder resource entry for mentor notes, checklists, and quick links.",
+        },
+        color: "#ff5fd1",
+      },
+      {
+        id: "insight-hub",
+        title: "Insight Hub",
+        subtitle: "Resource library map",
+        anchor: { u: 0.35, v: 0.72 },
+        resource: {
+          title: "Insight Hub",
+          body: "Placeholder resource entry for the resource library map and file index.",
+        },
+        color: "#7dff9a",
+      },
+      {
+        id: "field-cache",
+        title: "Field Cache",
+        subtitle: "Session recap file",
+        anchor: { u: 0.6, v: 0.58 },
+        resource: {
+          title: "Field Cache",
+          body: "Placeholder resource entry for session recaps and follow-up tasks.",
+        },
+        color: "#ffd166",
+      },
+      {
+        id: "neuro-vault",
+        title: "Neuro Vault",
+        subtitle: "Supplemental docs",
+        anchor: { u: 0.12, v: 0.58 },
+        resource: {
+          title: "Neuro Vault",
+          body: "Placeholder resource entry for supplemental docs and deep dives.",
+        },
+        color: "#8a7dff",
+      },
+    ];
+    const maxObjectives = 3;
+    const objectiveMarkers = [];
+    const objectiveReachRadius = 1.15;
+    const objectiveLineHeight = 0.08;
+    let activeObjective = null;
+    let objectiveLine = null;
+    let objectiveLinePositions = null;
+    let objectivePulse = 0;
+    let objectiveInRange = false;
     let cameraRadius = 20;
     const cameraMinRadius = 10;
     const cameraMaxRadius = 50;
@@ -452,6 +739,81 @@
       outlineOpacity: 0.92,
       edgeThreshold: 35,
     };
+
+    const formatObjectiveIndex = (index) => String(index + 1).padStart(2, "0");
+
+    function renderObjectiveList() {
+      if (!objectiveListEl) return;
+      objectiveListEl.innerHTML = "";
+      objectives.slice(0, maxObjectives).forEach((objective, index) => {
+        const item = document.createElement("li");
+        item.className = "objective-item";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "objective-button";
+        button.dataset.objectiveId = objective.id;
+
+        const indexEl = document.createElement("span");
+        indexEl.className = "objective-index";
+        indexEl.textContent = formatObjectiveIndex(index);
+
+        const nameEl = document.createElement("span");
+        nameEl.className = "objective-name";
+        nameEl.textContent = objective.title;
+
+        const subEl = document.createElement("span");
+        subEl.className = "objective-sub";
+        subEl.textContent = objective.subtitle;
+
+        button.append(indexEl, nameEl, subEl);
+        item.appendChild(button);
+        objectiveListEl.appendChild(item);
+      });
+    }
+
+    function updateObjectiveSelectionUI() {
+      if (!objectiveListEl) return;
+      const items = objectiveListEl.querySelectorAll(".objective-item");
+      items.forEach((item) => {
+        const button = item.querySelector(".objective-button");
+        const isActive = button?.dataset?.objectiveId === activeObjective?.id;
+        item.classList.toggle("active", Boolean(isActive));
+      });
+    }
+
+    function setActiveObjective(objectiveId) {
+      const next = objectives.find((objective) => objective.id === objectiveId);
+      if (!next) return;
+      activeObjective = next;
+      objectivePulse = 0;
+      updateObjectiveSelectionUI();
+      updateObjectiveMarkers();
+      updateObjectiveTracking(0);
+    }
+
+    function openResourceModal(objective) {
+      if (!resourceModal || !objective) return;
+      if (resourceTitle) resourceTitle.textContent = objective.resource?.title ?? objective.title;
+      if (resourceBody) resourceBody.textContent = objective.resource?.body ?? "Placeholder resource details.";
+      resourceModal.classList.add("active");
+      resourceModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeResourceModal() {
+      if (!resourceModal) return;
+      resourceModal.classList.remove("active");
+      resourceModal.setAttribute("aria-hidden", "true");
+    }
+
+    if (objectiveListEl) {
+      objectiveListEl.addEventListener("click", (event) => {
+        const button = event.target.closest(".objective-button");
+        const objectiveId = button?.dataset?.objectiveId;
+        if (objectiveId) {
+          setActiveObjective(objectiveId);
+        }
+      });
+    }
 
     function tileToWorld(x, y, layer = 0) {
       const halfX = ((cols - 1) * tileSize) / 2;
@@ -1044,6 +1406,7 @@ out body geom;
         } else {
           checkCarCollisions();
         }
+        updateObjectiveTracking(dt);
         renderer.render(scene, camera);
       }
       render();
@@ -1726,6 +2089,206 @@ out body geom;
       }
       return false;
     };
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    const resolveObjectivePositions = () => {
+      if (!walkBounds) return;
+      objectives.forEach((objective, index) => {
+        const u = objective.anchor?.u ?? (index + 1) / (objectives.length + 1);
+        const v = objective.anchor?.v ?? (index + 1) / (objectives.length + 1);
+        let x = lerp(walkBounds.minX, walkBounds.maxX, u);
+        let z = lerp(walkBounds.minZ, walkBounds.maxZ, v);
+        const offsets = [
+          { x: 0, z: 0 },
+          { x: 0.9, z: 0 },
+          { x: -0.9, z: 0 },
+          { x: 0, z: 0.9 },
+          { x: 0, z: -0.9 },
+          { x: 1.4, z: 1.4 },
+          { x: -1.4, z: -1.4 },
+        ];
+        for (const offset of offsets) {
+          const testX = x + offset.x;
+          const testZ = z + offset.z;
+          if (!isBlockedPosition(testX, testZ)) {
+            x = testX;
+            z = testZ;
+            break;
+          }
+        }
+        if (!objective.position) {
+          objective.position = new THREE.Vector3();
+        }
+        objective.position.set(x, 0, z);
+      });
+    };
+
+    const clearObjectiveMarkers = () => {
+      objectiveMarkers.forEach((marker) => {
+        marker.parent?.remove(marker);
+        marker.traverse((child) => {
+          if (child.isMesh) {
+            child.geometry?.dispose?.();
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat) => mat.dispose());
+            } else {
+              child.material?.dispose?.();
+            }
+          }
+        });
+      });
+      objectiveMarkers.length = 0;
+      objectives.forEach((objective) => {
+        objective.marker = null;
+        objective.position = null;
+      });
+      if (objectiveLine) {
+        objectiveLine.visible = false;
+      }
+    };
+
+    const ensureObjectiveLine = () => {
+      if (!cityGroup) return;
+      if (!objectiveLine) {
+        const geom = new THREE.BufferGeometry();
+        objectiveLinePositions = new Float32Array(6);
+        geom.setAttribute("position", new THREE.BufferAttribute(objectiveLinePositions, 3));
+        const material = new THREE.LineBasicMaterial({
+          color: 0x5de2ff,
+          transparent: true,
+          opacity: 0.8,
+        });
+        material.depthTest = false;
+        objectiveLine = new THREE.Line(geom, material);
+        objectiveLine.visible = false;
+        objectiveLine.renderOrder = 3;
+      }
+      if (objectiveLine.parent !== cityGroup) {
+        objectiveLine.parent?.remove(objectiveLine);
+        cityGroup.add(objectiveLine);
+      }
+    };
+
+    const createObjectiveMarkers = () => {
+      if (!cityGroup) return;
+      clearObjectiveMarkers();
+      resolveObjectivePositions();
+      objectives.forEach((objective) => {
+        if (!objective.position) return;
+        const baseColor = new THREE.Color(objective.color ?? "#5de2ff");
+        const activeColor = new THREE.Color("#ffd166");
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(0.5, 0.09, 8, 24),
+          new THREE.MeshBasicMaterial({
+            color: baseColor,
+            transparent: true,
+            opacity: 0.85,
+          })
+        );
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 0.12;
+        const beam = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.08, 0.08, 1.6, 12, 1, true),
+          new THREE.MeshBasicMaterial({
+            color: baseColor,
+            transparent: true,
+            opacity: 0.45,
+          })
+        );
+        beam.position.y = 0.95;
+        const marker = new THREE.Group();
+        marker.add(ring, beam);
+        marker.position.copy(objective.position);
+        marker.userData.objectiveId = objective.id;
+        marker.userData.baseColor = baseColor;
+        marker.userData.activeColor = activeColor;
+        marker.userData.ring = ring;
+        marker.userData.beam = beam;
+        marker.userData.baseScale = 1;
+        cityGroup.add(marker);
+        objectiveMarkers.push(marker);
+        objective.marker = marker;
+      });
+      ensureObjectiveLine();
+      updateObjectiveMarkers();
+    };
+
+    const updateObjectiveMarkers = () => {
+      objectiveMarkers.forEach((marker) => {
+        const isActive = marker.userData.objectiveId === activeObjective?.id;
+        const ring = marker.userData.ring;
+        const beam = marker.userData.beam;
+        const color = isActive ? marker.userData.activeColor : marker.userData.baseColor;
+        if (ring?.material?.color) ring.material.color.copy(color);
+        if (beam?.material?.color) beam.material.color.copy(color);
+        marker.userData.baseScale = isActive ? 1.08 : 0.96;
+        marker.scale.setScalar(marker.userData.baseScale);
+      });
+    };
+
+    const updateObjectiveTracking = (dt) => {
+      if (!directionText || !directionArrow || !poiPrompt) return;
+      if (!activeObjective) {
+        directionText.textContent = "Select an objective.";
+        directionArrow.style.transform = "rotate(0deg)";
+        poiPrompt.classList.remove("active");
+        objectiveInRange = false;
+        if (objectiveLine) objectiveLine.visible = false;
+        return;
+      }
+      if (!activeObjective.position) {
+        directionText.textContent = `${activeObjective.title} - mapping route...`;
+        directionArrow.style.transform = "rotate(0deg)";
+        poiPrompt.classList.remove("active");
+        objectiveInRange = false;
+        if (objectiveLine) objectiveLine.visible = false;
+        return;
+      }
+      const target = activeObjective.position;
+      const dx = target.x - charPos.x;
+      const dz = target.z - charPos.z;
+      const distance = Math.hypot(dx, dz);
+      const { forward, right } = getScreenMoveBasis();
+      const direction = new THREE.Vector3(dx, 0, dz);
+      if (direction.lengthSq() > 1e-6) {
+        direction.normalize();
+      }
+      const screenX = direction.dot(right);
+      const screenY = direction.dot(forward);
+      const angle = Math.atan2(screenX, screenY);
+      directionArrow.style.transform = `rotate(${angle}rad)`;
+      directionText.textContent = `${activeObjective.title} - ${distance.toFixed(1)}m`;
+
+      objectiveInRange = distance <= objectiveReachRadius;
+      if (objectiveInRange && !resourceModal?.classList.contains("active")) {
+        poiPrompt.classList.add("active");
+      } else {
+        poiPrompt.classList.remove("active");
+      }
+
+      if (objectiveLine && objectiveLinePositions) {
+        objectiveLine.visible = true;
+        objectiveLinePositions[0] = charPos.x;
+        objectiveLinePositions[1] = objectiveLineHeight;
+        objectiveLinePositions[2] = charPos.z;
+        objectiveLinePositions[3] = target.x;
+        objectiveLinePositions[4] = objectiveLineHeight;
+        objectiveLinePositions[5] = target.z;
+        objectiveLine.geometry.attributes.position.needsUpdate = true;
+      }
+
+      if (activeObjective.marker) {
+        objectivePulse += dt;
+        const pulseScale = activeObjective.marker.userData.baseScale + Math.sin(objectivePulse * 2.6) * 0.05;
+        activeObjective.marker.scale.setScalar(pulseScale);
+      }
+    };
+
+    renderObjectiveList();
+    if (objectives.length > 0) {
+      setActiveObjective(objectives[0].id);
+    }
 
     const placeStreetLights = (curve, interval, offset, palette) => {
       if (!cityGroup || !curve) return;
@@ -2878,6 +3441,7 @@ out body geom;
           if (idx % 2 === 0) spawnPedestrianOnCurve(entry.curve, walkerPalette);
         });
       applyNeonToObject(cityGroup);
+      createObjectiveMarkers();
       return true;
     };
 
@@ -2906,6 +3470,7 @@ out body geom;
       boatCurves.length = 0;
       carVariantCursor = 0;
       boatVariantCursor = 0;
+      clearObjectiveMarkers();
 
       cityGroup = new THREE.Group();
       cityGroup.name = "cityGroup";
@@ -3272,6 +3837,7 @@ out body geom;
         placeStreetLights(curve, 2.4, 0.6, lightPalette);
       });
       applyNeonToObject(cityGroup);
+      createObjectiveMarkers();
     }
 
     function updateCars() {
@@ -3503,7 +4069,22 @@ out body geom;
 
     // Keyboard controls
     window.addEventListener("keydown", (e) => {
+      if (resourceModal?.classList.contains("active")) {
+        if (e.key === "Enter" || e.key === "Escape") {
+          e.preventDefault();
+          closeResourceModal();
+        }
+        e.preventDefault();
+        return;
+      }
       if (gameOver) return;
+      if (e.key === "Enter") {
+        if (objectiveInRange && activeObjective) {
+          e.preventDefault();
+          openResourceModal(activeObjective);
+        }
+        return;
+      }
       const moveFn = isRidingBoat ? moveBoat : moveCharacter;
       switch (e.key) {
         case "ArrowUp": e.preventDefault(); moveFn(0, 1); break;
