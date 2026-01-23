@@ -307,6 +307,33 @@
       right: 18px;
       bottom: 18px;
     }
+    .coin-counter {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(10, 16, 30, 0.82);
+      border: 1px solid rgba(93, 226, 255, 0.35);
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+    .coin-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(223, 232, 255, 0.7);
+    }
+    .coin-value {
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: #ffd166;
+    }
     .panel-title {
       font-size: 11px;
       text-transform: uppercase;
@@ -472,6 +499,10 @@
         right: 14px;
         bottom: 14px;
       }
+      .coin-counter {
+        top: 14px;
+        right: 14px;
+      }
     }
   </style>
 </head>
@@ -489,6 +520,10 @@
     <div class="objective-panel">
       <div class="panel-title">Objectives</div>
       <ul class="objective-list" id="objectiveList"></ul>
+    </div>
+    <div class="coin-counter">
+      <div class="coin-label">Coins</div>
+      <div class="coin-value" id="coinCounter">0</div>
     </div>
     <div class="direction-panel" id="directionPanel">
       <div class="panel-title">Directions</div>
@@ -542,6 +577,7 @@
     const resourceModal = document.getElementById("resourceModal");
     const resourceTitle = document.getElementById("resourceTitle");
     const resourceBody = document.getElementById("resourceBody");
+    const coinCounterEl = document.getElementById("coinCounter");
 
     const tiles = [];
     const charPos = new THREE.Vector3(0, 0, 0);
@@ -705,6 +741,17 @@
     let objectiveLinePositions = null;
     let objectivePulse = 0;
     let objectiveInRange = false;
+    const coins = [];
+    const coinSpawnCount = 32;
+    const coinPickupRadius = 0.65;
+    const coinFloatHeight = 0.65;
+    const coinFloatAmp = 0.16;
+    const coinSpinSpeed = 2.2;
+    const coinMinSpacing = 1.6;
+    const coinMaxAttempts = 320;
+    let coinCount = 0;
+    let coinGeometry = null;
+    let coinMaterial = null;
     let cameraRadius = 20;
     const cameraMinRadius = 10;
     const cameraMaxRadius = 50;
@@ -803,6 +850,69 @@
       if (!resourceModal) return;
       resourceModal.classList.remove("active");
       resourceModal.setAttribute("aria-hidden", "true");
+    }
+
+    function updateCoinCounter() {
+      if (!coinCounterEl) return;
+      coinCounterEl.textContent = String(coinCount);
+    }
+
+    function ensureCoinAssets() {
+      if (coinGeometry && coinMaterial) return;
+      coinGeometry = new THREE.CylinderGeometry(0.24, 0.24, 0.08, 20);
+      coinGeometry.rotateZ(Math.PI / 2);
+      coinMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffd166,
+        emissive: new THREE.Color(0xffb703),
+        emissiveIntensity: 0.6,
+        metalness: 0.7,
+        roughness: 0.25,
+      });
+    }
+
+    function clearCoins() {
+      coins.forEach((coin) => {
+        coin.parent?.remove(coin);
+      });
+      coins.length = 0;
+    }
+
+    function createCoins() {
+      if (!cityGroup || !walkBounds) return;
+      clearCoins();
+      coinCount = 0;
+      updateCoinCounter();
+      ensureCoinAssets();
+      const positions = [];
+      let attempts = 0;
+      while (positions.length < coinSpawnCount && attempts < coinMaxAttempts) {
+        attempts += 1;
+        const x = lerp(walkBounds.minX, walkBounds.maxX, Math.random());
+        const z = lerp(walkBounds.minZ, walkBounds.maxZ, Math.random());
+        if (isBlockedPosition(x, z)) continue;
+        let tooClose = false;
+        for (let i = 0; i < positions.length; i += 1) {
+          const dx = positions[i].x - x;
+          const dz = positions[i].z - z;
+          if (dx * dx + dz * dz < coinMinSpacing * coinMinSpacing) {
+            tooClose = true;
+            break;
+          }
+        }
+        if (tooClose) continue;
+        positions.push({ x, z });
+      }
+
+      positions.forEach((pos) => {
+        const coin = new THREE.Mesh(coinGeometry, coinMaterial);
+        coin.position.set(pos.x, coinFloatHeight, pos.z);
+        coin.rotation.y = Math.random() * Math.PI * 2;
+        coin.userData.baseY = coinFloatHeight;
+        coin.userData.phase = Math.random() * Math.PI * 2;
+        coin.userData.spinDir = Math.random() < 0.5 ? -1 : 1;
+        cityGroup.add(coin);
+        coins.push(coin);
+      });
     }
 
     if (objectiveListEl) {
@@ -1407,6 +1517,7 @@ out body geom;
           checkCarCollisions();
         }
         updateObjectiveTracking(dt);
+        updateCoins(t, dt);
         renderer.render(scene, camera);
       }
       render();
@@ -2285,10 +2396,31 @@ out body geom;
       }
     };
 
+    const updateCoins = (time, dt) => {
+      if (!coins.length) return;
+      const canCollect = !gameOver;
+      for (let i = coins.length - 1; i >= 0; i -= 1) {
+        const coin = coins[i];
+        const spinDir = coin.userData.spinDir ?? 1;
+        coin.rotation.y += dt * coinSpinSpeed * spinDir;
+        coin.position.y = coin.userData.baseY + Math.sin(time * 2.6 + coin.userData.phase) * coinFloatAmp;
+        if (!canCollect) continue;
+        const dx = coin.position.x - charPos.x;
+        const dz = coin.position.z - charPos.z;
+        if (Math.hypot(dx, dz) <= coinPickupRadius) {
+          coin.parent?.remove(coin);
+          coins.splice(i, 1);
+          coinCount += 1;
+          updateCoinCounter();
+        }
+      }
+    };
+
     renderObjectiveList();
     if (objectives.length > 0) {
       setActiveObjective(objectives[0].id);
     }
+    updateCoinCounter();
 
     const placeStreetLights = (curve, interval, offset, palette) => {
       if (!cityGroup || !curve) return;
@@ -3442,6 +3574,7 @@ out body geom;
         });
       applyNeonToObject(cityGroup);
       createObjectiveMarkers();
+      createCoins();
       return true;
     };
 
@@ -3471,6 +3604,7 @@ out body geom;
       carVariantCursor = 0;
       boatVariantCursor = 0;
       clearObjectiveMarkers();
+      clearCoins();
 
       cityGroup = new THREE.Group();
       cityGroup.name = "cityGroup";
@@ -3838,6 +3972,7 @@ out body geom;
       });
       applyNeonToObject(cityGroup);
       createObjectiveMarkers();
+      createCoins();
     }
 
     function updateCars() {
