@@ -768,13 +768,13 @@
     let objectivePulse = 0;
     let objectiveInRange = false;
     const coins = [];
-    const coinSpawnCount = 32;
+    const coinSpawnCount = 64;
     const coinPickupRadius = 0.65;
     const coinFloatHeight = 0.65;
     const coinFloatAmp = 0.16;
     const coinSpinSpeed = 2.2;
-    const coinMinSpacing = 1.6;
-    const coinMaxAttempts = 320;
+    const coinMinSpacing = 1.2;
+    const coinMaxAttempts = 520;
     let coinCount = 0;
     let coinGeometry = null;
     let coinMaterial = null;
@@ -2237,13 +2237,50 @@ out body geom;
 
     const lerp = (a, b, t) => a + (b - a) * t;
 
+    const collectRoadSamples = () => {
+      const samples = [];
+      const sampleCount = 140;
+      roadCurves.forEach((curve) => {
+        const points = curve.getPoints(sampleCount);
+        points.forEach((point) => {
+          samples.push(new THREE.Vector3(point.x, 0, point.z));
+        });
+      });
+      return samples;
+    };
+
+    const findNearestSample = (samples, target) => {
+      if (!samples.length) return null;
+      let best = samples[0];
+      let bestDist = Infinity;
+      samples.forEach((sample) => {
+        const dx = sample.x - target.x;
+        const dz = sample.z - target.z;
+        const dist = dx * dx + dz * dz;
+        if (dist < bestDist) {
+          best = sample;
+          bestDist = dist;
+        }
+      });
+      return best;
+    };
+
     const resolveObjectivePositions = () => {
       if (!walkBounds) return;
+      const roadSamples = roadCurves.length ? collectRoadSamples() : [];
       objectives.forEach((objective, index) => {
         const u = objective.anchor?.u ?? (index + 1) / (objectives.length + 1);
         const v = objective.anchor?.v ?? (index + 1) / (objectives.length + 1);
-        let x = lerp(walkBounds.minX, walkBounds.maxX, u);
-        let z = lerp(walkBounds.minZ, walkBounds.maxZ, v);
+        const anchorX = lerp(walkBounds.minX, walkBounds.maxX, u);
+        const anchorZ = lerp(walkBounds.minZ, walkBounds.maxZ, v);
+        let x = anchorX;
+        let z = anchorZ;
+        const anchor = new THREE.Vector3(anchorX, 0, anchorZ);
+        const nearest = findNearestSample(roadSamples, anchor);
+        if (nearest) {
+          x = nearest.x;
+          z = nearest.z;
+        }
         const offsets = [
           { x: 0, z: 0 },
           { x: 0.9, z: 0 },
