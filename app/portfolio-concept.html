@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #111111;
+      --ink-soft: rgba(17, 17, 17, 0.6);
+      --paper: #f7f7f7;
+      --paper-deep: #eeeeee;
+      --shadow: rgba(0, 0, 0, 0.16);
+      --room-rot-x: 7deg;
+      --room-rot-y: -26deg;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, #f1f1f1 100%);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .gallery-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--paper);
+    }
+
+    .gallery-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1800px;
+    }
+
+    .room {
+      --room-w: min(1420px, 132vw);
+      --room-h: min(720px, 76vh);
+      --room-d: min(1680px, 200vw);
+      width: var(--room-w);
+      height: var(--room-h);
+      position: relative;
+      transform-style: preserve-3d;
+      transform: translate3d(220px, 50px, -320px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+    }
+
+    .face {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-style: preserve-3d;
+      backface-visibility: visible;
+      background: #fcfcfc;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+    }
+
+    .face.back {
+      width: var(--room-w);
+      height: var(--room-h);
+      transform: translate(-50%, -50%) translateZ(calc(var(--room-d) / -2));
+      background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+    }
+
+    .face.left {
+      width: var(--room-d);
+      height: var(--room-h);
+      transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--room-w) / 2));
+      background: linear-gradient(90deg, #f6f6f6 0%, #ededed 100%);
+    }
+
+    .face.right {
+      width: var(--room-d);
+      height: var(--room-h);
+      transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--room-w) / 2));
+      background: linear-gradient(90deg, #f0f0f0 0%, #fbfbfb 100%);
+    }
+
+    .face.floor {
+      width: var(--room-w);
+      height: var(--room-d);
+      transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / 2));
+      background: linear-gradient(180deg, #ffffff 0%, #efefef 100%);
+    }
+
+    .face.floor::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, transparent 40%, rgba(0, 0, 0, 0.05) 100%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .face.ceiling {
+      width: var(--room-w);
+      height: var(--room-d);
+      transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--room-h) / 2));
+      background: linear-gradient(180deg, #f0f0f0 0%, #fbfbfb 100%);
+    }
+
+    .wall-text {
+      position: absolute;
+      left: 58%;
+      top: 33%;
+      width: 28%;
+      text-align: center;
+      color: #111;
+      transform: translateX(-50%) translateZ(10px);
+    }
+
+    .wall-title {
+      font-size: clamp(0.78rem, 1.05vw, 1.05rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+
+    .wall-title::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -0.4rem;
+      width: 60%;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.35);
+      transform: translateX(-50%);
+    }
+
+    .wall-box {
+      margin: 1.1rem auto 0;
+      width: 92%;
+      padding: 0.8rem 1.2rem;
+      border: 1px solid rgba(0, 0, 0, 0.38);
+      display: grid;
+      gap: 0.35rem;
+      justify-items: start;
+      text-align: left;
+      opacity: 0.75;
+    }
+
+    .wall-box span {
+      display: block;
+      height: 3px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 999px;
+    }
+
+    .wall-box span:nth-child(1) { width: 86%; }
+    .wall-box span:nth-child(2) { width: 96%; }
+    .wall-box span:nth-child(3) { width: 92%; }
+    .wall-box span:nth-child(4) { width: 90%; }
+    .wall-box span:nth-child(5) { width: 78%; }
+    .wall-box span:nth-child(6) { width: 60%; }
+
+    .art-frame {
+      position: absolute;
+      border: 3px solid #111;
+      background: #ffffff;
+      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.18);
+      transform: translateZ(8px);
+      backface-visibility: visible;
+    }
+
+    .art-frame::before {
+      content: "";
+      position: absolute;
+      inset: 7%;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: #fbfbfb;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    }
+
+    .art-frame::after {
+      content: "";
+      position: absolute;
+      inset: 15% 12%;
+      opacity: 0.9;
+    }
+
+    .face.left .frame-1 { width: 26%; height: 78%; top: 3%; left: -2%; }
+    .face.left .frame-2 { width: 20%; height: 62%; top: 13%; left: 30%; }
+    .face.left .frame-3 { width: 15%; height: 50%; top: 22%; left: 54%; }
+    .face.left .frame-4 { width: 12%; height: 42%; top: 28%; left: 72%; }
+
+    .face.right .frame-5 { width: 20%; height: 56%; top: 18%; right: 10%; }
+
+    .frame-1::after {
+      background:
+        radial-gradient(circle at 30% 35%, rgba(0, 0, 0, 0.65), transparent 62%),
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 5px);
+    }
+
+    .frame-2::after {
+      background:
+        radial-gradient(circle at 45% 35%, rgba(0, 0, 0, 0.7), transparent 60%),
+        linear-gradient(120deg, rgba(0, 0, 0, 0.35), transparent 60%);
+    }
+
+    .frame-3::after {
+      background:
+        radial-gradient(circle at 55% 40%, rgba(0, 0, 0, 0.68), transparent 54%),
+        linear-gradient(160deg, rgba(0, 0, 0, 0.3), transparent 55%);
+    }
+
+    .frame-4::after {
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 0.6), transparent 52%),
+        linear-gradient(140deg, rgba(0, 0, 0, 0.32), transparent 60%);
+    }
+
+    .frame-5::after {
+      background:
+        radial-gradient(circle at 45% 45%, rgba(0, 0, 0, 0.7), transparent 60%),
+        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.3) 0 1px, transparent 1px 5px);
+    }
+
+    .rail {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 16.5%;
+      height: 3px;
+      background: #111;
+      transform: translateZ(5px);
+    }
+
+    .rail::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 2px;
+      height: 28px;
+      background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 36px);
+    }
+
+    .rail.back-rail {
+      left: 20%;
+      right: 20%;
+      bottom: 24.5%;
+    }
+
+    .ink-blob {
+      position: absolute;
+      left: 52%;
+      top: 63%;
+      width: 66px;
+      height: 76px;
+      background: radial-gradient(circle at 50% 40%, #111 0%, #111 48%, #1b1b1b 72%);
+      border-radius: 50% 50% 48% 52%;
+      box-shadow: 0 10px 16px rgba(0, 0, 0, 0.24);
+      transform: translate(-50%, -50%) translateZ(12px);
+    }
+
+    .ink-blob::before {
+      content: "";
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      width: 38px;
+      height: 34px;
+      background: radial-gradient(circle at 50% 40%, #111 0%, #111 60%, #1b1b1b 80%);
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+
+    .ink-blob::after {
+      content: "";
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      width: 12px;
+      height: 24px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 12px;
+      transform: translateX(-50%);
+    }
+
+    .footsteps {
+      position: absolute;
+      left: 52%;
+      top: 75%;
+      width: 140px;
+      height: 110px;
+      transform: translate(-50%, -50%) translateZ(6px);
+    }
+
+    .footsteps span {
+      position: absolute;
+      width: 12px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .footsteps span:nth-child(1) { top: 12px; left: 62px; opacity: 0.7; }
+    .footsteps span:nth-child(2) { top: 32px; left: 70px; opacity: 0.65; }
+    .footsteps span:nth-child(3) { top: 52px; left: 78px; opacity: 0.6; }
+    .footsteps span:nth-child(4) { top: 70px; left: 86px; opacity: 0.5; }
+    .footsteps span:nth-child(5) { top: 86px; left: 94px; opacity: 0.45; }
+
+    .floor-ring {
+      position: absolute;
+      border: 1.5px solid rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      background: transparent;
+      transform: translateZ(4px);
+      opacity: 0.6;
+    }
+
+    .ring-1 { width: 120px; height: 72px; left: 18%; top: 58%; }
+    .ring-2 { width: 110px; height: 66px; left: 40%; top: 62%; }
+    .ring-3 { width: 100px; height: 60px; left: 68%; top: 66%; }
+    .ring-4 { width: 90px; height: 54px; left: 28%; top: 72%; }
+    .ring-5 { width: 120px; height: 70px; left: 58%; top: 74%; }
+    .ring-6 { width: 70px; height: 44px; left: 44%; top: 78%; }
+
+    .ceiling-mark {
+      position: absolute;
+      top: 8%;
+      left: 58%;
+      width: 170px;
+      height: 170px;
+      transform: translateZ(6px) rotate(45deg);
+      background:
+        linear-gradient(90deg, transparent 46%, #111 46% 54%, transparent 54%),
+        linear-gradient(0deg, transparent 46%, #111 46% 54%, transparent 54%);
+      opacity: 0.85;
+    }
+
+    .ceiling-frame {
+      position: absolute;
+      border: 2px solid #111;
+      background: #f8f8f8;
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.12);
+      transform: translateZ(6px) rotate(45deg);
+    }
+
+    .ceiling-frame.frame-a {
+      width: 150px;
+      height: 96px;
+      top: 2%;
+      left: 38%;
+    }
+
+    .ceiling-frame.frame-b {
+      width: 130px;
+      height: 86px;
+      top: 1%;
+      left: 66%;
+    }
+
+    .ceiling-arrow {
+      position: absolute;
+      top: 18%;
+      left: 58%;
+      width: 24px;
+      height: 68px;
+      transform: translateZ(6px);
+      background: linear-gradient(180deg, #111 0%, #111 100%);
+    }
+
+    .ceiling-arrow::before,
+    .ceiling-arrow::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 24px;
+      height: 14px;
+      background: #111;
+      transform: translateX(-50%);
+    }
+
+    .ceiling-arrow::before {
+      top: -8px;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    .ceiling-arrow::after {
+      bottom: -8px;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .ui-hints {
+      position: absolute;
+      bottom: 3.5vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(640px, 80vw);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.4rem;
+      font-size: 0.6rem;
+      color: rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      pointer-events: none;
+    }
+
+    .key-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .key {
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      padding: 0.18rem 0.32rem;
+      border-radius: 3px;
+      font-size: 0.6rem;
+      color: rgba(0, 0, 0, 0.75);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    @media (max-width: 900px) {
+      .room {
+        --room-w: 110vw;
+        --room-h: 62vh;
+        --room-d: 140vw;
+        transform: translate3d(140px, 30px, -220px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      }
+
+      .ui-hints {
+        bottom: 4vh;
+        left: 6vw;
+        right: 6vw;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .room {
+        --room-w: 120vw;
+        --room-h: 54vh;
+        --room-d: 150vw;
+        transform: translate3d(80px, 20px, -180px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      }
+
+      .ui-hints {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="gallery-stage" aria-label="Gallery">
+    <section class="gallery-viewport" id="gallery-scene" aria-label="3D gallery preview">
+      <div class="room" role="img" aria-label="Minimal 3D gallery room">
+        <div class="face back">
+          <div class="wall-text">
+            <div class="wall-title">ThevertMenthe</div>
+            <div class="wall-box">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="rail back-rail"></div>
+        </div>
+        <div class="face left">
+          <div class="art-frame frame-1"></div>
+          <div class="art-frame frame-2"></div>
+          <div class="art-frame frame-3"></div>
+          <div class="art-frame frame-4"></div>
+          <div class="rail"></div>
+        </div>
+        <div class="face right">
+          <div class="art-frame frame-5"></div>
+          <div class="rail"></div>
+        </div>
+        <div class="face floor">
+          <div class="ink-blob" aria-hidden="true"></div>
+          <div class="footsteps" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="floor-ring ring-1" aria-hidden="true"></div>
+          <div class="floor-ring ring-2" aria-hidden="true"></div>
+          <div class="floor-ring ring-3" aria-hidden="true"></div>
+          <div class="floor-ring ring-4" aria-hidden="true"></div>
+          <div class="floor-ring ring-5" aria-hidden="true"></div>
+          <div class="floor-ring ring-6" aria-hidden="true"></div>
+        </div>
+        <div class="face ceiling">
+          <div class="ceiling-frame frame-a" aria-hidden="true"></div>
+          <div class="ceiling-frame frame-b" aria-hidden="true"></div>
+          <div class="ceiling-mark" aria-hidden="true"></div>
+          <div class="ceiling-arrow" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="ui-hints" aria-hidden="true">
+        <div class="key-group">
+          <span class="key">↑</span>
+          <span class="key">↓</span>
+          <span class="key">←</span>
+          <span class="key">→</span>
+          <span>Move</span>
+        </div>
+        <div class="key-group">
+          <span class="key">ESC</span>
+          <span>Open/Close Menu</span>
+        </div>
+        <div class="key-group">
+          <span class="key">+</span>
+          <span>See details</span>
+        </div>
+      </div>
+      <!-- Replace .room with a Three.js canvas when ready. -->
+    </section>
+  </main>
+  <script>
+    const root = document.documentElement;
+    const room = document.querySelector(".room");
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let rotX = 7;
+    let rotY = -26;
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function updateRotation() {
+      root.style.setProperty("--room-rot-x", `${rotX}deg`);
+      root.style.setProperty("--room-rot-y", `${rotY}deg`);
+    }
+
+    function onPointerDown(event) {
+      isDragging = true;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      room.setPointerCapture(event.pointerId);
+    }
+
+    function onPointerMove(event) {
+      if (!isDragging) return;
+      const dx = event.clientX - lastX;
+      const dy = event.clientY - lastY;
+      lastX = event.clientX;
+      lastY = event.clientY;
+      rotY += dx * 0.12;
+      rotX -= dy * 0.12;
+      rotX = clamp(rotX, -4, 18);
+      rotY = clamp(rotY, -60, 10);
+      updateRotation();
+    }
+
+    function onPointerUp(event) {
+      isDragging = false;
+      room.releasePointerCapture(event.pointerId);
+    }
+
+    room.addEventListener("pointerdown", onPointerDown);
+    room.addEventListener("pointermove", onPointerMove);
+    room.addEventListener("pointerup", onPointerUp);
+    room.addEventListener("pointerleave", () => { isDragging = false; });
+    updateRotation();
+  </script>
+</body>
+</html>
