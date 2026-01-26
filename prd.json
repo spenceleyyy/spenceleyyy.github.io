@@ -1,0 +1,15 @@
+{
+  "branchName": "ralph/first-feature",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Example task",
+      "description": "This is an example task. Replace with your actual task.",
+      "acceptanceCriteria": [
+        "Task is complete",
+        "Code works as expected"
+      ],
+      "passes": false
+    }
+  ]
+}
