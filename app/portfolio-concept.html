@@ -7,6 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./lib/three/three.module.js"
+      }
+    }
+  </script>
   <style>
     :root {
       --ink: #111111;
@@ -14,8 +21,14 @@
       --paper: #f7f7f7;
       --paper-deep: #eeeeee;
       --shadow: rgba(0, 0, 0, 0.16);
-      --room-rot-x: 7deg;
-      --room-rot-y: -26deg;
+      --room-rot-x: 52deg;
+      --room-rot-y: 0deg;
+      --frame-depth: 10px;
+      --rail-depth: 8px;
+      --char-x: 0px;
+      --char-y: 0px;
+      --char-z: 500px;
+      --char-tilt: 0deg;
     }
 
     * {
@@ -30,7 +43,7 @@
     body {
       margin: 0;
       font-family: "Inter", sans-serif;
-      background: linear-gradient(180deg, #ffffff 0%, #f1f1f1 100%);
+      background: #fcfcfc;
       color: var(--ink);
       overflow: hidden;
     }
@@ -42,7 +55,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--paper);
+      background: radial-gradient(ellipse at 50% 40%, #fdfdfb 0%, #f8f8f6 60%, #f4f4f2 100%);
     }
 
     .gallery-viewport {
@@ -53,18 +66,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 1800px;
+      perspective: 1200px;
+      perspective-origin: 50% 20%;
+      background: radial-gradient(ellipse at 50% 35%, rgba(255, 252, 245, 0.4) 0%, transparent 50%);
+      --spot-x: 50%;
+      --spot-y: 50%;
+      --spot-size: 240px;
     }
 
     .room {
-      --room-w: min(1420px, 132vw);
-      --room-h: min(720px, 76vh);
-      --room-d: min(1680px, 200vw);
+      /* Fixed room dimensions - consistent coordinates */
+      --room-w: 4000px;
+      --room-h: 1800px;
+      --room-d: 8000px;
       width: var(--room-w);
       height: var(--room-h);
       position: relative;
       transform-style: preserve-3d;
-      transform: translate3d(220px, 50px, -320px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      transform: translate3d(0px, 500px, -3200px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
     }
 
     .face {
@@ -74,117 +93,410 @@
       transform-style: preserve-3d;
       backface-visibility: visible;
       background: #fcfcfc;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
     }
 
     .face.back {
       width: var(--room-w);
       height: var(--room-h);
       transform: translate(-50%, -50%) translateZ(calc(var(--room-d) / -2));
-      background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 100%);
+      background: linear-gradient(180deg, #f9f9f7 0%, #f6f6f4 100%);
     }
 
     .face.left {
       width: var(--room-d);
       height: var(--room-h);
-      transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--room-w) / 2));
-      background: linear-gradient(90deg, #f6f6f6 0%, #ededed 100%);
+      transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--room-w) / -2));
+      background: linear-gradient(180deg, #f7f7f5 0%, #f2f2f0 100%);
     }
 
     .face.right {
       width: var(--room-d);
       height: var(--room-h);
-      transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--room-w) / 2));
-      background: linear-gradient(90deg, #f0f0f0 0%, #fbfbfb 100%);
+      transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--room-w) / -2));
+      background: linear-gradient(180deg, #f8f8f6 0%, #f4f4f2 100%);
     }
 
     .face.floor {
       width: var(--room-w);
       height: var(--room-d);
       transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / 2));
-      background: linear-gradient(180deg, #ffffff 0%, #efefef 100%);
+      background: linear-gradient(180deg, #fafaf8 0%, #f6f6f4 100%);
     }
 
     .face.floor::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, transparent 40%, rgba(0, 0, 0, 0.05) 100%);
-      opacity: 0.5;
-      pointer-events: none;
+      display: none;
     }
 
     .face.ceiling {
       width: var(--room-w);
       height: var(--room-d);
       transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--room-h) / 2));
-      background: linear-gradient(180deg, #f0f0f0 0%, #fbfbfb 100%);
+      background:
+        radial-gradient(ellipse at 50% 52%, rgba(255, 247, 232, 0.26) 0%, rgba(255, 247, 232, 0.12) 35%, transparent 60%),
+        radial-gradient(ellipse at 50% 22%, rgba(255, 255, 255, 0.45) 0%, transparent 45%),
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.045) 0 2px, transparent 2px 230px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 2px, transparent 2px 190px),
+        linear-gradient(180deg, #f1f1ef 0%, #f8f8f6 55%, #f0f0ee 100%);
     }
+
+    /* ========== MUSEUM LIGHTING SYSTEM ========== */
+
+    /* Viewport vignette for atmospheric depth */
+    .gallery-viewport::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0, 0, 0, 0.12) 100%);
+      z-index: 10;
+    }
+
+    /* Spotlight dimming mask */
+    .gallery-viewport.spotlight-active::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at var(--spot-x) var(--spot-y),
+          rgba(0, 0, 0, 0) 0,
+          rgba(0, 0, 0, 0) calc(var(--spot-size) * 0.6),
+          rgba(0, 0, 0, 0.32) calc(var(--spot-size) * 0.95),
+          rgba(0, 0, 0, 0.55) 100%);
+      pointer-events: none;
+      z-index: 8;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Track light fixtures */
+    .track-light {
+      position: absolute;
+      width: 60px;
+      height: 40px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+      border-radius: 6px 6px 12px 12px;
+      transform: translateZ(8px);
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Track light mounting bar */
+    .track-light::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 10px;
+      background: linear-gradient(180deg, #0f0f0f, #252525);
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* Light cone effect from track lights */
+    .track-light::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 120px solid transparent;
+      border-right: 120px solid transparent;
+      border-top: 800px solid rgba(255, 248, 230, 0.04);
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    /* Track light positions - Left wall (ceiling above left wall artwork) */
+    .face.ceiling .track-light.left-1 { top: 82%; left: 8%; }
+    .face.ceiling .track-light.left-2 { top: 82%; left: 22%; }
+    .face.ceiling .track-light.left-3 { top: 82%; left: 36%; }
+    .face.ceiling .track-light.left-4 { top: 82%; left: 50%; }
+    .face.ceiling .track-light.left-5 { top: 82%; left: 64%; }
+
+    /* Track light positions - Right wall (ceiling above right wall artwork) */
+    .face.ceiling .track-light.right-1 { top: 18%; left: 28%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-2 { top: 18%; left: 42%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-3 { top: 18%; left: 56%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-4 { top: 18%; left: 70%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-5 { top: 18%; left: 84%; transform: translateZ(8px) rotate(180deg); }
+
+    /* Wall ambient lighting - darker edges, lighter center */
+    .face.left::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.18) 0%, transparent 12%, transparent 88%, rgba(0, 0, 0, 0.12) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 15%, transparent 75%, rgba(0, 0, 0, 0.2) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .face.right::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0%, transparent 12%, transparent 88%, rgba(0, 0, 0, 0.18) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 15%, transparent 75%, rgba(0, 0, 0, 0.2) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .face.back::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.15) 0%, transparent 15%, transparent 85%, rgba(0, 0, 0, 0.15) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, transparent 20%, transparent 70%, rgba(0, 0, 0, 0.18) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Floor ambient lighting - subtle vignette and wall junction shadows */
+    .face.floor::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.08) 60%, rgba(0, 0, 0, 0.18) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.15) 0%, transparent 6%, transparent 94%, rgba(0, 0, 0, 0.15) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, transparent 8%, transparent 92%, rgba(0, 0, 0, 0.12) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Warm spotlight pools on floor beneath artwork */
+    .floor-spotlight {
+      position: absolute;
+      width: 400px;
+      height: 600px;
+      background: radial-gradient(ellipse at 50% 30%, rgba(255, 250, 240, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+      transform: translateZ(2px);
+    }
+
+    /* Enhanced ceiling with subtle glow areas */
+    .face.ceiling::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse at 50% 50%, transparent 42%, rgba(0, 0, 0, 0.12) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 28%, transparent 72%, rgba(0, 0, 0, 0.1) 100%);
+      pointer-events: none;
+    }
+
+    .face.ceiling::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.02) 0 1px, transparent 1px 5px);
+      opacity: 0.35;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    /* ========== END MUSEUM LIGHTING SYSTEM ========== */
 
     .wall-text {
       position: absolute;
-      left: 58%;
-      top: 33%;
-      width: 28%;
-      text-align: center;
+      left: 50%;
+      top: 5%;
+      width: 92%;
+      text-align: left;
       color: #111;
       transform: translateX(-50%) translateZ(10px);
     }
 
     .wall-title {
-      font-size: clamp(0.78rem, 1.05vw, 1.05rem);
-      letter-spacing: 0.22em;
+      font-size: clamp(8.5rem, 16vw, 18rem);
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
       position: relative;
       display: inline-block;
+      text-align: center;
+      width: 100%;
     }
 
     .wall-title::after {
       content: "";
       position: absolute;
       left: 50%;
-      bottom: -0.4rem;
+      bottom: -0.6rem;
       width: 60%;
-      height: 1px;
-      background: rgba(0, 0, 0, 0.35);
+      height: 2px;
+      background: rgba(0, 0, 0, 0.4);
       transform: translateX(-50%);
     }
 
-    .wall-box {
-      margin: 1.1rem auto 0;
-      width: 92%;
-      padding: 0.8rem 1.2rem;
-      border: 1px solid rgba(0, 0, 0, 0.38);
-      display: grid;
-      gap: 0.35rem;
-      justify-items: start;
-      text-align: left;
-      opacity: 0.75;
+    .wall-body {
+      margin-top: 3.2rem;
+      font-size: clamp(5.4rem, 11vw, 12.5rem);
+      line-height: 1.2;
+      max-width: 100%;
+      color: rgba(0, 0, 0, 0.7);
     }
-
-    .wall-box span {
-      display: block;
-      height: 3px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 999px;
-    }
-
-    .wall-box span:nth-child(1) { width: 86%; }
-    .wall-box span:nth-child(2) { width: 96%; }
-    .wall-box span:nth-child(3) { width: 92%; }
-    .wall-box span:nth-child(4) { width: 90%; }
-    .wall-box span:nth-child(5) { width: 78%; }
-    .wall-box span:nth-child(6) { width: 60%; }
 
     .art-frame {
       position: absolute;
       border: 3px solid #111;
       background: #ffffff;
-      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.18);
+      box-shadow:
+        0 14px 24px rgba(0, 0, 0, 0.18),
+        0 0 40px rgba(255, 250, 235, 0.15),
+        0 0 80px rgba(255, 248, 220, 0.08);
       transform: translateZ(8px);
       backface-visibility: visible;
+      transform-style: preserve-3d;
+    }
+
+    .art-frame.spotlit {
+      box-shadow:
+        0 14px 24px rgba(0, 0, 0, 0.18),
+        0 0 70px rgba(255, 245, 220, 0.45),
+        0 0 160px rgba(255, 240, 210, 0.28);
+    }
+
+    .art-frame.spotlit .art-surface {
+      filter: brightness(1.06) saturate(1.05);
+    }
+
+    /* Spotlight illumination on artwork */
+    .art-frame::after {
+      content: "";
+      position: absolute;
+      inset: -30px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255, 252, 245, 0.12) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .frame-depth {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transform-style: preserve-3d;
+    }
+
+    .frame-side {
+      position: absolute;
+      background: linear-gradient(180deg, #0f0f0f, #1f1f1f);
+    }
+
+    .frame-side.right {
+      top: 0;
+      right: calc(-1 * var(--frame-depth));
+      width: var(--frame-depth);
+      height: 100%;
+      transform: rotateY(90deg);
+      transform-origin: left;
+    }
+
+    .frame-side.left {
+      top: 0;
+      left: calc(-1 * var(--frame-depth));
+      width: var(--frame-depth);
+      height: 100%;
+      transform: rotateY(-90deg);
+      transform-origin: right;
+    }
+
+    .frame-side.bottom {
+      left: 0;
+      bottom: calc(-1 * var(--frame-depth));
+      width: 100%;
+      height: var(--frame-depth);
+      transform: rotateX(-90deg);
+      transform-origin: top;
+    }
+
+    .art-caption {
+      position: absolute;
+      left: 50%;
+      bottom: -32px;
+      transform: translateX(-50%) translateZ(calc(var(--frame-depth) + 4px));
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      padding: 0.25rem 0.5rem;
+      font-size: 0.55rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .art-frame.near .art-caption {
+      opacity: 1;
+    }
+
+    .art-plaque {
+      position: absolute;
+      left: 50%;
+      bottom: -58px;
+      transform: translateX(-50%) translateZ(calc(var(--frame-depth) + 6px));
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(0, 0, 0, 0.35);
+      padding: 0.35rem 0.6rem 0.4rem;
+      display: grid;
+      gap: 0.2rem;
+      min-width: 120px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.5rem;
+      color: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.14);
+      text-align: center;
+    }
+
+    .plaque-title {
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: rgba(0, 0, 0, 0.78);
+    }
+
+    .plaque-subtitle {
+      font-size: 0.45rem;
+      letter-spacing: 0.2em;
+      opacity: 0.7;
+    }
+
+    .art-frame.placeholder .art-surface {
+      background:
+        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0 6px, transparent 6px 16px),
+        linear-gradient(180deg, #f8f8f6 0%, #efefed 100%) !important;
+      filter: grayscale(1);
+    }
+
+    .face.right .art-caption {
+      transform: translateX(-50%) translateZ(calc(var(--frame-depth) + 4px));
     }
 
     .art-frame::before {
@@ -196,58 +508,121 @@
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
     }
 
-    .art-frame::after {
+    .art-surface {
+      position: absolute;
+      inset: 12% 10%;
+      background: #f6f6f6;
+      box-shadow:
+        0 6px 10px rgba(0, 0, 0, 0.12),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.16),
+        inset 0 -20px 40px rgba(255, 252, 245, 0.2);
+      transform: translateZ(0);
+      transform-style: preserve-3d;
+    }
+
+    .art-surface::before,
+    .art-surface::after {
       content: "";
       position: absolute;
-      inset: 15% 12%;
-      opacity: 0.9;
+      inset: 0;
+      pointer-events: none;
     }
 
-    .face.left .frame-1 { width: 26%; height: 78%; top: 3%; left: -2%; }
-    .face.left .frame-2 { width: 20%; height: 62%; top: 13%; left: 30%; }
-    .face.left .frame-3 { width: 15%; height: 50%; top: 22%; left: 54%; }
-    .face.left .frame-4 { width: 12%; height: 42%; top: 28%; left: 72%; }
-
-    .face.right .frame-5 { width: 20%; height: 56%; top: 18%; right: 10%; }
-
-    .frame-1::after {
+    .art-surface::before {
       background:
-        radial-gradient(circle at 30% 35%, rgba(0, 0, 0, 0.65), transparent 62%),
-        repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.38) 0 1px, transparent 1px 5px);
+        radial-gradient(ellipse at 50% 20%, rgba(255, 252, 245, 0.25) 0%, transparent 50%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.14), transparent 45%, rgba(0, 0, 0, 0.14));
+      opacity: 0.6;
     }
 
-    .frame-2::after {
-      background:
-        radial-gradient(circle at 45% 35%, rgba(0, 0, 0, 0.7), transparent 60%),
-        linear-gradient(120deg, rgba(0, 0, 0, 0.35), transparent 60%);
+    .art-surface::after {
+      background: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 4px);
+      opacity: 0.15;
+      mix-blend-mode: multiply;
     }
 
-    .frame-3::after {
-      background:
-        radial-gradient(circle at 55% 40%, rgba(0, 0, 0, 0.68), transparent 54%),
-        linear-gradient(160deg, rgba(0, 0, 0, 0.3), transparent 55%);
+    .frame-1 .art-surface {
+      background: #f6f6f6 url("../Portfolio/1.png") center / cover no-repeat;
     }
 
-    .frame-4::after {
-      background:
-        radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 0.6), transparent 52%),
-        linear-gradient(140deg, rgba(0, 0, 0, 0.32), transparent 60%);
+    .frame-2 .art-surface {
+      background: #f6f6f6 url("../Portfolio/2.png") center / cover no-repeat;
     }
 
-    .frame-5::after {
-      background:
-        radial-gradient(circle at 45% 45%, rgba(0, 0, 0, 0.7), transparent 60%),
-        repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.3) 0 1px, transparent 1px 5px);
+    .frame-3 .art-surface {
+      background: #f6f6f6 url("../Portfolio/3.png") center / cover no-repeat;
     }
+
+    .frame-4 .art-surface {
+      background: #f6f6f6 url("../Portfolio/4.png") center / cover no-repeat;
+    }
+
+    .frame-5 .art-surface {
+      background: #f6f6f6 url("../Portfolio/1.png") center / cover no-repeat;
+    }
+
+    .frame-6 .art-surface {
+      background: #f6f6f6 url("../Portfolio/2.png") center / cover no-repeat;
+    }
+
+    .frame-7 .art-surface {
+      background: #f6f6f6 url("../Portfolio/3.png") center / cover no-repeat;
+    }
+
+    .frame-8 .art-surface {
+      background: #f6f6f6 url("../Portfolio/4.png") center / cover no-repeat;
+    }
+
+    .frame-9 .art-surface {
+      background: #f6f6f6 url("../Portfolio/1.png") center / cover no-repeat;
+    }
+
+    .frame-10 .art-surface {
+      background: #f6f6f6 url("../Portfolio/2.png") center / cover no-repeat;
+    }
+
+    .face.left .frame-1 { width: 9%; height: 50%; top: 20%; left: 12%; }
+    .face.left .frame-2 { width: 9%; height: 50%; top: 20%; left: 34%; }
+    .face.left .frame-3 { width: 9%; height: 50%; top: 20%; left: 56%; }
+    .face.left .frame-4 { width: 9%; height: 50%; top: 20%; left: 78%; }
+    .face.left .frame-9 { display: none; }
+
+    .face.right .frame-5 { width: 9%; height: 50%; top: 20%; left: 20%; }
+    .face.right .frame-6 { width: 9%; height: 50%; top: 20%; left: 42%; }
+    .face.right .frame-7 { width: 9%; height: 50%; top: 20%; left: 64%; }
+    .face.right .frame-8 { width: 9%; height: 50%; top: 20%; left: 86%; }
+    .face.right .frame-10 { display: none; }
+
+    .face.right .art-frame {
+      transform: translateZ(8px);
+    }
+
+    .face.right .rail {
+      transform: translateZ(400px) translate(var(--rail-x), var(--rail-y));
+    }
+
+    .face.right .art-surface {
+      transform: translateZ(0) rotateY(180deg);
+    }
+
 
     .rail {
+      --rail-x: 0px;
+      --rail-y: 0px;
       position: absolute;
       left: 6%;
       right: 6%;
-      bottom: 16.5%;
-      height: 3px;
+      bottom: 5%;
+      height: 6px;
       background: #111;
-      transform: translateZ(5px);
+      /* Push rail from wall toward room center - adjusted for visual position ~750 */
+      transform: translateZ(400px) translate(var(--rail-x), var(--rail-y));
+      transform-style: preserve-3d;
+      pointer-events: auto;
+    }
+
+    .rail:active {
+      cursor: grabbing;
     }
 
     .rail::after {
@@ -255,75 +630,108 @@
       position: absolute;
       left: 0;
       right: 0;
-      top: 2px;
-      height: 28px;
+      top: 4px;
+      height: 38px;
       background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 36px);
     }
 
+    .rail::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: var(--rail-depth);
+      background: linear-gradient(180deg, #0b0b0b, #1a1a1a);
+      transform: translateZ(var(--rail-depth));
+    }
+
     .rail.back-rail {
-      left: 20%;
-      right: 20%;
-      bottom: 24.5%;
+      display: none;
     }
 
-    .ink-blob {
-      position: absolute;
-      left: 52%;
-      top: 63%;
-      width: 66px;
-      height: 76px;
-      background: radial-gradient(circle at 50% 40%, #111 0%, #111 48%, #1b1b1b 72%);
-      border-radius: 50% 50% 48% 52%;
-      box-shadow: 0 10px 16px rgba(0, 0, 0, 0.24);
-      transform: translate(-50%, -50%) translateZ(12px);
+    /* Wall-mounted rails are the primary barrier indicators */
+
+    /* Floor barrier rails - hidden, using wall-mounted rails instead */
+    .barrier-rail {
+      display: none;
     }
 
-    .ink-blob::before {
-      content: "";
+    .character-plane {
       position: absolute;
-      top: -16px;
       left: 50%;
-      width: 38px;
-      height: 34px;
-      background: radial-gradient(circle at 50% 40%, #111 0%, #111 60%, #1b1b1b 80%);
+      top: 50%;
+      transform-style: preserve-3d;
+      transform: translate(-50%, -50%) translate(var(--char-x), var(--char-z)) translateZ(var(--char-y));
+    }
+
+    .character {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translate(-50%, -100%) rotateX(90deg);
+      transform-origin: 50% 100%;
+      transform-style: preserve-3d;
+      width: 120px;
+      height: 150px;
+      cursor: grab;
+      pointer-events: auto;
+    }
+
+    .character-plane > .character-shadow {
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      /* Counter the character-plane's translateZ (-880px) to put shadow on floor */
+      transform: translate(-50%, -50%) translateZ(880px);
+      width: 80px;
+      height: 30px;
+      background: radial-gradient(ellipse, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 70%);
       border-radius: 50%;
-      transform: translateX(-50%);
+      pointer-events: none;
     }
 
-    .ink-blob::after {
-      content: "";
+    #floor-shadow {
+      display: none;  /* Shadow temporarily disabled - 3D positioning complex */
+    }
+
+    .character > .character-shadow {
+      display: none;
+    }
+
+    .character:active {
+      cursor: grabbing;
+    }
+
+    .character-shadow {
       position: absolute;
-      bottom: -18px;
-      left: 50%;
-      width: 12px;
-      height: 24px;
-      background: rgba(0, 0, 0, 0.55);
-      border-radius: 12px;
-      transform: translateX(-50%);
+      left: 0;
+      top: 0;
+      width: 90px;
+      height: 28px;
+      background: radial-gradient(circle, rgba(0, 0, 0, 0.28), transparent 70%);
+      transform: translate(-50%, -50%);
+      filter: blur(2px);
+      opacity: 0.6;
+      pointer-events: none;
     }
 
-    .footsteps {
+    .character-layer {
       position: absolute;
-      left: 52%;
-      top: 75%;
-      width: 140px;
-      height: 110px;
-      transform: translate(-50%, -50%) translateZ(6px);
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      transform: translateZ(6px);
     }
 
-    .footsteps span {
+    .character-layer canvas {
       position: absolute;
-      width: 12px;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.4);
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      pointer-events: none;
     }
-
-    .footsteps span:nth-child(1) { top: 12px; left: 62px; opacity: 0.7; }
-    .footsteps span:nth-child(2) { top: 32px; left: 70px; opacity: 0.65; }
-    .footsteps span:nth-child(3) { top: 52px; left: 78px; opacity: 0.6; }
-    .footsteps span:nth-child(4) { top: 70px; left: 86px; opacity: 0.5; }
-    .footsteps span:nth-child(5) { top: 86px; left: 94px; opacity: 0.45; }
 
     .floor-ring {
       position: absolute;
@@ -333,6 +741,31 @@
       transform: translateZ(4px);
       opacity: 0.6;
     }
+
+    .footstep {
+      position: absolute;
+      left: var(--step-x, 0px);
+      top: var(--step-y, 0px);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.18) 60%, transparent 78%);
+      transform: translate(-50%, -50%) rotate(var(--step-rot, 0deg)) scale(var(--step-scale, 1));
+      opacity: var(--step-opacity, 0);
+      filter: blur(2px);
+      mix-blend-mode: multiply;
+      z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .footstep-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 11;
+    }
+
 
     .ring-1 { width: 120px; height: 72px; left: 18%; top: 58%; }
     .ring-2 { width: 110px; height: 66px; left: 40%; top: 62%; }
@@ -349,17 +782,18 @@
       height: 170px;
       transform: translateZ(6px) rotate(45deg);
       background:
-        linear-gradient(90deg, transparent 46%, #111 46% 54%, transparent 54%),
-        linear-gradient(0deg, transparent 46%, #111 46% 54%, transparent 54%);
-      opacity: 0.85;
+        linear-gradient(90deg, transparent 46%, rgba(17, 17, 17, 0.25) 46% 54%, transparent 54%),
+        linear-gradient(0deg, transparent 46%, rgba(17, 17, 17, 0.25) 46% 54%, transparent 54%);
+      opacity: 0.35;
     }
 
     .ceiling-frame {
       position: absolute;
-      border: 2px solid #111;
-      background: #f8f8f8;
-      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(17, 17, 17, 0.22);
+      background: rgba(250, 250, 250, 0.75);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
       transform: translateZ(6px) rotate(45deg);
+      opacity: 0.6;
     }
 
     .ceiling-frame.frame-a {
@@ -377,51 +811,11 @@
     }
 
     .ceiling-arrow {
-      position: absolute;
-      top: 18%;
-      left: 58%;
-      width: 24px;
-      height: 68px;
-      transform: translateZ(6px);
-      background: linear-gradient(180deg, #111 0%, #111 100%);
-    }
-
-    .ceiling-arrow::before,
-    .ceiling-arrow::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      width: 24px;
-      height: 14px;
-      background: #111;
-      transform: translateX(-50%);
-    }
-
-    .ceiling-arrow::before {
-      top: -8px;
-      clip-path: polygon(50% 0, 100% 100%, 0 100%);
-    }
-
-    .ceiling-arrow::after {
-      bottom: -8px;
-      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      display: none;
     }
 
     .ui-hints {
-      position: absolute;
-      bottom: 3.5vh;
-      left: 50%;
-      transform: translateX(-50%);
-      width: min(640px, 80vw);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2.4rem;
-      font-size: 0.6rem;
-      color: rgba(0, 0, 0, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      pointer-events: none;
+      display: none;  /* Hidden for clean gallery view */
     }
 
     .key-group {
@@ -439,14 +833,260 @@
       background: rgba(255, 255, 255, 0.85);
     }
 
-    @media (max-width: 900px) {
-      .room {
-        --room-w: 110vw;
-        --room-h: 62vh;
-        --room-d: 140vw;
-        transform: translate3d(140px, 30px, -220px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
-      }
+    .art-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(248, 248, 248, 0.95);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
 
+    .art-overlay.active {
+      display: flex;
+    }
+
+    .art-modal {
+      position: relative;
+      width: min(86vw, 1200px);
+      height: min(80vh, 780px);
+      border: 3px solid #111;
+      background: #fff;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .art-front {
+      position: relative;
+      flex: 1 1 58%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid rgba(0, 0, 0, 0.12);
+      background: #fff;
+    }
+
+    .art-front .art-surface {
+      inset: 8% 8%;
+      transform: none;
+    }
+
+    .art-details {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 46%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      border-left: 1px solid rgba(0, 0, 0, 0.18);
+      transform: translateX(110%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.35s ease, opacity 0.3s ease;
+      box-shadow: -18px 0 32px rgba(0, 0, 0, 0.18);
+      overflow-y: auto;
+    }
+
+    .art-modal.show-details .art-details {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .details-inner {
+      padding: 2rem 2.1rem 2.5rem;
+      display: grid;
+      gap: 1.2rem;
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.72);
+    }
+
+    .details-eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 0.55rem;
+      margin: 0;
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .details-title {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #111;
+    }
+
+    .details-subtitle {
+      margin: 0;
+      font-size: 0.95rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .details-summary {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .details-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .details-meta span {
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .details-section {
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      padding-top: 1rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .details-section h4 {
+      margin: 0;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.7);
+    }
+
+    .details-section p,
+    .details-section li {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 0.85rem;
+    }
+
+    .details-section ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .details-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .details-links a {
+      text-decoration: none;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #111;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 0.2rem;
+    }
+
+    .art-details-toggle {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 0.8rem;
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+      z-index: 14;
+    }
+
+    .art-arrow {
+      position: absolute;
+      top: 50%;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
+      font-size: 1.2rem;
+      transform: translateY(-50%);
+      cursor: pointer;
+      z-index: 12;
+    }
+
+    .art-arrow.left { left: -68px; }
+    .art-arrow.right { right: -68px; }
+
+    .art-close {
+      position: absolute;
+      top: -54px;
+      right: -54px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.92);
+      color: #111;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 13;
+    }
+
+    .art-hint {
+      position: absolute;
+      bottom: -44px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .rail-readout {
+      display: none;  /* Hidden for clean gallery view */
+    }
+
+    .char-controls {
+      display: none;  /* Hidden for clean gallery view */
+    }
+
+    .char-controls input[type="range"] {
+      width: 100%;
+    }
+
+    .char-controls label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.6rem;
+    }
+
+    .char-controls input[type="number"] {
+      width: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      padding: 0.2rem 0.35rem;
+      font-size: 0.7rem;
+    }
+
+    .char-controls button {
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      background: #fff;
+      padding: 0.3rem 0.4rem;
+      font-size: 0.65rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
       .ui-hints {
         bottom: 4vh;
         left: 6vw;
@@ -455,13 +1095,6 @@
     }
 
     @media (max-width: 640px) {
-      .room {
-        --room-w: 120vw;
-        --room-h: 54vh;
-        --room-d: 150vw;
-        transform: translate3d(80px, 20px, -180px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
-      }
-
       .ui-hints {
         display: none;
       }
@@ -474,37 +1107,123 @@
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
         <div class="face back">
           <div class="wall-text">
-            <div class="wall-title">ThevertMenthe</div>
-            <div class="wall-box">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
+            <div class="wall-title">My Portfolio</div>
+            <div class="wall-body">
+              This page is comprised of projects I have developed as course or personal projects. Each of these projects has aimed to address a problem that I face in everyday life. Projects are developed with principles of psychology, human factors, and engineering integrated. Note that many of these projects were developed in coordination with LLMs.
             </div>
           </div>
-          <div class="rail back-rail"></div>
+          <div class="rail back-rail" data-rail="back"></div>
         </div>
         <div class="face left">
-          <div class="art-frame frame-1"></div>
-          <div class="art-frame frame-2"></div>
-          <div class="art-frame frame-3"></div>
-          <div class="art-frame frame-4"></div>
-          <div class="rail"></div>
+          <div class="art-frame frame-1" data-art="1" data-project="workout">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+            <div class="art-plaque">
+              <span class="plaque-title">Atlas Quest</span>
+              <span class="plaque-subtitle">Workout app</span>
+            </div>
+          </div>
+          <div class="art-frame frame-2" data-art="2" data-project="journal">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+            <div class="art-plaque">
+              <span class="plaque-title">Journal Studio</span>
+              <span class="plaque-subtitle">Reflective writing</span>
+            </div>
+          </div>
+          <div class="art-frame frame-3" data-art="3" data-project="translator">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+            <div class="art-plaque">
+              <span class="plaque-title">Travel Buddy</span>
+              <span class="plaque-subtitle">Photo translator</span>
+            </div>
+          </div>
+          <div class="art-frame frame-4" data-art="4" data-project="language">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+            <div class="art-plaque">
+              <span class="plaque-title">LinguaBloom</span>
+              <span class="plaque-subtitle">Language learning</span>
+            </div>
+          </div>
+          <div class="art-frame frame-9 placeholder" data-art="9">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="rail" data-rail="left"></div>
         </div>
         <div class="face right">
-          <div class="art-frame frame-5"></div>
-          <div class="rail"></div>
+          <div class="art-frame frame-5 placeholder" data-art="5">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="art-frame frame-6 placeholder" data-art="6">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="art-frame frame-7 placeholder" data-art="7">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="art-frame frame-8 placeholder" data-art="8">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="art-frame frame-10 placeholder" data-art="10">
+            <span class="art-surface" aria-hidden="true"></span>
+            <span class="frame-depth" aria-hidden="true">
+              <span class="frame-side left"></span>
+              <span class="frame-side right"></span>
+              <span class="frame-side bottom"></span>
+            </span>
+          </div>
+          <div class="rail" data-rail="right"></div>
         </div>
         <div class="face floor">
-          <div class="ink-blob" aria-hidden="true"></div>
-          <div class="footsteps" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+          <div id="floor-shadow" aria-hidden="true"></div>
+          <div class="character-plane" aria-hidden="true">
+            <div class="character-shadow" aria-hidden="true"></div>
+            <div class="character" aria-hidden="true">
+              <div class="character-shadow"></div>
+              <div class="character-layer" id="character-layer" aria-hidden="true"></div>
+            </div>
           </div>
           <div class="floor-ring ring-1" aria-hidden="true"></div>
           <div class="floor-ring ring-2" aria-hidden="true"></div>
@@ -514,11 +1233,30 @@
           <div class="floor-ring ring-6" aria-hidden="true"></div>
         </div>
         <div class="face ceiling">
+          <!-- Track lights for left wall -->
+          <div class="track-light left-1" aria-hidden="true"></div>
+          <div class="track-light left-2" aria-hidden="true"></div>
+          <div class="track-light left-3" aria-hidden="true"></div>
+          <div class="track-light left-4" aria-hidden="true"></div>
+          <div class="track-light left-5" aria-hidden="true"></div>
+          <!-- Track lights for right wall -->
+          <div class="track-light right-1" aria-hidden="true"></div>
+          <div class="track-light right-2" aria-hidden="true"></div>
+          <div class="track-light right-3" aria-hidden="true"></div>
+          <div class="track-light right-4" aria-hidden="true"></div>
+          <div class="track-light right-5" aria-hidden="true"></div>
+          <!-- Decorative ceiling elements -->
           <div class="ceiling-frame frame-a" aria-hidden="true"></div>
           <div class="ceiling-frame frame-b" aria-hidden="true"></div>
           <div class="ceiling-mark" aria-hidden="true"></div>
           <div class="ceiling-arrow" aria-hidden="true"></div>
         </div>
+      </div>
+      <div class="footstep-layer" aria-hidden="true">
+        <div class="footstep" aria-hidden="true"></div>
+        <div class="footstep" aria-hidden="true"></div>
+        <div class="footstep" aria-hidden="true"></div>
+        <div class="footstep" aria-hidden="true"></div>
       </div>
       <div class="ui-hints" aria-hidden="true">
         <div class="key-group">
@@ -540,22 +1278,763 @@
       <!-- Replace .room with a Three.js canvas when ready. -->
     </section>
   </main>
+  <div class="art-overlay" id="art-overlay" aria-hidden="true">
+    <div class="art-modal frame-1" id="art-modal">
+      <div class="art-front">
+        <span class="art-surface" aria-hidden="true"></span>
+      </div>
+      <button class="art-details-toggle" type="button" aria-expanded="false">Details</button>
+      <aside class="art-details" aria-label="Project details">
+        <div class="details-inner">
+          <p class="details-eyebrow">Project</p>
+          <h3 class="details-title"></h3>
+          <p class="details-subtitle"></p>
+          <p class="details-summary"></p>
+          <div class="details-meta"></div>
+          <div class="details-sections"></div>
+          <div class="details-links"></div>
+        </div>
+      </aside>
+      <button class="art-arrow left" type="button" data-dir="-1">&lt;</button>
+      <button class="art-arrow right" type="button" data-dir="1">&gt;</button>
+      <button class="art-close" type="button">X</button>
+      <div class="art-hint">Use arrows to browse · Pull tab for details · Esc to close</div>
+    </div>
+  </div>
+  <div class="rail-readout" id="rail-readout">Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.</div>
+  <div class="char-controls" id="char-controls">
+    <div><strong>Character X: <span id="char-x-display">0</span>px</strong> (boundary: ±740)</div>
+    <div>Character Z</div>
+    <input type="range" id="char-z-range" min="-1200" max="800" step="1" value="500" />
+    <input type="number" id="char-z-input" min="-1200" max="800" step="1" value="500" />
+    <div>Character Yaw</div>
+    <input type="range" id="char-yaw-range" min="0" max="360" step="1" value="0" />
+    <input type="number" id="char-yaw-input" min="0" max="360" step="1" value="0" />
+    <div>Model Pitch</div>
+    <input type="range" id="model-pitch-range" min="-180" max="180" step="1" value="-90" />
+    <input type="number" id="model-pitch-input" min="-180" max="180" step="1" value="-90" />
+    <div>Model Yaw</div>
+    <input type="range" id="model-yaw-range" min="-180" max="180" step="1" value="180" />
+    <input type="number" id="model-yaw-input" min="-180" max="180" step="1" value="180" />
+    <div>Model Roll</div>
+    <input type="range" id="model-roll-range" min="-180" max="180" step="1" value="0" />
+    <input type="number" id="model-roll-input" min="-180" max="180" step="1" value="0" />
+    <div>Floor Offset</div>
+    <input type="range" id="floor-offset-range" min="-400" max="800" step="1" value="550" />
+    <input type="number" id="floor-offset-input" min="-400" max="800" step="1" value="550" />
+    <label><input type="checkbox" id="debug-axes" /> Debug axes</label>
+    <button type="button" id="char-reset">Reset Character</button>
+  </div>
   <script>
+    window.__sceneBooted = false;
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        if (window.__sceneBooted) return;
+        const readout = document.getElementById("rail-readout");
+        if (readout) {
+          readout.textContent = "3D character failed to boot. Check module paths.";
+        }
+      }, 2000);
+    });
+  </script>
+  <script type="module">
+    import * as THREE from "./lib/three/three.module.js";
+    import { GLTFLoader } from "./lib/three/GLTFLoader.js";
+    window.__sceneBooted = true;
     const root = document.documentElement;
     const room = document.querySelector(".room");
+    const character = document.querySelector(".character");
+    const characterLayer = document.getElementById("character-layer");
+    const viewport = document.querySelector(".gallery-viewport");
+    const frames = Array.from(document.querySelectorAll(".art-frame"));
+    const interactiveFrames = frames.filter((frame) => frame.dataset.project);
+    const projectIds = interactiveFrames.map((frame) => Number(frame.dataset.art));
+    const frameById = new Map(interactiveFrames.map((frame) => [Number(frame.dataset.art), frame]));
+    const footstepNodes = Array.from(document.querySelectorAll(".footstep"));
+    const overlay = document.getElementById("art-overlay");
+    const artModal = document.getElementById("art-modal");
+    const detailsToggle = document.querySelector(".art-details-toggle");
+    const detailsTitle = document.querySelector(".details-title");
+    const detailsSubtitle = document.querySelector(".details-subtitle");
+    const detailsSummary = document.querySelector(".details-summary");
+    const detailsMeta = document.querySelector(".details-meta");
+    const detailsSections = document.querySelector(".details-sections");
+    const detailsLinks = document.querySelector(".details-links");
+    const prevBtn = document.querySelector(".art-arrow.left");
+    const nextBtn = document.querySelector(".art-arrow.right");
+    const closeBtn = document.querySelector(".art-close");
+    const rails = document.querySelectorAll(".rail");
+    const readout = document.getElementById("rail-readout");
+    const charZRange = document.getElementById("char-z-range");
+    const charZInput = document.getElementById("char-z-input");
+    const charYawRange = document.getElementById("char-yaw-range");
+    const charYawInput = document.getElementById("char-yaw-input");
+    const modelPitchRange = document.getElementById("model-pitch-range");
+    const modelPitchInput = document.getElementById("model-pitch-input");
+    const modelYawRange = document.getElementById("model-yaw-range");
+    const modelYawInput = document.getElementById("model-yaw-input");
+    const modelRollRange = document.getElementById("model-roll-range");
+    const modelRollInput = document.getElementById("model-roll-input");
+    const floorOffsetRange = document.getElementById("floor-offset-range");
+    const floorOffsetInput = document.getElementById("floor-offset-input");
+    const debugAxesToggle = document.getElementById("debug-axes");
+    const charReset = document.getElementById("char-reset");
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
-    let rotX = 7;
-    let rotY = -26;
+    let rotX = 2;
+    let rotY = 0;
+    let activeRail = null;
+    let railStartX = 0;
+    let railStartY = 0;
+    let railOffsetX = 0;
+    let railOffsetY = 0;
+    let charX = 0;
+    let charY = 0;
+    let charZ = 900;  // Position character inside room
+    let charTilt = 0;
+    let charYaw = 0;  // CSS rotation for walking direction
+    let walkTimeout = null;
+    let isDraggingChar = false;
+    let charStartX = 0;
+    let charStartY = 0;
+    let charOffsetX = 0;
+    let charOffsetY = 0;
+    let charOffsetZ = 26;
+    let charYawOffset = 0;
+    const footstepSpacing = 48;
+    const footstepSide = 10;
+    const footstepBack = 10;
+    const footstepJitter = 3;
+    const footstepScaleVariance = 0.15;
+    const footstepLifetime = 1400;
+    const maxFootsteps = 3;
+    const footstepExitDuration = 450;
+    let lastStepX = null;
+    let lastStepY = null;
+    let footstepHistory = [];
+    let stepToggle = 1;
+    const keysPressed = {};
+    let movementAnimationId = null;
+    let walkingDirection = 180;  // Direction character faces while walking (180 = into room)
+    let isViewingArt = false;
+    let renderer = null;
+    let scene = null;
+    let camera = null;
+    let axesHelper = null;
+    let mixer = null;
+    let walkAction = null;
+    let characterModel = null;
+    let modelReady = false;
+    let placeholder = null;
+    let characterGroup = null;
+    let threeInitialized = false;
+    const clock = new THREE.Clock();
+    const cameraTarget = new THREE.Vector3(0, 0.7, 0);
+    let cameraRadius = 2.4;
+    let cameraTargetY = 0.7;
+    const cameraPadding = 1.8;
+    const cameraMinRadius = 2.6;
+    let charFloorOffset = 550;  // Offset to place character feet on floor
+    const charYawBase = 0;  // Base rotation, model yaw adds to this
+    const charPitchBase = 0;
+    const charRollBase = 0;
+    const modelSources = [
+      "../Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
+      "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
+    ];
+    let readoutTimer = null;
+    const interactionDistance = 260;
+    let spotlitFrame = interactiveFrames[0] || null;
+    let currentArtId = projectIds[0] || 1;
+    const projectData = {
+      1: {
+        title: "Atlas Quest",
+        subtitle: "Photo-first fitness companion with local coaching, logging, and progress tracking.",
+        summary: "Log workouts, meals, and progress without friction. Built for fast gym flows: image-based exercise cards, photo logging, and a local planner that adapts to your goals.",
+        meta: ["Local AI coach", "Offline friendly", "iOS-ready UI"],
+        links: [
+          { label: "Open demo", href: "gym-login.html" },
+          { label: "Download demo", href: "gym-login.html", download: "atlas-quest.html" },
+        ],
+        sections: [
+          {
+            title: "Test on iPhone",
+            list: [
+              "Start a local server (e.g., python3 -m http.server).",
+              "Open http://YOUR-IP:8000/gym-login.html on your iPhone.",
+              "Add to Home Screen for a full-screen feel.",
+            ],
+            body: "Requires both devices on the same Wi-Fi network.",
+          },
+          {
+            title: "Local model notes",
+            body: "Atlas Quest uses a fully local planner for now. No API keys or servers required to generate weekly splits.",
+          },
+        ],
+      },
+      2: {
+        title: "Journal Studio",
+        subtitle: "Minimal writing space with focus-first typography and structured prompts.",
+        summary: "A clean, intentional journaling flow designed to reduce friction and keep the focus on reflection.",
+        meta: ["Web app", "Reflection"],
+        links: [{ label: "Open", href: "journal.html" }],
+        sections: [],
+      },
+      3: {
+        title: "Travel Buddy",
+        subtitle: "Camera-first translator that reflows new language directly on top of the photo.",
+        summary: "Photo, voice, and typed translations in one flow. Built for travelers: point the camera, detect the language, translate on top of the image, and save the result.",
+        meta: ["iOS-ready", "On-device OCR", "Offline cache"],
+        links: [
+          { label: "Open demo", href: "photo-translator.html" },
+          { label: "Download demo", href: "photo-translator.html", download: "travel-buddy.html" },
+          { label: "Download iPhone setup", href: "travel-buddy-ios-setup.command", download: true },
+        ],
+        sections: [
+          {
+            title: "Install on iPhone",
+            list: [
+              "Download travel-buddy-ios-setup.command and double-click it.",
+              "When Xcode opens, click Run to install on your iPhone.",
+              "On first launch, trust the developer profile in Settings.",
+            ],
+            body: "Requires Node.js, Xcode, and an Apple developer account. Re-run the script after any UI changes.",
+          },
+          {
+            title: "One-time setup details",
+            list: [
+              "Add native/ios/TravelBuddyTranslatePlugin.swift to the App target for offline translation.",
+              "Add NSCameraUsageDescription in Info.plist and set the deployment target to iOS 17+.",
+            ],
+          },
+          {
+            title: "Offline mode",
+            body: "Travel Buddy caches recent translations locally. For full offline translation, add the iOS plugin file and download language packs in Settings > Translate (requires iOS 17+).",
+          },
+        ],
+      },
+      4: {
+        title: "LinguaBloom",
+        subtitle: "Language learning flow with gentle pacing, visual progress, and guided practice.",
+        summary: "A calm learning loop that balances pacing, progress, and practice prompts for steady habit building.",
+        meta: ["Product concept", "Education"],
+        links: [{ label: "Open", href: "Language%20Learning/language-learning.html" }],
+        sections: [],
+      },
+    };
+
+    // Wall rail boundaries - match visual rail position
+    function getWallBoundaries() {
+      return {
+        left: -740,       // Stop at left rail
+        right: 740,       // Stop at right rail
+        minZ: -1000,
+        maxZ: 3800
+      };
+    }
 
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
     }
 
+    function normalizeYaw(value) {
+      const wrapped = ((value % 360) + 360) % 360;
+      return wrapped;
+    }
+
+    function setReadout(text) {
+      if (!readout) return;
+      readout.textContent = text;
+    }
+
+    function flashReadout(text, duration = 2000) {
+      setReadout(text);
+      if (readoutTimer) clearTimeout(readoutTimer);
+      readoutTimer = setTimeout(() => {
+        if (!activeRail && !isDraggingChar) {
+          setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
+        }
+      }, duration);
+    }
+
+    function syncCharacterCamera() {
+      if (!camera) return;
+      const yaw = THREE.MathUtils.degToRad(180 + rotY * 0.8);
+      const pitch = THREE.MathUtils.degToRad(clamp(60 - rotX * 0.4, 45, 78));
+      const radius = cameraRadius;
+      const y = Math.sin(pitch) * radius + 0.4;
+      const x = Math.sin(yaw) * Math.cos(pitch) * radius;
+      const z = Math.cos(yaw) * Math.cos(pitch) * radius;
+      camera.position.set(x, y, z);
+      cameraTarget.set(0, cameraTargetY, 0);
+      camera.lookAt(cameraTarget);
+    }
+
+    function fitCameraToModel(box) {
+      if (!camera) return;
+      const sphere = box.getBoundingSphere(new THREE.Sphere());
+      const fov = THREE.MathUtils.degToRad(camera.fov);
+      const aspect = camera.aspect || 1;
+      const fitHeight = sphere.radius / Math.sin(fov / 2);
+      const fitWidth = fitHeight / aspect;
+      cameraRadius = Math.max(cameraMinRadius, Math.max(fitHeight, fitWidth) * cameraPadding);
+      cameraTargetY = 0;  // Target feet level so character stands on floor
+      syncCharacterCamera();
+    }
+
     function updateRotation() {
       root.style.setProperty("--room-rot-x", `${rotX}deg`);
       root.style.setProperty("--room-rot-y", `${rotY}deg`);
+      syncCharacterCamera();
+    }
+
+    function updateCharacter() {
+      root.style.setProperty("--char-x", `${charX}px`);
+      // Character feet glued to floor - fixed position at floor level
+      root.style.setProperty("--char-y", "-880px");  // Place feet on floor
+      root.style.setProperty("--char-z", `${charZ}px`);
+      root.style.setProperty("--char-tilt", `${charTilt}deg`);
+      root.style.setProperty("--char-facing", `${charYaw}deg`);
+      // Update X position debug display
+      const xDisplay = document.getElementById('char-x-display');
+      if (xDisplay) xDisplay.textContent = Math.round(charX);
+      if (charZRange) charZRange.value = Math.round(charZ);
+      if (charZInput) charZInput.value = Math.round(charZ);
+      if (charYawRange) charYawRange.value = Math.round(charYaw);
+      if (charYawInput) charYawInput.value = Math.round(charYaw);
+      // Rotate 3D model: stand upright, then turn to face walking direction
+      // No CSS rotation for facing - all handled in Three.js for true 3D appearance
+      if (characterModel) {
+        const pitch = Number(modelPitchRange?.value ?? -90);
+        const baseYaw = Number(modelYawRange?.value || 180);
+        const roll = Number(modelRollRange?.value || 0);
+        // XYZ order: first stand up (X), then turn to face direction (Y)
+        characterModel.rotation.order = "XYZ";
+        characterModel.rotation.set(
+          THREE.MathUtils.degToRad(pitch),
+          THREE.MathUtils.degToRad(baseYaw - charYaw),  // Turn model to face walking direction
+          THREE.MathUtils.degToRad(roll)
+        );
+      }
+      updateFootsteps();
+    }
+
+    function renderFootsteps(now = performance.now()) {
+      if (!footstepNodes.length) return;
+      footstepHistory = footstepHistory.filter((step) => {
+        if (now - step.time >= footstepLifetime) return false;
+        if (step.fadeStart && now - step.fadeStart >= footstepExitDuration) return false;
+        return true;
+      });
+      footstepNodes.forEach((node, index) => {
+        const step = footstepHistory[index];
+        if (!step) {
+          node.style.setProperty("--step-opacity", "0");
+          return;
+        }
+        const age = now - step.time;
+        const baseFade = clamp(1 - age / footstepLifetime, 0, 1);
+        const exitFade = step.fadeStart
+          ? clamp(1 - (now - step.fadeStart) / footstepExitDuration, 0, 1)
+          : 1;
+        const fade = baseFade * exitFade;
+        node.style.setProperty("--step-x", `${step.x}px`);
+        node.style.setProperty("--step-y", `${step.y}px`);
+        node.style.setProperty("--step-rot", `${step.rot}deg`);
+        node.style.setProperty("--step-scale", `${step.scale}`);
+        node.style.setProperty("--step-opacity", `${Math.max(0, fade * (0.5 - index * 0.12))}`);
+      });
+    }
+
+    function updateFootsteps() {
+      if (!footstepNodes.length) return;
+      const charRect = character.getBoundingClientRect();
+      const viewportRect = viewport?.getBoundingClientRect() || { left: 0, top: 0 };
+      const cx = charRect.left + charRect.width / 2 - viewportRect.left;
+      const cy = charRect.top + charRect.height / 2 - viewportRect.top;
+      if (lastStepX === null || lastStepY === null) {
+        lastStepX = cx;
+        lastStepY = cy;
+        footstepNodes.forEach((node) => node.style.setProperty("--step-opacity", "0"));
+        return;
+      }
+      const dx = cx - lastStepX;
+      const dy = cy - lastStepY;
+      const dist = Math.hypot(dx, dy);
+      if (dist < footstepSpacing) return;
+      const dirX = dx / dist;
+      const dirY = dy / dist;
+      const side = footstepSide * stepToggle;
+      const jitterX = (Math.random() - 0.5) * 2 * footstepJitter;
+      const jitterY = (Math.random() - 0.5) * 2 * footstepJitter;
+      const stepX = cx - dirX * footstepBack + (-dirY) * side + jitterX;
+      const stepY = cy - dirY * footstepBack + (dirX) * side + jitterY;
+      const rot = Math.atan2(dirX, dirY) * (180 / Math.PI);
+      const scale = 1 + (Math.random() - 0.5) * 2 * footstepScaleVariance;
+      footstepHistory.unshift({ x: stepX, y: stepY, rot, scale, time: performance.now(), fadeStart: null });
+      if (footstepHistory.length > maxFootsteps) {
+        const oldest = footstepHistory[footstepHistory.length - 1];
+        if (oldest && !oldest.fadeStart) {
+          oldest.fadeStart = performance.now();
+        }
+      }
+      if (footstepHistory.length > maxFootsteps + 1) {
+        footstepHistory.length = maxFootsteps + 1;
+      }
+      lastStepX = cx;
+      lastStepY = cy;
+      stepToggle *= -1;
+      renderFootsteps();
+    }
+
+    function resetFootsteps() {
+      const charRect = character.getBoundingClientRect();
+      const viewportRect = viewport?.getBoundingClientRect() || { left: 0, top: 0 };
+      lastStepX = charRect.left + charRect.width / 2 - viewportRect.left;
+      lastStepY = charRect.top + charRect.height / 2 - viewportRect.top;
+      footstepHistory = [];
+      footstepNodes.forEach((node) => node.style.setProperty("--step-opacity", "0"));
+      stepToggle = 1;
+    }
+
+    function updateModelOrientation() {
+      if (!characterModel) return;
+      const pitch = Number(modelPitchRange?.value ?? -90);
+      const yaw = Number(modelYawRange?.value || 0);
+      const roll = Number(modelRollRange?.value || 0);
+      characterModel.rotation.order = "YXZ";
+      characterModel.rotation.set(
+        THREE.MathUtils.degToRad(pitch),
+        THREE.MathUtils.degToRad(yaw),
+        THREE.MathUtils.degToRad(roll)
+      );
+    }
+
+    function triggerWalk() {
+      if (!walkAction) return;
+      walkAction.paused = false;
+      walkAction.enabled = true;
+      walkAction.play();
+      clearTimeout(walkTimeout);
+      walkTimeout = setTimeout(() => {
+        if (walkAction) walkAction.paused = true;
+      }, 350);
+    }
+
+    function updateArtModal(id) {
+      artModal.classList.forEach((name) => {
+        if (name.startsWith("frame-")) {
+          artModal.classList.remove(name);
+        }
+      });
+      artModal.classList.add(`frame-${id}`);
+      const data = projectData[id];
+      if (!data) return;
+      if (detailsTitle) detailsTitle.textContent = data.title;
+      if (detailsSubtitle) detailsSubtitle.textContent = data.subtitle;
+      if (detailsSummary) detailsSummary.textContent = data.summary;
+      if (detailsMeta) {
+        detailsMeta.innerHTML = "";
+        data.meta.forEach((item) => {
+          const span = document.createElement("span");
+          span.textContent = item;
+          detailsMeta.appendChild(span);
+        });
+      }
+      if (detailsSections) {
+        detailsSections.innerHTML = "";
+        data.sections.forEach((section) => {
+          const block = document.createElement("div");
+          block.className = "details-section";
+          const title = document.createElement("h4");
+          title.textContent = section.title;
+          block.appendChild(title);
+          if (section.body) {
+            const body = document.createElement("p");
+            body.textContent = section.body;
+            block.appendChild(body);
+          }
+          if (section.list) {
+            const list = document.createElement("ul");
+            section.list.forEach((item) => {
+              const li = document.createElement("li");
+              li.textContent = item;
+              list.appendChild(li);
+            });
+            block.appendChild(list);
+          }
+          detailsSections.appendChild(block);
+        });
+      }
+      if (detailsLinks) {
+        detailsLinks.innerHTML = "";
+        data.links.forEach((link) => {
+          const anchor = document.createElement("a");
+          anchor.href = link.href;
+          anchor.textContent = link.label;
+          anchor.target = "_blank";
+          anchor.rel = "noopener";
+          if (link.download) {
+            anchor.setAttribute("download", link.download === true ? "" : link.download);
+          }
+          detailsLinks.appendChild(anchor);
+        });
+      }
+    }
+
+    function openArt(id) {
+      currentArtId = id;
+      updateArtModal(id);
+      updateSpotlightByIndex(id);
+      artModal.classList.remove("show-details");
+      if (detailsToggle) detailsToggle.setAttribute("aria-expanded", "false");
+      overlay.classList.add("active");
+      overlay.setAttribute("aria-hidden", "false");
+      isViewingArt = true;
+    }
+
+    function closeArt() {
+      overlay.classList.remove("active");
+      overlay.setAttribute("aria-hidden", "true");
+      artModal.classList.remove("show-details");
+      if (detailsToggle) detailsToggle.setAttribute("aria-expanded", "false");
+      isViewingArt = false;
+      updateNearbyFrame();
+    }
+
+    function getFrameInteractionPoint(frame) {
+      const face = frame.closest(".face");
+      if (!face) return null;
+      const walls = getWallBoundaries();
+      const faceWidth = face.clientWidth || 1;
+      const centerX = frame.offsetLeft + frame.offsetWidth / 2;
+      const t = clamp(centerX / faceWidth, 0, 1);
+      if (face.classList.contains("left")) {
+        return {
+          x: walls.left,
+          z: walls.maxZ - t * (walls.maxZ - walls.minZ),
+        };
+      }
+      if (face.classList.contains("right")) {
+        return {
+          x: walls.right,
+          z: walls.minZ + t * (walls.maxZ - walls.minZ),
+        };
+      }
+      if (face.classList.contains("back")) {
+        return {
+          x: walls.left + t * (walls.right - walls.left),
+          z: walls.minZ,
+        };
+      }
+      return { x: 0, z: 0 };
+    }
+
+    function findNearestFrame() {
+      let nearest = null;
+      let minDistance = Infinity;
+      interactiveFrames.forEach((frame) => {
+        const point = getFrameInteractionPoint(frame);
+        if (!point) return;
+        const dx = point.x - charX;
+        const dz = point.z - charZ;
+        const dist = Math.hypot(dx, dz);
+        if (dist < minDistance) {
+          minDistance = dist;
+          nearest = frame;
+        }
+      });
+      if (!nearest) return null;
+      return minDistance < interactionDistance ? nearest : null;
+    }
+
+    function updateSpotlightPosition(frame) {
+      if (!frame || !viewport) return;
+      const rect = frame.getBoundingClientRect();
+      const viewportRect = viewport.getBoundingClientRect();
+      const x = ((rect.left + rect.width / 2) - viewportRect.left) / viewportRect.width;
+      const y = ((rect.top + rect.height / 2) - viewportRect.top) / viewportRect.height;
+      const clampedX = clamp(x, 0.1, 0.9) * 100;
+      const clampedY = clamp(y, 0.1, 0.9) * 100;
+      viewport.style.setProperty("--spot-x", `${clampedX}%`);
+      viewport.style.setProperty("--spot-y", `${clampedY}%`);
+    }
+
+    function applySpotlight(frame) {
+      if (!frame || !viewport) return;
+      spotlitFrame = frame;
+      interactiveFrames.forEach((item) => item.classList.toggle("spotlit", item === frame));
+      viewport.classList.add("spotlight-active");
+      updateSpotlightPosition(frame);
+    }
+
+    function clearSpotlight() {
+      if (!viewport) return;
+      interactiveFrames.forEach((item) => item.classList.remove("spotlit"));
+      viewport.classList.remove("spotlight-active");
+    }
+
+    function updateSpotlightByIndex(index) {
+      const frame = frameById.get(index);
+      const nearest = findNearestFrame();
+      if (frame && nearest === frame) {
+        applySpotlight(frame);
+      } else {
+        clearSpotlight();
+      }
+    }
+
+    function updateNearbyFrame() {
+      const nearest = findNearestFrame();
+      interactiveFrames.forEach((frame) => {
+        frame.classList.toggle("near", frame === nearest);
+      });
+      if (nearest) {
+        applySpotlight(nearest);
+      } else {
+        clearSpotlight();
+      }
+    }
+
+    function navigateArt(direction) {
+      if (!projectIds.length) return;
+      const currentIndex = projectIds.indexOf(currentArtId);
+      const nextIndex = (currentIndex + direction + projectIds.length) % projectIds.length;
+      currentArtId = projectIds[nextIndex];
+      updateArtModal(currentArtId);
+      updateSpotlightByIndex(currentArtId);
+    }
+
+    function onKeyDown(event) {
+      if (isViewingArt) {
+        if (event.key === "Escape") {
+          closeArt();
+          return;
+        }
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          navigateArt(-1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          navigateArt(1);
+          return;
+        }
+        return;
+      }
+      if (event.key === "Enter") {
+        const nearest = findNearestFrame();
+        if (nearest) {
+          const index = Number(nearest.dataset.art || "1");
+          openArt(index);
+        }
+        return;
+      }
+      // Track which keys are pressed for smooth movement
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        event.preventDefault();
+        keysPressed[event.key] = true;
+        if (!movementAnimationId) {
+          startMovementLoop();
+        }
+      }
+    }
+
+    function onKeyUp(event) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        keysPressed[event.key] = false;
+      }
+    }
+
+    function startMovementLoop() {
+      const speed = 5;
+
+      function loop() {
+        const walls = getWallBoundaries();
+        let dx = 0;
+        let dz = 0;
+
+        if (keysPressed["ArrowUp"]) dz -= 1;
+        if (keysPressed["ArrowDown"]) dz += 1;
+        if (keysPressed["ArrowLeft"]) dx -= 1;
+        if (keysPressed["ArrowRight"]) dx += 1;
+
+        if (dx !== 0 || dz !== 0) {
+          // Normalize diagonal movement so speed is consistent
+          const len = Math.hypot(dx, dz);
+          dx = (dx / len) * speed;
+          // Boost Z speed to compensate for perspective (forward/back appears slower)
+          dz = (dz / len) * speed * 1.8;
+          // Calculate target yaw based on movement direction (in degrees)
+          // This rotates the character to face the direction of travel
+          const targetYaw = Math.atan2(-dx, -dz) * (180 / Math.PI);
+
+          // Smoothly interpolate charYaw towards target
+          let yawDiff = targetYaw - charYaw;
+          // Normalize to -180 to 180
+          while (yawDiff > 180) yawDiff -= 360;
+          while (yawDiff < -180) yawDiff += 360;
+          charYaw += yawDiff * 0.12;
+
+          // Apply movement with viewport-independent boundaries
+          charX = clamp(charX + dx, walls.left, walls.right);
+          charZ = clamp(charZ + dz, walls.minZ, walls.maxZ);
+
+          updateCharacter();
+          updateNearbyFrame();
+          triggerWalk();
+
+          movementAnimationId = requestAnimationFrame(loop);
+        } else {
+          movementAnimationId = null;
+        }
+      }
+
+      movementAnimationId = requestAnimationFrame(loop);
+    }
+
+    function updateRailReadout(rail) {
+      if (!rail) {
+        setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
+        return;
+      }
+      const label = rail.getAttribute("data-rail") || "rail";
+      const x = rail.style.getPropertyValue("--rail-x") || "0px";
+      const y = rail.style.getPropertyValue("--rail-y") || "0px";
+      setReadout(`${label} rail  x:${x.trim()}  y:${y.trim()}`);
+    }
+
+    function updateCharReadout() {
+      setReadout(`character  x:${charX.toFixed(1)}px  y:${charY.toFixed(1)}px  z:${charZ.toFixed(1)}px  yaw:${charYaw.toFixed(1)}deg`);
+    }
+
+    function setCharZ(value) {
+      const next = Number(value);
+      if (Number.isNaN(next)) return;
+      const walls = getWallBoundaries();
+      charZ = clamp(next, walls.minZ, walls.maxZ);
+      updateCharacter();
+      updateCharReadout();
+    }
+
+    function setCharYaw(value) {
+      const next = Number(value);
+      if (Number.isNaN(next)) return;
+      charYaw = normalizeYaw(next);
+      updateCharacter();
+      updateCharReadout();
+    }
+
+    function setFloorOffset(value) {
+      const next = Number(value);
+      if (Number.isNaN(next)) return;
+      charFloorOffset = clamp(next, -800, 800);
+      if (floorOffsetRange) floorOffsetRange.value = Math.round(charFloorOffset);
+      if (floorOffsetInput) floorOffsetInput.value = Math.round(charFloorOffset);
+      updateCharacter();
+      updateCharReadout();
     }
 
     function onPointerDown(event) {
@@ -583,11 +2062,340 @@
       room.releasePointerCapture(event.pointerId);
     }
 
-    room.addEventListener("pointerdown", onPointerDown);
-    room.addEventListener("pointermove", onPointerMove);
-    room.addEventListener("pointerup", onPointerUp);
-    room.addEventListener("pointerleave", () => { isDragging = false; });
+    function onRailPointerDown(event) {
+      event.stopPropagation();
+      activeRail = event.currentTarget;
+      railStartX = event.clientX;
+      railStartY = event.clientY;
+      railOffsetX = parseFloat(activeRail.style.getPropertyValue("--rail-x")) || 0;
+      railOffsetY = parseFloat(activeRail.style.getPropertyValue("--rail-y")) || 0;
+      activeRail.setPointerCapture(event.pointerId);
+      updateRailReadout(activeRail);
+    }
+
+    function onRailPointerMove(event) {
+      if (!activeRail) return;
+      const dx = event.clientX - railStartX;
+      const dy = event.clientY - railStartY;
+      activeRail.style.setProperty("--rail-x", `${railOffsetX + dx}px`);
+      activeRail.style.setProperty("--rail-y", `${railOffsetY + dy}px`);
+      updateRailReadout(activeRail);
+    }
+
+    function onRailPointerUp(event) {
+      if (!activeRail) return;
+      activeRail.releasePointerCapture(event.pointerId);
+      console.log("Rail offsets:", activeRail.getAttribute("data-rail"), {
+        x: activeRail.style.getPropertyValue("--rail-x"),
+        y: activeRail.style.getPropertyValue("--rail-y"),
+      });
+      activeRail = null;
+      updateRailReadout(null);
+    }
+
+    function onCharPointerDown(event) {
+      event.stopPropagation();
+      isDraggingChar = true;
+      charStartX = event.clientX;
+      charStartY = event.clientY;
+      charOffsetX = charX;
+      charOffsetY = charY;
+      charOffsetZ = charZ;
+      charYawOffset = charYaw;
+      character.setPointerCapture(event.pointerId);
+      updateCharReadout();
+    }
+
+    function onCharPointerMove(event) {
+      if (!isDraggingChar) return;
+      const dx = event.clientX - charStartX;
+      const dy = event.clientY - charStartY;
+      if (event.shiftKey) {
+        charYaw = normalizeYaw(charYawOffset + dx * 0.35);
+      } else if (event.metaKey || event.ctrlKey) {
+        charTilt = clamp(charTilt - dy * 0.2, -90, 90);
+      } else {
+        // Use viewport-independent wall boundaries
+        const walls = getWallBoundaries();
+        charX = clamp(charOffsetX + dx, walls.left, walls.right);
+        charZ = clamp(charOffsetZ - dy, walls.minZ, walls.maxZ);
+      }
+      updateCharacter();
+      updateNearbyFrame();
+      updateCharReadout();
+      triggerWalk();
+    }
+
+    function onCharPointerUp(event) {
+      if (!isDraggingChar) return;
+      isDraggingChar = false;
+      character.releasePointerCapture(event.pointerId);
+      console.log("Character offsets:", { x: charX, y: charY, z: charZ, yaw: charYaw });
+      setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
+    }
+
+    function onCharWheel(event) {
+      event.preventDefault();
+      setCharZ(charZ + event.deltaY * 0.3);
+      triggerWalk();
+    }
+
+    function resizeCharacterRenderer() {
+      if (!renderer || !camera || !characterLayer) return;
+      const width = Math.max(1, characterLayer.clientWidth || 140);
+      const height = Math.max(1, characterLayer.clientHeight || 180);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      syncCharacterCamera();
+    }
+
+    function loadCharacterModel(loader, index) {
+      const source = modelSources[index];
+      if (!source) {
+        flashReadout("Character model failed to load. Check /Portfolio/Character_Model path.");
+        return;
+      }
+      loader.load(
+        source,
+        (gltf) => {
+          characterModel = gltf.scene;
+          characterModel.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = false;
+              child.receiveShadow = false;
+              child.frustumCulled = false;
+              // Ensure materials are visible and not black
+              if (child.material) {
+                child.material.needsUpdate = true;
+                // If material is too dark, brighten it
+                if (child.material.color) {
+                  const col = child.material.color;
+                  if (col.r < 0.1 && col.g < 0.1 && col.b < 0.1) {
+                    // Material is very dark, lighten it
+                    child.material.color.setRGB(0.6, 0.55, 0.5);
+                  }
+                }
+              }
+            }
+          });
+          const box = new THREE.Box3().setFromObject(characterModel);
+          const size = box.getSize(new THREE.Vector3());
+          const desiredHeight = 1.0;
+          const scale = size.y > 0 ? desiredHeight / size.y : 1;
+          characterModel.scale.setScalar(scale);
+          characterModel.updateMatrixWorld(true);
+          const scaledBox = new THREE.Box3().setFromObject(characterModel);
+          const center = scaledBox.getCenter(new THREE.Vector3());
+          characterModel.position.set(-center.x, -scaledBox.min.y, -center.z);
+          const finalBox = new THREE.Box3().setFromObject(characterModel);
+          fitCameraToModel(finalBox);
+          if (!characterGroup) {
+            characterGroup = new THREE.Group();
+            scene.add(characterGroup);
+          }
+          characterGroup.add(characterModel);
+          updateModelOrientation();
+          updateCharacter();
+          if (placeholder) {
+            characterGroup.remove(placeholder);
+            placeholder.geometry.dispose();
+            placeholder.material.dispose();
+            placeholder = null;
+          }
+          if (gltf.animations && gltf.animations.length) {
+            mixer = new THREE.AnimationMixer(characterModel);
+            walkAction = mixer.clipAction(gltf.animations[0]);
+            walkAction.play();
+            walkAction.paused = true;
+          }
+          modelReady = true;
+          flashReadout("Character model loaded.");
+        },
+        undefined,
+        () => loadCharacterModel(loader, index + 1)
+      );
+    }
+
+    function initCharacterRenderer() {
+      if (threeInitialized || !characterLayer) return;
+      threeInitialized = true;
+      flashReadout("Loading character model...");
+      scene = new THREE.Scene();
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.domElement.style.position = "absolute";
+      renderer.domElement.style.inset = "0";
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
+      renderer.domElement.style.pointerEvents = "none";
+      characterLayer.appendChild(renderer.domElement);
+      const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);  // Increased intensity
+      hemi.position.set(0, 2, 0);
+      scene.add(hemi);
+      const ambient = new THREE.AmbientLight(0xffffff, 0.8);  // Increased ambient light
+      scene.add(ambient);
+      const dir = new THREE.DirectionalLight(0xffffff, 1.5);  // Increased directional light
+      dir.position.set(2, 4, 2);
+      scene.add(dir);
+      // Add a second directional light from the front
+      const dir2 = new THREE.DirectionalLight(0xffffff, 1.2);
+      dir2.position.set(0, 3, 3);
+      scene.add(dir2);
+      camera = new THREE.PerspectiveCamera(38, 1, 0.05, 100);
+      syncCharacterCamera();
+      placeholder = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.18, 0.6, 4, 12),
+        new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6, metalness: 0.1 })
+      );
+      placeholder.position.set(0, 0.48, 0);
+      characterGroup = new THREE.Group();
+      axesHelper = new THREE.AxesHelper(0.6);
+      axesHelper.visible = Boolean(debugAxesToggle?.checked);
+      characterGroup.add(axesHelper);
+      characterGroup.add(placeholder);
+      scene.add(characterGroup);
+      const loader = new GLTFLoader();
+      loadCharacterModel(loader, 0);
+      const resize = () => {
+        resizeCharacterRenderer();
+      };
+      resize();
+      new ResizeObserver(resize).observe(characterLayer);
+      window.addEventListener("resize", resize);
+      const renderLoop = () => {
+        requestAnimationFrame(renderLoop);
+        renderFootsteps();
+        if (mixer && walkAction && !walkAction.paused) {
+          mixer.update(clock.getDelta());
+        } else {
+          clock.getDelta();
+        }
+        if (renderer && scene && camera) {
+          renderer.render(scene, camera);
+        }
+      };
+      renderLoop();
+    }
+
+    // Room rotation disabled - fixed camera view
+    // room.addEventListener("pointerdown", onPointerDown);
+    // room.addEventListener("pointermove", onPointerMove);
+    // room.addEventListener("pointerup", onPointerUp);
+    // room.addEventListener("pointerleave", () => { isDragging = false; });
+    rails.forEach((rail) => {
+      rail.addEventListener("pointerdown", onRailPointerDown);
+      rail.addEventListener("pointermove", onRailPointerMove);
+      rail.addEventListener("pointerup", onRailPointerUp);
+      rail.addEventListener("pointerleave", onRailPointerUp);
+    });
+    character.addEventListener("pointerdown", onCharPointerDown);
+    character.addEventListener("pointermove", onCharPointerMove);
+    character.addEventListener("pointerup", onCharPointerUp);
+    character.addEventListener("pointerleave", onCharPointerUp);
+    character.addEventListener("wheel", onCharWheel, { passive: false });
+    if (charZRange) {
+      charZRange.addEventListener("input", (event) => setCharZ(event.target.value));
+    }
+    if (charZInput) {
+      charZInput.addEventListener("change", (event) => setCharZ(event.target.value));
+    }
+    if (charYawRange) {
+      charYawRange.addEventListener("input", (event) => setCharYaw(event.target.value));
+    }
+    if (charYawInput) {
+      charYawInput.addEventListener("change", (event) => setCharYaw(event.target.value));
+    }
+    if (modelPitchRange) {
+      modelPitchRange.addEventListener("input", () => {
+        if (modelPitchInput) modelPitchInput.value = modelPitchRange.value;
+        updateModelOrientation();
+      });
+    }
+    if (modelPitchInput) {
+      modelPitchInput.addEventListener("change", () => {
+        if (modelPitchRange) modelPitchRange.value = modelPitchInput.value;
+        updateModelOrientation();
+      });
+    }
+    if (modelYawRange) {
+      modelYawRange.addEventListener("input", () => {
+        if (modelYawInput) modelYawInput.value = modelYawRange.value;
+        updateModelOrientation();
+      });
+    }
+    if (modelYawInput) {
+      modelYawInput.addEventListener("change", () => {
+        if (modelYawRange) modelYawRange.value = modelYawInput.value;
+        updateModelOrientation();
+      });
+    }
+    if (modelRollRange) {
+      modelRollRange.addEventListener("input", () => {
+        if (modelRollInput) modelRollInput.value = modelRollRange.value;
+        updateModelOrientation();
+      });
+    }
+    if (modelRollInput) {
+      modelRollInput.addEventListener("change", () => {
+        if (modelRollRange) modelRollRange.value = modelRollInput.value;
+        updateModelOrientation();
+      });
+    }
+    if (floorOffsetRange) {
+      floorOffsetRange.addEventListener("input", (event) => setFloorOffset(event.target.value));
+    }
+    if (floorOffsetInput) {
+      floorOffsetInput.addEventListener("change", (event) => setFloorOffset(event.target.value));
+    }
+    if (debugAxesToggle) {
+      debugAxesToggle.addEventListener("change", () => {
+        if (axesHelper) axesHelper.visible = debugAxesToggle.checked;
+      });
+    }
+    if (charReset) {
+      charReset.addEventListener("click", () => {
+        charX = 0;
+        charY = 0;
+        charZ = 500;
+        charTilt = 0;
+        charYaw = 0;
+        if (modelPitchRange) modelPitchRange.value = "-90";
+        if (modelPitchInput) modelPitchInput.value = "-90";
+        if (modelYawRange) modelYawRange.value = "180";
+        if (modelYawInput) modelYawInput.value = "180";
+        if (modelRollRange) modelRollRange.value = "0";
+        if (modelRollInput) modelRollInput.value = "0";
+        updateModelOrientation();
+        setFloorOffset(550);
+        updateCharacter();
+        updateNearbyFrame();
+        updateCharReadout();
+        resetFootsteps();
+      });
+    }
+    prevBtn.addEventListener("click", () => navigateArt(-1));
+    nextBtn.addEventListener("click", () => navigateArt(1));
+    closeBtn.addEventListener("click", closeArt);
+    if (detailsToggle) {
+      detailsToggle.addEventListener("click", () => {
+        const isOpen = artModal.classList.toggle("show-details");
+        detailsToggle.setAttribute("aria-expanded", String(isOpen));
+      });
+    }
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closeArt();
+    });
+    window.addEventListener("keydown", onKeyDown, { passive: false });
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("resize", () => updateSpotlightPosition(spotlitFrame));
     updateRotation();
+    updateCharacter();
+    updateNearbyFrame();
+    updateRailReadout(null);
+    initCharacterRenderer();
   </script>
 </body>
 </html>

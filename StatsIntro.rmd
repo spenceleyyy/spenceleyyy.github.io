@@ -1,0 +1,144 @@
+---
+title: "Stats Intro"
+author: "Rob Spenceley"
+date: "2026-01-28"
+output: html_document
+---
+
+# Packages
+R has a LOT of built in functions that you can use, but we often need to do specific testing, and plotting. Thus, we need to install packages to expand on R's functionality. The most common packages you will be using is ggplot2, which is the gold standard for plotting, tidyverse, which is a suite of packages for data manipulation, and dplyr, which is part of the tidyverse but is specifically for data manipulation.
+
+The first time you install a package, you need to use the install.packages() function. You only need to do this once per package. For example, to install ggplot2, you would run: install.packages("ggplot2"). I recommend installing your packages in the console window, not in the R markdown document itself. 
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+```
+
+# Reading data: 
+
+For this tutorial, we will use the mtcars dataset, which is built into R, but you can also read in your own datasets using the read.csv() function.
+
+```{r}
+#data <- read.csv("path/to/your/data.csv")
+
+# In the above line of code, I am reading in the csv, data.csv, and assigning it to the variable "data". When you are reading in your data, you do not have to use the full file path, just the file name as long as the file is in your working directory. To check your working directory, type getwd() into the console. To change the wd, you can use setwd("path/to/your/directory"), of use the UI in the files pain to navigate to your path, and then "Session, Set Working Directory, To Files Pane Location".
+```
+
+# Viewing your data
+
+The first time you use a dataset, you may need to run data() to load it into your environment. You can view the first few rows of your dataset using the head() function. 
+
+```{r}
+head(mtcars)
+
+str(mtcars)
+
+```
+
+# Data cleaning
+
+There are a couple of important variables in the mtcars dataset we can use to group data together, like the cyl varible, which includes the number of cylinder in each car. However, the variable is numeric, and we want to use it as a categorical variable. To do this, we can use the as.factor() function to convert it to a factor variable.
+
+```{r}
+mtcars <- mtcars %>%
+  mutate(cyl = as.factor(cyl))
+
+summary(mtcars)
+```
+# Visualizzing your data
+
+The ggplot function follows a "grammar of graphics" approach to plotting. You start with the ggplot() function, which takes your dataset as the first argument, and then you specify the aesthetics (aes) mapping, which tells ggplot which variables to plot on the x and y axes. Then, you add layers to the plot using the + operator. For example, to create a boxplot of miles per gallon (mpg) by number of cylinders (cyl), you would use the geom_boxplot() function.
+
+You can also specify details on the global (in the top ggplot function) or local level. Each allows you to change different features of the graph. 
+```{r}
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_boxplot() +
+  labs(title = "Miles per Gallon by Number of Cylinders",
+       x = "Number of Cylinders",
+       y = "Miles per Gallon")
+```
+# Global AES 
+```{r}
+ggplot(mtcars) +
+  geom_boxplot(aes(x = cyl, y = mpg, fill = cyl)) +
+  labs(title = "Miles per Gallon by Number of Cylinders",
+       x = "Number of Cylinders",
+       y = "Miles per Gallon")
+```
+# Local AES
+```{r}
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_boxplot() +
+  geom_point(
+    aes(color = factor(cyl)),
+    position = position_jitter(width = 0.2),
+    size = 2,
+    alpha = 0.6
+  ) +
+  labs(
+    title = "Miles per Gallon by Number of Cylinders",
+    x = "Number of Cylinders",
+    y = "Miles per Gallon",
+    color = "Cylinders"
+  )
+```
+
+# To show Raw data Connected
+
+```{r}
+library(tidyverse)
+
+mtcars_long <- mtcars %>%
+  rownames_to_column("car") %>%
+  mutate(mpg_adjusted = mpg - wt) %>%
+  select(car, mpg, mpg_adjusted) %>%
+  pivot_longer(
+    cols = c(mpg, mpg_adjusted),
+    names_to = "condition",
+    values_to = "value"
+  )
+
+ggplot(mtcars_long, aes(x = condition, y = value)) +
+
+  # paired lines (same car across conditions)
+  geom_line(
+    aes(group = car),
+    alpha = 0.3
+  ) +
+
+  # bars = condition mean
+  stat_summary(
+    fun = mean,
+    geom = "bar",
+    fill = "grey70",
+    width = 0.6
+  ) +
+
+  # jittered individual points
+  geom_jitter(
+    width = 0.12,
+    size = 2,
+    alpha = 0.6
+  ) +
+
+  labs(
+    title = "Paired Data: Bars, Jittered Points, and Connecting Lines",
+    x = "Condition",
+    y = "Value"
+  )
+```
+
+
+# Statistical testing
+For this example, we will use a one-way ANOVA to test if there are significant differences in mpg between the different cylinder groups. The aov() function is used to fit the ANOVA model, and the summary() function is used to view the results.
+
+```{r}
+anova_model <- aov(mpg ~ cyl, data = mtcars)
+summary(anova_model)
+```
+
+
+
+
