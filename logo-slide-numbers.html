@@ -437,6 +437,10 @@
             <label for="logo-text">Slide number / text</label>
             <input id="logo-text" type="text" value="01" />
           </div>
+          <div class="toggle-row">
+            <label for="no-cutout">Logo has no letters</label>
+            <input id="no-cutout" type="checkbox" />
+          </div>
           <p class="hint">More controls are tucked into the sections below.</p>
         </div>
 
@@ -611,6 +615,7 @@
       maskY: canvas.height / 2,
       activeTool: 'text',
       brushSize: 40,
+      cutoutDisabled: false,
     };
 
     const controls = {
@@ -619,6 +624,7 @@
       upload: document.getElementById('logo-upload'),
       toolButtons: Array.from(document.querySelectorAll('[data-tool]')),
       text: document.getElementById('logo-text'),
+      noCutout: document.getElementById('no-cutout'),
       fontFamily: document.getElementById('font-family'),
       fontSize: document.getElementById('font-size'),
       fontSizeNumber: document.getElementById('font-size-number'),
@@ -662,6 +668,7 @@
 
     function syncInputs() {
       controls.text.value = state.text;
+      controls.noCutout.checked = state.cutoutDisabled;
       controls.fontFamily.value = state.fontFamily;
       controls.fontSize.value = state.fontSize;
       controls.fontSizeNumber.value = state.fontSize;
@@ -680,6 +687,24 @@
       controls.maskY.value = Math.round(state.maskY);
       controls.brushSize.value = state.brushSize;
       controls.brushSizeNumber.value = state.brushSize;
+
+      const cutoutDisabled = state.cutoutDisabled;
+      controls.maskToggle.disabled = cutoutDisabled;
+      controls.maskWidth.disabled = cutoutDisabled;
+      controls.maskWidthNumber.disabled = cutoutDisabled;
+      controls.maskHeight.disabled = cutoutDisabled;
+      controls.maskHeightNumber.disabled = cutoutDisabled;
+      controls.maskX.disabled = cutoutDisabled;
+      controls.maskY.disabled = cutoutDisabled;
+      controls.centerMask.disabled = cutoutDisabled;
+      controls.brushSize.disabled = cutoutDisabled;
+      controls.brushSizeNumber.disabled = cutoutDisabled;
+      controls.clearBrush.disabled = cutoutDisabled;
+      controls.toolButtons.forEach((btn) => {
+        if (btn.dataset.tool !== 'text') {
+          btn.disabled = cutoutDisabled;
+        }
+      });
     }
 
     function renderToContext(targetCtx, textValue, includeText = true) {
@@ -867,7 +892,7 @@
     canvas.addEventListener('pointerdown', (event) => {
       if (!state.image) return;
       const point = getCanvasPoint(event);
-      if (state.activeTool === 'brush') {
+      if (state.activeTool === 'brush' && !state.cutoutDisabled) {
         dragging = 'brush';
         lastBrushPoint = point;
         drawBrushPoint(point);
@@ -876,7 +901,7 @@
         return;
       }
 
-      if (state.activeTool === 'box' && state.maskEnabled) {
+      if (state.activeTool === 'box' && state.maskEnabled && !state.cutoutDisabled) {
         dragging = 'mask';
         dragOffset.x = point.x - state.maskX;
         dragOffset.y = point.y - state.maskY;
@@ -952,10 +977,28 @@
       });
     }
 
+    function setCutoutDisabled(disabled) {
+      state.cutoutDisabled = disabled;
+      if (disabled) {
+        state.maskEnabled = false;
+        brushMaskCtx.clearRect(0, 0, brushMaskCanvas.width, brushMaskCanvas.height);
+        brushDirty = false;
+        setActiveTool('text');
+      } else {
+        state.maskEnabled = true;
+      }
+      syncInputs();
+      render();
+    }
+
     controls.toolButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         setActiveTool(btn.dataset.tool);
       });
+    });
+
+    controls.noCutout.addEventListener('change', (event) => {
+      setCutoutDisabled(event.target.checked);
     });
 
     controls.text.addEventListener('input', (event) => {
@@ -1018,6 +1061,10 @@
     });
 
     controls.maskToggle.addEventListener('change', (event) => {
+      if (state.cutoutDisabled) {
+        event.target.checked = false;
+        return;
+      }
       state.maskEnabled = event.target.checked;
       render();
     });
@@ -1163,6 +1210,7 @@
       brushMaskCtx.clearRect(0, 0, brushMaskCanvas.width, brushMaskCanvas.height);
       brushDirty = false;
       setActiveTool('text');
+      state.cutoutDisabled = false;
       syncInputs();
       render();
     });
@@ -1170,6 +1218,7 @@
     syncInputs();
     setActiveTool(state.activeTool);
     loadImage(defaultLogoSrc, legacyLogoSrc);
+    setCutoutDisabled(true);
     render();
   </script>
 </body>
