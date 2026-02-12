@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logo Slide Numbers | RS</title>
+  <link rel="icon" href="/logos/RSlogoUPDATED.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Space+Grotesk:wght@400;500;600&family=Montserrat:wght@400;600&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f8f4ef;
+      --bg-2: #f0efe9;
+      --panel: #ffffff;
+      --ink: #111111;
+      --muted: rgba(17, 17, 17, 0.6);
+      --line: rgba(17, 17, 17, 0.12);
+      --accent: #0b4f6c;
+      --accent-2: #c0643b;
+      --shadow: 0 22px 50px rgba(0, 0, 0, 0.12);
+      --nav-height: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(11, 79, 108, 0.08), transparent 45%),
+        radial-gradient(circle at 82% 0%, rgba(192, 100, 59, 0.1), transparent 40%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      background: rgba(248, 244, 239, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      font-family: "Space Grotesk", sans-serif;
+    }
+    .nav-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .logo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .logo-image {
+      width: 34px;
+      height: 34px;
+    }
+    .full-name {
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: inherit;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      opacity: 0;
+      transform: scaleX(0.4);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links .active a::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-toggle {
+      cursor: pointer;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 0.5rem 0;
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    }
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a::after {
+      display: none;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: calc(var(--nav-height) + 2rem) 6vw 4rem;
+      display: grid;
+      gap: 2.4rem;
+    }
+
+    .page-hero {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .page-hero h1 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+    }
+
+    .page-hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.6;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1.6rem;
+      display: grid;
+      gap: 1.2rem;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .control-group {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .control-row {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    input[type="color"] {
+      border: none;
+      background: none;
+      width: 42px;
+      height: 32px;
+      padding: 0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .inline {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fff;
+      padding: 0.6rem 1.2rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.12);
+    }
+
+    .canvas-shell {
+      display: grid;
+      place-items: center;
+      background: #f4f4f4;
+      border-radius: 16px;
+      padding: 1rem;
+      min-height: 420px;
+      border: 1px dashed rgba(0, 0, 0, 0.12);
+    }
+
+    canvas {
+      max-width: min(60vw, 560px);
+      width: 100%;
+      height: auto;
+      background: #fff;
+      border-radius: 8px;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    @media (max-width: 980px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      canvas {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-content">
+      <a href="index.html" class="logo-link">
+        <img src="/logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image" />
+        <span class="full-name">Robert J. Spenceley</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="mentorship.html">Mentorship</a></li>
+        <li><a href="people.html">People</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Misc</a>
+          <ul class="dropdown-menu">
+            <li><a href="qr-generator.html">QR Code Generator</a></li>
+            <li><a href="bg-remover.html">Background Remover</a></li>
+            <li><a href="image-converter.html">Image Converter</a></li>
+            <li><a href="link-shortener.html">Link Shortener</a></li>
+            <li><a href="photo-translator.html">Travel Buddy</a></li>
+            <li><a href="logo-slide-numbers.html">Logo Slide Numbers</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Resources</a>
+          <ul class="dropdown-menu">
+            <li><a href="page-designer.html">Page Designer</a></li>
+            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+          </ul>
+        </li>
+        <li><a href="cv.html">CV</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <header class="page-hero">
+      <p class="pill">Slide-ready logo tools</p>
+      <h1>Logo Slide Numberer</h1>
+      <p>Swap the initials on your logo for slide numbers or custom text in seconds. Load your RS template or upload any logo, then drag the number into place and export a PNG.</p>
+    </header>
+
+    <section class="workspace">
+      <div class="panel">
+        <h2>Generator</h2>
+        <div class="control-group">
+          <div class="control-row">
+            <label>Logo source</label>
+            <div class="inline">
+              <button class="button" id="use-template" type="button">Use RS Template</button>
+              <label class="button secondary" for="logo-upload">Upload Logo</label>
+              <input id="logo-upload" type="file" accept="image/*" hidden />
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label for="logo-text">Slide number / text</label>
+            <input id="logo-text" type="text" value="01" />
+          </div>
+
+          <div class="control-row">
+            <label for="font-family">Font</label>
+            <select id="font-family">
+              <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+              <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+              <option value="'Montserrat', sans-serif">Montserrat</option>
+              <option value="'Fraunces', serif">Fraunces</option>
+            </select>
+          </div>
+
+          <div class="control-row">
+            <label>Font size</label>
+            <div class="inline">
+              <input id="font-size" type="range" min="40" max="400" value="180" />
+              <input id="font-size-number" type="number" min="40" max="400" value="180" />
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label>Text color</label>
+            <div class="inline">
+              <input id="text-color" type="color" value="#111111" />
+              <span class="hint">Pick the number color.</span>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <div class="toggle-row">
+              <label for="outline-toggle">Outline</label>
+              <input id="outline-toggle" type="checkbox" />
+            </div>
+            <div class="inline">
+              <input id="outline-color" type="color" value="#111111" />
+              <input id="outline-width" type="range" min="1" max="20" value="6" />
+            </div>
+          </div>
+
+          <div class="control-row">
+            <label>Text position</label>
+            <div class="inline">
+              <input id="text-x" type="number" value="0" />
+              <input id="text-y" type="number" value="0" />
+              <button class="button secondary" id="center-text" type="button">Center</button>
+            </div>
+            <p class="hint">Drag the number on the canvas to reposition.</p>
+          </div>
+        </div>
+
+        <h2>Cover Box</h2>
+        <div class="control-group">
+          <div class="toggle-row">
+            <label for="mask-toggle">Cover existing letters</label>
+            <input id="mask-toggle" type="checkbox" checked />
+          </div>
+          <div class="control-row">
+            <label>Cover color</label>
+            <div class="inline">
+              <input id="mask-color" type="color" value="#f7f7f7" />
+              <span class="hint">Match the logo background.</span>
+            </div>
+          </div>
+          <div class="control-row">
+            <label>Cover size</label>
+            <div class="inline">
+              <input id="mask-width" type="range" min="60" max="600" value="260" />
+              <input id="mask-width-number" type="number" min="60" max="600" value="260" />
+            </div>
+            <div class="inline">
+              <input id="mask-height" type="range" min="60" max="600" value="260" />
+              <input id="mask-height-number" type="number" min="60" max="600" value="260" />
+            </div>
+          </div>
+          <div class="control-row">
+            <label>Cover position</label>
+            <div class="inline">
+              <input id="mask-x" type="number" value="0" />
+              <input id="mask-y" type="number" value="0" />
+              <button class="button secondary" id="center-mask" type="button">Center</button>
+            </div>
+            <p class="hint">Hold Shift and drag to move the cover box.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Preview</h2>
+        <div class="canvas-shell">
+          <canvas id="logo-canvas" width="1200" height="1200"></canvas>
+        </div>
+        <div class="inline">
+          <button class="button" id="download-png" type="button">Download PNG</button>
+          <button class="button secondary" id="reset-all" type="button">Reset Layout</button>
+        </div>
+        <p class="hint">Tip: drag the number to place it. Hold Shift to drag the cover box. Export will use the full image resolution.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('logo-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const state = {
+      image: null,
+      text: '01',
+      fontFamily: "'Bebas Neue', sans-serif",
+      fontSize: 180,
+      textColor: '#111111',
+      outlineEnabled: false,
+      outlineColor: '#111111',
+      outlineWidth: 6,
+      textX: canvas.width / 2,
+      textY: canvas.height / 2,
+      maskEnabled: true,
+      maskColor: '#f7f7f7',
+      maskWidth: 260,
+      maskHeight: 260,
+      maskX: canvas.width / 2,
+      maskY: canvas.height / 2,
+    };
+
+    const controls = {
+      useTemplate: document.getElementById('use-template'),
+      upload: document.getElementById('logo-upload'),
+      text: document.getElementById('logo-text'),
+      fontFamily: document.getElementById('font-family'),
+      fontSize: document.getElementById('font-size'),
+      fontSizeNumber: document.getElementById('font-size-number'),
+      textColor: document.getElementById('text-color'),
+      outlineToggle: document.getElementById('outline-toggle'),
+      outlineColor: document.getElementById('outline-color'),
+      outlineWidth: document.getElementById('outline-width'),
+      textX: document.getElementById('text-x'),
+      textY: document.getElementById('text-y'),
+      centerText: document.getElementById('center-text'),
+      maskToggle: document.getElementById('mask-toggle'),
+      maskColor: document.getElementById('mask-color'),
+      maskWidth: document.getElementById('mask-width'),
+      maskWidthNumber: document.getElementById('mask-width-number'),
+      maskHeight: document.getElementById('mask-height'),
+      maskHeightNumber: document.getElementById('mask-height-number'),
+      maskX: document.getElementById('mask-x'),
+      maskY: document.getElementById('mask-y'),
+      centerMask: document.getElementById('center-mask'),
+      download: document.getElementById('download-png'),
+      reset: document.getElementById('reset-all'),
+    };
+
+    function syncInputs() {
+      controls.text.value = state.text;
+      controls.fontFamily.value = state.fontFamily;
+      controls.fontSize.value = state.fontSize;
+      controls.fontSizeNumber.value = state.fontSize;
+      controls.textColor.value = state.textColor;
+      controls.outlineToggle.checked = state.outlineEnabled;
+      controls.outlineColor.value = state.outlineColor;
+      controls.outlineWidth.value = state.outlineWidth;
+      controls.textX.value = Math.round(state.textX);
+      controls.textY.value = Math.round(state.textY);
+      controls.maskToggle.checked = state.maskEnabled;
+      controls.maskColor.value = state.maskColor;
+      controls.maskWidth.value = state.maskWidth;
+      controls.maskWidthNumber.value = state.maskWidth;
+      controls.maskHeight.value = state.maskHeight;
+      controls.maskHeightNumber.value = state.maskHeight;
+      controls.maskX.value = Math.round(state.maskX);
+      controls.maskY.value = Math.round(state.maskY);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!state.image) {
+        ctx.fillStyle = '#f7f7f7';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999999';
+        ctx.font = '24px "Space Grotesk", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Load a logo to begin', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      ctx.drawImage(state.image, 0, 0, canvas.width, canvas.height);
+
+      if (state.maskEnabled) {
+        ctx.fillStyle = state.maskColor;
+        const maskX = state.maskX - state.maskWidth / 2;
+        const maskY = state.maskY - state.maskHeight / 2;
+        ctx.fillRect(maskX, maskY, state.maskWidth, state.maskHeight);
+      }
+
+      ctx.font = `${state.fontSize}px ${state.fontFamily}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (state.outlineEnabled) {
+        ctx.lineWidth = state.outlineWidth;
+        ctx.strokeStyle = state.outlineColor;
+        ctx.strokeText(state.text, state.textX, state.textY);
+      }
+
+      ctx.fillStyle = state.textColor;
+      ctx.fillText(state.text, state.textX, state.textY);
+    }
+
+    function updateCanvasForImage(img) {
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      state.textX = canvas.width / 2;
+      state.textY = canvas.height / 2;
+      state.maskX = canvas.width / 2;
+      state.maskY = canvas.height / 2;
+      state.maskWidth = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+      state.maskHeight = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+
+      const maxSize = Math.round(Math.min(canvas.width, canvas.height) * 0.6);
+      controls.fontSize.max = maxSize;
+      controls.fontSizeNumber.max = maxSize;
+      controls.maskWidth.max = Math.round(canvas.width * 0.8);
+      controls.maskWidthNumber.max = Math.round(canvas.width * 0.8);
+      controls.maskHeight.max = Math.round(canvas.height * 0.8);
+      controls.maskHeightNumber.max = Math.round(canvas.height * 0.8);
+
+      syncInputs();
+      render();
+    }
+
+    function loadImage(src) {
+      const img = new Image();
+      img.onload = () => {
+        state.image = img;
+        updateCanvasForImage(img);
+      };
+      img.src = src;
+    }
+
+    function getTextBounds() {
+      ctx.font = `${state.fontSize}px ${state.fontFamily}`;
+      const metrics = ctx.measureText(state.text || '');
+      const width = metrics.width;
+      const height = state.fontSize;
+      return {
+        x: state.textX - width / 2,
+        y: state.textY - height / 2,
+        width,
+        height,
+      };
+    }
+
+    function getMaskBounds() {
+      return {
+        x: state.maskX - state.maskWidth / 2,
+        y: state.maskY - state.maskHeight / 2,
+        width: state.maskWidth,
+        height: state.maskHeight,
+      };
+    }
+
+    function pointInRect(point, rect) {
+      return (
+        point.x >= rect.x &&
+        point.x <= rect.x + rect.width &&
+        point.y >= rect.y &&
+        point.y <= rect.y + rect.height
+      );
+    }
+
+    function getCanvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (event.clientX - rect.left) * scaleX,
+        y: (event.clientY - rect.top) * scaleY,
+      };
+    }
+
+    let dragging = null;
+    let dragOffset = { x: 0, y: 0 };
+
+    canvas.addEventListener('pointerdown', (event) => {
+      if (!state.image) return;
+      const point = getCanvasPoint(event);
+      const textBounds = getTextBounds();
+      const maskBounds = getMaskBounds();
+
+      if (state.maskEnabled && (event.shiftKey || pointInRect(point, maskBounds))) {
+        dragging = 'mask';
+        dragOffset.x = point.x - state.maskX;
+        dragOffset.y = point.y - state.maskY;
+      } else if (pointInRect(point, textBounds)) {
+        dragging = 'text';
+        dragOffset.x = point.x - state.textX;
+        dragOffset.y = point.y - state.textY;
+      }
+
+      if (dragging) {
+        canvas.setPointerCapture(event.pointerId);
+      }
+    });
+
+    canvas.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const point = getCanvasPoint(event);
+      if (dragging === 'text') {
+        state.textX = point.x - dragOffset.x;
+        state.textY = point.y - dragOffset.y;
+      }
+      if (dragging === 'mask') {
+        state.maskX = point.x - dragOffset.x;
+        state.maskY = point.y - dragOffset.y;
+      }
+      syncInputs();
+      render();
+    });
+
+    canvas.addEventListener('pointerup', () => {
+      dragging = null;
+    });
+
+    canvas.addEventListener('pointerleave', () => {
+      dragging = null;
+    });
+
+    controls.useTemplate.addEventListener('click', () => {
+      loadImage('/logos/RSlogoUPDATED.png');
+    });
+
+    controls.upload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        loadImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    controls.text.addEventListener('input', (event) => {
+      state.text = event.target.value;
+      render();
+    });
+
+    controls.fontFamily.addEventListener('change', (event) => {
+      state.fontFamily = event.target.value;
+      render();
+    });
+
+    controls.fontSize.addEventListener('input', (event) => {
+      state.fontSize = Number(event.target.value);
+      syncInputs();
+      render();
+    });
+
+    controls.fontSizeNumber.addEventListener('input', (event) => {
+      state.fontSize = Number(event.target.value || state.fontSize);
+      syncInputs();
+      render();
+    });
+
+    controls.textColor.addEventListener('input', (event) => {
+      state.textColor = event.target.value;
+      render();
+    });
+
+    controls.outlineToggle.addEventListener('change', (event) => {
+      state.outlineEnabled = event.target.checked;
+      render();
+    });
+
+    controls.outlineColor.addEventListener('input', (event) => {
+      state.outlineColor = event.target.value;
+      render();
+    });
+
+    controls.outlineWidth.addEventListener('input', (event) => {
+      state.outlineWidth = Number(event.target.value);
+      render();
+    });
+
+    controls.textX.addEventListener('input', (event) => {
+      state.textX = Number(event.target.value || state.textX);
+      render();
+    });
+
+    controls.textY.addEventListener('input', (event) => {
+      state.textY = Number(event.target.value || state.textY);
+      render();
+    });
+
+    controls.centerText.addEventListener('click', () => {
+      state.textX = canvas.width / 2;
+      state.textY = canvas.height / 2;
+      syncInputs();
+      render();
+    });
+
+    controls.maskToggle.addEventListener('change', (event) => {
+      state.maskEnabled = event.target.checked;
+      render();
+    });
+
+    controls.maskColor.addEventListener('input', (event) => {
+      state.maskColor = event.target.value;
+      render();
+    });
+
+    controls.maskWidth.addEventListener('input', (event) => {
+      state.maskWidth = Number(event.target.value);
+      syncInputs();
+      render();
+    });
+
+    controls.maskWidthNumber.addEventListener('input', (event) => {
+      state.maskWidth = Number(event.target.value || state.maskWidth);
+      syncInputs();
+      render();
+    });
+
+    controls.maskHeight.addEventListener('input', (event) => {
+      state.maskHeight = Number(event.target.value);
+      syncInputs();
+      render();
+    });
+
+    controls.maskHeightNumber.addEventListener('input', (event) => {
+      state.maskHeight = Number(event.target.value || state.maskHeight);
+      syncInputs();
+      render();
+    });
+
+    controls.maskX.addEventListener('input', (event) => {
+      state.maskX = Number(event.target.value || state.maskX);
+      render();
+    });
+
+    controls.maskY.addEventListener('input', (event) => {
+      state.maskY = Number(event.target.value || state.maskY);
+      render();
+    });
+
+    controls.centerMask.addEventListener('click', () => {
+      state.maskX = canvas.width / 2;
+      state.maskY = canvas.height / 2;
+      syncInputs();
+      render();
+    });
+
+    controls.download.addEventListener('click', () => {
+      if (!state.image) return;
+      const link = document.createElement('a');
+      link.download = `logo-slide-${state.text || 'number'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    controls.reset.addEventListener('click', () => {
+      if (!state.image) return;
+      state.fontSize = 180;
+      state.textColor = '#111111';
+      state.textX = canvas.width / 2;
+      state.textY = canvas.height / 2;
+      state.maskEnabled = true;
+      state.maskColor = '#f7f7f7';
+      state.maskWidth = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+      state.maskHeight = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+      state.maskX = canvas.width / 2;
+      state.maskY = canvas.height / 2;
+      syncInputs();
+      render();
+    });
+
+    syncInputs();
+    render();
+  </script>
+</body>
+</html>

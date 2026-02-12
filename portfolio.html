@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script type="importmap">
     {
       "imports": {
@@ -22,6 +23,10 @@
       --paper: #f7f7f7;
       --paper-deep: #eeeeee;
       --shadow: rgba(0, 0, 0, 0.16);
+      --line: rgba(21, 21, 21, 0.12);
+      --nav-height: 72px;
+      --stage-w: 1440px;
+      --stage-h: 900px;
       --room-rot-x: 52deg;
       --room-rot-y: 0deg;
       --frame-depth: 10px;
@@ -46,13 +51,117 @@
       font-family: "Inter", sans-serif;
       background: #fcfcfc;
       color: var(--ink);
-      overflow: hidden;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      background: rgba(246, 242, 237, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      font-family: "Sora", sans-serif;
+    }
+    .nav-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .logo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .logo-image {
+      width: 34px;
+      height: 34px;
+    }
+    .full-name {
+      font-size: 0.75rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: inherit;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      opacity: 0;
+      transform: scaleX(0.4);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links .active a::after {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-toggle {
+      cursor: pointer;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      padding: 0.5rem 0;
+      min-width: 200px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    }
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a::after {
+      display: none;
     }
 
     .gallery-stage {
       position: relative;
-      width: 100vw;
-      height: 100vh;
+      width: var(--stage-w);
+      height: var(--stage-h);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -215,18 +324,18 @@
     }
 
     /* Track light positions - Left wall (ceiling above left wall artwork) */
-    .face.ceiling .track-light.left-1 { top: 82%; left: 8%; }
-    .face.ceiling .track-light.left-2 { top: 82%; left: 22%; }
-    .face.ceiling .track-light.left-3 { top: 82%; left: 36%; }
-    .face.ceiling .track-light.left-4 { top: 82%; left: 50%; }
-    .face.ceiling .track-light.left-5 { top: 82%; left: 64%; }
+    .face.ceiling .track-light.left-1 { top: 82%; left: 12%; }
+    .face.ceiling .track-light.left-2 { top: 82%; left: 28%; }
+    .face.ceiling .track-light.left-3 { top: 82%; left: 44%; }
+    .face.ceiling .track-light.left-4 { top: 82%; left: 60%; }
+    .face.ceiling .track-light.left-5 { top: 82%; left: 76%; }
 
     /* Track light positions - Right wall (ceiling above right wall artwork) */
-    .face.ceiling .track-light.right-1 { top: 18%; left: 28%; transform: translateZ(8px) rotate(180deg); }
-    .face.ceiling .track-light.right-2 { top: 18%; left: 42%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-1 { top: 18%; left: 24%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-2 { top: 18%; left: 40%; transform: translateZ(8px) rotate(180deg); }
     .face.ceiling .track-light.right-3 { top: 18%; left: 56%; transform: translateZ(8px) rotate(180deg); }
-    .face.ceiling .track-light.right-4 { top: 18%; left: 70%; transform: translateZ(8px) rotate(180deg); }
-    .face.ceiling .track-light.right-5 { top: 18%; left: 84%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-4 { top: 18%; left: 72%; transform: translateZ(8px) rotate(180deg); }
+    .face.ceiling .track-light.right-5 { top: 18%; left: 88%; transform: translateZ(8px) rotate(180deg); }
 
     /* Wall ambient lighting - darker edges, lighter center */
     .face.left::before {
@@ -334,7 +443,7 @@
     }
 
     .wall-title {
-      font-size: clamp(8.5rem, 16vw, 18rem);
+      font-size: 160px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       font-weight: 600;
@@ -357,7 +466,7 @@
 
     .wall-body {
       margin-top: 3.2rem;
-      font-size: clamp(5.4rem, 11vw, 12.5rem);
+      font-size: 95px;
       line-height: 1.2;
       max-width: 100%;
       color: rgba(0, 0, 0, 0.7);
@@ -582,16 +691,16 @@
       background: #f6f6f6 url("/Portfolio/2.png") center / cover no-repeat;
     }
 
-    .face.left .frame-1 { width: 9%; height: 50%; top: 20%; left: 12%; }
-    .face.left .frame-2 { width: 9%; height: 50%; top: 20%; left: 34%; }
-    .face.left .frame-3 { width: 9%; height: 50%; top: 20%; left: 56%; }
-    .face.left .frame-4 { width: 9%; height: 50%; top: 20%; left: 78%; }
+    .face.left .frame-1 { width: 9%; height: 50%; top: 20%; left: 18%; }
+    .face.left .frame-2 { width: 9%; height: 50%; top: 20%; left: 36%; }
+    .face.left .frame-3 { width: 9%; height: 50%; top: 20%; left: 54%; }
+    .face.left .frame-4 { width: 9%; height: 50%; top: 20%; left: 72%; }
     .face.left .frame-9 { display: none; }
 
-    .face.right .frame-5 { width: 9%; height: 50%; top: 20%; left: 20%; }
-    .face.right .frame-6 { width: 9%; height: 50%; top: 20%; left: 42%; }
-    .face.right .frame-7 { width: 9%; height: 50%; top: 20%; left: 64%; }
-    .face.right .frame-8 { width: 9%; height: 50%; top: 20%; left: 86%; }
+    .face.right .frame-5 { width: 9%; height: 50%; top: 20%; left: 26%; }
+    .face.right .frame-6 { width: 9%; height: 50%; top: 20%; left: 44%; }
+    .face.right .frame-7 { width: 9%; height: 50%; top: 20%; left: 62%; }
+    .face.right .frame-8 { width: 9%; height: 50%; top: 20%; left: 80%; }
     .face.right .frame-10 { display: none; }
 
     .face.right .art-frame {
@@ -1103,6 +1212,40 @@
   </style>
 </head>
 <body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-content">
+      <a href="index.html" class="logo-link">
+        <img src="/logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image" />
+        <span class="full-name">Robert J. Spenceley</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li class="active"><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="mentorship.html">Mentorship</a></li>
+        <li><a href="people.html">People</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Misc</a>
+          <ul class="dropdown-menu">
+            <li><a href="qr-generator.html">QR Code Generator</a></li>
+            <li><a href="bg-remover.html">Background Remover</a></li>
+            <li><a href="image-converter.html">Image Converter</a></li>
+            <li><a href="link-shortener.html">Link Shortener</a></li>
+            <li><a href="photo-translator.html">Travel Buddy</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Resources</a>
+          <ul class="dropdown-menu">
+            <li><a href="page-designer.html">Page Designer</a></li>
+            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+          </ul>
+        </li>
+        <li><a href="cv.html">CV</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
   <main class="gallery-stage" aria-label="Gallery">
     <section class="gallery-viewport" id="gallery-scene" aria-label="3D gallery preview">
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
