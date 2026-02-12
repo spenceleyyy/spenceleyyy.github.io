@@ -322,6 +322,48 @@
       gap: 1rem;
     }
 
+    details {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.6rem 0.9rem;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    details + details {
+      margin-top: 0.9rem;
+    }
+
+    summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      font-size: 1rem;
+    }
+
+    details[open] summary::after {
+      content: "–";
+    }
+
+    .details-body {
+      margin-top: 0.8rem;
+      display: grid;
+      gap: 0.9rem;
+    }
+
     @media (max-width: 980px) {
       .workspace {
         grid-template-columns: 1fr;
@@ -379,12 +421,13 @@
 
     <section class="workspace">
       <div class="panel">
-        <h2>Generator</h2>
+        <h2>Quick Setup</h2>
         <div class="control-group">
           <div class="control-row">
             <label>Logo source</label>
             <div class="inline">
-              <button class="button" id="use-template" type="button">Use RS Template</button>
+              <button class="button" id="use-template" type="button">Use Default Logo</button>
+              <button class="button secondary" id="use-legacy" type="button">Use RS Legacy</button>
               <label class="button secondary" for="logo-upload">Upload Logo</label>
               <input id="logo-upload" type="file" accept="image/*" hidden />
             </div>
@@ -394,99 +437,139 @@
             <label for="logo-text">Slide number / text</label>
             <input id="logo-text" type="text" value="01" />
           </div>
+          <p class="hint">More controls are tucked into the sections below.</p>
+        </div>
 
-          <div class="control-row">
-            <label for="font-family">Font</label>
-            <select id="font-family">
-              <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
-              <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
-              <option value="'Montserrat', sans-serif">Montserrat</option>
-              <option value="'Fraunces', serif">Fraunces</option>
-            </select>
-          </div>
+        <details>
+          <summary>Text styling</summary>
+          <div class="details-body">
+            <div class="control-row">
+              <label for="font-family">Font</label>
+              <select id="font-family">
+                <option value="'Bebas Neue', sans-serif">Bebas Neue</option>
+                <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="'Fraunces', serif">Fraunces</option>
+              </select>
+            </div>
 
-          <div class="control-row">
-            <label>Font size</label>
-            <div class="inline">
-              <input id="font-size" type="range" min="40" max="400" value="180" />
-              <input id="font-size-number" type="number" min="40" max="400" value="180" />
+            <div class="control-row">
+              <label>Font size</label>
+              <div class="inline">
+                <input id="font-size" type="range" min="40" max="400" value="180" />
+                <input id="font-size-number" type="number" min="40" max="400" value="180" />
+              </div>
+            </div>
+
+            <div class="control-row">
+              <label>Text color</label>
+              <div class="inline">
+                <input id="text-color" type="color" value="#111111" />
+                <span class="hint">Pick the number color.</span>
+              </div>
+            </div>
+
+            <div class="control-row">
+              <div class="toggle-row">
+                <label for="outline-toggle">Outline</label>
+                <input id="outline-toggle" type="checkbox" />
+              </div>
+              <div class="inline">
+                <input id="outline-color" type="color" value="#111111" />
+                <input id="outline-width" type="range" min="1" max="20" value="6" />
+              </div>
+            </div>
+
+            <div class="control-row">
+              <label>Text position</label>
+              <div class="inline">
+                <input id="text-x" type="number" value="0" />
+                <input id="text-y" type="number" value="0" />
+                <button class="button secondary" id="center-text" type="button">Center</button>
+              </div>
+              <p class="hint">Use the Text tool to drag the number on the canvas.</p>
             </div>
           </div>
+        </details>
 
-          <div class="control-row">
-            <label>Text color</label>
-            <div class="inline">
-              <input id="text-color" type="color" value="#111111" />
-              <span class="hint">Pick the number color.</span>
+        <details>
+          <summary>Cutout tools</summary>
+          <div class="details-body">
+            <div class="control-row">
+              <label>Active tool</label>
+              <div class="tool-toggle" role="group" aria-label="Active tool">
+                <button class="tool-button is-active" type="button" data-tool="text">Text</button>
+                <button class="tool-button" type="button" data-tool="box">Box</button>
+                <button class="tool-button" type="button" data-tool="brush">Brush</button>
+              </div>
             </div>
-          </div>
-
-          <div class="control-row">
             <div class="toggle-row">
-              <label for="outline-toggle">Outline</label>
-              <input id="outline-toggle" type="checkbox" />
+              <label for="mask-toggle">Cutout box</label>
+              <input id="mask-toggle" type="checkbox" checked />
             </div>
-            <div class="inline">
-              <input id="outline-color" type="color" value="#111111" />
-              <input id="outline-width" type="range" min="1" max="20" value="6" />
+            <div class="control-row">
+              <label>Box size</label>
+              <div class="inline">
+                <input id="mask-width" type="range" min="60" max="600" value="260" />
+                <input id="mask-width-number" type="number" min="60" max="600" value="260" />
+              </div>
+              <div class="inline">
+                <input id="mask-height" type="range" min="60" max="600" value="260" />
+                <input id="mask-height-number" type="number" min="60" max="600" value="260" />
+              </div>
+            </div>
+            <div class="control-row">
+              <label>Box position</label>
+              <div class="inline">
+                <input id="mask-x" type="number" value="0" />
+                <input id="mask-y" type="number" value="0" />
+                <button class="button secondary" id="center-mask" type="button">Center</button>
+              </div>
+              <p class="hint">Use the Box tool to drag the cutout box.</p>
+            </div>
+            <div class="control-row">
+              <label>Brush size</label>
+              <div class="inline">
+                <input id="brush-size" type="range" min="6" max="120" value="40" />
+                <input id="brush-size-number" type="number" min="6" max="120" value="40" />
+                <button class="button secondary" id="clear-brush" type="button">Clear Brush</button>
+              </div>
+              <p class="hint">Brush tool erases to transparency. Great for removing the RS cleanly.</p>
             </div>
           </div>
+        </details>
 
-          <div class="control-row">
-            <label>Text position</label>
-            <div class="inline">
-              <input id="text-x" type="number" value="0" />
-              <input id="text-y" type="number" value="0" />
-              <button class="button secondary" id="center-text" type="button">Center</button>
+        <details>
+          <summary>Batch export</summary>
+          <div class="details-body">
+            <div class="control-row">
+              <label>Number range</label>
+              <div class="inline">
+                <input id="batch-start" type="number" value="1" min="0" />
+                <span class="hint">to</span>
+                <input id="batch-end" type="number" value="20" min="0" />
+              </div>
             </div>
-            <p class="hint">Use the Text tool to drag the number on the canvas.</p>
-          </div>
-        </div>
-
-        <h2>Cutout Tools</h2>
-        <div class="control-group">
-          <div class="control-row">
-            <label>Active tool</label>
-            <div class="tool-toggle" role="group" aria-label="Active tool">
-              <button class="tool-button is-active" type="button" data-tool="text">Text</button>
-              <button class="tool-button" type="button" data-tool="box">Box</button>
-              <button class="tool-button" type="button" data-tool="brush">Brush</button>
+            <div class="control-row">
+              <label>Formatting</label>
+              <div class="inline">
+                <input id="batch-prefix" type="text" value="" placeholder="Prefix" />
+                <input id="batch-suffix" type="text" value="" placeholder="Suffix" />
+                <input id="batch-pad" type="number" value="2" min="0" max="6" />
+                <span class="hint">Zero pad</span>
+              </div>
             </div>
-          </div>
-          <div class="toggle-row">
-            <label for="mask-toggle">Cutout box</label>
-            <input id="mask-toggle" type="checkbox" checked />
-          </div>
-          <div class="control-row">
-            <label>Box size</label>
-            <div class="inline">
-              <input id="mask-width" type="range" min="60" max="600" value="260" />
-              <input id="mask-width-number" type="number" min="60" max="600" value="260" />
+            <div class="control-row">
+              <label>Filename prefix</label>
+              <input id="batch-filename" type="text" value="slide-" />
             </div>
             <div class="inline">
-              <input id="mask-height" type="range" min="60" max="600" value="260" />
-              <input id="mask-height-number" type="number" min="60" max="600" value="260" />
+              <button class="button" id="batch-generate" type="button">Generate ZIP</button>
+              <button class="button secondary" id="download-base" type="button">Download Base</button>
             </div>
+            <p class="hint">Batch export uses your current cutout + text placement to generate a zip of PNGs.</p>
           </div>
-          <div class="control-row">
-            <label>Box position</label>
-            <div class="inline">
-              <input id="mask-x" type="number" value="0" />
-              <input id="mask-y" type="number" value="0" />
-              <button class="button secondary" id="center-mask" type="button">Center</button>
-            </div>
-            <p class="hint">Use the Box tool to drag the cutout box.</p>
-          </div>
-          <div class="control-row">
-            <label>Brush size</label>
-            <div class="inline">
-              <input id="brush-size" type="range" min="6" max="120" value="40" />
-              <input id="brush-size-number" type="number" min="6" max="120" value="40" />
-              <button class="button secondary" id="clear-brush" type="button">Clear Brush</button>
-            </div>
-            <p class="hint">Brush tool erases to transparency. Great for removing the RS cleanly.</p>
-          </div>
-        </div>
+        </details>
       </div>
 
       <div class="panel">
@@ -503,9 +586,12 @@
     </section>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
     const canvas = document.getElementById('logo-canvas');
     const ctx = canvas.getContext('2d');
+    const defaultLogoSrc = '/logos/RSlogo-brain.png';
+    const legacyLogoSrc = '/logos/RSlogoUPDATED.png';
 
     const state = {
       image: null,
@@ -529,6 +615,7 @@
 
     const controls = {
       useTemplate: document.getElementById('use-template'),
+      useLegacy: document.getElementById('use-legacy'),
       upload: document.getElementById('logo-upload'),
       toolButtons: Array.from(document.querySelectorAll('[data-tool]')),
       text: document.getElementById('logo-text'),
@@ -553,6 +640,14 @@
       brushSize: document.getElementById('brush-size'),
       brushSizeNumber: document.getElementById('brush-size-number'),
       clearBrush: document.getElementById('clear-brush'),
+      batchStart: document.getElementById('batch-start'),
+      batchEnd: document.getElementById('batch-end'),
+      batchPrefix: document.getElementById('batch-prefix'),
+      batchSuffix: document.getElementById('batch-suffix'),
+      batchPad: document.getElementById('batch-pad'),
+      batchFilename: document.getElementById('batch-filename'),
+      batchGenerate: document.getElementById('batch-generate'),
+      downloadBase: document.getElementById('download-base'),
       download: document.getElementById('download-png'),
       reset: document.getElementById('reset-all'),
     };
@@ -587,6 +682,52 @@
       controls.brushSizeNumber.value = state.brushSize;
     }
 
+    function renderToContext(targetCtx, textValue, includeText = true) {
+      targetCtx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!state.image) {
+        targetCtx.fillStyle = '#f7f7f7';
+        targetCtx.fillRect(0, 0, canvas.width, canvas.height);
+        targetCtx.fillStyle = '#999999';
+        targetCtx.font = '24px "Space Grotesk", sans-serif';
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+        targetCtx.fillText('Load a logo to begin', canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      targetCtx.drawImage(state.image, 0, 0, canvas.width, canvas.height);
+
+      if (state.maskEnabled || brushDirty) {
+        targetCtx.save();
+        targetCtx.globalCompositeOperation = 'destination-out';
+        if (state.maskEnabled) {
+          drawBoxMask();
+          targetCtx.drawImage(boxMaskCanvas, 0, 0);
+        }
+        if (brushDirty) {
+          targetCtx.drawImage(brushMaskCanvas, 0, 0);
+        }
+        targetCtx.restore();
+      }
+
+      if (!includeText) {
+        return;
+      }
+
+      targetCtx.font = `${state.fontSize}px ${state.fontFamily}`;
+      targetCtx.textAlign = 'center';
+      targetCtx.textBaseline = 'middle';
+
+      if (state.outlineEnabled) {
+        targetCtx.lineWidth = state.outlineWidth;
+        targetCtx.strokeStyle = state.outlineColor;
+        targetCtx.strokeText(textValue, state.textX, state.textY);
+      }
+
+      targetCtx.fillStyle = state.textColor;
+      targetCtx.fillText(textValue, state.textX, state.textY);
+    }
+
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (!state.image) {
@@ -600,33 +741,7 @@
         return;
       }
 
-      ctx.drawImage(state.image, 0, 0, canvas.width, canvas.height);
-
-      if (state.maskEnabled || brushDirty) {
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-out';
-        if (state.maskEnabled) {
-          drawBoxMask();
-          ctx.drawImage(boxMaskCanvas, 0, 0);
-        }
-        if (brushDirty) {
-          ctx.drawImage(brushMaskCanvas, 0, 0);
-        }
-        ctx.restore();
-      }
-
-      ctx.font = `${state.fontSize}px ${state.fontFamily}`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      if (state.outlineEnabled) {
-        ctx.lineWidth = state.outlineWidth;
-        ctx.strokeStyle = state.outlineColor;
-        ctx.strokeText(state.text, state.textX, state.textY);
-      }
-
-      ctx.fillStyle = state.textColor;
-      ctx.fillText(state.text, state.textX, state.textY);
+      renderToContext(ctx, state.text, true);
     }
 
     function updateCanvasForImage(img) {
@@ -661,11 +776,16 @@
       render();
     }
 
-    function loadImage(src) {
+    function loadImage(src, fallback) {
       const img = new Image();
       img.onload = () => {
         state.image = img;
         updateCanvasForImage(img);
+      };
+      img.onerror = () => {
+        if (fallback) {
+          loadImage(fallback);
+        }
       };
       img.src = src;
     }
@@ -808,7 +928,11 @@
     });
 
     controls.useTemplate.addEventListener('click', () => {
-      loadImage('/logos/RSlogoUPDATED.png');
+      loadImage(defaultLogoSrc, legacyLogoSrc);
+    });
+
+    controls.useLegacy.addEventListener('click', () => {
+      loadImage(legacyLogoSrc);
     });
 
     controls.upload.addEventListener('change', (event) => {
@@ -963,6 +1087,67 @@
       link.click();
     });
 
+    controls.downloadBase.addEventListener('click', () => {
+      if (!state.image) return;
+      const baseCanvas = document.createElement('canvas');
+      baseCanvas.width = canvas.width;
+      baseCanvas.height = canvas.height;
+      const baseCtx = baseCanvas.getContext('2d');
+      renderToContext(baseCtx, '', false);
+      const link = document.createElement('a');
+      link.download = 'logo-base.png';
+      link.href = baseCanvas.toDataURL('image/png');
+      link.click();
+    });
+
+    function formatBatchNumber(value, pad, prefix, suffix) {
+      const padded = pad > 0 ? String(value).padStart(pad, '0') : String(value);
+      return `${prefix}${padded}${suffix}`;
+    }
+
+    controls.batchGenerate.addEventListener('click', async () => {
+      if (!state.image) return;
+      const start = Number(controls.batchStart.value);
+      const end = Number(controls.batchEnd.value);
+      const pad = Number(controls.batchPad.value);
+      const prefix = controls.batchPrefix.value || '';
+      const suffix = controls.batchSuffix.value || '';
+      const filenamePrefix = controls.batchFilename.value || 'slide-';
+
+      if (Number.isNaN(start) || Number.isNaN(end) || end < start) {
+        return;
+      }
+
+      if (typeof JSZip === 'undefined') {
+        return;
+      }
+
+      const zip = new JSZip();
+      const workCanvas = document.createElement('canvas');
+      workCanvas.width = canvas.width;
+      workCanvas.height = canvas.height;
+      const workCtx = workCanvas.getContext('2d');
+
+      controls.batchGenerate.disabled = true;
+      controls.batchGenerate.textContent = 'Generating...';
+
+      for (let i = start; i <= end; i += 1) {
+        const label = formatBatchNumber(i, pad, prefix, suffix);
+        renderToContext(workCtx, label, true);
+        const blob = await new Promise((resolve) => workCanvas.toBlob(resolve, 'image/png'));
+        zip.file(`${filenamePrefix}${label}.png`, blob);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.download = 'logo-batch.zip';
+      link.href = URL.createObjectURL(zipBlob);
+      link.click();
+      URL.revokeObjectURL(link.href);
+      controls.batchGenerate.disabled = false;
+      controls.batchGenerate.textContent = 'Generate ZIP';
+    });
+
     controls.reset.addEventListener('click', () => {
       if (!state.image) return;
       state.fontSize = 180;
@@ -984,6 +1169,7 @@
 
     syncInputs();
     setActiveTool(state.activeTool);
+    loadImage(defaultLogoSrc, legacyLogoSrc);
     render();
   </script>
 </body>
