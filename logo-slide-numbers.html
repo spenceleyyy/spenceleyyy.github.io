@@ -235,6 +235,29 @@
       flex-wrap: wrap;
     }
 
+    .tool-toggle {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tool-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .tool-button.is-active {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink);
+    }
+
     .button {
       border: 1px solid var(--ink);
       background: var(--ink);
@@ -416,25 +439,26 @@
               <input id="text-y" type="number" value="0" />
               <button class="button secondary" id="center-text" type="button">Center</button>
             </div>
-            <p class="hint">Drag the number on the canvas to reposition.</p>
+            <p class="hint">Use the Text tool to drag the number on the canvas.</p>
           </div>
         </div>
 
-        <h2>Cover Box</h2>
+        <h2>Cutout Tools</h2>
         <div class="control-group">
+          <div class="control-row">
+            <label>Active tool</label>
+            <div class="tool-toggle" role="group" aria-label="Active tool">
+              <button class="tool-button is-active" type="button" data-tool="text">Text</button>
+              <button class="tool-button" type="button" data-tool="box">Box</button>
+              <button class="tool-button" type="button" data-tool="brush">Brush</button>
+            </div>
+          </div>
           <div class="toggle-row">
-            <label for="mask-toggle">Cover existing letters</label>
+            <label for="mask-toggle">Cutout box</label>
             <input id="mask-toggle" type="checkbox" checked />
           </div>
           <div class="control-row">
-            <label>Cover color</label>
-            <div class="inline">
-              <input id="mask-color" type="color" value="#f7f7f7" />
-              <span class="hint">Match the logo background.</span>
-            </div>
-          </div>
-          <div class="control-row">
-            <label>Cover size</label>
+            <label>Box size</label>
             <div class="inline">
               <input id="mask-width" type="range" min="60" max="600" value="260" />
               <input id="mask-width-number" type="number" min="60" max="600" value="260" />
@@ -445,13 +469,22 @@
             </div>
           </div>
           <div class="control-row">
-            <label>Cover position</label>
+            <label>Box position</label>
             <div class="inline">
               <input id="mask-x" type="number" value="0" />
               <input id="mask-y" type="number" value="0" />
               <button class="button secondary" id="center-mask" type="button">Center</button>
             </div>
-            <p class="hint">Hold Shift and drag to move the cover box.</p>
+            <p class="hint">Use the Box tool to drag the cutout box.</p>
+          </div>
+          <div class="control-row">
+            <label>Brush size</label>
+            <div class="inline">
+              <input id="brush-size" type="range" min="6" max="120" value="40" />
+              <input id="brush-size-number" type="number" min="6" max="120" value="40" />
+              <button class="button secondary" id="clear-brush" type="button">Clear Brush</button>
+            </div>
+            <p class="hint">Brush tool erases to transparency. Great for removing the RS cleanly.</p>
           </div>
         </div>
       </div>
@@ -465,7 +498,7 @@
           <button class="button" id="download-png" type="button">Download PNG</button>
           <button class="button secondary" id="reset-all" type="button">Reset Layout</button>
         </div>
-        <p class="hint">Tip: drag the number to place it. Hold Shift to drag the cover box. Export will use the full image resolution.</p>
+        <p class="hint">Tip: use the Brush tool to erase the RS, then place the number. Export uses transparency.</p>
       </div>
     </section>
   </main>
@@ -486,16 +519,18 @@
       textX: canvas.width / 2,
       textY: canvas.height / 2,
       maskEnabled: true,
-      maskColor: '#f7f7f7',
       maskWidth: 260,
       maskHeight: 260,
       maskX: canvas.width / 2,
       maskY: canvas.height / 2,
+      activeTool: 'text',
+      brushSize: 40,
     };
 
     const controls = {
       useTemplate: document.getElementById('use-template'),
       upload: document.getElementById('logo-upload'),
+      toolButtons: Array.from(document.querySelectorAll('[data-tool]')),
       text: document.getElementById('logo-text'),
       fontFamily: document.getElementById('font-family'),
       fontSize: document.getElementById('font-size'),
@@ -508,7 +543,6 @@
       textY: document.getElementById('text-y'),
       centerText: document.getElementById('center-text'),
       maskToggle: document.getElementById('mask-toggle'),
-      maskColor: document.getElementById('mask-color'),
       maskWidth: document.getElementById('mask-width'),
       maskWidthNumber: document.getElementById('mask-width-number'),
       maskHeight: document.getElementById('mask-height'),
@@ -516,9 +550,20 @@
       maskX: document.getElementById('mask-x'),
       maskY: document.getElementById('mask-y'),
       centerMask: document.getElementById('center-mask'),
+      brushSize: document.getElementById('brush-size'),
+      brushSizeNumber: document.getElementById('brush-size-number'),
+      clearBrush: document.getElementById('clear-brush'),
       download: document.getElementById('download-png'),
       reset: document.getElementById('reset-all'),
     };
+
+    const boxMaskCanvas = document.createElement('canvas');
+    const boxMaskCtx = boxMaskCanvas.getContext('2d');
+    const brushMaskCanvas = document.createElement('canvas');
+    const brushMaskCtx = brushMaskCanvas.getContext('2d');
+    brushMaskCtx.lineCap = 'round';
+    brushMaskCtx.lineJoin = 'round';
+    let brushDirty = false;
 
     function syncInputs() {
       controls.text.value = state.text;
@@ -532,13 +577,14 @@
       controls.textX.value = Math.round(state.textX);
       controls.textY.value = Math.round(state.textY);
       controls.maskToggle.checked = state.maskEnabled;
-      controls.maskColor.value = state.maskColor;
       controls.maskWidth.value = state.maskWidth;
       controls.maskWidthNumber.value = state.maskWidth;
       controls.maskHeight.value = state.maskHeight;
       controls.maskHeightNumber.value = state.maskHeight;
       controls.maskX.value = Math.round(state.maskX);
       controls.maskY.value = Math.round(state.maskY);
+      controls.brushSize.value = state.brushSize;
+      controls.brushSizeNumber.value = state.brushSize;
     }
 
     function render() {
@@ -556,11 +602,17 @@
 
       ctx.drawImage(state.image, 0, 0, canvas.width, canvas.height);
 
-      if (state.maskEnabled) {
-        ctx.fillStyle = state.maskColor;
-        const maskX = state.maskX - state.maskWidth / 2;
-        const maskY = state.maskY - state.maskHeight / 2;
-        ctx.fillRect(maskX, maskY, state.maskWidth, state.maskHeight);
+      if (state.maskEnabled || brushDirty) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        if (state.maskEnabled) {
+          drawBoxMask();
+          ctx.drawImage(boxMaskCanvas, 0, 0);
+        }
+        if (brushDirty) {
+          ctx.drawImage(brushMaskCanvas, 0, 0);
+        }
+        ctx.restore();
       }
 
       ctx.font = `${state.fontSize}px ${state.fontFamily}`;
@@ -580,12 +632,17 @@
     function updateCanvasForImage(img) {
       canvas.width = img.naturalWidth || img.width;
       canvas.height = img.naturalHeight || img.height;
+      boxMaskCanvas.width = canvas.width;
+      boxMaskCanvas.height = canvas.height;
+      brushMaskCanvas.width = canvas.width;
+      brushMaskCanvas.height = canvas.height;
       state.textX = canvas.width / 2;
       state.textY = canvas.height / 2;
       state.maskX = canvas.width / 2;
       state.maskY = canvas.height / 2;
       state.maskWidth = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
       state.maskHeight = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
+      state.brushSize = Math.round(Math.min(canvas.width, canvas.height) * 0.04);
 
       const maxSize = Math.round(Math.min(canvas.width, canvas.height) * 0.6);
       controls.fontSize.max = maxSize;
@@ -594,6 +651,11 @@
       controls.maskWidthNumber.max = Math.round(canvas.width * 0.8);
       controls.maskHeight.max = Math.round(canvas.height * 0.8);
       controls.maskHeightNumber.max = Math.round(canvas.height * 0.8);
+      const maxBrush = Math.max(40, Math.round(Math.min(canvas.width, canvas.height) * 0.2));
+      controls.brushSize.max = maxBrush;
+      controls.brushSizeNumber.max = maxBrush;
+      brushMaskCtx.clearRect(0, 0, brushMaskCanvas.width, brushMaskCanvas.height);
+      brushDirty = false;
 
       syncInputs();
       render();
@@ -619,6 +681,17 @@
         width,
         height,
       };
+    }
+
+    function drawBoxMask() {
+      boxMaskCtx.clearRect(0, 0, boxMaskCanvas.width, boxMaskCanvas.height);
+      if (!state.maskEnabled) {
+        return;
+      }
+      const maskX = state.maskX - state.maskWidth / 2;
+      const maskY = state.maskY - state.maskHeight / 2;
+      boxMaskCtx.fillStyle = '#000';
+      boxMaskCtx.fillRect(maskX, maskY, state.maskWidth, state.maskHeight);
     }
 
     function getMaskBounds() {
@@ -649,27 +722,56 @@
       };
     }
 
+    function drawBrushPoint(point) {
+      brushMaskCtx.fillStyle = '#000';
+      brushMaskCtx.beginPath();
+      brushMaskCtx.arc(point.x, point.y, state.brushSize, 0, Math.PI * 2);
+      brushMaskCtx.fill();
+      brushDirty = true;
+    }
+
+    function drawBrushLine(from, to) {
+      brushMaskCtx.strokeStyle = '#000';
+      brushMaskCtx.lineWidth = state.brushSize * 2;
+      brushMaskCtx.beginPath();
+      brushMaskCtx.moveTo(from.x, from.y);
+      brushMaskCtx.lineTo(to.x, to.y);
+      brushMaskCtx.stroke();
+      brushDirty = true;
+    }
+
     let dragging = null;
     let dragOffset = { x: 0, y: 0 };
+    let lastBrushPoint = null;
 
     canvas.addEventListener('pointerdown', (event) => {
       if (!state.image) return;
       const point = getCanvasPoint(event);
-      const textBounds = getTextBounds();
-      const maskBounds = getMaskBounds();
+      if (state.activeTool === 'brush') {
+        dragging = 'brush';
+        lastBrushPoint = point;
+        drawBrushPoint(point);
+        render();
+        canvas.setPointerCapture(event.pointerId);
+        return;
+      }
 
-      if (state.maskEnabled && (event.shiftKey || pointInRect(point, maskBounds))) {
+      if (state.activeTool === 'box' && state.maskEnabled) {
         dragging = 'mask';
         dragOffset.x = point.x - state.maskX;
         dragOffset.y = point.y - state.maskY;
-      } else if (pointInRect(point, textBounds)) {
-        dragging = 'text';
-        dragOffset.x = point.x - state.textX;
-        dragOffset.y = point.y - state.textY;
+        canvas.setPointerCapture(event.pointerId);
+        return;
       }
 
-      if (dragging) {
-        canvas.setPointerCapture(event.pointerId);
+      if (state.activeTool === 'text') {
+        const textBounds = getTextBounds();
+        if (pointInRect(point, textBounds)) {
+          dragging = 'text';
+          dragOffset.x = point.x - state.textX;
+          dragOffset.y = point.y - state.textY;
+          canvas.setPointerCapture(event.pointerId);
+        }
       }
     });
 
@@ -679,21 +781,30 @@
       if (dragging === 'text') {
         state.textX = point.x - dragOffset.x;
         state.textY = point.y - dragOffset.y;
+        syncInputs();
+        render();
       }
       if (dragging === 'mask') {
         state.maskX = point.x - dragOffset.x;
         state.maskY = point.y - dragOffset.y;
+        syncInputs();
+        render();
       }
-      syncInputs();
-      render();
+      if (dragging === 'brush') {
+        drawBrushLine(lastBrushPoint || point, point);
+        lastBrushPoint = point;
+        render();
+      }
     });
 
     canvas.addEventListener('pointerup', () => {
       dragging = null;
+      lastBrushPoint = null;
     });
 
     canvas.addEventListener('pointerleave', () => {
       dragging = null;
+      lastBrushPoint = null;
     });
 
     controls.useTemplate.addEventListener('click', () => {
@@ -708,6 +819,19 @@
         loadImage(reader.result);
       };
       reader.readAsDataURL(file);
+    });
+
+    function setActiveTool(tool) {
+      state.activeTool = tool;
+      controls.toolButtons.forEach((btn) => {
+        btn.classList.toggle('is-active', btn.dataset.tool === tool);
+      });
+    }
+
+    controls.toolButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setActiveTool(btn.dataset.tool);
+      });
     });
 
     controls.text.addEventListener('input', (event) => {
@@ -774,11 +898,6 @@
       render();
     });
 
-    controls.maskColor.addEventListener('input', (event) => {
-      state.maskColor = event.target.value;
-      render();
-    });
-
     controls.maskWidth.addEventListener('input', (event) => {
       state.maskWidth = Number(event.target.value);
       syncInputs();
@@ -820,6 +939,22 @@
       render();
     });
 
+    controls.brushSize.addEventListener('input', (event) => {
+      state.brushSize = Number(event.target.value);
+      syncInputs();
+    });
+
+    controls.brushSizeNumber.addEventListener('input', (event) => {
+      state.brushSize = Number(event.target.value || state.brushSize);
+      syncInputs();
+    });
+
+    controls.clearBrush.addEventListener('click', () => {
+      brushMaskCtx.clearRect(0, 0, brushMaskCanvas.width, brushMaskCanvas.height);
+      brushDirty = false;
+      render();
+    });
+
     controls.download.addEventListener('click', () => {
       if (!state.image) return;
       const link = document.createElement('a');
@@ -835,16 +970,20 @@
       state.textX = canvas.width / 2;
       state.textY = canvas.height / 2;
       state.maskEnabled = true;
-      state.maskColor = '#f7f7f7';
       state.maskWidth = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
       state.maskHeight = Math.round(Math.min(canvas.width, canvas.height) * 0.22);
       state.maskX = canvas.width / 2;
       state.maskY = canvas.height / 2;
+      state.brushSize = Math.round(Math.min(canvas.width, canvas.height) * 0.04);
+      brushMaskCtx.clearRect(0, 0, brushMaskCanvas.width, brushMaskCanvas.height);
+      brushDirty = false;
+      setActiveTool('text');
       syncInputs();
       render();
     });
 
     syncInputs();
+    setActiveTool(state.activeTool);
     render();
   </script>
 </body>
