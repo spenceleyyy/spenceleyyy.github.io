@@ -1568,11 +1568,37 @@
       const extents = getRoomExtents();
       const insetX = roomMetrics.width * 0.06;
       const insetZ = roomMetrics.depth * 0.06;
-      return {
+      const bounds = {
         left: extents.left + insetX,
         right: extents.right - insetX,
         minZ: extents.minZ + insetZ,
         maxZ: extents.maxZ - insetZ,
+      };
+      const artRange = getArtDepthRange();
+      if (!artRange) return bounds;
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        minZ: clamp(artRange.minZ, bounds.minZ, bounds.maxZ),
+        maxZ: clamp(artRange.maxZ, bounds.minZ, bounds.maxZ),
+      };
+    }
+
+    function getArtDepthRange() {
+      if (!interactiveFrames.length) return null;
+      let minZ = Infinity;
+      let maxZ = -Infinity;
+      interactiveFrames.forEach((frame) => {
+        const point = getFrameInteractionPoint(frame);
+        if (!point) return;
+        minZ = Math.min(minZ, point.z);
+        maxZ = Math.max(maxZ, point.z);
+      });
+      if (!Number.isFinite(minZ) || !Number.isFinite(maxZ)) return null;
+      const margin = roomMetrics.depth * 0.08;
+      return {
+        minZ: minZ - margin,
+        maxZ: maxZ + margin,
       };
     }
 

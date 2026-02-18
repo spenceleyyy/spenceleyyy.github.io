@@ -29,6 +29,9 @@
       --stage-h: 900px;
       --room-rot-x: 52deg;
       --room-rot-y: 0deg;
+      --room-scale: 1;
+      --room-shift-y: 500px;
+      --room-shift-z: -3200px;
       --frame-depth: 10px;
       --rail-depth: 8px;
       --char-x: 0px;
@@ -51,10 +54,12 @@
       font-family: "Inter", sans-serif;
       background: #fcfcfc;
       color: var(--ink);
-      overflow: auto;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
+      min-height: 100svh;
+      height: 100svh;
     }
 
     nav {
@@ -160,8 +165,10 @@
 
     .gallery-stage {
       position: relative;
-      width: var(--stage-w);
-      height: var(--stage-h);
+      flex: 1 1 auto;
+      width: 100%;
+      height: auto;
+      min-height: calc(100svh - var(--nav-height));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -172,6 +179,7 @@
       position: relative;
       width: 100%;
       height: 100%;
+      min-height: calc(100svh - var(--nav-height));
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -181,7 +189,7 @@
       background: radial-gradient(ellipse at 50% 35%, rgba(255, 252, 245, 0.4) 0%, transparent 50%);
       --spot-x: 50%;
       --spot-y: 50%;
-      --spot-size: 240px;
+      --spot-size: clamp(220px, 22vw, 360px);
     }
 
     .room {
@@ -193,7 +201,8 @@
       height: var(--room-h);
       position: relative;
       transform-style: preserve-3d;
-      transform: translate3d(0px, 500px, -3200px) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      transform: translate3d(0px, var(--room-shift-y), var(--room-shift-z)) scale(var(--room-scale)) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      transform-origin: 50% 50% 0;
     }
 
     .face {
@@ -1574,6 +1583,8 @@
     let characterGroup = null;
     let threeInitialized = false;
     const clock = new THREE.Clock();
+    const roomMetrics = { width: 4000, height: 1800, depth: 8000 };
+    const nav = document.querySelector("nav");
     const cameraTarget = new THREE.Vector3(0, 0.7, 0);
     let cameraRadius = 2.4;
     let cameraTargetY = 0.7;
@@ -1588,7 +1599,7 @@
       "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
     ];
     let readoutTimer = null;
-    const interactionDistance = 260;
+    const interactionDistance = 220;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
     const projectData = {
@@ -1668,16 +1679,6 @@
       },
     };
 
-    // Wall rail boundaries - match visual rail position
-    function getWallBoundaries() {
-      return {
-        left: -740,       // Stop at left rail
-        right: 740,       // Stop at right rail
-        minZ: -1000,
-        maxZ: 3800
-      };
-    }
-
     function clamp(value, min, max) {
       return Math.min(max, Math.max(min, value));
     }
@@ -1685,6 +1686,87 @@
     function normalizeYaw(value) {
       const wrapped = ((value % 360) + 360) % 360;
       return wrapped;
+    }
+
+    function readCssNumber(value, fallback) {
+      const parsed = Number.parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function updateNavHeight() {
+      if (!nav) return;
+      root.style.setProperty("--nav-height", `${nav.offsetHeight}px`);
+    }
+
+    function updateRoomMetrics() {
+      if (!room) return;
+      const styles = getComputedStyle(room);
+      roomMetrics.width = readCssNumber(styles.getPropertyValue("--room-w"), roomMetrics.width || room.offsetWidth);
+      roomMetrics.height = readCssNumber(styles.getPropertyValue("--room-h"), roomMetrics.height || room.offsetHeight);
+      roomMetrics.depth = readCssNumber(styles.getPropertyValue("--room-d"), roomMetrics.depth || roomMetrics.width);
+      const bounds = getWalkBounds();
+      if (charZRange) {
+        charZRange.min = Math.round(bounds.minZ);
+        charZRange.max = Math.round(bounds.maxZ);
+      }
+      if (charZInput) {
+        charZInput.min = Math.round(bounds.minZ);
+        charZInput.max = Math.round(bounds.maxZ);
+      }
+    }
+
+    function getRoomExtents() {
+      const halfWidth = roomMetrics.width / 2;
+      const halfDepth = roomMetrics.depth / 2;
+      return {
+        left: -halfWidth,
+        right: halfWidth,
+        minZ: -halfDepth,
+        maxZ: halfDepth,
+      };
+    }
+
+    function getWalkBounds() {
+      const extents = getRoomExtents();
+      const insetX = roomMetrics.width * 0.06;
+      const insetZ = roomMetrics.depth * 0.06;
+      const bounds = {
+        left: extents.left + insetX,
+        right: extents.right - insetX,
+        minZ: extents.minZ + insetZ,
+        maxZ: extents.maxZ - insetZ,
+      };
+      const artRange = getArtDepthRange();
+      if (!artRange) return bounds;
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        minZ: clamp(artRange.minZ, bounds.minZ, bounds.maxZ),
+        maxZ: clamp(artRange.maxZ, bounds.minZ, bounds.maxZ),
+      };
+    }
+
+    function getArtDepthRange() {
+      if (!interactiveFrames.length) return null;
+      let minZ = Infinity;
+      let maxZ = -Infinity;
+      interactiveFrames.forEach((frame) => {
+        const point = getFrameInteractionPoint(frame);
+        if (!point) return;
+        minZ = Math.min(minZ, point.z);
+        maxZ = Math.max(maxZ, point.z);
+      });
+      if (!Number.isFinite(minZ) || !Number.isFinite(maxZ)) return null;
+      const margin = roomMetrics.depth * 0.08;
+      return {
+        minZ: minZ - margin,
+        maxZ: maxZ + margin,
+      };
+    }
+
+    // Wall rail boundaries - match visual rail position
+    function getWallBoundaries() {
+      return getWalkBounds();
     }
 
     function setReadout(text) {
@@ -1731,6 +1813,20 @@
       root.style.setProperty("--room-rot-x", `${rotX}deg`);
       root.style.setProperty("--room-rot-y", `${rotY}deg`);
       syncCharacterCamera();
+    }
+
+    function updateRoomScale() {
+      if (!room || !viewport) return;
+      const viewportRect = viewport.getBoundingClientRect();
+      if (!viewportRect.width || !viewportRect.height) return;
+      const rect = room.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), 1);
+      const scaleX = viewportRect.width / rect.width;
+      const scaleY = viewportRect.height / rect.height;
+      const factor = Math.max(scaleX, scaleY);
+      const nextScale = clamp(currentScale * factor, 0.75, 1.8);
+      root.style.setProperty("--room-scale", nextScale.toFixed(3));
     }
 
     function updateCharacter() {
@@ -1950,47 +2046,67 @@
     function getFrameInteractionPoint(frame) {
       const face = frame.closest(".face");
       if (!face) return null;
-      const walls = getWallBoundaries();
+      const extents = getRoomExtents();
       const faceWidth = face.clientWidth || 1;
       const centerX = frame.offsetLeft + frame.offsetWidth / 2;
       const t = clamp(centerX / faceWidth, 0, 1);
       if (face.classList.contains("left")) {
         return {
-          x: walls.left,
-          z: walls.maxZ - t * (walls.maxZ - walls.minZ),
+          x: extents.left,
+          z: extents.maxZ - t * (extents.maxZ - extents.minZ),
         };
       }
       if (face.classList.contains("right")) {
         return {
-          x: walls.right,
-          z: walls.minZ + t * (walls.maxZ - walls.minZ),
+          x: extents.right,
+          z: extents.minZ + t * (extents.maxZ - extents.minZ),
         };
       }
       if (face.classList.contains("back")) {
         return {
-          x: walls.left + t * (walls.right - walls.left),
-          z: walls.minZ,
+          x: extents.left + t * (extents.right - extents.left),
+          z: extents.minZ,
         };
       }
       return { x: 0, z: 0 };
     }
 
+    function getCharScreenPoint() {
+      if (!character) return null;
+      const rect = character.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.bottom,
+      };
+    }
+
+    function getFrameScreenPoint(frame) {
+      const rect = frame.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height * 0.82,
+        size: Math.max(rect.width, rect.height),
+      };
+    }
+
     function findNearestFrame() {
+      const charPoint = getCharScreenPoint();
+      if (!charPoint) return null;
       let nearest = null;
       let minDistance = Infinity;
       interactiveFrames.forEach((frame) => {
-        const point = getFrameInteractionPoint(frame);
-        if (!point) return;
-        const dx = point.x - charX;
-        const dz = point.z - charZ;
-        const dist = Math.hypot(dx, dz);
-        if (dist < minDistance) {
+        const target = getFrameScreenPoint(frame);
+        if (!target) return;
+        const dx = target.x - charPoint.x;
+        const dy = target.y - charPoint.y;
+        const dist = Math.hypot(dx, dy);
+        const threshold = clamp(target.size * 0.6, interactionDistance, 360);
+        if (dist < threshold && dist < minDistance) {
           minDistance = dist;
           nearest = frame;
         }
       });
-      if (!nearest) return null;
-      return minDistance < interactionDistance ? nearest : null;
+      return nearest;
     }
 
     function updateSpotlightPosition(frame) {
@@ -1999,8 +2115,8 @@
       const viewportRect = viewport.getBoundingClientRect();
       const x = ((rect.left + rect.width / 2) - viewportRect.left) / viewportRect.width;
       const y = ((rect.top + rect.height / 2) - viewportRect.top) / viewportRect.height;
-      const clampedX = clamp(x, 0.1, 0.9) * 100;
-      const clampedY = clamp(y, 0.1, 0.9) * 100;
+      const clampedX = clamp(x, 0.02, 0.98) * 100;
+      const clampedY = clamp(y, 0.02, 0.98) * 100;
       viewport.style.setProperty("--spot-x", `${clampedX}%`);
       viewport.style.setProperty("--spot-y", `${clampedY}%`);
     }
@@ -2534,7 +2650,15 @@
     });
     window.addEventListener("keydown", onKeyDown, { passive: false });
     window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("resize", () => updateSpotlightPosition(spotlitFrame));
+    window.addEventListener("resize", () => {
+      updateNavHeight();
+      updateRoomMetrics();
+      updateRoomScale();
+      updateSpotlightPosition(spotlitFrame);
+    });
+    updateNavHeight();
+    updateRoomMetrics();
+    updateRoomScale();
     updateRotation();
     updateCharacter();
     updateNearbyFrame();
