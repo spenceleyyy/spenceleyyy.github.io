@@ -106,6 +106,19 @@
         .nav-links > li:nth-child(9) > a:focus { color: var(--nav-hover-9); }
         .nav-links > li:nth-child(9) > a:hover::after,
         .nav-links > li:nth-child(9) > a:focus::after { background: var(--nav-hover-9); }
+
+        .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .dropdown-toggle .caret {
+            display: inline-block;
+            transform: translateY(-1px);
+            font-size: 0.8em;
+        }
     </style>
     <div class="nav-content">
         <a href="index.html" class="logo-link">
