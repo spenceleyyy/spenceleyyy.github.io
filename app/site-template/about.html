@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/about.css">
+</head>
+<body>
+    <!-- Navigation loaded by JavaScript -->
+
+    <main>
+        <div class="page-header">
+            <p class="kicker">Placeholder kicker text goes here</p>
+            <h1>Lorem ipsum dolor sit amet.</h1>
+            <p class="page-subtitle">
+                Consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+            </p>
+        </div>
+
+        <section class="people-timeline">
+            <div class="collab-block" data-project="BIO" data-link="" data-accent="#ff9f68" data-bg="#160b1b">
+                <button class="project-title" type="button">
+                    <div class="project-title__stack">
+                        <span>BIO</span>
+                        <p class="project-full-name">Placeholder subtitle</p>
+                    </div>
+                </button>
+
+                <article class="person-panel" data-person-track="pi">
+                    <div class="person-meta">
+                        <div class="person-avatar photo-placeholder">Photo</div>
+                        <div>
+                            <span class="person-role">Placeholder Role</span>
+                            <h3 class="person-name">Placeholder Name</h3>
+                            <p class="person-affiliation">Placeholder affiliation line</p>
+                        </div>
+                    </div>
+                    <p class="person-summary">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    </p>
+                    <ul class="person-tags">
+                        <li>Keyword</li>
+                        <li>Keyword</li>
+                        <li>Keyword</li>
+                    </ul>
+                    <div class="person-links">
+                        <a href="#" class="icon-link">Primary Link</a>
+                        <a href="#" class="icon-link">Secondary Link</a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="collab-block" data-project="CV" data-link="" data-accent="#5ac7ff" data-bg="#051f26">
+                <button class="project-title" type="button">
+                    <div class="project-title__stack">
+                        <span>CV</span>
+                        <p class="project-full-name">Curriculum Vitae</p>
+                    </div>
+                </button>
+
+                <article class="person-panel" data-person-track="undergrad-analysis">
+                    <div class="person-meta">
+                        <div class="person-avatar file-placeholder">CV</div>
+                        <div>
+                            <span class="person-role">Download + Preview</span>
+                            <h3 class="person-name">Placeholder CV</h3>
+                            <p class="person-affiliation">PDF embed + download</p>
+                        </div>
+                    </div>
+                    <p class="person-summary">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Replace the links below with your CV files.
+                    </p>
+                    <div class="cv-actions">
+                        <a class="icon-link" href="assets/cv-placeholder.pdf">Download CV (PDF)</a>
+                    </div>
+                    <div class="cv-embed">
+                        <iframe class="cv-frame" src="assets/cv-placeholder.pdf" title="CV PDF"></iframe>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Placeholder Name. Lorem ipsum dolor sit amet.</p>
+    </footer>
+
+    <script src="navigation.js"></script>
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            const blocks = Array.from(document.querySelectorAll('.collab-block'));
+            if (!blocks.length) return;
+
+            const root = document.documentElement;
+            const computed = getComputedStyle(root);
+            const defaultAccent = (computed.getPropertyValue('--color-primary') || '#e890be').trim();
+            const defaultSurface = (computed.getPropertyValue('--color-background-main') || '#172D33').trim();
+
+            const toRgb = (color) => {
+                if (!color) return { r: 255, g: 255, b: 255 };
+                if (typeof color !== 'string') return color;
+                const value = color.trim();
+                if (value.startsWith('#')) {
+                    let hex = value.slice(1);
+                    if (hex.length === 3) {
+                        hex = hex.split('').map(char => char + char).join('');
+                    }
+                    const num = parseInt(hex, 16);
+                    if (Number.isNaN(num)) return { r: 255, g: 255, b: 255 };
+                    return {
+                        r: (num >> 16) & 255,
+                        g: (num >> 8) & 255,
+                        b: num & 255,
+                    };
+                }
+                const match = value.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+                if (match) {
+                    return {
+                        r: Number(match[1]),
+                        g: Number(match[2]),
+                        b: Number(match[3]),
+                    };
+                }
+                return { r: 255, g: 255, b: 255 };
+            };
+
+            const toRgbaString = (color, alpha = 1) => {
+                const { r, g, b } = toRgb(color);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            };
+
+            const mixColors = (first, second, amount = 0.5) => {
+                const base = toRgb(first);
+                const overlay = toRgb(second);
+                const weight = Math.min(Math.max(amount, 0), 1);
+                const r = Math.round(base.r + (overlay.r - base.r) * weight);
+                const g = Math.round(base.g + (overlay.g - base.g) * weight);
+                const b = Math.round(base.b + (overlay.b - base.b) * weight);
+                return `rgb(${r}, ${g}, ${b})`;
+            };
+
+            const getCurrentVar = (name, fallback = '') => {
+                const inline = root.style.getPropertyValue(name);
+                if (inline) return inline.trim();
+                const styles = getComputedStyle(root);
+                const value = styles.getPropertyValue(name);
+                return (value || fallback).trim();
+            };
+
+            const updateGlobalPaletteVars = (accent, surface) => {
+                root.style.setProperty('--dynamic-accent', accent);
+                root.style.setProperty('--dynamic-accent-soft', toRgbaString(accent, 0.4));
+                root.style.setProperty('--dynamic-surface', surface);
+                root.style.setProperty('--dynamic-surface-strong', mixColors(surface, accent, 0.25));
+            };
+
+            let paletteAnimationFrame = null;
+            let paletteInitialized = false;
+
+            const animateGlobalPalette = (accent, surface, duration = 900, immediate = false) => {
+                if (paletteAnimationFrame) {
+                    cancelAnimationFrame(paletteAnimationFrame);
+                    paletteAnimationFrame = null;
+                }
+
+                if (immediate) {
+                    updateGlobalPaletteVars(accent, surface);
+                    return;
+                }
+
+                const startAccent = getCurrentVar('--dynamic-accent', defaultAccent);
+                const startSurface = getCurrentVar('--dynamic-surface', defaultSurface);
+                const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+                let startTime = null;
+
+                const step = (timestamp) => {
+                    if (startTime === null) startTime = timestamp;
+                    const progress = Math.min((timestamp - startTime) / duration, 1);
+                    const eased = easeOutCubic(progress);
+                    const currentAccent = mixColors(startAccent, accent, eased);
+                    const currentSurface = mixColors(startSurface, surface, eased);
+                    updateGlobalPaletteVars(currentAccent, currentSurface);
+                    if (progress < 1) {
+                        paletteAnimationFrame = requestAnimationFrame(step);
+                    } else {
+                        paletteAnimationFrame = null;
+                    }
+                };
+
+                paletteAnimationFrame = requestAnimationFrame(step);
+            };
+
+            const applyBlockPalette = (block) => {
+                const accent = (block.dataset.accent || defaultAccent).trim();
+                const surface = (block.dataset.bg || defaultSurface).trim();
+                const blended = mixColors(surface, accent, 0.55);
+                block.style.setProperty('--block-accent', accent);
+                block.style.setProperty('--block-surface', surface);
+                block.style.setProperty('--block-gradient', `linear-gradient(135deg, ${surface}, ${blended})`);
+            };
+
+            let activeBlock = null;
+            const activateBlock = (block) => {
+                if (!block || block === activeBlock) return;
+                activeBlock = block;
+                blocks.forEach(collab => collab.classList.toggle('is-active', collab === block));
+                const accent = (block.dataset.accent || defaultAccent).trim();
+                const surface = (block.dataset.bg || defaultSurface).trim();
+                animateGlobalPalette(accent, surface, 900, !paletteInitialized);
+                paletteInitialized = true;
+            };
+
+            const findBlockInView = () => {
+                const viewportCenter = window.scrollY + window.innerHeight / 2;
+                let target = blocks[0];
+                let shortestDistance = Infinity;
+
+                blocks.forEach(block => {
+                    const rect = block.getBoundingClientRect();
+                    const blockCenter = rect.top + window.scrollY + rect.height / 2;
+                    const distance = Math.abs(blockCenter - viewportCenter);
+                    if (distance < shortestDistance) {
+                        shortestDistance = distance;
+                        target = block;
+                    }
+                });
+
+                activateBlock(target);
+            };
+
+            let ticking = false;
+            const handleScroll = () => {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(() => {
+                    findBlockInView();
+                    ticking = false;
+                });
+            };
+
+            blocks.forEach(block => {
+                applyBlockPalette(block);
+            });
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('resize', findBlockInView, { passive: true });
+
+            findBlockInView();
+        });
+    </script>
+</body>
+</html>

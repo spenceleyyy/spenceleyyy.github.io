@@ -1,0 +1,46 @@
+/* === BUTTONS + LINKS === */
+.cta-button,
+.secondary-button,
+.contact-link,
+/* === PROJECT CARD LINK === */
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-text);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.cta-button {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.cta-button:hover,
+.secondary-button:hover,
+.contact-link:hover,
+.project-link:hover {
+  transform: translateY(-2px);
+}
+
+.project-link {
+  margin-top: 1rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.75rem;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.contact-link {
+  padding: 0.6rem 1.3rem;
+}

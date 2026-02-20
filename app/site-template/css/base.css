@@ -1,0 +1,88 @@
+/* === BRAND + GLOBAL TOKENS ===
+   Update fonts, colors, and spacing here to re-skin the entire site. */
+:root {
+  --color-bg: #0b0b0b;
+  --color-surface: #121212;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-text: #f5f5f5;
+  --color-muted: rgba(245, 245, 245, 0.68);
+  --color-accent: #ffffff;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  --content-width: 1120px;
+  --section-pad: clamp(3.5rem, 8vw, 6rem);
+}
+
+/* === GLOBAL RESETS === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* === BASE TYPOGRAPHY + BODY === */
+body {
+  font-family: var(--font-display);
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+p {
+  color: var(--color-muted);
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* === LAYOUT UTILITY === */
+.content-wrapper {
+  width: min(var(--content-width), 90vw);
+  margin: 0 auto;
+}
+
+/* === SECTION SPACING === */
+.section {
+  padding: var(--section-pad) 0;
+  scroll-margin-top: 100px;
+}
+
+.hero-text {
+  color: var(--color-muted);
+  margin-top: 1rem;
+}

@@ -27,11 +27,11 @@
       --nav-height: 72px;
       --stage-w: 1440px;
       --stage-h: 900px;
-      --room-rot-x: 52deg;
+      --room-rot-x: 46deg;
       --room-rot-y: 0deg;
-      --room-scale: 1;
-      --room-shift-y: 500px;
-      --room-shift-z: -3200px;
+      --room-scale: 0.7;
+      --room-shift-y: 460px;
+      --room-shift-z: -4600px;
       --frame-depth: 10px;
       --rail-depth: 8px;
       --char-x: 0px;
@@ -184,7 +184,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 1200px;
+      perspective: 1800px;
       perspective-origin: 50% 20%;
       background: radial-gradient(ellipse at 50% 35%, rgba(255, 252, 245, 0.4) 0%, transparent 50%);
       --spot-x: 50%;
@@ -1585,6 +1585,7 @@
     const clock = new THREE.Clock();
     const roomMetrics = { width: 4000, height: 1800, depth: 8000 };
     const nav = document.querySelector("nav");
+    const baseRoomScale = 0.7;
     const cameraTarget = new THREE.Vector3(0, 0.7, 0);
     let cameraRadius = 2.4;
     let cameraTargetY = 0.7;
@@ -1729,7 +1730,7 @@
     function getWalkBounds() {
       const extents = getRoomExtents();
       const insetX = roomMetrics.width * 0.06;
-      const insetZ = roomMetrics.depth * 0.06;
+      const insetZ = roomMetrics.depth * 0.3;
       const bounds = {
         left: extents.left + insetX,
         right: extents.right - insetX,
@@ -1757,7 +1758,7 @@
         maxZ = Math.max(maxZ, point.z);
       });
       if (!Number.isFinite(minZ) || !Number.isFinite(maxZ)) return null;
-      const margin = roomMetrics.depth * 0.08;
+      const margin = roomMetrics.depth * 0.03;
       return {
         minZ: minZ - margin,
         maxZ: maxZ + margin,
@@ -1821,11 +1822,10 @@
       if (!viewportRect.width || !viewportRect.height) return;
       const rect = room.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
-      const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), 1);
       const scaleX = viewportRect.width / rect.width;
       const scaleY = viewportRect.height / rect.height;
-      const factor = Math.max(scaleX, scaleY);
-      const nextScale = clamp(currentScale * factor, 0.75, 1.8);
+      const factor = Math.min(scaleX, scaleY);
+      const nextScale = clamp(baseRoomScale * factor, 0.55, 1);
       root.style.setProperty("--room-scale", nextScale.toFixed(3));
     }
 

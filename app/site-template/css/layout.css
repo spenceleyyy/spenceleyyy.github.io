@@ -1,0 +1,407 @@
+/* === GLOBAL LAYOUT LAYERS === */
+.site-header,
+main,
+footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* === PAGE OFFSET FOR FIXED NAV === */
+body {
+  padding-top: 86px;
+}
+
+/* === NAVIGATION (STRUCTURE + RESPONSIVE) === */
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: rgba(11, 11, 11, 0.92);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+}
+
+.nav-content {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 1.1rem 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text);
+}
+
+.logo-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--color-text);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+}
+
+.logo-text {
+  font-size: 0.95rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.nav-links a {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  position: relative;
+  padding-bottom: 0.35rem;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-text);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus {
+  color: var(--color-text);
+}
+
+.nav-links a:hover::after,
+.nav-links a:focus::after {
+  width: 100%;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  background: transparent;
+  border: none;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 0.35rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.dropdown-toggle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-text);
+  transition: width 0.3s ease;
+}
+
+.dropdown:hover .dropdown-toggle,
+.dropdown-toggle:focus,
+.dropdown.is-open .dropdown-toggle {
+  color: var(--color-text);
+}
+
+.dropdown:hover .dropdown-toggle::after,
+.dropdown-toggle:focus::after,
+.dropdown.is-open .dropdown-toggle::after {
+  width: 100%;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(11, 11, 11, 0.96);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  list-style: none;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 0.6rem 1.2rem;
+  color: var(--color-muted);
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown.is-open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu a:focus {
+  color: var(--color-text);
+}
+
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  padding: var(--section-pad) 0;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.05;
+}
+
+.subtitle {
+  margin-top: 1.2rem;
+  font-size: 1.05rem;
+  color: var(--color-muted);
+}
+
+/* === ABOUT LAYOUT === */
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.profile-photo {
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+  display: grid;
+  place-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.bio-card {
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 1.6rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cv-embed {
+  margin-top: 1.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 420px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cv-frame {
+  width: 100%;
+  height: 420px;
+  border: 0;
+  display: block;
+}
+
+.hero-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* === FEATURE GRID === */
+.feature-grid {
+  display: grid;
+  gap: 1.6rem;
+  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.feature-card {
+  padding: 1.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.feature-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+  letter-spacing: 0.12em;
+  font-size: 0.9rem;
+}
+
+/* === PROJECT LIST === */
+.projects-grid {
+  display: grid;
+  gap: 1.8rem;
+  margin-top: 2rem;
+}
+
+.project-card {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 1.6rem;
+  padding: 1.6rem;
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.project-image {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  min-height: 110px;
+}
+
+.project-content h3 {
+  margin-bottom: 0.6rem;
+}
+
+/* === CONTACT === */
+.contact-section {
+  text-align: center;
+}
+
+.contact-links {
+  margin-top: 1.6rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* === FOOTER === */
+footer {
+  padding: 2.5rem 0 3rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+/* === THREE.JS BACKGROUND CANVAS === */
+.three-background {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.22;
+}
+
+.three-background canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* === MOBILE LAYOUT === */
+@media (max-width: 900px) {
+  body {
+    padding-top: 74px;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    right: 4vw;
+    top: calc(100% + 12px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    background: rgba(11, 11, 11, 0.95);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 1rem 1.4rem;
+    display: none;
+  }
+
+  .nav.is-open .nav-links {
+    display: flex;
+  }
+
+  .dropdown-menu {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.2rem 0 0.2rem 0.6rem;
+    display: none;
+  }
+
+  .dropdown.is-open .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu a {
+    padding: 0.4rem 0;
+  }
+
+  .project-card {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
