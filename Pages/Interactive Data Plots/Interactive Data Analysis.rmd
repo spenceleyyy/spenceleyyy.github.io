@@ -1,0 +1,289 @@
+---
+title: "Data Visualizations Examples"
+author: "Rob Spenceley"
+date: "2025-10-28"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    number_sections: true
+    toc_depth: 3
+---
+
+#Animated Bar Graphs
+##Pokemon Types
+```{r}
+library(tidyverse)
+library(gganimate)
+library(magick)
+library(scales)
+```
+
+### --- Load + normalize ---
+```{r}
+df_raw <- read_csv("All_Pokemon.csv", show_col_types = FALSE)
+
+type_candidates <- c("Type 1","Type.1","type_1","type1","Type1","PrimaryType","primary_type")
+type_col <- intersect(type_candidates, names(df_raw))[1]
+stopifnot(!is.na(type_col))
+
+df <- df_raw %>%
+  rename(Type1 = all_of(type_col)) %>%
+  rename_with(~"Generation", .cols = matches("^Gen(eration)?$", ignore.case = TRUE)) %>%
+  select(Name = matches("Name", ignore.case = TRUE), Generation, Type1) %>%
+  drop_na(Generation, Type1) %>%
+  mutate(Generation = as.integer(Generation),
+         Type1 = as.character(Type1))
+```
+
+
+### --- Colors ---
+```{r}
+pokemon_colors <- c(
+  "Normal"="#A8A77A","Fire"="#EE8130","Water"="#6390F0","Grass"="#7AC74C",
+  "Electric"="#F7D02C","Ice"="#96D9D6","Fighting"="#C22E28","Poison"="#A33EA1",
+  "Ground"="#E2BF65","Flying"="#A98FF3","Psychic"="#F95587","Bug"="#A6B91A",
+  "Rock"="#B6A136","Ghost"="#735797","Dragon"="#6F35FC","Steel"="#B7B7CE",
+  "Dark"="#705746","Fairy"="#DDA0DD"
+)
+type_levels <- names(pokemon_colors)
+```
+
+### --- Cumulative counts (all types every gen) ---
+```{r}
+cum_counts <- df %>%
+  count(Generation, Type1, name = "Count") %>%
+  mutate(Type1 = factor(Type1, levels = type_levels)) %>%
+  complete(Type1 = factor(type_levels, levels = type_levels),
+           Generation = seq(min(Generation), max(Generation)),
+           fill = list(Count = 0)) %>%
+  arrange(Type1, Generation) %>%
+  group_by(Type1) %>%
+  mutate(Cum = cumsum(Count)) %>%
+  ungroup()
+```
+
+### --- Rank all types per generation ---
+```{r}
+ranked <- cum_counts %>%
+  group_by(Generation) %>%
+  arrange(Generation, desc(Cum), .by_group = TRUE) %>%
+  mutate(rank = row_number(),
+         type_label = as.character(Type1),
+         value_label = comma(Cum)) %>%
+  ungroup()
+
+max_cum <- max(ranked$Cum, na.rm = TRUE)
+left_inset  <- 0.10 * max_cum
+right_inset <- 0.05 * max_cum
+```
+
+### --- Plot ---
+```{r}
+p <- ggplot(ranked, aes(x = rank, y = Cum, fill = Type1, group = Type1)) +
+  geom_col(width = 0.80, color = NA) +
+  # left-aligned type names with matching colors
+  geom_text(aes(y = -left_inset,
+                label = ifelse(Cum > 0, type_label, ""),
+                colour = Type1),
+            hjust = 1, vjust = 0.5, size = 4.6, fontface = "bold",
+            lineheight = 0.9, check_overlap = TRUE) +
+  # right value labels
+  geom_text(aes(y = Cum + right_inset,
+                label = ifelse(Cum > 0, value_label, ""),
+                colour = Type1),
+            hjust = 0, vjust = 0.5, size = 4, fontface = "bold",
+            check_overlap = TRUE) +
+  scale_fill_manual(values = pokemon_colors, drop = FALSE) +
+  scale_colour_manual(values = pokemon_colors, drop = FALSE) +
+  coord_flip(clip = "off") +
+  scale_x_reverse() +
+  scale_y_continuous(
+    limits = c(-left_inset, max_cum * 1.12),
+    labels = comma,
+    expand = c(0, 0)
+  ) +
+  labs(
+    title = "Cumulative Pokémon by Primary Type",
+    subtitle = "All types • Up to Generation {closest_state}",
+    x = NULL, y = NULL,
+    caption = "Counts accumulate across generations"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "none",
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#e9eef2"),
+    plot.background  = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white",  color = NA),
+    plot.title = element_text(face = "bold", size = 22),
+    plot.subtitle = element_text(size = 14, colour = "#555555"),
+    plot.caption = element_text(size = 10, colour = "#777777"),
+    plot.margin = margin(16, 36, 16, 96)
+  ) +
+  transition_states(Generation, transition_length = 4, state_length = 1) +
+  view_follow(fixed_y = TRUE) +
+  ease_aes("cubic-in-out")
+
+# --- Animate inline (HTML) ---
+print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))
+```
+
+# MAPS
+```{r}
+
+library(tidyverse)
+library(data.table)
+library(osmdata)
+library(sf)
+library(ggrepel)
+library(maps)
+library(mapproj)
+library(usmap)
+```
+
+
+#Reading the data in
+```{r}
+braking <- read.csv("braking_data.csv")
+```
+
+#Taking a look 
+```{r}
+head(braking)
+
+view(braking)
+```
+
+# Read in the map data - Wisconsin
+```{r}
+wi_map_county = st_as_sf(map('county', c("wisconsin", "illinois", "minnesota"), plot = F, fill = T))
+wi_only_map = st_as_sf(map('county', "wisconsin", plot = F, fill = T))
+
+#st_as_sf is the standard way to import this kind of map. So, what you are doing here is 
+#if you want to add more states, then you just change "wisconsin" to c("list of states),
+#so, for the above example, you could change the county to just wisconsin if you wanted only wisconsin
+
+view(wi_map_county)
+```
+
+the geoms here are multipolygons, so you want to wait to combine until the very end
+
+# plot
+```{r}
+ggplot()+
+  geom_sf(data = wi_map_county)+
+  geom_point(data = braking, aes(x= lon, y = lat))+
+  theme_void()
+
+#when you are doing this kind of map, you should do your sf layer FIRST 
+#For maps, USE THEME VOID!!!!!
+```
+
+# oly wisc
+```{r}
+ggplot()+
+  geom_sf(data = wi_only_map)+
+  geom_point(data = braking, aes(x= lon, y = lat))+
+  theme_void()
+
+#when you are doing this kind of map, you should do your sf layer FIRST 
+#For maps, USE THEME VOID!!!!!
+```
+
+# Filter to include only Dane country 
+```{r}
+latitudes <- c(43.3, 42.9)
+longitude <- c(-89.9, -89.0)
+
+dan_co_hb_df = braking %>%
+  filter(lat <= 43.3 & lat >= 42.9 &
+           lon >= -89.9 & lon <= -89.0)
+
+```
+
+#reanme
+```{r}
+wi_map_county = st_as_sf(map('county', c("wisconsin", "illinois", "minnesota"), plot = F, fill = T))
+```
+
+# re plot
+
+```{r}
+
+ggplot()+
+  geom_sf(data = wi_only_map)+
+  geom_point(data = dan_co_hb_df, aes(x= lon, y = lat))+
+  theme_void()
+```
+
+# Open street map data integration
+need to get the madison region using get bounding box (gbb)
+```{r}
+msn = getbb("Madison, Wisconsin", featuretype = "city")
+
+msn_streets = msn %>%
+  opq() %>%
+  add_osm_feature(key = "highway", 
+                  value = c("motorway", "trunk", "primary", "secondary", "tertiary")) %>%
+  osmdata_sf()
+```
+
+# plottig the street data 
+```{r}
+ggplot()+
+  geom_sf(data = msn_streets$osm_lines, alpha = 0.8, size = 0.4, color = "grey")+
+  geom_point(data = dan_co_hb_df, aes(x = lon, y = lat), size = 0.5)+
+  lims(x = c(msn[1,1], msn[1,2]), y = c(msn[2,1], msn[2,2]))+
+  theme_void()
+```
+
+# new layers
+```{r}
+ggplot()+
+  geom_sf(data = msn_streets$osm_lines, alpha = 0.8, size = 0.4, color = "grey")+
+  geom_point(data = dan_co_hb_df, aes(x = lon, y = lat), size = 0.5, color = "red")+
+  lims(x = c(msn[1,1], msn[1,2]), y = c(msn[2,1], msn[2,2]))+
+  facet_wrap(~participant)+
+  theme_void()
+```
+#creating a new representation
+```{r}
+hb_per_part <- dan_co_hb_df %>%
+  group_by(participant) %>%
+  summarise(AF_count = sum(str_count(participant, "AF(0[1-9]|1[0-9]|20|21)")))
+
+hb_per_part
+```
+
+# REAL suggestion 
+```{r}
+brake_sm_df = braking %>%
+  group_by(participant) %>%
+  summarize(total = n())
+
+brake_sm_df
+```
+#Plot
+this plot is less engaging but far more explainatory 
+```{r}
+ggplot(data = brake_sm_df, aes(x = total,xend = 0, y = reorder(participant, total),yend=reorder(participant, total)))+
+  geom_point()+
+  geom_segment()+
+  scale_x_continuous(expand = c(0,0.), limits = c(0, 1250))+
+  xlab("Total hard braking events")+
+  ylab("Participant")+
+ theme_bw() +
+   theme(
+     axis.ticks.y = element_blank(),
+     axis.line.x  = element_blank(),
+     panel.grid.major.y = element_blank(),
+     panel.grid.minor.y = element_blank()) #this has to go after theme_bw
+```
+
+
