@@ -1,11 +1,14 @@
 // Load navigation
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('navigation.html')
-        .then(response => response.text())
-        .then(data => {
+    const navSources = ['navigation.html', '../navigation.html'];
+    loadNavigation(navSources)
+        .then((data) => {
+            if (!data) {
+                return;
+            }
             // Insert navigation at the start of body
             document.body.insertAdjacentHTML('afterbegin', data);
-            
+
             // Reinitialize dropdown functionality after loading
             initializeDropdowns();
             highlightActiveNavLink();
@@ -15,6 +18,22 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error loading navigation:', error));
 });
+
+async function loadNavigation(sources) {
+    for (const source of sources) {
+        try {
+            const response = await fetch(source, { cache: 'no-store' });
+            if (!response.ok) {
+                continue;
+            }
+            return await response.text();
+        } catch (error) {
+            console.warn('Navigation fetch failed:', source, error);
+        }
+    }
+    console.warn('Navigation not found in any source.');
+    return '';
+}
 
 // Dropdown functionality
 function initializeDropdowns() {

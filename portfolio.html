@@ -36,7 +36,7 @@
       --rail-depth: 8px;
       --char-x: 0px;
       --char-y: 0px;
-      --char-z: 500px;
+      --char-z: 0px;
       --char-tilt: 0deg;
     }
 
@@ -1458,8 +1458,8 @@
   <div class="char-controls" id="char-controls">
     <div><strong>Character X: <span id="char-x-display">0</span>px</strong> (boundary: ±740)</div>
     <div>Character Z</div>
-    <input type="range" id="char-z-range" min="-1200" max="800" step="1" value="500" />
-    <input type="number" id="char-z-input" min="-1200" max="800" step="1" value="500" />
+    <input type="range" id="char-z-range" min="-1200" max="800" step="1" value="0" />
+    <input type="number" id="char-z-input" min="-1200" max="800" step="1" value="0" />
     <div>Character Yaw</div>
     <input type="range" id="char-yaw-range" min="0" max="360" step="1" value="0" />
     <input type="number" id="char-yaw-input" min="0" max="360" step="1" value="0" />
@@ -1544,7 +1544,7 @@
     let railOffsetY = 0;
     let charX = 0;
     let charY = 0;
-    let charZ = 900;  // Position character inside room
+    let charZ = 0;  // Position character inside room
     let charTilt = 0;
     let charYaw = 0;  // CSS rotation for walking direction
     let walkTimeout = null;
@@ -1768,6 +1768,16 @@
     // Wall rail boundaries - match visual rail position
     function getWallBoundaries() {
       return getWalkBounds();
+    }
+
+    function ensureCharacterInBounds() {
+      const walls = getWallBoundaries();
+      const nextX = clamp(charX, walls.left, walls.right);
+      const nextZ = clamp(charZ, walls.minZ, walls.maxZ);
+      const changed = nextX !== charX || nextZ !== charZ;
+      charX = nextX;
+      charZ = nextZ;
+      return changed;
     }
 
     function setReadout(text) {
@@ -2619,7 +2629,8 @@
       charReset.addEventListener("click", () => {
         charX = 0;
         charY = 0;
-        charZ = 500;
+        charZ = 0;
+        ensureCharacterInBounds();
         charTilt = 0;
         charYaw = 0;
         if (modelPitchRange) modelPitchRange.value = "-90";
@@ -2653,11 +2664,16 @@
     window.addEventListener("resize", () => {
       updateNavHeight();
       updateRoomMetrics();
+      if (ensureCharacterInBounds()) {
+        updateCharacter();
+        updateNearbyFrame();
+      }
       updateRoomScale();
       updateSpotlightPosition(spotlitFrame);
     });
     updateNavHeight();
     updateRoomMetrics();
+    ensureCharacterInBounds();
     updateRoomScale();
     updateRotation();
     updateCharacter();
