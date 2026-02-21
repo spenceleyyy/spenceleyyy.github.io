@@ -1584,6 +1584,7 @@
     let threeInitialized = false;
     const clock = new THREE.Clock();
     const roomMetrics = { width: 4000, height: 1800, depth: 8000 };
+    let hasSpawned = false;
     const nav = document.querySelector("nav");
     const baseRoomScale = 0.7;
     const cameraTarget = new THREE.Vector3(0, 0.7, 0);
@@ -1739,11 +1740,17 @@
       };
       const artRange = getArtDepthRange();
       if (!artRange) return bounds;
+      const minZ = clamp(artRange.minZ, bounds.minZ, bounds.maxZ);
+      const maxZ = clamp(artRange.maxZ, bounds.minZ, bounds.maxZ);
+      const span = Math.abs(maxZ - minZ);
+      if (!Number.isFinite(span) || span < roomMetrics.depth * 0.05) {
+        return bounds;
+      }
       return {
         left: bounds.left,
         right: bounds.right,
-        minZ: clamp(artRange.minZ, bounds.minZ, bounds.maxZ),
-        maxZ: clamp(artRange.maxZ, bounds.minZ, bounds.maxZ),
+        minZ,
+        maxZ,
       };
     }
 
@@ -1778,6 +1785,15 @@
       charX = nextX;
       charZ = nextZ;
       return changed;
+    }
+
+    function spawnCharacter() {
+      const walls = getWallBoundaries();
+      const span = walls.maxZ - walls.minZ;
+      const spawnZ = walls.maxZ - span * 0.25;
+      charX = clamp(0, walls.left, walls.right);
+      charZ = clamp(spawnZ, walls.minZ, walls.maxZ);
+      hasSpawned = true;
     }
 
     function setReadout(text) {
@@ -2630,6 +2646,8 @@
         charX = 0;
         charY = 0;
         charZ = 0;
+        hasSpawned = false;
+        spawnCharacter();
         ensureCharacterInBounds();
         charTilt = 0;
         charYaw = 0;
@@ -2673,6 +2691,9 @@
     });
     updateNavHeight();
     updateRoomMetrics();
+    if (!hasSpawned) {
+      spawnCharacter();
+    }
     ensureCharacterInBounds();
     updateRoomScale();
     updateRotation();
