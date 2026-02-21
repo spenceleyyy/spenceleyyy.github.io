@@ -1792,9 +1792,11 @@
 
     function spawnCharacter() {
       const walls = getWallBoundaries();
-      const spawnZ = (walls.minZ + walls.maxZ) / 2;
       charX = clamp(0, walls.left, walls.right);
-      charZ = clamp(spawnZ, walls.minZ, walls.maxZ);
+      const span = Math.max(1, walls.maxZ - walls.minZ);
+      const frontBias = 0.08;
+      const frontZ = walls.minZ + span * frontBias;
+      charZ = clamp(frontZ, walls.minZ, walls.maxZ);
       hasSpawned = true;
     }
 
