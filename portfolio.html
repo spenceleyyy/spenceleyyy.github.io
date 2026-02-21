@@ -1795,7 +1795,7 @@
       charX = clamp(0, walls.left, walls.right);
       const span = Math.max(1, walls.maxZ - walls.minZ);
       const frontBias = 0.08;
-      const frontZ = walls.minZ + span * frontBias;
+      const frontZ = walls.maxZ - span * frontBias;
       charZ = clamp(frontZ, walls.minZ, walls.maxZ);
       hasSpawned = true;
     }
