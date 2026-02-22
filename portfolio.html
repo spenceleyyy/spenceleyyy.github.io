@@ -1996,7 +1996,7 @@
       const centerX = frame.offsetLeft + frame.offsetWidth / 2;
       const t = clamp(centerX / faceWidth, 0, 1);
       const yawOffset = (t - 0.5) * 14;
-      const yawMagnitude = 42;
+      const yawMagnitude = 58;
       let targetYaw = 0;
       if (face?.classList.contains("left")) targetYaw = -yawMagnitude + yawOffset;
       if (face?.classList.contains("right")) targetYaw = yawMagnitude - yawOffset;
@@ -2010,14 +2010,14 @@
       const zoomTarget = {
         rotX: clamp(10, -4, 18),
         rotY: targetYaw,
-        zoom: 1.22,
-        shiftZ: baseRoomShiftZ + 1000,
+        zoom: 1.35,
+        shiftZ: baseRoomShiftZ + 1400,
       };
       animateRoomTo(rotateTarget, {
-        duration: 520,
+        duration: 580,
         onDone: () => {
           animateRoomTo(zoomTarget, {
-            duration: 520,
+            duration: 620,
             onDone: () => {
               clearHiddenWalls();
               if (onDone) onDone();
