@@ -2029,7 +2029,7 @@
         shiftX: baseRoomShiftX,
         shiftZ: baseRoomShiftZ + 1400,
       };
-      const centerFrameInView = (frameToCenter, done) => {
+      const centerFrameInView = (frameToCenter, passes, done) => {
         if (!frameToCenter || !viewport) {
           if (done) done();
           return;
@@ -2045,12 +2045,12 @@
           return;
         }
         const targetX = viewportRect.left + viewportRect.width / 2;
-        const delta = clamp((framePoint.x - targetX) / viewportRect.width, -0.5, 0.5);
-        const correction = clamp(-delta * 1400, -900, 900);
-        if (Math.abs(correction) < 6) {
+        const deltaPx = targetX - framePoint.x;
+        if (Math.abs(deltaPx) < 8 || passes <= 0) {
           if (done) done();
           return;
         }
+        const correction = clamp(deltaPx * 2.2, -1600, 1600);
         animateRoomTo({
           rotX,
           rotY,
@@ -2058,8 +2058,8 @@
           shiftX: focusShiftX + correction,
           shiftZ: focusShiftZ,
         }, {
-          duration: 260,
-          onDone: done,
+          duration: 240,
+          onDone: () => centerFrameInView(frameToCenter, passes - 1, done),
         });
       };
       animateRoomTo(rotateTarget, {
@@ -2068,7 +2068,7 @@
           animateRoomTo(zoomTarget, {
             duration: 620,
             onDone: () => {
-              centerFrameInView(frame, () => {
+              centerFrameInView(frame, 2, () => {
                 clearHiddenWalls();
                 if (onDone) onDone();
               });
