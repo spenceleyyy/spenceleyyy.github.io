@@ -995,16 +995,32 @@
       justify-content: center;
       border-right: 1px solid rgba(0, 0, 0, 0.12);
       background: #fff;
-      padding: 3.5%;
+      padding: 2.5% 3.5%;
     }
 
-    .art-front .art-surface {
+    .art-frame-view {
       position: relative;
-      inset: auto;
-      height: min(70vh, 640px);
-      width: auto;
+      width: min(46vw, 520px);
+      height: min(72vh, 680px);
       aspect-ratio: 3 / 4;
-      max-width: 46vw;
+      background: #f7f6f4;
+      border: 2px solid rgba(17, 17, 17, 0.9);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+      display: grid;
+      place-items: center;
+    }
+
+    .art-frame-view::before {
+      content: "";
+      position: absolute;
+      inset: 6%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+    }
+
+    .art-frame-view .art-surface {
+      position: absolute;
+      inset: 10% 11%;
       transform: none;
       background-size: contain;
       background-position: center;
@@ -1454,7 +1470,9 @@
   <div class="art-overlay" id="art-overlay" aria-hidden="true">
     <div class="art-modal frame-1" id="art-modal">
       <div class="art-front">
-        <span class="art-surface" aria-hidden="true"></span>
+        <div class="art-frame-view">
+          <span class="art-surface" aria-hidden="true"></span>
+        </div>
       </div>
       <button class="art-details-toggle" type="button" aria-expanded="false">Details</button>
       <aside class="art-details" aria-label="Project details">
@@ -1998,8 +2016,8 @@
       }
     }
 
-    function focusOnFrame(id, onDone) {
-      const frame = frameById.get(id);
+    function focusOnFrame(id, onDone, frameOverride = null) {
+      const frame = frameOverride || frameById.get(id);
       if (!frame) {
         if (onDone) onDone();
         return;
@@ -2302,17 +2320,19 @@
     }
 
     function openArt(id) {
-      currentArtId = id;
-      updateArtModal(id);
-      updateSpotlightByIndex(id);
+      const targetFrame = spotlitFrame || findNearestFrame() || frameById.get(id);
+      const targetId = Number(targetFrame?.dataset.art || id || currentArtId);
+      currentArtId = targetId;
+      updateArtModal(targetId);
+      updateSpotlightByIndex(targetId);
       artModal.classList.remove("show-details");
       if (detailsToggle) detailsToggle.setAttribute("aria-expanded", "false");
       isViewingArt = true;
       lowerMusic();
-      focusOnFrame(id, () => {
+      focusOnFrame(targetId, () => {
         overlay.classList.add("active");
         overlay.setAttribute("aria-hidden", "false");
-      });
+      }, targetFrame);
     }
 
     function closeArt() {
