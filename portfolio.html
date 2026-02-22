@@ -989,17 +989,26 @@
 
     .art-front {
       position: relative;
-      flex: 1 1 58%;
+      flex: 1 1 auto;
       display: flex;
       align-items: center;
       justify-content: center;
       border-right: 1px solid rgba(0, 0, 0, 0.12);
       background: #fff;
+      padding: 3.5%;
     }
 
     .art-front .art-surface {
-      inset: 8% 8%;
+      position: relative;
+      inset: auto;
+      height: min(70vh, 640px);
+      width: auto;
+      aspect-ratio: 3 / 4;
+      max-width: 46vw;
       transform: none;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
     .art-details {
@@ -2029,6 +2038,13 @@
         shiftX: baseRoomShiftX,
         shiftZ: baseRoomShiftZ + 1400,
       };
+      const finalZoomTarget = {
+        rotX: clamp(10, -4, 18),
+        rotY: targetYaw,
+        zoom: 1.55,
+        shiftX: focusShiftX,
+        shiftZ: baseRoomShiftZ + 1900,
+      };
       const centerFrameInView = (frameToCenter, passes, done) => {
         if (!frameToCenter || !viewport) {
           if (done) done();
@@ -2069,8 +2085,13 @@
             duration: 620,
             onDone: () => {
               centerFrameInView(frame, 2, () => {
-                clearHiddenWalls();
-                if (onDone) onDone();
+                animateRoomTo(finalZoomTarget, {
+                  duration: 900,
+                  onDone: () => {
+                    clearHiddenWalls();
+                    if (onDone) onDone();
+                  },
+                });
               });
             },
           });
