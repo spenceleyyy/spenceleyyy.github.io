@@ -30,6 +30,7 @@
       --room-rot-x: 46deg;
       --room-rot-y: 0deg;
       --room-scale: 0.7;
+      --room-shift-x: 0px;
       --room-shift-y: 460px;
       --room-shift-z: -4600px;
       --frame-depth: 10px;
@@ -201,7 +202,7 @@
       height: var(--room-h);
       position: relative;
       transform-style: preserve-3d;
-      transform: translate3d(0px, var(--room-shift-y), var(--room-shift-z)) scale(var(--room-scale)) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
+      transform: translate3d(var(--room-shift-x), var(--room-shift-y), var(--room-shift-z)) scale(var(--room-scale)) rotateX(var(--room-rot-x)) rotateY(var(--room-rot-y));
       transform-origin: 50% 50% 0;
     }
 
@@ -1606,9 +1607,11 @@
     const charYawBase = 0;  // Base rotation, model yaw adds to this
     const charPitchBase = 0;
     const charRollBase = 0;
+    const baseRoomShiftX = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-x"), 0);
     const baseRoomShiftZ = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-z"), -4600);
     const baseRoomShiftY = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-y"), 460);
     let focusZoom = 1;
+    let focusShiftX = baseRoomShiftX;
     let focusShiftZ = baseRoomShiftZ;
     let focusAnimationId = null;
     let lastViewBeforeFocus = null;
@@ -1911,6 +1914,7 @@
     }
 
     function updateRoomShift() {
+      root.style.setProperty("--room-shift-x", `${focusShiftX}px`);
       root.style.setProperty("--room-shift-z", `${focusShiftZ}px`);
       root.style.setProperty("--room-shift-y", `${baseRoomShiftY}px`);
     }
@@ -1929,7 +1933,15 @@
         rotX,
         rotY,
         zoom: focusZoom,
+        shiftX: focusShiftX,
         shiftZ: focusShiftZ,
+      };
+      const targetValues = {
+        rotX: target.rotX ?? start.rotX,
+        rotY: target.rotY ?? start.rotY,
+        zoom: target.zoom ?? start.zoom,
+        shiftX: target.shiftX ?? start.shiftX,
+        shiftZ: target.shiftZ ?? start.shiftZ,
       };
       const duration = options.duration ?? 700;
       const startTime = performance.now();
@@ -1937,10 +1949,11 @@
       const step = (now) => {
         const t = clamp((now - startTime) / duration, 0, 1);
         const eased = easeInOutQuad(t);
-        rotX = lerp(start.rotX, target.rotX, eased);
-        rotY = lerp(start.rotY, target.rotY, eased);
-        focusZoom = lerp(start.zoom, target.zoom, eased);
-        focusShiftZ = lerp(start.shiftZ, target.shiftZ, eased);
+        rotX = lerp(start.rotX, targetValues.rotX, eased);
+        rotY = lerp(start.rotY, targetValues.rotY, eased);
+        focusZoom = lerp(start.zoom, targetValues.zoom, eased);
+        focusShiftX = lerp(start.shiftX, targetValues.shiftX, eased);
+        focusShiftZ = lerp(start.shiftZ, targetValues.shiftZ, eased);
         updateRotation();
         updateRoomScale();
         updateRoomShift();
@@ -1987,6 +2000,7 @@
           rotX,
           rotY,
           zoom: focusZoom,
+          shiftX: focusShiftX,
           shiftZ: focusShiftZ,
         };
       }
@@ -2005,12 +2019,14 @@
         rotX: clamp(10, -4, 18),
         rotY: targetYaw,
         zoom: 1,
+        shiftX: baseRoomShiftX,
         shiftZ: baseRoomShiftZ,
       };
       const zoomTarget = {
         rotX: clamp(10, -4, 18),
         rotY: targetYaw,
         zoom: 1.35,
+        shiftX: baseRoomShiftX,
         shiftZ: baseRoomShiftZ + 1400,
       };
       const centerFrameInView = (frameToCenter, done) => {
@@ -2030,15 +2046,16 @@
         }
         const targetX = viewportRect.left + viewportRect.width / 2;
         const delta = clamp((framePoint.x - targetX) / viewportRect.width, -0.5, 0.5);
-        const correction = delta * 40;
-        if (Math.abs(correction) < 0.5) {
+        const correction = clamp(-delta * 1400, -900, 900);
+        if (Math.abs(correction) < 6) {
           if (done) done();
           return;
         }
         animateRoomTo({
           rotX,
-          rotY: rotY + correction,
+          rotY,
           zoom: focusZoom,
+          shiftX: focusShiftX + correction,
           shiftZ: focusShiftZ,
         }, {
           duration: 260,
