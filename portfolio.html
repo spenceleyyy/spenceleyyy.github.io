@@ -1256,6 +1256,9 @@
     </div>
   </nav>
   <main class="gallery-stage" aria-label="Gallery">
+    <audio id="bg-audio" preload="auto" loop>
+      <source src="Portfolio/Gallery%20in%20Soft%20Shoes.mp3" type="audio/mpeg" />
+    </audio>
     <section class="gallery-viewport" id="gallery-scene" aria-label="3D gallery preview">
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
         <div class="face back">
@@ -1596,6 +1599,12 @@
     const charYawBase = 0;  // Base rotation, model yaw adds to this
     const charPitchBase = 0;
     const charRollBase = 0;
+    const baseRoomShiftZ = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-z"), -4600);
+    const baseRoomShiftY = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-y"), 460);
+    let focusZoom = 1;
+    let focusShiftZ = baseRoomShiftZ;
+    let focusAnimationId = null;
+    let lastViewBeforeFocus = null;
     const modelSources = [
       "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
       "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
@@ -1604,6 +1613,9 @@
     const interactionDistance = 220;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
+    const audioEl = document.getElementById("bg-audio");
+    const musicDefaultVolume = 0.35;
+    const musicLowVolume = 0.12;
     const projectData = {
       1: {
         title: "Atlas Quest",
@@ -1816,6 +1828,36 @@
       }, duration);
     }
 
+    function initMusic() {
+      if (!audioEl) return;
+      audioEl.volume = musicDefaultVolume;
+      audioEl.muted = true;
+      const tryPlay = () => {
+        audioEl.play().then(() => {
+          audioEl.muted = false;
+        }).catch(() => {
+          // Autoplay blocked; wait for a user gesture.
+        });
+      };
+      tryPlay();
+      const resume = () => {
+        audioEl.muted = false;
+        audioEl.play().catch(() => {});
+      };
+      window.addEventListener("pointerdown", resume, { once: true });
+      window.addEventListener("keydown", resume, { once: true });
+    }
+
+    function lowerMusic() {
+      if (!audioEl) return;
+      audioEl.volume = musicLowVolume;
+    }
+
+    function restoreMusic() {
+      if (!audioEl) return;
+      audioEl.volume = musicDefaultVolume;
+    }
+
     function syncCharacterCamera() {
       if (!camera) return;
       const yaw = THREE.MathUtils.degToRad(180 + rotY * 0.8);
@@ -1856,8 +1898,87 @@
       const scaleX = viewportRect.width / rect.width;
       const scaleY = viewportRect.height / rect.height;
       const factor = Math.min(scaleX, scaleY);
-      const nextScale = clamp(baseRoomScale * factor, 0.55, 1);
+      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.55, 1.2);
       root.style.setProperty("--room-scale", nextScale.toFixed(3));
+    }
+
+    function updateRoomShift() {
+      root.style.setProperty("--room-shift-z", `${focusShiftZ}px`);
+      root.style.setProperty("--room-shift-y", `${baseRoomShiftY}px`);
+    }
+
+    function lerp(start, end, t) {
+      return start + (end - start) * t;
+    }
+
+    function easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    function animateRoomTo(target, onDone) {
+      if (focusAnimationId) cancelAnimationFrame(focusAnimationId);
+      const start = {
+        rotX,
+        rotY,
+        zoom: focusZoom,
+        shiftZ: focusShiftZ,
+      };
+      const duration = 700;
+      const startTime = performance.now();
+
+      const step = (now) => {
+        const t = clamp((now - startTime) / duration, 0, 1);
+        const eased = easeInOutQuad(t);
+        rotX = lerp(start.rotX, target.rotX, eased);
+        rotY = lerp(start.rotY, target.rotY, eased);
+        focusZoom = lerp(start.zoom, target.zoom, eased);
+        focusShiftZ = lerp(start.shiftZ, target.shiftZ, eased);
+        updateRotation();
+        updateRoomScale();
+        updateRoomShift();
+        if (t < 1) {
+          focusAnimationId = requestAnimationFrame(step);
+          return;
+        }
+        focusAnimationId = null;
+        if (onDone) onDone();
+      };
+      focusAnimationId = requestAnimationFrame(step);
+    }
+
+    function focusOnFrame(id, onDone) {
+      const frame = frameById.get(id);
+      if (!frame) {
+        if (onDone) onDone();
+        return;
+      }
+      if (!lastViewBeforeFocus) {
+        lastViewBeforeFocus = {
+          rotX,
+          rotY,
+          zoom: focusZoom,
+          shiftZ: focusShiftZ,
+        };
+      }
+      const face = frame.closest(".face");
+      let targetYaw = 0;
+      if (face?.classList.contains("left")) targetYaw = 22;
+      if (face?.classList.contains("right")) targetYaw = -22;
+      if (face?.classList.contains("back")) targetYaw = 0;
+      const target = {
+        rotX: clamp(10, -4, 18),
+        rotY: targetYaw,
+        zoom: 1.12,
+        shiftZ: baseRoomShiftZ + 700,
+      };
+      animateRoomTo(target, onDone);
+    }
+
+    function restoreRoomView() {
+      if (!lastViewBeforeFocus) return;
+      const target = lastViewBeforeFocus;
+      lastViewBeforeFocus = null;
+      animateRoomTo(target);
     }
 
     function updateCharacter() {
@@ -2060,9 +2181,12 @@
       updateSpotlightByIndex(id);
       artModal.classList.remove("show-details");
       if (detailsToggle) detailsToggle.setAttribute("aria-expanded", "false");
-      overlay.classList.add("active");
-      overlay.setAttribute("aria-hidden", "false");
       isViewingArt = true;
+      lowerMusic();
+      focusOnFrame(id, () => {
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+      });
     }
 
     function closeArt() {
@@ -2072,6 +2196,8 @@
       if (detailsToggle) detailsToggle.setAttribute("aria-expanded", "false");
       isViewingArt = false;
       updateNearbyFrame();
+      restoreMusic();
+      restoreRoomView();
     }
 
     function getFrameInteractionPoint(frame) {
@@ -2682,6 +2808,7 @@
     overlay.addEventListener("click", (event) => {
       if (event.target === overlay) closeArt();
     });
+    initMusic();
     window.addEventListener("keydown", onKeyDown, { passive: false });
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", () => {
@@ -2692,6 +2819,7 @@
         updateNearbyFrame();
       }
       updateRoomScale();
+      updateRoomShift();
       updateSpotlightPosition(spotlitFrame);
     });
     updateNavHeight();
@@ -2701,6 +2829,7 @@
     }
     ensureCharacterInBounds();
     updateRoomScale();
+    updateRoomShift();
     updateRotation();
     updateCharacter();
     updateNearbyFrame();
