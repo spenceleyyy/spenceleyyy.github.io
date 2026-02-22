@@ -1995,8 +1995,8 @@
       const faceWidth = face?.clientWidth || 1;
       const centerX = frame.offsetLeft + frame.offsetWidth / 2;
       const t = clamp(centerX / faceWidth, 0, 1);
-      const yawOffset = (t - 0.5) * 14;
-      const yawMagnitude = 58;
+      const yawOffset = (t - 0.5) * 18;
+      const yawMagnitude = 68;
       let targetYaw = 0;
       if (face?.classList.contains("left")) targetYaw = -yawMagnitude + yawOffset;
       if (face?.classList.contains("right")) targetYaw = yawMagnitude - yawOffset;
@@ -2013,14 +2013,48 @@
         zoom: 1.35,
         shiftZ: baseRoomShiftZ + 1400,
       };
+      const centerFrameInView = (frameToCenter, done) => {
+        if (!frameToCenter || !viewport) {
+          if (done) done();
+          return;
+        }
+        const viewportRect = viewport.getBoundingClientRect();
+        if (!viewportRect.width) {
+          if (done) done();
+          return;
+        }
+        const framePoint = getFrameScreenPoint(frameToCenter);
+        if (!framePoint) {
+          if (done) done();
+          return;
+        }
+        const targetX = viewportRect.left + viewportRect.width / 2;
+        const delta = clamp((framePoint.x - targetX) / viewportRect.width, -0.5, 0.5);
+        const correction = delta * 40;
+        if (Math.abs(correction) < 0.5) {
+          if (done) done();
+          return;
+        }
+        animateRoomTo({
+          rotX,
+          rotY: rotY + correction,
+          zoom: focusZoom,
+          shiftZ: focusShiftZ,
+        }, {
+          duration: 260,
+          onDone: done,
+        });
+      };
       animateRoomTo(rotateTarget, {
         duration: 580,
         onDone: () => {
           animateRoomTo(zoomTarget, {
             duration: 620,
             onDone: () => {
-              clearHiddenWalls();
-              if (onDone) onDone();
+              centerFrameInView(frame, () => {
+                clearHiddenWalls();
+                if (onDone) onDone();
+              });
             },
           });
         },
