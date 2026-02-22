@@ -1962,8 +1962,8 @@
       }
       const face = frame.closest(".face");
       let targetYaw = 0;
-      if (face?.classList.contains("left")) targetYaw = 22;
-      if (face?.classList.contains("right")) targetYaw = -22;
+      if (face?.classList.contains("left")) targetYaw = -22;
+      if (face?.classList.contains("right")) targetYaw = 22;
       if (face?.classList.contains("back")) targetYaw = 0;
       const target = {
         rotX: clamp(10, -4, 18),
