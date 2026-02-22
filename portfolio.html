@@ -212,6 +212,13 @@
       transform-style: preserve-3d;
       backface-visibility: visible;
       background: #fcfcfc;
+      transition: opacity 0.4s ease;
+    }
+
+    .face.wall-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
     }
 
     .face.back {
@@ -1605,6 +1612,7 @@
     let focusShiftZ = baseRoomShiftZ;
     let focusAnimationId = null;
     let lastViewBeforeFocus = null;
+    let hiddenOppositeWall = null;
     const modelSources = [
       "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
       "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
@@ -1915,7 +1923,7 @@
       return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     }
 
-    function animateRoomTo(target, onDone) {
+    function animateRoomTo(target, options = {}) {
       if (focusAnimationId) cancelAnimationFrame(focusAnimationId);
       const start = {
         rotX,
@@ -1923,7 +1931,7 @@
         zoom: focusZoom,
         shiftZ: focusShiftZ,
       };
-      const duration = 700;
+      const duration = options.duration ?? 700;
       const startTime = performance.now();
 
       const step = (now) => {
@@ -1941,9 +1949,31 @@
           return;
         }
         focusAnimationId = null;
-        if (onDone) onDone();
+        if (options.onDone) options.onDone();
       };
       focusAnimationId = requestAnimationFrame(step);
+    }
+
+    function clearHiddenWalls() {
+      if (!room) return;
+      room.querySelectorAll(".face.wall-hidden").forEach((face) => face.classList.remove("wall-hidden"));
+      hiddenOppositeWall = null;
+    }
+
+    function hideOppositeWall(face) {
+      if (!room) return;
+      clearHiddenWalls();
+      if (!face) return;
+      if (face.classList.contains("left")) {
+        hiddenOppositeWall = room.querySelector(".face.right");
+      } else if (face.classList.contains("right")) {
+        hiddenOppositeWall = room.querySelector(".face.left");
+      } else if (face.classList.contains("back")) {
+        hiddenOppositeWall = null;
+      }
+      if (hiddenOppositeWall) {
+        hiddenOppositeWall.classList.add("wall-hidden");
+      }
     }
 
     function focusOnFrame(id, onDone) {
@@ -1961,23 +1991,47 @@
         };
       }
       const face = frame.closest(".face");
+      hideOppositeWall(face);
+      const faceWidth = face?.clientWidth || 1;
+      const centerX = frame.offsetLeft + frame.offsetWidth / 2;
+      const t = clamp(centerX / faceWidth, 0, 1);
+      const yawOffset = (t - 0.5) * 14;
+      const yawMagnitude = 42;
       let targetYaw = 0;
-      if (face?.classList.contains("left")) targetYaw = -22;
-      if (face?.classList.contains("right")) targetYaw = 22;
-      if (face?.classList.contains("back")) targetYaw = 0;
-      const target = {
+      if (face?.classList.contains("left")) targetYaw = -yawMagnitude + yawOffset;
+      if (face?.classList.contains("right")) targetYaw = yawMagnitude - yawOffset;
+      if (face?.classList.contains("back")) targetYaw = yawOffset * 0.6;
+      const rotateTarget = {
         rotX: clamp(10, -4, 18),
         rotY: targetYaw,
-        zoom: 1.12,
-        shiftZ: baseRoomShiftZ + 700,
+        zoom: 1,
+        shiftZ: baseRoomShiftZ,
       };
-      animateRoomTo(target, onDone);
+      const zoomTarget = {
+        rotX: clamp(10, -4, 18),
+        rotY: targetYaw,
+        zoom: 1.22,
+        shiftZ: baseRoomShiftZ + 1000,
+      };
+      animateRoomTo(rotateTarget, {
+        duration: 520,
+        onDone: () => {
+          animateRoomTo(zoomTarget, {
+            duration: 520,
+            onDone: () => {
+              clearHiddenWalls();
+              if (onDone) onDone();
+            },
+          });
+        },
+      });
     }
 
     function restoreRoomView() {
       if (!lastViewBeforeFocus) return;
       const target = lastViewBeforeFocus;
       lastViewBeforeFocus = null;
+      clearHiddenWalls();
       animateRoomTo(target);
     }
 
