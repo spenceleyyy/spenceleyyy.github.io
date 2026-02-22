@@ -1792,9 +1792,12 @@
 
     function spawnCharacter() {
       const walls = getWallBoundaries();
-      const centerZ = (walls.minZ + walls.maxZ) / 2;
+      const minZ = Math.min(walls.minZ, walls.maxZ);
+      const maxZ = Math.max(walls.minZ, walls.maxZ);
+      const span = Math.max(1, Math.abs(maxZ - minZ));
+      const spawnZ = maxZ - span * 0.5;
       charX = clamp(0, walls.left, walls.right);
-      charZ = clamp(centerZ, walls.minZ, walls.maxZ);
+      charZ = clamp(spawnZ, minZ, maxZ);
       hasSpawned = true;
     }
 
@@ -1861,7 +1864,7 @@
       root.style.setProperty("--char-x", `${charX}px`);
       // Character feet glued to floor - fixed position at floor level
       root.style.setProperty("--char-y", "-880px");  // Place feet on floor
-      root.style.setProperty("--char-z", `${-charZ}px`);
+      root.style.setProperty("--char-z", `${charZ}px`);
       root.style.setProperty("--char-tilt", `${charTilt}deg`);
       root.style.setProperty("--char-facing", `${charYaw}deg`);
       // Update X position debug display
