@@ -1000,8 +1000,8 @@
 
     .art-frame-view {
       position: relative;
-      width: min(62vw, 720px);
-      height: min(80vh, 840px);
+      width: min(72vw, 860px);
+      height: min(86vh, 940px);
       aspect-ratio: 3 / 4;
       background: transparent;
       border: 2px solid rgba(17, 17, 17, 0.85);
@@ -1016,7 +1016,7 @@
 
     .art-frame-view .art-surface {
       position: absolute;
-      inset: 5% 5%;
+      inset: 2.5% 2.5%;
       transform: none;
       background-size: contain;
       background-position: center;
@@ -2012,12 +2012,14 @@
       }
     }
 
+    let activeFocusFrame = null;
     function focusOnFrame(id, onDone, frameOverride = null) {
       const frame = frameOverride || frameById.get(id);
       if (!frame) {
         if (onDone) onDone();
         return;
       }
+      activeFocusFrame = frame;
       if (!lastViewBeforeFocus) {
         lastViewBeforeFocus = {
           rotX,
@@ -2098,10 +2100,16 @@
           animateRoomTo(zoomTarget, {
             duration: 620,
             onDone: () => {
+              if (activeFocusFrame && activeFocusFrame !== frame) {
+                return;
+              }
               centerFrameInView(frame, 2, () => {
                 animateRoomTo(finalZoomTarget, {
                   duration: 900,
                   onDone: () => {
+                    if (activeFocusFrame && activeFocusFrame !== frame) {
+                      return;
+                    }
                     clearHiddenWalls();
                     if (onDone) onDone();
                   },
