@@ -31,7 +31,7 @@
       --room-rot-y: 0deg;
       --room-scale: 0.7;
       --room-shift-x: 0px;
-      --room-shift-y: 460px;
+      --room-shift-y: 320px;
       --room-shift-z: -4600px;
       --frame-depth: 10px;
       --rail-depth: 8px;
@@ -1569,7 +1569,7 @@
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
-    let rotX = 2;
+    let rotX = 22;
     let rotY = 0;
     let activeRail = null;
     let railStartX = 0;
@@ -1830,15 +1830,12 @@
       return {
         left: -halfWidth + railOffset,   // -1540 (stops at left rail)
         right: halfWidth - railOffset,   // 1540 (stops at right rail)
-        minZ: 2000,   // Front boundary (closest to viewer)
-        maxZ: 6000,   // Back boundary (near back wall)
+        minZ: -3800,  // Back boundary (toward back wall; floor local Y=0 maps to charZ=-4000)
+        maxZ: 3800,   // Front boundary (toward viewer; floor local Y=8000 maps to charZ=+4000)
       };
     }
 
     function ensureCharacterInBounds() {
-      // Temporarily disabled to debug spawn position
-      return false;
-      /*
       const walls = getWallBoundaries();
       const nextX = clamp(charX, walls.left, walls.right);
       const nextZ = clamp(charZ, walls.minZ, walls.maxZ);
@@ -1846,13 +1843,12 @@
       charX = nextX;
       charZ = nextZ;
       return changed;
-      */
     }
 
     function spawnCharacter() {
       // Hardcode spawn position inside the room
       charX = 0;
-      charZ = 4000;  // Room depth is 8000, try halfway
+      charZ = 0;  // Spawn at room center depth
       hasSpawned = true;
     }
 
@@ -1941,7 +1937,7 @@
       const scaleX = viewportRect.width / rect.width;
       const scaleY = viewportRect.height / rect.height;
       const factor = Math.min(scaleX, scaleY);
-      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.55, 2.4);
+      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.42, 2.4);
       root.style.setProperty("--room-scale", nextScale.toFixed(3));
     }
 
