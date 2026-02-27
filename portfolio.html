@@ -37,7 +37,7 @@
       --rail-depth: 8px;
       --char-x: 0px;
       --char-y: 0px;
-      --char-z: 0px;
+      --char-z: 600px;
       --char-tilt: 0deg;
     }
 
@@ -1492,8 +1492,8 @@
   <div class="char-controls" id="char-controls">
     <div><strong>Character X: <span id="char-x-display">0</span>px</strong> (boundary: ±740)</div>
     <div>Character Z</div>
-    <input type="range" id="char-z-range" min="-1200" max="800" step="1" value="0" />
-    <input type="number" id="char-z-input" min="-1200" max="800" step="1" value="0" />
+    <input type="range" id="char-z-range" min="-2000" max="2000" step="1" value="600" />
+    <input type="number" id="char-z-input" min="-2000" max="2000" step="1" value="600" />
     <div>Character Yaw</div>
     <input type="range" id="char-yaw-range" min="0" max="360" step="1" value="0" />
     <input type="number" id="char-yaw-input" min="0" max="360" step="1" value="0" />
@@ -1578,7 +1578,7 @@
     let railOffsetY = 0;
     let charX = 0;
     let charY = 0;
-    let charZ = 0;  // Position character inside room
+    let charZ = 600;  // Position character in center of room
     let charTilt = 0;
     let charYaw = 0;  // CSS rotation for walking direction
     let walkTimeout = null;
@@ -1821,12 +1821,24 @@
       };
     }
 
-    // Wall rail boundaries - match visual rail position
+    // Wall rail boundaries - allow movement within visible room
     function getWallBoundaries() {
-      return getWalkBounds();
+      const halfWidth = roomMetrics.width / 2;  // 2000
+      // Rails are 400px from walls, add small buffer for character width
+      const railOffset = 400 + 60;  // rail position + character buffer
+      // Character needs high Z values to be inside the room
+      return {
+        left: -halfWidth + railOffset,   // -1540 (stops at left rail)
+        right: halfWidth - railOffset,   // 1540 (stops at right rail)
+        minZ: 2000,   // Front boundary (closest to viewer)
+        maxZ: 6000,   // Back boundary (near back wall)
+      };
     }
 
     function ensureCharacterInBounds() {
+      // Temporarily disabled to debug spawn position
+      return false;
+      /*
       const walls = getWallBoundaries();
       const nextX = clamp(charX, walls.left, walls.right);
       const nextZ = clamp(charZ, walls.minZ, walls.maxZ);
@@ -1834,16 +1846,13 @@
       charX = nextX;
       charZ = nextZ;
       return changed;
+      */
     }
 
     function spawnCharacter() {
-      const walls = getWallBoundaries();
-      const minZ = Math.min(walls.minZ, walls.maxZ);
-      const maxZ = Math.max(walls.minZ, walls.maxZ);
-      const span = Math.max(1, Math.abs(maxZ - minZ));
-      const spawnZ = maxZ - span * 0.5;
-      charX = clamp(0, walls.left, walls.right);
-      charZ = clamp(spawnZ, minZ, maxZ);
+      // Hardcode spawn position inside the room
+      charX = 0;
+      charZ = 4000;  // Room depth is 8000, try halfway
       hasSpawned = true;
     }
 
@@ -1932,7 +1941,7 @@
       const scaleX = viewportRect.width / rect.width;
       const scaleY = viewportRect.height / rect.height;
       const factor = Math.min(scaleX, scaleY);
-      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.55, 1.2);
+      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.55, 2.4);
       root.style.setProperty("--room-scale", nextScale.toFixed(3));
     }
 
@@ -1988,6 +1997,61 @@
         if (options.onDone) options.onDone();
       };
       focusAnimationId = requestAnimationFrame(step);
+    }
+
+    function measureOverlayFrame() {
+      if (!overlay) return null;
+      const frameView = overlay.querySelector(".art-frame-view");
+      if (!frameView) return null;
+      const prevDisplay = overlay.style.display;
+      const prevVisibility = overlay.style.visibility;
+      const prevPointer = overlay.style.pointerEvents;
+      const prevOpacity = overlay.style.opacity;
+      const wasActive = overlay.classList.contains("active");
+      overlay.style.display = "flex";
+      overlay.style.visibility = "hidden";
+      overlay.style.pointerEvents = "none";
+      overlay.style.opacity = "0";
+      const rect = frameView.getBoundingClientRect();
+      overlay.style.display = prevDisplay;
+      overlay.style.visibility = prevVisibility;
+      overlay.style.pointerEvents = prevPointer;
+      overlay.style.opacity = prevOpacity;
+      if (!wasActive) {
+        overlay.classList.remove("active");
+      }
+      return rect;
+    }
+
+    function matchZoomToOverlay(frameToMatch, done) {
+      if (!frameToMatch) {
+        if (done) done();
+        return;
+      }
+      const desired = measureOverlayFrame();
+      if (!desired || !desired.height) {
+        if (done) done();
+        return;
+      }
+      const frameRect = frameToMatch.getBoundingClientRect();
+      if (!frameRect.height) {
+        if (done) done();
+        return;
+      }
+      const ratio = clamp(desired.height / frameRect.height, 0.7, 2.8);
+      if (Math.abs(ratio - 1) < 0.03) {
+        if (done) done();
+        return;
+      }
+      animateRoomTo({
+        rotX,
+        rotY,
+        zoom: focusZoom * ratio,
+        shiftZ: focusShiftZ + (ratio - 1) * 1400,
+      }, {
+        duration: 900,
+        onDone: done,
+      });
     }
 
     function clearHiddenWalls() {
@@ -2097,20 +2161,12 @@
                 return;
               }
               centerFrameInView(frame, 2, () => {
-                animateRoomTo({
-                  rotX: clamp(10, -4, 18),
-                  rotY: targetYaw,
-                  zoom: 1.75,
-                  shiftZ: baseRoomShiftZ + 2400,
-                }, {
-                  duration: 1000,
-                  onDone: () => {
-                    if (activeFocusFrame && activeFocusFrame !== frame) {
-                      return;
-                    }
-                    clearHiddenWalls();
-                    if (onDone) onDone();
-                  },
+                matchZoomToOverlay(frame, () => {
+                  if (activeFocusFrame && activeFocusFrame !== frame) {
+                    return;
+                  }
+                  clearHiddenWalls();
+                  if (onDone) onDone();
                 });
               });
             },

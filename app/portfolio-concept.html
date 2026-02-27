@@ -30,7 +30,7 @@
       --rail-depth: 8px;
       --char-x: 0px;
       --char-y: 0px;
-      --char-z: 500px;
+      --char-z: 600px;
       --char-tilt: 0deg;
     }
 
@@ -1105,9 +1105,151 @@
         display: none;
       }
     }
+
+    /* ========== CEILING NAVBAR ========== */
+    .ceiling-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      /* Match ceiling gradient and texture */
+      background:
+        linear-gradient(180deg, #f1f1ef 0%, #f8f8f6 55%, #f0f0ee 100%);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .ceiling-nav::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 120px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.02) 0 1px, transparent 1px 60px);
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .ceiling-nav::after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .nav-logo {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #111;
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-links a {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(17, 17, 17, 0.7);
+      text-decoration: none;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: #111;
+      border-bottom-color: rgba(17, 17, 17, 0.4);
+    }
+
+    .nav-links a.active {
+      color: #111;
+      border-bottom-color: #111;
+    }
+
+    /* Track light accents in navbar */
+    .nav-light {
+      position: absolute;
+      bottom: 0;
+      width: 40px;
+      height: 4px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .nav-light:nth-child(1) { left: 15%; }
+    .nav-light:nth-child(2) { left: 35%; }
+    .nav-light:nth-child(3) { right: 35%; }
+    .nav-light:nth-child(4) { right: 15%; }
+
+    /* Adjust gallery stage to account for navbar */
+    .gallery-stage {
+      padding-top: 60px;
+    }
+
+    @media (max-width: 640px) {
+      .ceiling-nav {
+        padding: 0 1rem;
+        height: 50px;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .nav-links a {
+        font-size: 0.55rem;
+      }
+
+      .nav-light {
+        display: none;
+      }
+
+      .gallery-stage {
+        padding-top: 50px;
+      }
+    }
+    /* ========== END CEILING NAVBAR ========== */
   </style>
 </head>
 <body>
+  <nav class="ceiling-nav" aria-label="Main navigation">
+    <div class="nav-light"></div>
+    <div class="nav-light"></div>
+    <div class="nav-light"></div>
+    <div class="nav-light"></div>
+    <a href="#" class="nav-logo">Spencer Lee</a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Portfolio</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
   <main class="gallery-stage" aria-label="Gallery">
     <section class="gallery-viewport" id="gallery-scene" aria-label="3D gallery preview">
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
@@ -1311,8 +1453,8 @@
   <div class="char-controls" id="char-controls">
     <div><strong>Character X: <span id="char-x-display">0</span>px</strong> (boundary: ±740)</div>
     <div>Character Z</div>
-    <input type="range" id="char-z-range" min="-1200" max="800" step="1" value="500" />
-    <input type="number" id="char-z-input" min="-1200" max="800" step="1" value="500" />
+    <input type="range" id="char-z-range" min="-2000" max="4000" step="1" value="600" />
+    <input type="number" id="char-z-input" min="-2000" max="4000" step="1" value="600" />
     <div>Character Yaw</div>
     <input type="range" id="char-yaw-range" min="0" max="360" step="1" value="0" />
     <input type="number" id="char-yaw-input" min="0" max="360" step="1" value="0" />
@@ -1397,7 +1539,7 @@
     let railOffsetY = 0;
     let charX = 0;
     let charY = 0;
-    let charZ = 900;  // Position character inside room
+    let charZ = 600;  // Position character in center of room
     let charTilt = 0;
     let charYaw = 0;  // CSS rotation for walking direction
     let walkTimeout = null;
