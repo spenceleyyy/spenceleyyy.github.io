@@ -1730,8 +1730,9 @@
     ];
     const railModelSource = "Portfolio/hedge.glb";
     let readoutTimer = null;
-    const interactionDistance = 280;
-    const interactionWorldDistance = 680;
+    const interactionDistance = 320;
+    const interactionDistanceFallback = 900;
+    const interactionWorldDistance = 1100;
     const wallInteractionInset = 180;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
@@ -2682,28 +2683,42 @@
       if (!charPoint) return null;
       let nearest = null;
       let minDistance = Infinity;
+      let fallbackNearest = null;
+      let fallbackMinDistance = Infinity;
       interactiveFrames.forEach((frame) => {
         const interactionPoint = getFrameInteractionPoint(frame);
         if (interactionPoint) {
           const worldDist = Math.hypot(interactionPoint.x - charX, interactionPoint.z - charZ);
           const face = frame.closest(".face");
           const worldThreshold = face?.classList.contains("back")
-            ? interactionWorldDistance * 1.15
+            ? interactionWorldDistance * 1.2
             : interactionWorldDistance;
-          if (worldDist > worldThreshold) return;
+          if (worldDist > worldThreshold) {
+            const fallbackTarget = getFrameScreenPoint(frame);
+            if (!fallbackTarget) return;
+            const fallbackDx = fallbackTarget.x - charPoint.x;
+            const fallbackDy = fallbackTarget.y - charPoint.y;
+            const fallbackDist = Math.hypot(fallbackDx, fallbackDy);
+            const fallbackThreshold = clamp(fallbackTarget.size * 1.1, interactionDistance, interactionDistanceFallback);
+            if (fallbackDist < fallbackThreshold && fallbackDist < fallbackMinDistance) {
+              fallbackMinDistance = fallbackDist;
+              fallbackNearest = frame;
+            }
+            return;
+          }
         }
         const target = getFrameScreenPoint(frame);
         if (!target) return;
         const dx = target.x - charPoint.x;
         const dy = target.y - charPoint.y;
         const dist = Math.hypot(dx, dy);
-        const threshold = clamp(target.size * 0.7, interactionDistance, 460);
+        const threshold = clamp(target.size * 0.95, interactionDistance, 680);
         if (dist < threshold && dist < minDistance) {
           minDistance = dist;
           nearest = frame;
         }
       });
-      return nearest;
+      return nearest || fallbackNearest;
     }
 
     function updateSpotlightPosition(frame) {
