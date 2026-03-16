@@ -2385,10 +2385,8 @@
                   if (activeFocusFrame && activeFocusFrame !== frame) {
                     return;
                   }
-                  centerFrameInView(frame, 24, () => {
-                    clearHiddenWalls();
-                    if (onDone) onDone();
-                  });
+                  clearHiddenWalls();
+                  if (onDone) onDone();
                 });
               });
             },
