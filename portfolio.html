@@ -2727,10 +2727,13 @@
       const viewportRect = viewport.getBoundingClientRect();
       const x = ((rect.left + rect.width / 2) - viewportRect.left) / viewportRect.width;
       const y = ((rect.top + rect.height / 2) - viewportRect.top) / viewportRect.height;
+      const frameSize = Math.max(rect.width, rect.height);
+      const spotSize = clamp(frameSize * 1.05, 300, 640);
       const clampedX = clamp(x, 0.02, 0.98) * 100;
       const clampedY = clamp(y, 0.02, 0.98) * 100;
       viewport.style.setProperty("--spot-x", `${clampedX}%`);
       viewport.style.setProperty("--spot-y", `${clampedY}%`);
+      viewport.style.setProperty("--spot-size", `${Math.round(spotSize)}px`);
     }
 
     function applySpotlight(frame) {
