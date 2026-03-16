@@ -242,6 +242,56 @@
             text-transform: uppercase;
         }
 
+        .file-list li.file-entry {
+            padding: 1rem 1.1rem 1.1rem;
+            display: grid;
+            gap: 0.55rem;
+            text-transform: none;
+            letter-spacing: 0.04em;
+        }
+
+        .file-name {
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.74rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #dff5ff;
+        }
+
+        .file-meta {
+            font-size: 0.72rem;
+            color: rgba(230, 246, 255, 0.65);
+        }
+
+        .file-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+        }
+
+        .file-actions a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 92px;
+            padding: 0.46rem 0.62rem;
+            border-radius: 999px;
+            border: 1px solid rgba(127, 231, 255, 0.38);
+            background: rgba(13, 33, 48, 0.75);
+            color: #dff5ff;
+            text-decoration: none;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .file-actions a:hover {
+            transform: translateY(-1px);
+            border-color: rgba(127, 231, 255, 0.7);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+        }
+
         @media (max-width: 900px) {
             body.mentorship-page nav {
                 position: sticky;
@@ -293,20 +343,56 @@
 
     <section class="mentorship-files" id="mentorshipFiles">
         <h2>All Files</h2>
-        <p>Placeholder list for the full mentorship file library.</p>
+        <p>Download the mentorship PPTX decks directly here. These same files are linked from POIs inside the dashboard.</p>
         <ul class="file-list">
-            <li>File 01 - Placeholder</li>
-            <li>File 02 - Placeholder</li>
-            <li>File 03 - Placeholder</li>
-            <li>File 04 - Placeholder</li>
-            <li>File 05 - Placeholder</li>
-            <li>File 06 - Placeholder</li>
-            <li>File 07 - Placeholder</li>
-            <li>File 08 - Placeholder</li>
-            <li>File 09 - Placeholder</li>
-            <li>File 10 - Placeholder</li>
-            <li>File 11 - Placeholder</li>
-            <li>File 12 - Placeholder</li>
+            <li class="file-entry">
+                <div class="file-name">Building an Introduction</div>
+                <div class="file-meta">Teaching deck (.pptx)</div>
+                <div class="file-actions">
+                    <a href="Teaching/Building%20an%20Introduction.pptx" download>Download</a>
+                    <a href="Teaching/Building%20an%20Introduction.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
+            <li class="file-entry">
+                <div class="file-name">Stats Intro</div>
+                <div class="file-meta">Teaching deck (.pptx)</div>
+                <div class="file-actions">
+                    <a href="Teaching/Stats%20Intro.pptx" download>Download</a>
+                    <a href="Teaching/Stats%20Intro.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
+            <li class="file-entry">
+                <div class="file-name">Trust in Automation</div>
+                <div class="file-meta">Teaching deck (.pptx)</div>
+                <div class="file-actions">
+                    <a href="Teaching/Trust%20in%20Automation.pptx" download>Download</a>
+                    <a href="Teaching/Trust%20in%20Automation.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
+            <li class="file-entry">
+                <div class="file-name">10-20 Electrode System</div>
+                <div class="file-meta">EEG resource (.pptx)</div>
+                <div class="file-actions">
+                    <a href="EEGResources/10-20.pptx" download>Download</a>
+                    <a href="EEGResources/10-20.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
+            <li class="file-entry">
+                <div class="file-name">HFES FIPRED Print</div>
+                <div class="file-meta">Project deck (.pptx)</div>
+                <div class="file-actions">
+                    <a href="projects/HFESFIPREDPrint.pptx" download>Download</a>
+                    <a href="projects/HFESFIPREDPrint.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
+            <li class="file-entry">
+                <div class="file-name">Website Template</div>
+                <div class="file-meta">Template deck (.pptx)</div>
+                <div class="file-actions">
+                    <a href="app/site-template/Website.pptx" download>Download</a>
+                    <a href="app/site-template/Website.pptx" target="_blank" rel="noopener">Open</a>
+                </div>
+            </li>
         </ul>
     </section>
 

@@ -479,6 +479,44 @@
       color: rgba(223, 232, 255, 0.8);
       margin-bottom: 18px;
     }
+    .resource-downloads {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .resource-download {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(93, 226, 255, 0.35);
+      background: rgba(9, 14, 24, 0.85);
+      color: #dfe8ff;
+      text-decoration: none;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .resource-download::after {
+      content: "Download";
+      color: rgba(255, 209, 102, 0.95);
+      font-size: 8px;
+      letter-spacing: 1.2px;
+    }
+    .resource-download:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 209, 102, 0.75);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+    }
+    .resource-empty {
+      font-size: 9px;
+      color: rgba(223, 232, 255, 0.58);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
     .resource-hint {
       font-size: 9px;
       letter-spacing: 1.5px;
@@ -524,21 +562,21 @@
           <button class="objective-button" type="button" data-objective-id="signal-archive">
             <span class="objective-index">01</span>
             <span class="objective-name">Signal Archive</span>
-            <span class="objective-sub">EEG baseline file</span>
+            <span class="objective-sub">EEG + methods decks</span>
           </button>
         </li>
         <li class="objective-item">
           <button class="objective-button" type="button" data-objective-id="lab-terminal">
             <span class="objective-index">02</span>
             <span class="objective-name">Lab Terminal</span>
-            <span class="objective-sub">Mentor notes index</span>
+            <span class="objective-sub">Mentorship decks</span>
           </button>
         </li>
         <li class="objective-item">
           <button class="objective-button" type="button" data-objective-id="insight-hub">
             <span class="objective-index">03</span>
             <span class="objective-name">Insight Hub</span>
-            <span class="objective-sub">Resource library map</span>
+            <span class="objective-sub">Project decks</span>
           </button>
         </li>
       </ul>
@@ -559,7 +597,8 @@
   <div class="resource-modal" id="resourceModal" aria-hidden="true">
     <div class="resource-card">
       <div class="resource-title" id="resourceTitle">Resource</div>
-      <div class="resource-body" id="resourceBody">Placeholder resource details go here.</div>
+      <div class="resource-body" id="resourceBody">Resource details appear here.</div>
+      <div class="resource-downloads" id="resourceDownloads"></div>
       <div class="resource-hint">Press Enter to close</div>
     </div>
   </div>
@@ -599,6 +638,7 @@
     const resourceModal = document.getElementById("resourceModal");
     const resourceTitle = document.getElementById("resourceTitle");
     const resourceBody = document.getElementById("resourceBody");
+    const resourceDownloads = document.getElementById("resourceDownloads");
     const coinCounterEl = document.getElementById("coinCounter");
 
     const tiles = [];
@@ -701,33 +741,45 @@
       {
         id: "signal-archive",
         title: "Signal Archive",
-        subtitle: "EEG baseline file",
+        subtitle: "EEG + methods decks",
         anchor: { u: 0.2, v: 0.2 },
         resource: {
           title: "Signal Archive",
-          body: "Placeholder resource entry for EEG baseline notes and raw signal files.",
+          body: "Download slide decks for EEG setup and baseline methods.",
+          files: [
+            { label: "10-20 Electrode System", href: "EEGResources/10-20.pptx" },
+            { label: "Stats Intro", href: "Teaching/Stats%20Intro.pptx" },
+          ],
         },
         color: "#5de2ff",
       },
       {
         id: "lab-terminal",
         title: "Lab Terminal",
-        subtitle: "Mentor notes index",
+        subtitle: "Mentorship decks",
         anchor: { u: 0.78, v: 0.32 },
         resource: {
           title: "Lab Terminal",
-          body: "Placeholder resource entry for mentor notes, checklists, and quick links.",
+          body: "Core mentorship and automation slide decks.",
+          files: [
+            { label: "Building an Introduction", href: "Teaching/Building%20an%20Introduction.pptx" },
+            { label: "Trust in Automation", href: "Teaching/Trust%20in%20Automation.pptx" },
+          ],
         },
         color: "#ff5fd1",
       },
       {
         id: "insight-hub",
         title: "Insight Hub",
-        subtitle: "Resource library map",
+        subtitle: "Project decks",
         anchor: { u: 0.35, v: 0.72 },
         resource: {
           title: "Insight Hub",
-          body: "Placeholder resource entry for the resource library map and file index.",
+          body: "Project presentation decks available for direct download.",
+          files: [
+            { label: "HFES FIPRED Print", href: "projects/HFESFIPREDPrint.pptx" },
+            { label: "Website Template", href: "app/site-template/Website.pptx" },
+          ],
         },
         color: "#7dff9a",
       },
@@ -738,7 +790,7 @@
         anchor: { u: 0.6, v: 0.58 },
         resource: {
           title: "Field Cache",
-          body: "Placeholder resource entry for session recaps and follow-up tasks.",
+          body: "Session recap resources are being prepared.",
         },
         color: "#ffd166",
       },
@@ -749,7 +801,7 @@
         anchor: { u: 0.12, v: 0.58 },
         resource: {
           title: "Neuro Vault",
-          body: "Placeholder resource entry for supplemental docs and deep dives.",
+          body: "Supplemental deep-dive resources are being prepared.",
         },
         color: "#8a7dff",
       },
@@ -875,9 +927,31 @@
     function openResourceModal(objective) {
       if (!resourceModal || !objective) return;
       if (resourceTitle) resourceTitle.textContent = objective.resource?.title ?? objective.title;
-      if (resourceBody) resourceBody.textContent = objective.resource?.body ?? "Placeholder resource details.";
+      if (resourceBody) resourceBody.textContent = objective.resource?.body ?? "Resource details.";
+      renderResourceDownloads(objective.resource?.files);
       resourceModal.classList.add("active");
       resourceModal.setAttribute("aria-hidden", "false");
+    }
+
+    function renderResourceDownloads(files) {
+      if (!resourceDownloads) return;
+      resourceDownloads.innerHTML = "";
+      if (!Array.isArray(files) || files.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "resource-empty";
+        empty.textContent = "No downloadable files assigned yet.";
+        resourceDownloads.appendChild(empty);
+        return;
+      }
+      files.forEach((file) => {
+        if (!file?.href) return;
+        const link = document.createElement("a");
+        link.className = "resource-download";
+        link.href = file.href;
+        link.download = "";
+        link.textContent = file.label || file.href;
+        resourceDownloads.appendChild(link);
+      });
     }
 
     function closeResourceModal() {
