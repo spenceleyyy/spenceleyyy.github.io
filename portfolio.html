@@ -1730,8 +1730,8 @@
     ];
     const railModelSource = "Portfolio/hedge.glb";
     let readoutTimer = null;
-    const interactionDistance = 220;
-    const interactionWorldDistance = 360;
+    const interactionDistance = 280;
+    const interactionWorldDistance = 680;
     const wallInteractionInset = 180;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
@@ -2688,7 +2688,7 @@
           const worldDist = Math.hypot(interactionPoint.x - charX, interactionPoint.z - charZ);
           const face = frame.closest(".face");
           const worldThreshold = face?.classList.contains("back")
-            ? interactionWorldDistance * 1.1
+            ? interactionWorldDistance * 1.15
             : interactionWorldDistance;
           if (worldDist > worldThreshold) return;
         }
@@ -2697,7 +2697,7 @@
         const dx = target.x - charPoint.x;
         const dy = target.y - charPoint.y;
         const dist = Math.hypot(dx, dy);
-        const threshold = clamp(target.size * 0.6, interactionDistance, 360);
+        const threshold = clamp(target.size * 0.7, interactionDistance, 460);
         if (dist < threshold && dist < minDistance) {
           minDistance = dist;
           nearest = frame;
