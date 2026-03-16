@@ -1106,11 +1106,11 @@
       position: relative;
       width: min(56vw, 620px);
       min-height: 120px;
-      border: 1px solid rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.82);
       border-radius: 12px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 251, 252, 0.84) 54%, rgba(231, 242, 245, 0.88) 100%),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 249, 250, 0.96) 56%, rgba(226, 242, 245, 0.96) 100%);
+        linear-gradient(180deg, rgba(252, 253, 253, 0.98) 0%, rgba(244, 248, 249, 0.94) 58%, rgba(229, 241, 244, 0.94) 100%),
+        linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(246, 250, 251, 0.98) 56%, rgba(226, 242, 245, 0.98) 100%);
       backdrop-filter: blur(7px) saturate(138%);
       -webkit-backdrop-filter: blur(7px) saturate(138%);
       box-shadow:
@@ -1132,10 +1132,10 @@
 
     .viewer-plaque-edge {
       position: absolute;
-      inset: auto 10px -8px 10px;
-      height: 8px;
+      inset: auto 12px -9px 12px;
+      height: 9px;
       border-radius: 0 0 10px 10px;
-      background: linear-gradient(180deg, rgba(198, 215, 219, 0.72) 0%, rgba(160, 183, 188, 0.82) 100%);
+      background: linear-gradient(180deg, rgba(201, 216, 220, 0.82) 0%, rgba(162, 183, 188, 0.92) 100%);
       box-shadow:
         0 2px 0 rgba(255, 255, 255, 0.32) inset,
         0 6px 14px rgba(0, 0, 0, 0.14);
@@ -1145,14 +1145,14 @@
 
     .viewer-plaque:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.9);
+      border-color: rgba(255, 255, 255, 0.92);
       box-shadow:
         0 20px 30px -12px rgba(0, 0, 0, 0.36),
         0 34px 46px -24px rgba(0, 0, 0, 0.3),
         0 1px 0 rgba(255, 255, 255, 1) inset,
-        0 -1px 0 rgba(135, 235, 226, 0.78) inset,
+        0 -1px 0 rgba(135, 235, 226, 0.82) inset,
         0 0 0 1px rgba(255, 255, 255, 0.46) inset,
-        0 0 22px rgba(135, 235, 226, 0.16);
+        0 0 24px rgba(135, 235, 226, 0.18);
     }
 
     .viewer-plaque:focus-visible {
@@ -1163,14 +1163,19 @@
     .viewer-plaque::before {
       content: "";
       position: absolute;
-      inset: 1px;
-      border-radius: 11px;
+      inset: 6px;
+      border-radius: 9px;
       pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.42) 26%, rgba(255, 255, 255, 0.1) 52%, transparent 78%),
-        linear-gradient(90deg, transparent 0%, transparent 55%, rgba(178, 241, 237, 0.22) 100%);
-      mix-blend-mode: screen;
-      opacity: 0.98;
+        linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 251, 252, 0.74) 52%, rgba(232, 242, 245, 0.78) 100%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(244, 248, 249, 0.88) 56%, rgba(224, 241, 244, 0.92) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(145, 233, 225, 0.2),
+        inset 0 8px 16px rgba(255, 255, 255, 0.34),
+        inset 0 -10px 16px rgba(171, 194, 199, 0.18),
+        inset 0 0 0 1px rgba(189, 210, 214, 0.72),
+        0 1px 0 rgba(255, 255, 255, 0.45);
       z-index: 1;
     }
 
@@ -1183,15 +1188,15 @@
       height: 4px;
       border-radius: 999px;
       pointer-events: none;
-      background: linear-gradient(90deg, rgba(130, 236, 227, 0.2) 0%, rgba(130, 236, 227, 0.75) 50%, rgba(130, 236, 227, 0.22) 100%);
-      box-shadow: 0 0 14px rgba(130, 236, 227, 0.34);
+      background: linear-gradient(90deg, rgba(130, 236, 227, 0.18) 0%, rgba(130, 236, 227, 0.82) 50%, rgba(130, 236, 227, 0.2) 100%);
+      box-shadow: 0 0 16px rgba(130, 236, 227, 0.38);
       opacity: 1;
-      z-index: 2;
+      z-index: 3;
     }
 
     .viewer-plaque-bolt {
       position: absolute;
-      bottom: 9px;
+      bottom: 10px;
       width: 22px;
       height: 22px;
       border-radius: 50%;
@@ -1202,15 +1207,15 @@
         0 1px 0 rgba(255, 255, 255, 0.84) inset,
         inset 0 -1px 2px rgba(0, 0, 0, 0.16);
       pointer-events: none;
-      z-index: 4;
+      z-index: 5;
     }
 
     .viewer-plaque-bolt.left {
-      left: -10px;
+      left: -11px;
     }
 
     .viewer-plaque-bolt.right {
-      right: -10px;
+      right: -11px;
     }
 
     .viewer-plaque-title {
@@ -1222,10 +1227,10 @@
       text-transform: uppercase;
       color: rgba(28, 28, 28, 0.82);
       text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.78),
-        0 -1px 0 rgba(0, 0, 0, 0.06);
+        0 1px 0 rgba(255, 255, 255, 0.82),
+        0 -1px 0 rgba(0, 0, 0, 0.05);
       position: relative;
-      z-index: 3;
+      z-index: 4;
     }
 
     .viewer-plaque-subtext {
@@ -1236,22 +1241,22 @@
       text-transform: uppercase;
       color: rgba(42, 42, 42, 0.5);
       text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.62),
-        0 -1px 0 rgba(0, 0, 0, 0.04);
+        0 1px 0 rgba(255, 255, 255, 0.66),
+        0 -1px 0 rgba(0, 0, 0, 0.03);
       position: relative;
-      z-index: 3;
+      z-index: 4;
     }
 
     .viewer-plaque-sheen {
       position: absolute;
-      top: 8px;
-      left: 12px;
-      right: 12px;
-      height: 38%;
-      border-radius: 9px 9px 22px 22px;
+      top: 10px;
+      left: 18px;
+      right: 18px;
+      height: 32%;
+      border-radius: 8px 8px 18px 18px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.66) 0%, rgba(255, 255, 255, 0.24) 58%, transparent 100%),
-        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 34%, rgba(255, 255, 255, 0.24) 72%, transparent 100%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.22) 60%, transparent 100%),
+        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 36%, rgba(255, 255, 255, 0.18) 72%, transparent 100%);
       pointer-events: none;
       z-index: 2;
       opacity: 1;
