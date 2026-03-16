@@ -1106,40 +1106,53 @@
       position: relative;
       width: min(56vw, 620px);
       min-height: 120px;
-      border: 1px solid rgba(255, 255, 255, 0.68);
-      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      border-radius: 12px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(247, 251, 252, 0.78) 52%, rgba(229, 241, 244, 0.82) 100%),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(245, 249, 250, 0.9) 56%, rgba(224, 241, 244, 0.92) 100%);
-      backdrop-filter: blur(6px) saturate(135%);
-      -webkit-backdrop-filter: blur(6px) saturate(135%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 251, 252, 0.84) 54%, rgba(231, 242, 245, 0.88) 100%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 249, 250, 0.96) 56%, rgba(226, 242, 245, 0.96) 100%);
+      backdrop-filter: blur(7px) saturate(138%);
+      -webkit-backdrop-filter: blur(7px) saturate(138%);
       box-shadow:
         0 18px 28px -12px rgba(0, 0, 0, 0.34),
-        0 26px 36px -24px rgba(0, 0, 0, 0.28),
-        0 1px 0 rgba(255, 255, 255, 0.96) inset,
-        0 -1px 0 rgba(132, 234, 225, 0.58) inset,
-        0 0 0 1px rgba(255, 255, 255, 0.34) inset,
+        0 30px 42px -24px rgba(0, 0, 0, 0.28),
+        0 1px 0 rgba(255, 255, 255, 0.98) inset,
+        0 -1px 0 rgba(135, 235, 226, 0.66) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.42) inset,
         0 0 18px rgba(135, 235, 226, 0.12);
       color: #121212;
       cursor: pointer;
       text-align: left;
-      padding: 1.55rem 2rem 1.55rem;
+      padding: 1.55rem 2rem 1.6rem;
       transform: none;
       transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
       overflow: visible;
       isolation: isolate;
     }
 
+    .viewer-plaque-edge {
+      position: absolute;
+      inset: auto 10px -8px 10px;
+      height: 8px;
+      border-radius: 0 0 10px 10px;
+      background: linear-gradient(180deg, rgba(198, 215, 219, 0.72) 0%, rgba(160, 183, 188, 0.82) 100%);
+      box-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.32) inset,
+        0 6px 14px rgba(0, 0, 0, 0.14);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .viewer-plaque:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.82);
+      border-color: rgba(255, 255, 255, 0.9);
       box-shadow:
         0 20px 30px -12px rgba(0, 0, 0, 0.36),
-        0 32px 42px -24px rgba(0, 0, 0, 0.3),
+        0 34px 46px -24px rgba(0, 0, 0, 0.3),
         0 1px 0 rgba(255, 255, 255, 1) inset,
-        0 -1px 0 rgba(132, 234, 225, 0.72) inset,
-        0 0 0 1px rgba(255, 255, 255, 0.4) inset,
-        0 0 24px rgba(135, 235, 226, 0.18);
+        0 -1px 0 rgba(135, 235, 226, 0.78) inset,
+        0 0 0 1px rgba(255, 255, 255, 0.46) inset,
+        0 0 22px rgba(135, 235, 226, 0.16);
     }
 
     .viewer-plaque:focus-visible {
@@ -1151,13 +1164,14 @@
       content: "";
       position: absolute;
       inset: 1px;
-      border-radius: 9px;
+      border-radius: 11px;
       pointer-events: none;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.38) 24%, rgba(255, 255, 255, 0.08) 48%, transparent 74%),
-        linear-gradient(90deg, transparent 0%, transparent 58%, rgba(179, 240, 236, 0.18) 100%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.42) 26%, rgba(255, 255, 255, 0.1) 52%, transparent 78%),
+        linear-gradient(90deg, transparent 0%, transparent 55%, rgba(178, 241, 237, 0.22) 100%);
       mix-blend-mode: screen;
-      opacity: 0.96;
+      opacity: 0.98;
+      z-index: 1;
     }
 
     .viewer-plaque::after {
@@ -1165,37 +1179,38 @@
       position: absolute;
       left: 12px;
       right: 12px;
-      bottom: -2px;
-      height: 3px;
+      bottom: -3px;
+      height: 4px;
       border-radius: 999px;
       pointer-events: none;
-      background: linear-gradient(90deg, rgba(130, 236, 227, 0.22) 0%, rgba(130, 236, 227, 0.62) 50%, rgba(130, 236, 227, 0.24) 100%);
-      box-shadow: 0 0 12px rgba(130, 236, 227, 0.26);
-      opacity: 0.95;
+      background: linear-gradient(90deg, rgba(130, 236, 227, 0.2) 0%, rgba(130, 236, 227, 0.75) 50%, rgba(130, 236, 227, 0.22) 100%);
+      box-shadow: 0 0 14px rgba(130, 236, 227, 0.34);
+      opacity: 1;
+      z-index: 2;
     }
 
     .viewer-plaque-bolt {
       position: absolute;
-      bottom: 10px;
-      width: 21px;
-      height: 21px;
+      bottom: 9px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
-      background: radial-gradient(circle at 34% 30%, #ffffff 0%, #efefef 38%, #cacaca 62%, #969696 100%);
-      border: 1px solid rgba(110, 110, 110, 0.52);
+      background: radial-gradient(circle at 34% 30%, #ffffff 0%, #f1f1f1 38%, #cbcbcb 62%, #9a9a9a 100%);
+      border: 1px solid rgba(110, 110, 110, 0.5);
       box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.28),
-        0 1px 0 rgba(255, 255, 255, 0.82) inset,
-        inset 0 -1px 2px rgba(0, 0, 0, 0.18);
+        0 2px 4px rgba(0, 0, 0, 0.24),
+        0 1px 0 rgba(255, 255, 255, 0.84) inset,
+        inset 0 -1px 2px rgba(0, 0, 0, 0.16);
       pointer-events: none;
-      z-index: 3;
+      z-index: 4;
     }
 
     .viewer-plaque-bolt.left {
-      left: -8px;
+      left: -10px;
     }
 
     .viewer-plaque-bolt.right {
-      right: -8px;
+      right: -10px;
     }
 
     .viewer-plaque-title {
@@ -1208,23 +1223,23 @@
       color: rgba(28, 28, 28, 0.82);
       text-shadow:
         0 1px 0 rgba(255, 255, 255, 0.78),
-        0 -1px 0 rgba(0, 0, 0, 0.08);
+        0 -1px 0 rgba(0, 0, 0, 0.06);
       position: relative;
-      z-index: 2;
+      z-index: 3;
     }
 
     .viewer-plaque-subtext {
       display: block;
-      margin-top: 0.9rem;
+      margin-top: 0.92rem;
       font-size: clamp(0.78rem, 1.02vw, 0.9rem);
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(38, 38, 38, 0.54);
+      color: rgba(42, 42, 42, 0.5);
       text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.58),
-        0 -1px 0 rgba(0, 0, 0, 0.06);
+        0 1px 0 rgba(255, 255, 255, 0.62),
+        0 -1px 0 rgba(0, 0, 0, 0.04);
       position: relative;
-      z-index: 2;
+      z-index: 3;
     }
 
     .viewer-plaque-sheen {
@@ -1232,14 +1247,14 @@
       top: 8px;
       left: 12px;
       right: 12px;
-      height: 36%;
-      border-radius: 8px 8px 20px 20px;
+      height: 38%;
+      border-radius: 9px 9px 22px 22px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.2) 56%, transparent 100%),
-        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 35%, rgba(255, 255, 255, 0.22) 72%, transparent 100%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.66) 0%, rgba(255, 255, 255, 0.24) 58%, transparent 100%),
+        linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 34%, rgba(255, 255, 255, 0.24) 72%, transparent 100%);
       pointer-events: none;
-      z-index: 1;
-      opacity: 0.98;
+      z-index: 2;
+      opacity: 1;
     }
 
     .art-details {
@@ -1695,6 +1710,7 @@
           <span class="art-surface" aria-hidden="true"></span>
         </div>
         <button class="viewer-plaque" type="button" aria-expanded="false">
+          <span class="viewer-plaque-edge" aria-hidden="true"></span>
           <span class="viewer-plaque-sheen" aria-hidden="true"></span>
           <span class="viewer-plaque-title"></span>
           <span class="viewer-plaque-subtext">Click to see more details</span>
