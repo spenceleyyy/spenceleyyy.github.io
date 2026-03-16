@@ -27,18 +27,19 @@
       --nav-height: 72px;
       --stage-w: 1440px;
       --stage-h: 900px;
-      --room-rot-x: 46deg;
+      --room-rot-x: 52deg;
       --room-rot-y: 0deg;
-      --room-scale: 0.7;
+      --room-scale: 1;
       --room-shift-x: 0px;
-      --room-shift-y: 320px;
-      --room-shift-z: -4600px;
+      --room-shift-y: 500px;
+      --room-shift-z: -3200px;
       --frame-depth: 10px;
       --rail-depth: 8px;
       --char-x: 0px;
       --char-y: 0px;
-      --char-z: 600px;
+      --char-z: 500px;
       --char-tilt: 0deg;
+      --char-floor-lift: 880px;
     }
 
     * {
@@ -185,7 +186,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      perspective: 1800px;
+      perspective: 1200px;
       perspective-origin: 50% 20%;
       background: radial-gradient(ellipse at 50% 35%, rgba(255, 252, 245, 0.4) 0%, transparent 50%);
       --spot-x: 50%;
@@ -491,22 +492,26 @@
 
     .art-frame {
       position: absolute;
-      border: 3px solid #111;
-      background: #ffffff;
+      aspect-ratio: var(--frame-ratio, 2 / 3);
+      border: none;
+      border-radius: 16px;
+      background:
+        linear-gradient(155deg, #040406 0%, #17141d 28%, #2b2733 50%, #131019 72%, #06070a 100%);
       box-shadow:
-        0 14px 24px rgba(0, 0, 0, 0.18),
-        0 0 40px rgba(255, 250, 235, 0.15),
-        0 0 80px rgba(255, 248, 220, 0.08);
+        0 18px 26px rgba(0, 0, 0, 0.26),
+        0 6px 14px rgba(0, 0, 0, 0.22),
+        0 0 42px rgba(245, 235, 210, 0.14);
       transform: translateZ(8px);
       backface-visibility: visible;
       transform-style: preserve-3d;
+      overflow: visible;
     }
 
     .art-frame.spotlit {
       box-shadow:
-        0 14px 24px rgba(0, 0, 0, 0.18),
-        0 0 70px rgba(255, 245, 220, 0.45),
-        0 0 160px rgba(255, 240, 210, 0.28);
+        0 20px 30px rgba(0, 0, 0, 0.28),
+        0 0 70px rgba(255, 245, 220, 0.42),
+        0 0 160px rgba(255, 240, 210, 0.24);
     }
 
     .art-frame.spotlit .art-surface {
@@ -629,16 +634,27 @@
     .art-frame::before {
       content: "";
       position: absolute;
-      inset: 7%;
-      border: 1px solid rgba(0, 0, 0, 0.18);
-      background: #fbfbfb;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+      inset: 1.8%;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.18) 0, transparent 28%),
+        radial-gradient(circle at 87% 12%, rgba(255, 255, 255, 0.14) 0, transparent 26%),
+        radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.34) 0, transparent 62%),
+        linear-gradient(145deg, rgba(52, 47, 59, 0.88), rgba(17, 15, 23, 0.92));
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+        inset 0 0 0 8px rgba(10, 9, 14, 0.78),
+        inset 0 0 0 10px rgba(255, 255, 255, 0.08);
+      pointer-events: none;
     }
 
     .art-surface {
       position: absolute;
-      inset: 12% 10%;
+      inset: clamp(14px, 1.3vw, 24px);
       background: #f6f6f6;
+      border: 2px solid #cfc4a9;
+      border-radius: 3px;
       box-shadow:
         0 6px 10px rgba(0, 0, 0, 0.12),
         inset 0 0 0 1px rgba(0, 0, 0, 0.16),
@@ -669,55 +685,55 @@
     }
 
     .frame-1 .art-surface {
-      background: #f6f6f6 url("/Portfolio/1.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/1.png") center / cover no-repeat;
     }
 
     .frame-2 .art-surface {
-      background: #f6f6f6 url("/Portfolio/2.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/2.png") center / cover no-repeat;
     }
 
     .frame-3 .art-surface {
-      background: #f6f6f6 url("/Portfolio/3.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/3.png") center / cover no-repeat;
     }
 
     .frame-4 .art-surface {
-      background: #f6f6f6 url("/Portfolio/4.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/4.png") center / cover no-repeat;
     }
 
     .frame-5 .art-surface {
-      background: #f6f6f6 url("/Portfolio/1.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/1.png") center / cover no-repeat;
     }
 
     .frame-6 .art-surface {
-      background: #f6f6f6 url("/Portfolio/2.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/2.png") center / cover no-repeat;
     }
 
     .frame-7 .art-surface {
-      background: #f6f6f6 url("/Portfolio/3.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/3.png") center / cover no-repeat;
     }
 
     .frame-8 .art-surface {
-      background: #f6f6f6 url("/Portfolio/4.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/4.png") center / cover no-repeat;
     }
 
     .frame-9 .art-surface {
-      background: #f6f6f6 url("/Portfolio/1.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/1.png") center / cover no-repeat;
     }
 
     .frame-10 .art-surface {
-      background: #f6f6f6 url("/Portfolio/2.png") center / cover no-repeat;
+      background: #f6f6f6 url("Portfolio/2.png") center / cover no-repeat;
     }
 
-    .face.left .frame-1 { width: 9%; height: 50%; top: 20%; left: 18%; }
-    .face.left .frame-2 { width: 9%; height: 50%; top: 20%; left: 36%; }
-    .face.left .frame-3 { width: 9%; height: 50%; top: 20%; left: 54%; }
-    .face.left .frame-4 { width: 9%; height: 50%; top: 20%; left: 72%; }
+    .face.left .frame-1 { width: 9%; top: 20%; left: 18%; }
+    .face.left .frame-2 { width: 9%; top: 20%; left: 36%; }
+    .face.left .frame-3 { width: 9%; top: 20%; left: 54%; }
+    .face.left .frame-4 { width: 9%; top: 20%; left: 72%; }
     .face.left .frame-9 { display: none; }
 
-    .face.right .frame-5 { width: 9%; height: 50%; top: 20%; left: 26%; }
-    .face.right .frame-6 { width: 9%; height: 50%; top: 20%; left: 44%; }
-    .face.right .frame-7 { width: 9%; height: 50%; top: 20%; left: 62%; }
-    .face.right .frame-8 { width: 9%; height: 50%; top: 20%; left: 80%; }
+    .face.right .frame-5 { width: 9%; top: 20%; left: 26%; }
+    .face.right .frame-6 { width: 9%; top: 20%; left: 44%; }
+    .face.right .frame-7 { width: 9%; top: 20%; left: 62%; }
+    .face.right .frame-8 { width: 9%; top: 20%; left: 80%; }
     .face.right .frame-10 { display: none; }
 
     .face.right .art-frame {
@@ -737,40 +753,38 @@
       --rail-x: 0px;
       --rail-y: 0px;
       position: absolute;
-      left: 6%;
-      right: 6%;
-      bottom: 5%;
-      height: 6px;
-      background: #111;
-      /* Push rail from wall toward room center - adjusted for visual position ~750 */
+      left: 0%;
+      right: 0%;
+      bottom: 2.2%;
+      height: 260px;
+      background: transparent;
       transform: translateZ(400px) translate(var(--rail-x), var(--rail-y));
       transform-style: preserve-3d;
-      pointer-events: auto;
-    }
-
-    .rail:active {
-      cursor: grabbing;
+      pointer-events: none;
     }
 
     .rail::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 4px;
-      height: 38px;
-      background: repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 36px);
+      display: none;
     }
 
     .rail::before {
-      content: "";
+      display: none;
+    }
+
+    .rail-model-layer {
       position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      height: var(--rail-depth);
-      background: linear-gradient(180deg, #0b0b0b, #1a1a1a);
-      transform: translateZ(var(--rail-depth));
+      inset: 0;
+      transform: translateZ(10px);
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .rail-model-layer canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      pointer-events: none;
     }
 
     .rail.back-rail {
@@ -810,8 +824,7 @@
       position: absolute;
       left: 0;
       top: 0;
-      /* Counter the character-plane's translateZ (-880px) to put shadow on floor */
-      transform: translate(-50%, -50%) translateZ(880px);
+      transform: translate(-50%, -50%) translateZ(calc(var(--char-floor-lift) + 6px));
       width: 80px;
       height: 30px;
       background: radial-gradient(ellipse, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 40%, transparent 70%);
@@ -976,15 +989,15 @@
 
     .art-modal {
       position: relative;
-      width: min(86vw, 1200px);
-      height: min(80vh, 780px);
+      width: min(94vw, 1420px);
+      height: min(92vh, 980px);
       border: none;
       background: transparent;
       box-shadow: none;
       display: flex;
       align-items: stretch;
       justify-content: flex-start;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .art-front {
@@ -996,31 +1009,64 @@
       border-right: none;
       background: transparent;
       padding: 0;
+      overflow: visible;
     }
 
     .art-frame-view {
+      --viewer-ratio: 2 / 3;
       position: relative;
-      width: min(78vw, 980px);
-      height: min(90vh, 1040px);
-      aspect-ratio: 3 / 4;
-      background: transparent;
-      border: 2px solid rgba(17, 17, 17, 0.85);
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
+      width: 720px;
+      height: calc(720px / var(--viewer-ratio));
+      max-width: min(88vw, 1240px);
+      max-height: min(92vh, 980px);
+      aspect-ratio: var(--viewer-ratio);
+      background:
+        linear-gradient(155deg, #040406 0%, #17141d 28%, #2b2733 50%, #131019 72%, #06070a 100%);
+      border: none;
+      border-radius: 20px;
+      box-shadow:
+        0 28px 54px rgba(0, 0, 0, 0.3),
+        0 0 70px rgba(245, 235, 210, 0.18);
       display: grid;
       place-items: center;
+      overflow: hidden;
+    }
+
+    .art-frame-view.is-landscape {
+      width: min(84vw, 1180px);
+    }
+
+    .art-frame-view.is-square {
+      width: min(76vw, 980px);
     }
 
     .art-frame-view::before {
-      content: none;
+      content: "";
+      position: absolute;
+      inset: 1.4%;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.18) 0, transparent 28%),
+        radial-gradient(circle at 87% 12%, rgba(255, 255, 255, 0.14) 0, transparent 26%),
+        radial-gradient(circle at 50% 100%, rgba(0, 0, 0, 0.34) 0, transparent 62%),
+        linear-gradient(145deg, rgba(52, 47, 59, 0.88), rgba(17, 15, 23, 0.92));
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+        inset 0 0 0 10px rgba(10, 9, 14, 0.78),
+        inset 0 0 0 12px rgba(255, 255, 255, 0.08);
+      pointer-events: none;
     }
 
     .art-frame-view .art-surface {
       position: absolute;
-      inset: 1.5% 1.5%;
+      inset: clamp(16px, 1.7vw, 28px);
       transform: none;
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
+      border: 2px solid #d5cab1;
+      background-color: #f8f4ea;
+      background-size: contain !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
     }
 
     .art-details {
@@ -1208,6 +1254,24 @@
       display: none;  /* Hidden for clean gallery view */
     }
 
+    .debug-char-mode .rail-readout {
+      display: block;
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 120;
+      background: rgba(12, 12, 12, 0.9);
+      color: #f3f3f3;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: "Sora", sans-serif;
+      backdrop-filter: blur(6px);
+    }
+
     .char-controls input[type="range"] {
       width: 100%;
     }
@@ -1356,7 +1420,9 @@
               <span class="frame-side bottom"></span>
             </span>
           </div>
-          <div class="rail" data-rail="left"></div>
+          <div class="rail" data-rail="left">
+            <div class="rail-model-layer" data-rail-model="left" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="face right">
           <div class="art-frame frame-5 placeholder" data-art="5">
@@ -1399,7 +1465,9 @@
               <span class="frame-side bottom"></span>
             </span>
           </div>
-          <div class="rail" data-rail="right"></div>
+          <div class="rail" data-rail="right">
+            <div class="rail-model-layer" data-rail-model="right" aria-hidden="true"></div>
+          </div>
         </div>
         <div class="face floor">
           <div id="floor-shadow" aria-hidden="true"></div>
@@ -1507,8 +1575,8 @@
     <input type="range" id="model-roll-range" min="-180" max="180" step="1" value="0" />
     <input type="number" id="model-roll-input" min="-180" max="180" step="1" value="0" />
     <div>Floor Offset</div>
-    <input type="range" id="floor-offset-range" min="-400" max="800" step="1" value="550" />
-    <input type="number" id="floor-offset-input" min="-400" max="800" step="1" value="550" />
+    <input type="range" id="floor-offset-range" min="200" max="1400" step="1" value="880" />
+    <input type="number" id="floor-offset-input" min="200" max="1400" step="1" value="880" />
     <label><input type="checkbox" id="debug-axes" /> Debug axes</label>
     <button type="button" id="char-reset">Reset Character</button>
   </div>
@@ -1540,6 +1608,7 @@
     const footstepNodes = Array.from(document.querySelectorAll(".footstep"));
     const overlay = document.getElementById("art-overlay");
     const artModal = document.getElementById("art-modal");
+    const artFrameView = document.querySelector(".art-frame-view");
     const detailsToggle = document.querySelector(".art-details-toggle");
     const detailsTitle = document.querySelector(".details-title");
     const detailsSubtitle = document.querySelector(".details-subtitle");
@@ -1551,6 +1620,7 @@
     const nextBtn = document.querySelector(".art-arrow.right");
     const closeBtn = document.querySelector(".art-close");
     const rails = document.querySelectorAll(".rail");
+    const railModelLayers = Array.from(document.querySelectorAll("[data-rail-model]"));
     const readout = document.getElementById("rail-readout");
     const charZRange = document.getElementById("char-z-range");
     const charZInput = document.getElementById("char-z-input");
@@ -1566,11 +1636,21 @@
     const floorOffsetInput = document.getElementById("floor-offset-input");
     const debugAxesToggle = document.getElementById("debug-axes");
     const charReset = document.getElementById("char-reset");
+    const debugCharacterMode = false;
+    const spawnConfig = {
+      x: 3.5,
+      z: 2846.7,
+      yaw: -180,
+      floor: 880,
+    };
+    if (debugCharacterMode) {
+      document.body.classList.add("debug-char-mode");
+    }
     let isDragging = false;
     let lastX = 0;
     let lastY = 0;
-    let rotX = 22;
-    let rotY = 0;
+    let rotX = 2;
+    let rotY = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-rot-y"), 0);
     let activeRail = null;
     let railStartX = 0;
     let railStartY = 0;
@@ -1578,7 +1658,7 @@
     let railOffsetY = 0;
     let charX = 0;
     let charY = 0;
-    let charZ = 600;  // Position character in center of room
+    let charZ = 0;  // Position character at room center by default
     let charTilt = 0;
     let charYaw = 0;  // CSS rotation for walking direction
     let walkTimeout = null;
@@ -1616,23 +1696,28 @@
     let placeholder = null;
     let characterGroup = null;
     let threeInitialized = false;
+    let railModelTemplate = null;
+    const railModelInstances = [];
+    let railResizeObserver = null;
+    let railRenderQueued = false;
     const clock = new THREE.Clock();
     const roomMetrics = { width: 4000, height: 1800, depth: 8000 };
     let hasSpawned = false;
     const nav = document.querySelector("nav");
-    const baseRoomScale = 0.7;
+    const baseRoomScale = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-scale"), 1);
     const cameraTarget = new THREE.Vector3(0, 0.7, 0);
     let cameraRadius = 2.4;
     let cameraTargetY = 0.7;
     const cameraPadding = 1.8;
     const cameraMinRadius = 2.6;
-    let charFloorOffset = 550;  // Offset to place character feet on floor
+    let charFloorOffset = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--char-floor-lift"), 880);  // Offset to place character feet on floor
     const charYawBase = 0;  // Base rotation, model yaw adds to this
     const charPitchBase = 0;
     const charRollBase = 0;
     const baseRoomShiftX = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-x"), 0);
-    const baseRoomShiftZ = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-z"), -4600);
-    const baseRoomShiftY = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-y"), 460);
+    const baseRoomShiftZ = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-z"), -3200);
+    const baseRoomShiftY = readCssNumber(getComputedStyle(document.documentElement).getPropertyValue("--room-shift-y"), 500);
+    let roomFitScale = baseRoomScale;
     let focusZoom = 1;
     let focusShiftX = baseRoomShiftX;
     let focusShiftZ = baseRoomShiftZ;
@@ -1640,13 +1725,24 @@
     let lastViewBeforeFocus = null;
     let hiddenOppositeWall = null;
     const modelSources = [
-      "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
-      "/Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
+      "Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
+      "Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
     ];
+    const railModelSource = "Portfolio/hedge.glb";
     let readoutTimer = null;
     const interactionDistance = 220;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
+    const cameraMotionScale = 1.25;
+    const defaultFrameRatio = 2 / 3;
+    const frameRatioById = new Map();
+    const ratioProbeById = new Map();
+    const artImageById = {
+      1: "Portfolio/1.png",
+      2: "Portfolio/2.png",
+      3: "Portfolio/3.png",
+      4: "Portfolio/4.png",
+    };
     const audioEl = document.getElementById("bg-audio");
     const musicDefaultVolume = 0.35;
     const musicLowVolume = 0.12;
@@ -1741,6 +1837,99 @@
       return Number.isFinite(parsed) ? parsed : fallback;
     }
 
+    function parseCssUrl(value) {
+      if (!value || value === "none") return "";
+      const match = value.match(/url\((['"]?)(.*?)\1\)/);
+      return match ? match[2] : "";
+    }
+
+    function orientationFromRatio(ratio) {
+      if (!Number.isFinite(ratio) || ratio <= 0) return "portrait";
+      if (ratio > 1.05) return "landscape";
+      if (ratio < 0.95) return "portrait";
+      return "square";
+    }
+
+    function setFrameRatio(frame, ratio) {
+      if (!frame || !Number.isFinite(ratio) || ratio <= 0) return;
+      frame.style.setProperty("--frame-ratio", ratio.toFixed(4));
+      const orientation = orientationFromRatio(ratio);
+      frame.classList.toggle("is-landscape", orientation === "landscape");
+      frame.classList.toggle("is-square", orientation === "square");
+    }
+
+    function setViewerRatio(id) {
+      if (!artFrameView) return;
+      const ratio = frameRatioById.get(id) || defaultFrameRatio;
+      artFrameView.style.setProperty("--viewer-ratio", ratio.toFixed(4));
+      const orientation = orientationFromRatio(ratio);
+      artFrameView.classList.toggle("is-landscape", orientation === "landscape");
+      artFrameView.classList.toggle("is-square", orientation === "square");
+      layoutViewerFrame(ratio);
+    }
+
+    function layoutViewerFrame(ratio = defaultFrameRatio) {
+      if (!artFrameView) return;
+      const safeRatio = Number.isFinite(ratio) && ratio > 0 ? ratio : defaultFrameRatio;
+      const orientation = orientationFromRatio(safeRatio);
+      const isPortrait = orientation === "portrait";
+      const maxWidth = Math.min(window.innerWidth * (isPortrait ? 0.9 : 0.82), isPortrait ? 980 : 1180);
+      const maxHeight = Math.min(window.innerHeight * (isPortrait ? 0.92 : 0.84), isPortrait ? 980 : 860);
+      let width = maxWidth;
+      let height = width / safeRatio;
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * safeRatio;
+      }
+      artFrameView.style.width = `${Math.max(220, Math.round(width))}px`;
+      artFrameView.style.height = `${Math.max(220, Math.round(height))}px`;
+    }
+
+    function getFrameImageUrl(frame) {
+      const surface = frame?.querySelector(".art-surface");
+      if (!surface) return "";
+      const bgImage = getComputedStyle(surface).backgroundImage;
+      return parseCssUrl(bgImage);
+    }
+
+    function resolveFrameRatio(frame) {
+      const id = Number(frame?.dataset.art || 0);
+      if (!id) return;
+      if (frameRatioById.has(id)) {
+        setFrameRatio(frame, frameRatioById.get(id));
+        return;
+      }
+      const src = artImageById[id] || getFrameImageUrl(frame);
+      if (!src) return;
+      if (ratioProbeById.has(id)) {
+        ratioProbeById.get(id).then((ratio) => {
+          if (Number.isFinite(ratio)) setFrameRatio(frame, ratio);
+        });
+        return;
+      }
+      const probe = new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = img.naturalHeight ? img.naturalWidth / img.naturalHeight : defaultFrameRatio;
+          resolve(ratio);
+        };
+        img.onerror = () => resolve(defaultFrameRatio);
+        img.src = src;
+      });
+      ratioProbeById.set(id, probe);
+      probe.then((ratio) => {
+        ratioProbeById.delete(id);
+        if (!Number.isFinite(ratio) || ratio <= 0) return;
+        frameRatioById.set(id, ratio);
+        frames
+          .filter((item) => Number(item.dataset.art || 0) === id)
+          .forEach((item) => setFrameRatio(item, ratio));
+        if (currentArtId === id) {
+          setViewerRatio(id);
+        }
+      });
+    }
+
     function updateNavHeight() {
       if (!nav) return;
       root.style.setProperty("--nav-height", `${nav.offsetHeight}px`);
@@ -1752,7 +1941,7 @@
       roomMetrics.width = readCssNumber(styles.getPropertyValue("--room-w"), roomMetrics.width || room.offsetWidth);
       roomMetrics.height = readCssNumber(styles.getPropertyValue("--room-h"), roomMetrics.height || room.offsetHeight);
       roomMetrics.depth = readCssNumber(styles.getPropertyValue("--room-d"), roomMetrics.depth || roomMetrics.width);
-      const bounds = getWalkBounds();
+      const bounds = getWallBoundaries();
       if (charZRange) {
         charZRange.min = Math.round(bounds.minZ);
         charZRange.max = Math.round(bounds.maxZ);
@@ -1821,17 +2010,17 @@
       };
     }
 
-    // Wall rail boundaries - allow movement within visible room
     function getWallBoundaries() {
-      const halfWidth = roomMetrics.width / 2;  // 2000
-      // Rails are 400px from walls, add small buffer for character width
-      const railOffset = 400 + 60;  // rail position + character buffer
-      // Character needs high Z values to be inside the room
+      const extents = getRoomExtents();
+      // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
+      const insetX = Math.max(1360, roomMetrics.width * 0.34);
+      const backWallInset = Math.max(900, roomMetrics.depth * 0.11);
+      const frontWallInset = Math.max(520, roomMetrics.depth * 0.08);
       return {
-        left: -halfWidth + railOffset,   // -1540 (stops at left rail)
-        right: halfWidth - railOffset,   // 1540 (stops at right rail)
-        minZ: -3800,  // Back boundary (toward back wall; floor local Y=0 maps to charZ=-4000)
-        maxZ: 3800,   // Front boundary (toward viewer; floor local Y=8000 maps to charZ=+4000)
+        left: extents.left + insetX,
+        right: extents.right - insetX,
+        minZ: extents.minZ + backWallInset,
+        maxZ: extents.maxZ - frontWallInset,
       };
     }
 
@@ -1845,10 +2034,19 @@
       return changed;
     }
 
+    function getSpawnZ() {
+      const walls = getWallBoundaries();
+      return clamp(spawnConfig.z, walls.minZ, walls.maxZ);
+    }
+
     function spawnCharacter() {
-      // Hardcode spawn position inside the room
-      charX = 0;
-      charZ = 0;  // Spawn at room center depth
+      const walls = getWallBoundaries();
+      charX = clamp(spawnConfig.x, walls.left, walls.right);
+      charZ = getSpawnZ();
+      charYaw = normalizeYaw(spawnConfig.yaw);
+      charFloorOffset = clamp(spawnConfig.floor, 200, 1400);
+      if (floorOffsetRange) floorOffsetRange.value = Math.round(charFloorOffset);
+      if (floorOffsetInput) floorOffsetInput.value = Math.round(charFloorOffset);
       hasSpawned = true;
     }
 
@@ -1862,6 +2060,10 @@
       if (readoutTimer) clearTimeout(readoutTimer);
       readoutTimer = setTimeout(() => {
         if (!activeRail && !isDraggingChar) {
+          if (debugCharacterMode) {
+            updateCharReadout();
+            return;
+          }
           setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
         }
       }, duration);
@@ -1928,16 +2130,23 @@
       syncCharacterCamera();
     }
 
-    function updateRoomScale() {
+    function refreshRoomFitScale() {
       if (!room || !viewport) return;
       const viewportRect = viewport.getBoundingClientRect();
       if (!viewportRect.width || !viewportRect.height) return;
       const rect = room.getBoundingClientRect();
       if (!rect.width || !rect.height) return;
+      const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), baseRoomScale);
+      const focusSafe = Math.max(focusZoom, 0.001);
+      const unzoomedScale = currentScale / focusSafe;
       const scaleX = viewportRect.width / rect.width;
       const scaleY = viewportRect.height / rect.height;
-      const factor = Math.min(scaleX, scaleY);
-      const nextScale = clamp(baseRoomScale * factor * focusZoom, 0.42, 2.4);
+      const factor = Math.max(scaleX, scaleY);
+      roomFitScale = clamp(unzoomedScale * factor, 0.75, 1.8);
+    }
+
+    function updateRoomScale() {
+      const nextScale = clamp(roomFitScale * focusZoom, 0.75, 2.4);
       root.style.setProperty("--room-scale", nextScale.toFixed(3));
     }
 
@@ -1952,7 +2161,7 @@
     }
 
     function easeInOutQuad(t) {
-      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
     function animateRoomTo(target, options = {}) {
@@ -1971,7 +2180,7 @@
         shiftX: target.shiftX ?? start.shiftX,
         shiftZ: target.shiftZ ?? start.shiftZ,
       };
-      const duration = options.duration ?? 700;
+      const duration = (options.duration ?? 700) * cameraMotionScale;
       const startTime = performance.now();
 
       const step = (now) => {
@@ -2034,7 +2243,7 @@
         if (done) done();
         return;
       }
-      const ratio = clamp(desired.height / frameRect.height, 0.7, 2.8);
+      const ratio = clamp(desired.height / frameRect.height, 0.8, 2.4);
       if (Math.abs(ratio - 1) < 0.03) {
         if (done) done();
         return;
@@ -2043,9 +2252,9 @@
         rotX,
         rotY,
         zoom: focusZoom * ratio,
-        shiftZ: focusShiftZ + (ratio - 1) * 1400,
+        shiftZ: focusShiftZ + (ratio - 1) * 1200,
       }, {
-        duration: 900,
+        duration: 1150,
         onDone: done,
       });
     }
@@ -2114,38 +2323,44 @@
         shiftX: baseRoomShiftX,
         shiftZ: baseRoomShiftZ + 1400,
       };
-      const centerFrameInView = (frameToCenter, passes, done) => {
+      const centerFrameInView = (frameToCenter, maxFrames, done) => {
         if (!frameToCenter || !viewport) {
           if (done) done();
           return;
         }
-        const viewportRect = viewport.getBoundingClientRect();
-        if (!viewportRect.width) {
-          if (done) done();
-          return;
-        }
-        const framePoint = getFrameScreenPoint(frameToCenter);
-        if (!framePoint) {
-          if (done) done();
-          return;
-        }
-        const targetX = viewportRect.left + viewportRect.width / 2;
-        const deltaPx = targetX - framePoint.x;
-        if (Math.abs(deltaPx) < 8 || passes <= 0) {
-          if (done) done();
-          return;
-        }
-        const correction = clamp(deltaPx * 2.2, -1600, 1600);
-        animateRoomTo({
-          rotX,
-          rotY,
-          zoom: focusZoom,
-          shiftX: focusShiftX + correction,
-          shiftZ: focusShiftZ,
-        }, {
-          duration: 240,
-          onDone: () => centerFrameInView(frameToCenter, passes - 1, done),
-        });
+        let framesLeft = Math.max(1, maxFrames);
+        const settle = () => {
+          if (activeFocusFrame && activeFocusFrame !== frameToCenter) {
+            if (done) done();
+            return;
+          }
+          const viewportRect = viewport.getBoundingClientRect();
+          if (!viewportRect.width) {
+            if (done) done();
+            return;
+          }
+          const framePoint = getFrameScreenPoint(frameToCenter);
+          if (!framePoint) {
+            if (done) done();
+            return;
+          }
+          const targetX = viewportRect.left + viewportRect.width / 2;
+          const deltaPx = targetX - framePoint.x;
+          if (Math.abs(deltaPx) < 4 || framesLeft <= 0) {
+            if (done) done();
+            return;
+          }
+          const shiftStep = clamp((deltaPx * 0.28) / cameraMotionScale, -180, 180);
+          const yawStep = clamp((-deltaPx * 0.0022) / cameraMotionScale, -1.6, 1.6);
+          focusShiftX += shiftStep;
+          rotY = clamp(rotY + yawStep, -120, 120);
+          updateRotation();
+          updateRoomScale();
+          updateRoomShift();
+          framesLeft -= 1;
+          requestAnimationFrame(settle);
+        };
+        requestAnimationFrame(settle);
       };
       animateRoomTo(rotateTarget, {
         duration: 580,
@@ -2156,13 +2371,15 @@
               if (activeFocusFrame && activeFocusFrame !== frame) {
                 return;
               }
-              centerFrameInView(frame, 2, () => {
+              centerFrameInView(frame, 32, () => {
                 matchZoomToOverlay(frame, () => {
                   if (activeFocusFrame && activeFocusFrame !== frame) {
                     return;
                   }
-                  clearHiddenWalls();
-                  if (onDone) onDone();
+                  centerFrameInView(frame, 24, () => {
+                    clearHiddenWalls();
+                    if (onDone) onDone();
+                  });
                 });
               });
             },
@@ -2180,9 +2397,10 @@
     }
 
     function updateCharacter() {
+      ensureCharacterInBounds();
       root.style.setProperty("--char-x", `${charX}px`);
-      // Character feet glued to floor - fixed position at floor level
-      root.style.setProperty("--char-y", "-880px");  // Place feet on floor
+      root.style.setProperty("--char-floor-lift", `${charFloorOffset}px`);
+      root.style.setProperty("--char-y", `${-charFloorOffset}px`);
       root.style.setProperty("--char-z", `${charZ}px`);
       root.style.setProperty("--char-tilt", `${charTilt}deg`);
       root.style.setProperty("--char-facing", `${charYaw}deg`);
@@ -2313,12 +2531,15 @@
     }
 
     function updateArtModal(id) {
+      const sourceFrame = frameById.get(Number(id));
+      if (sourceFrame) resolveFrameRatio(sourceFrame);
       artModal.classList.forEach((name) => {
         if (name.startsWith("frame-")) {
           artModal.classList.remove(name);
         }
       });
       artModal.classList.add(`frame-${id}`);
+      setViewerRatio(id);
       const data = projectData[id];
       if (!data) return;
       if (detailsTitle) detailsTitle.textContent = data.title;
@@ -2615,6 +2836,10 @@
 
     function updateRailReadout(rail) {
       if (!rail) {
+        if (debugCharacterMode) {
+          updateCharReadout();
+          return;
+        }
         setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
         return;
       }
@@ -2625,7 +2850,7 @@
     }
 
     function updateCharReadout() {
-      setReadout(`character  x:${charX.toFixed(1)}px  y:${charY.toFixed(1)}px  z:${charZ.toFixed(1)}px  yaw:${charYaw.toFixed(1)}deg`);
+      setReadout(`character  x:${charX.toFixed(1)}px  z:${charZ.toFixed(1)}px  yaw:${charYaw.toFixed(1)}deg  floor:${charFloorOffset.toFixed(1)}px`);
     }
 
     function setCharZ(value) {
@@ -2648,7 +2873,7 @@
     function setFloorOffset(value) {
       const next = Number(value);
       if (Number.isNaN(next)) return;
-      charFloorOffset = clamp(next, -800, 800);
+      charFloorOffset = clamp(next, 200, 1400);
       if (floorOffsetRange) floorOffsetRange.value = Math.round(charFloorOffset);
       if (floorOffsetInput) floorOffsetInput.value = Math.round(charFloorOffset);
       updateCharacter();
@@ -2749,7 +2974,11 @@
       isDraggingChar = false;
       character.releasePointerCapture(event.pointerId);
       console.log("Character offsets:", { x: charX, y: charY, z: charZ, yaw: charYaw });
-      setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
+      if (debugCharacterMode) {
+        updateCharReadout();
+      } else {
+        setReadout("Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.");
+      }
     }
 
     function onCharWheel(event) {
@@ -2771,7 +3000,7 @@
     function loadCharacterModel(loader, index) {
       const source = modelSources[index];
       if (!source) {
-        flashReadout("Character model failed to load. Check /Portfolio/Character_Model path.");
+        flashReadout("Character model failed to load. Check Portfolio/Character_Model path.");
         return;
       }
       loader.load(
@@ -2832,6 +3061,180 @@
         },
         undefined,
         () => loadCharacterModel(loader, index + 1)
+      );
+    }
+
+    function queueRailRender() {
+      if (!railModelInstances.length || railRenderQueued) return;
+      railRenderQueued = true;
+      requestAnimationFrame(() => {
+        railRenderQueued = false;
+        railModelInstances.forEach((instance) => {
+          const { layer, renderer: railRenderer, scene: railScene, camera: railCamera } = instance;
+          const width = Math.max(1, layer.clientWidth || 1);
+          const height = Math.max(1, layer.clientHeight || 1);
+          railRenderer.setSize(width, height, false);
+          railCamera.aspect = width / height;
+          fitRailCamera(instance, width / height);
+          railCamera.updateProjectionMatrix();
+          railRenderer.render(railScene, railCamera);
+        });
+      });
+    }
+
+    function fitRailModel(model) {
+      model.rotation.set(0, 0, 0);
+      model.position.set(0, 0, 0);
+      model.scale.setScalar(1);
+      model.updateMatrixWorld(true);
+
+      // Align longest source axis to X (railing run direction).
+      let box = new THREE.Box3().setFromObject(model);
+      let size = box.getSize(new THREE.Vector3());
+      if (size.y >= size.x && size.y >= size.z) {
+        model.rotation.z = -Math.PI / 2;
+      } else if (size.z >= size.x && size.z >= size.y) {
+        model.rotation.y = Math.PI / 2;
+      }
+      model.updateMatrixWorld(true);
+
+      // Final guarantee: run direction must be X (not depth).
+      box = new THREE.Box3().setFromObject(model);
+      size = box.getSize(new THREE.Vector3());
+      if (size.z > size.x) {
+        model.rotation.y += Math.PI / 2;
+        model.updateMatrixWorld(true);
+      }
+
+      box = new THREE.Box3().setFromObject(model);
+      size = box.getSize(new THREE.Vector3());
+      const targetLength = 1.0;
+      const targetHeight = 1.0;
+      const scale = Math.min(
+        targetLength / Math.max(size.x, 0.001),
+        targetHeight / Math.max(size.y, 0.001)
+      );
+      model.scale.setScalar(scale);
+      model.updateMatrixWorld(true);
+
+      const scaledBox = new THREE.Box3().setFromObject(model);
+      const center = scaledBox.getCenter(new THREE.Vector3());
+      model.position.set(-center.x, -scaledBox.min.y + 0.02, -center.z);
+      const scaledSize = scaledBox.getSize(new THREE.Vector3());
+      return {
+        length: Math.max(scaledSize.x, 0.001),
+      };
+    }
+
+    function buildRailRun(segmentTemplate, side) {
+      const runGroup = new THREE.Group();
+      const fitted = fitRailModel(segmentTemplate);
+      const segmentLength = Math.max(fitted.length, 0.001);
+      const desiredSpan = 120;
+      // Overlap segments enough to eliminate holes while extending to back/front walls.
+      const pillarSpacingFactor = 0.82;
+      const spacing = segmentLength * pillarSpacingFactor;
+      const count = Math.max(3, Math.ceil(desiredSpan / spacing) + 6);
+      const offsetStart = -((count - 1) * spacing) / 2;
+      for (let i = 0; i < count; i += 1) {
+        const segment = segmentTemplate.clone(true);
+        segment.position.x = offsetStart + i * spacing;
+        runGroup.add(segment);
+      }
+      // Hedge profile: keep visual height, increase depth so it reads as volumetric.
+      runGroup.scale.set(1, 3.5, 2.4);
+      return runGroup;
+    }
+
+    function fitRailCamera(instance, aspect) {
+      const run = instance.run;
+      if (!run) return;
+      const box = new THREE.Box3().setFromObject(run);
+      if (box.isEmpty()) return;
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const fov = THREE.MathUtils.degToRad(instance.camera.fov);
+      const halfW = Math.max(size.x * 0.5, 0.25);
+      const halfH = Math.max(size.y * 0.9, 0.2);
+      const safeAspect = Math.max(0.2, aspect || 1);
+      const distW = halfW / (Math.tan(fov / 2) * safeAspect);
+      const distH = halfH / Math.tan(fov / 2);
+      // Slight zoom-in to make hedge visually span the full wall depth.
+      const dist = Math.max(2.4, distW, distH) * 0.96;
+      instance.camera.position.set(
+        center.x,
+        center.y + size.y * 0.5,
+        center.z + dist
+      );
+      instance.camera.lookAt(center.x, center.y + size.y * 0.35, center.z);
+    }
+
+    function initRailModels() {
+      if (!railModelLayers.length || railModelTemplate) return;
+      const railLoader = new GLTFLoader();
+      railLoader.load(
+        railModelSource,
+        (gltf) => {
+          railModelTemplate = gltf.scene;
+          railModelLayers.forEach((layer) => {
+            const railScene = new THREE.Scene();
+            const railRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            railRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            railRenderer.setClearColor(0x000000, 0);
+            railRenderer.outputColorSpace = THREE.SRGBColorSpace;
+            railRenderer.domElement.style.position = "absolute";
+            railRenderer.domElement.style.inset = "0";
+            railRenderer.domElement.style.width = "100%";
+            railRenderer.domElement.style.height = "100%";
+            railRenderer.domElement.style.pointerEvents = "none";
+            layer.appendChild(railRenderer.domElement);
+
+            const ambient = new THREE.AmbientLight(0xffffff, 0.72);
+            railScene.add(ambient);
+            const key = new THREE.DirectionalLight(0xffffff, 1.55);
+            key.position.set(3.4, 4.6, 2.8);
+            railScene.add(key);
+            const fill = new THREE.DirectionalLight(0xdde3f7, 0.48);
+            fill.position.set(-2.2, 2.1, -1.8);
+            railScene.add(fill);
+            const rim = new THREE.DirectionalLight(0xe6f2d4, 0.95);
+            rim.position.set(-4.8, 2.4, -3.6);
+            railScene.add(rim);
+
+            const railCamera = new THREE.PerspectiveCamera(30, 1, 0.01, 90);
+
+            const segmentTemplate = railModelTemplate.clone(true);
+            segmentTemplate.traverse((node) => {
+              if (!node.isMesh) return;
+              node.frustumCulled = false;
+              if (node.material) {
+                node.material = node.material.clone();
+                node.material.needsUpdate = true;
+              }
+            });
+            const run = buildRailRun(segmentTemplate, layer.dataset.railModel);
+            railScene.add(run);
+
+            railModelInstances.push({
+              layer,
+              renderer: railRenderer,
+              scene: railScene,
+              camera: railCamera,
+              run,
+            });
+          });
+          if (typeof ResizeObserver !== "undefined") {
+            railResizeObserver = new ResizeObserver(() => queueRailRender());
+            railModelLayers.forEach((layer) => railResizeObserver.observe(layer));
+          }
+          window.addEventListener("resize", queueRailRender);
+          queueRailRender();
+        },
+        undefined,
+        () => {
+          railModelLayers.forEach((layer) => { layer.innerHTML = ""; });
+          flashReadout("Railing model failed to load from Portfolio/hedge.glb.");
+        }
       );
     }
 
@@ -2975,14 +3378,14 @@
     }
     if (charReset) {
       charReset.addEventListener("click", () => {
-        charX = 0;
+        const walls = getWallBoundaries();
+        charX = clamp(spawnConfig.x, walls.left, walls.right);
         charY = 0;
-        charZ = 0;
-        hasSpawned = false;
-        spawnCharacter();
+        charZ = getSpawnZ();
+        hasSpawned = true;
         ensureCharacterInBounds();
         charTilt = 0;
-        charYaw = 0;
+        charYaw = normalizeYaw(spawnConfig.yaw);
         if (modelPitchRange) modelPitchRange.value = "-90";
         if (modelPitchInput) modelPitchInput.value = "-90";
         if (modelYawRange) modelYawRange.value = "180";
@@ -2990,7 +3393,7 @@
         if (modelRollRange) modelRollRange.value = "0";
         if (modelRollInput) modelRollInput.value = "0";
         updateModelOrientation();
-        setFloorOffset(550);
+        setFloorOffset(spawnConfig.floor);
         updateCharacter();
         updateNearbyFrame();
         updateCharReadout();
@@ -3010,6 +3413,8 @@
       if (event.target === overlay) closeArt();
     });
     initMusic();
+    frames.forEach((frame) => resolveFrameRatio(frame));
+    setViewerRatio(currentArtId);
     window.addEventListener("keydown", onKeyDown, { passive: false });
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", () => {
@@ -3019,9 +3424,12 @@
         updateCharacter();
         updateNearbyFrame();
       }
+      refreshRoomFitScale();
       updateRoomScale();
       updateRoomShift();
       updateSpotlightPosition(spotlitFrame);
+      layoutViewerFrame(frameRatioById.get(currentArtId) || defaultFrameRatio);
+      queueRailRender();
     });
     updateNavHeight();
     updateRoomMetrics();
@@ -3029,12 +3437,14 @@
       spawnCharacter();
     }
     ensureCharacterInBounds();
+    refreshRoomFitScale();
     updateRoomScale();
     updateRoomShift();
     updateRotation();
     updateCharacter();
     updateNearbyFrame();
     updateRailReadout(null);
+    initRailModels();
     initCharacterRenderer();
   </script>
 </body>
