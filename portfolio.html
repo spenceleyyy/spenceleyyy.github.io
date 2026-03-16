@@ -1075,18 +1075,20 @@
       position: relative;
       width: min(52vw, 560px);
       min-height: 108px;
-      border: 1px solid rgba(122, 232, 224, 0.72);
+      border: 1px solid rgba(132, 244, 235, 0.86);
       border-radius: 8px;
       background:
-        linear-gradient(160deg, rgba(255, 255, 255, 0.52) 0%, rgba(240, 250, 250, 0.28) 42%, rgba(220, 236, 238, 0.34) 100%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.58) 0%, rgba(255, 255, 255, 0.1) 46%, rgba(170, 202, 206, 0.18) 100%);
-      backdrop-filter: blur(2px) saturate(125%);
-      -webkit-backdrop-filter: blur(2px) saturate(125%);
+        linear-gradient(160deg, rgba(255, 255, 255, 0.62) 0%, rgba(246, 255, 255, 0.32) 35%, rgba(208, 230, 236, 0.34) 100%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 48%, rgba(116, 177, 187, 0.16) 100%);
+      backdrop-filter: blur(5px) saturate(145%);
+      -webkit-backdrop-filter: blur(5px) saturate(145%);
       box-shadow:
-        0 24px 36px rgba(0, 0, 0, 0.2),
-        0 8px 14px rgba(0, 0, 0, 0.14),
-        0 0 0 1px rgba(255, 255, 255, 0.52) inset,
-        0 -14px 24px rgba(255, 255, 255, 0.2) inset;
+        0 28px 42px rgba(0, 0, 0, 0.24),
+        0 12px 18px rgba(0, 0, 0, 0.16),
+        0 2px 0 rgba(255, 255, 255, 0.65) inset,
+        0 -2px 0 rgba(103, 214, 205, 0.45) inset,
+        14px 0 24px rgba(255, 255, 255, 0.16) inset,
+        -18px -14px 30px rgba(112, 154, 164, 0.18) inset;
       color: #121212;
       cursor: pointer;
       text-align: left;
@@ -1094,15 +1096,18 @@
       transform: none;
       transition: transform 0.16s ease, box-shadow 0.16s ease;
       overflow: hidden;
+      isolation: isolate;
     }
 
     .viewer-plaque:hover {
       transform: translateY(-1px);
       box-shadow:
-        0 27px 40px rgba(0, 0, 0, 0.22),
-        0 10px 16px rgba(0, 0, 0, 0.16),
-        0 0 0 1px rgba(255, 255, 255, 0.58) inset,
-        0 -14px 24px rgba(255, 255, 255, 0.22) inset;
+        0 32px 48px rgba(0, 0, 0, 0.26),
+        0 14px 20px rgba(0, 0, 0, 0.18),
+        0 2px 0 rgba(255, 255, 255, 0.7) inset,
+        0 -2px 0 rgba(103, 214, 205, 0.5) inset,
+        16px 0 28px rgba(255, 255, 255, 0.2) inset,
+        -20px -16px 32px rgba(112, 154, 164, 0.22) inset;
     }
 
     .viewer-plaque:focus-visible {
@@ -1110,26 +1115,54 @@
       outline-offset: 3px;
     }
 
-    .viewer-plaque::before,
+    .viewer-plaque::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 7px;
+      pointer-events: none;
+      background:
+        linear-gradient(118deg, rgba(255, 255, 255, 0.84) 0 9%, rgba(255, 255, 255, 0.34) 17%, transparent 30%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.44) 0%, rgba(255, 255, 255, 0) 42%, rgba(146, 198, 206, 0.2) 100%);
+      mix-blend-mode: screen;
+      opacity: 0.94;
+    }
+
     .viewer-plaque::after {
       content: "";
       position: absolute;
-      width: 22px;
-      height: 22px;
+      left: 10%;
+      right: 10%;
+      bottom: 7px;
+      height: 14px;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 40%, rgba(154, 238, 233, 0.45) 0%, rgba(154, 238, 233, 0.14) 55%, transparent 100%);
+      filter: blur(1.5px);
+      opacity: 0.9;
+    }
+
+    .viewer-plaque-bolt {
+      position: absolute;
+      bottom: 10px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background:
-        radial-gradient(circle at 35% 35%, #fafafa 0%, #ebebeb 42%, #b0b0b0 68%, #7f7f7f 100%);
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.24);
+        radial-gradient(circle at 34% 32%, #ffffff 0%, #f1f1f1 38%, #c8c8c8 62%, #919191 100%);
+      border: 1px solid rgba(115, 115, 115, 0.55);
+      box-shadow:
+        0 3px 5px rgba(0, 0, 0, 0.25),
+        0 1px 0 rgba(255, 255, 255, 0.7) inset;
+      pointer-events: none;
+      z-index: 2;
     }
 
-    .viewer-plaque::before {
-      left: 1rem;
-      bottom: 0.85rem;
+    .viewer-plaque-bolt.left {
+      left: 12px;
     }
 
-    .viewer-plaque::after {
-      right: 1rem;
-      bottom: 0.85rem;
+    .viewer-plaque-bolt.right {
+      right: 12px;
     }
 
     .viewer-plaque-title {
@@ -1139,6 +1172,9 @@
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+      position: relative;
+      z-index: 1;
     }
 
     .viewer-plaque-subtext {
@@ -1148,6 +1184,8 @@
       letter-spacing: 0.15em;
       text-transform: uppercase;
       color: rgba(0, 0, 0, 0.62);
+      position: relative;
+      z-index: 1;
     }
 
     .art-details {
@@ -1592,6 +1630,8 @@
         <button class="viewer-plaque" type="button" aria-expanded="false">
           <span class="viewer-plaque-title"></span>
           <span class="viewer-plaque-subtext">Click to see more details</span>
+          <span class="viewer-plaque-bolt left" aria-hidden="true"></span>
+          <span class="viewer-plaque-bolt right" aria-hidden="true"></span>
         </button>
       </div>
       <aside class="art-details" aria-label="Project details">
