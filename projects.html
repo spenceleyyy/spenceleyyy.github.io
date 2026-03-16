@@ -14,7 +14,6 @@
             --muted: #3d3d3d;
             --stroke: #0b0b0b;
             --shadow: #dcdcdc;
-            --hero-offset: 220px;
         }
 
         * {
@@ -140,8 +139,8 @@
         .hero-video {
             position: relative;
             width: 100%;
-            height: clamp(480px, calc(100svh - var(--hero-offset)), 920px);
-            min-height: 480px;
+            height: clamp(560px, 100svh, 960px);
+            min-height: 560px;
             overflow: hidden;
             border-radius: 0;
             margin: 2rem 0 0;
@@ -1330,7 +1329,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const body = document.body;
-            const root = document.documentElement;
             const viewButtons = Array.from(document.querySelectorAll('[data-view-target]'));
             const viewSections = {
                 storyboard: document.getElementById('storyboard-view'),
@@ -1396,27 +1394,15 @@
                 body.classList.toggle('has-scrolled', window.scrollY > 0);
             };
 
-            const syncHeroOffset = () => {
-                if (!body.classList.contains('mode-storyboard')) return;
-                if (window.scrollY > 0) return;
-                const hero = document.querySelector('#storyboard-view .hero-pin .hero-video');
-                if (!hero) return;
-                const top = hero.getBoundingClientRect().top;
-                const clamped = Math.max(120, Math.min(window.innerHeight - 120, Math.round(top)));
-                root.style.setProperty('--hero-offset', `${clamped}px`);
-            };
-
             const handleScroll = () => {
                 updateScrollState();
                 updateActiveHero();
             };
 
             handleScroll();
-            syncHeroOffset();
             window.addEventListener('scroll', handleScroll, { passive: true });
             window.addEventListener('resize', () => {
                 updateActiveHero();
-                syncHeroOffset();
             });
 
             const videos = Array.from(document.querySelectorAll('[data-scroll-video]'));
@@ -1504,7 +1490,6 @@
                 });
                 window.dispatchEvent(new Event('resize'));
                 handleScroll();
-                syncHeroOffset();
                 if (modal) {
                     modal.classList.remove('visible');
                     if (modalImage) modalImage.src = '';
