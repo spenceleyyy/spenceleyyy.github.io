@@ -958,6 +958,52 @@
       display: none;  /* Hidden for clean gallery view */
     }
 
+    .persistent-controls {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 70;
+      display: flex;
+      align-items: flex-end;
+      gap: 1.4rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+
+    .persistent-controls-item {
+      display: grid;
+      justify-items: center;
+      gap: 0.3rem;
+      min-width: 70px;
+    }
+
+    .persistent-controls-item img {
+      display: block;
+      width: auto;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .persistent-controls-item.enter img {
+      height: 40px;
+    }
+
+    .persistent-controls-item span {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.68);
+      font-family: "Sora", sans-serif;
+      white-space: nowrap;
+    }
+
     .key-group {
       display: flex;
       align-items: center;
@@ -1394,6 +1440,20 @@
         left: 6vw;
         right: 6vw;
       }
+
+      .persistent-controls {
+        bottom: 12px;
+        gap: 0.9rem;
+        padding: 0.45rem 0.65rem;
+      }
+
+      .persistent-controls-item img {
+        height: 34px;
+      }
+
+      .persistent-controls-item.enter img {
+        height: 31px;
+      }
     }
 
     @media (max-width: 640px) {
@@ -1651,6 +1711,16 @@
     </div>
   </div>
   <div class="rail-readout" id="rail-readout">Drag character to move (X/Z). Shift+drag rotates. Scroll = Z depth.</div>
+  <div class="persistent-controls" aria-hidden="true">
+    <div class="persistent-controls-item arrows">
+      <img src="Portfolio/Arrows.png" alt="" />
+      <span>Move</span>
+    </div>
+    <div class="persistent-controls-item enter">
+      <img src="Portfolio/ENTER.png" alt="" />
+      <span>Open</span>
+    </div>
+  </div>
   <div class="char-controls" id="char-controls">
     <div><strong>Character X: <span id="char-x-display">0</span>px</strong> (boundary: ±740)</div>
     <div>Character Z</div>
