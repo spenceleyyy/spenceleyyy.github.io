@@ -1731,6 +1731,8 @@
     const railModelSource = "Portfolio/hedge.glb";
     let readoutTimer = null;
     const interactionDistance = 220;
+    const interactionWorldDistance = 360;
+    const wallInteractionInset = 180;
     let spotlitFrame = interactiveFrames[0] || null;
     let currentArtId = projectIds[0] || 1;
     const cameraMotionScale = 1.25;
@@ -2013,9 +2015,9 @@
     function getWallBoundaries() {
       const extents = getRoomExtents();
       // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
-      const insetX = Math.max(1360, roomMetrics.width * 0.34);
-      const backWallInset = Math.max(900, roomMetrics.depth * 0.11);
-      const frontWallInset = Math.max(520, roomMetrics.depth * 0.08);
+      const insetX = Math.max(1410, roomMetrics.width * 0.3525);
+      const backWallInset = Math.max(980, roomMetrics.depth * 0.1225);
+      const frontWallInset = Math.max(580, roomMetrics.depth * 0.09);
       return {
         left: extents.left + insetX,
         right: extents.right - insetX,
@@ -2194,6 +2196,9 @@
         updateRotation();
         updateRoomScale();
         updateRoomShift();
+        if (spotlitFrame && viewport.classList.contains("spotlight-active")) {
+          updateSpotlightPosition(spotlitFrame);
+        }
         if (t < 1) {
           focusAnimationId = requestAnimationFrame(step);
           return;
@@ -2357,6 +2362,9 @@
           updateRotation();
           updateRoomScale();
           updateRoomShift();
+          if (spotlitFrame && viewport.classList.contains("spotlight-active")) {
+            updateSpotlightPosition(spotlitFrame);
+          }
           framesLeft -= 1;
           requestAnimationFrame(settle);
         };
@@ -2626,25 +2634,26 @@
       const face = frame.closest(".face");
       if (!face) return null;
       const extents = getRoomExtents();
+      const walls = getWallBoundaries();
       const faceWidth = face.clientWidth || 1;
       const centerX = frame.offsetLeft + frame.offsetWidth / 2;
       const t = clamp(centerX / faceWidth, 0, 1);
       if (face.classList.contains("left")) {
         return {
-          x: extents.left,
+          x: clamp(walls.left + wallInteractionInset, extents.left, extents.right),
           z: extents.maxZ - t * (extents.maxZ - extents.minZ),
         };
       }
       if (face.classList.contains("right")) {
         return {
-          x: extents.right,
+          x: clamp(walls.right - wallInteractionInset, extents.left, extents.right),
           z: extents.minZ + t * (extents.maxZ - extents.minZ),
         };
       }
       if (face.classList.contains("back")) {
         return {
           x: extents.left + t * (extents.right - extents.left),
-          z: extents.minZ,
+          z: clamp(walls.minZ + wallInteractionInset, extents.minZ, extents.maxZ),
         };
       }
       return { x: 0, z: 0 };
@@ -2674,6 +2683,15 @@
       let nearest = null;
       let minDistance = Infinity;
       interactiveFrames.forEach((frame) => {
+        const interactionPoint = getFrameInteractionPoint(frame);
+        if (interactionPoint) {
+          const worldDist = Math.hypot(interactionPoint.x - charX, interactionPoint.z - charZ);
+          const face = frame.closest(".face");
+          const worldThreshold = face?.classList.contains("back")
+            ? interactionWorldDistance * 1.1
+            : interactionWorldDistance;
+          if (worldDist > worldThreshold) return;
+        }
         const target = getFrameScreenPoint(frame);
         if (!target) return;
         const dx = target.x - charPoint.x;
