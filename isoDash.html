@@ -562,21 +562,21 @@
           <button class="objective-button" type="button" data-objective-id="signal-archive">
             <span class="objective-index">01</span>
             <span class="objective-name">Signal Archive</span>
-            <span class="objective-sub">EEG + methods decks</span>
+            <span class="objective-sub">Stats Intro deck</span>
           </button>
         </li>
         <li class="objective-item">
           <button class="objective-button" type="button" data-objective-id="lab-terminal">
             <span class="objective-index">02</span>
             <span class="objective-name">Lab Terminal</span>
-            <span class="objective-sub">Mentorship decks</span>
+            <span class="objective-sub">Building Intro deck</span>
           </button>
         </li>
         <li class="objective-item">
           <button class="objective-button" type="button" data-objective-id="insight-hub">
             <span class="objective-index">03</span>
             <span class="objective-name">Insight Hub</span>
-            <span class="objective-sub">Project decks</span>
+            <span class="objective-sub">Trust Automation deck</span>
           </button>
         </li>
       </ul>
@@ -645,7 +645,7 @@
     const charPos = new THREE.Vector3(0, 0, 0);
     let walkBounds = { minX: -8, maxX: 8, minZ: -5, maxZ: 5 };
     let boardAngleZ = -45;
-    let boardAngleX = 55;
+    let boardAngleX = 43;
     let facingYaw = 0;
 
     // Three.js objects
@@ -741,13 +741,12 @@
       {
         id: "signal-archive",
         title: "Signal Archive",
-        subtitle: "EEG + methods decks",
+        subtitle: "Stats Intro deck",
         anchor: { u: 0.2, v: 0.2 },
         resource: {
           title: "Signal Archive",
-          body: "Download slide decks for EEG setup and baseline methods.",
+          body: "Download the statistics introduction mentorship deck.",
           files: [
-            { label: "10-20 Electrode System", href: "EEGResources/10-20.pptx" },
             { label: "Stats Intro", href: "Teaching/Stats%20Intro.pptx" },
           ],
         },
@@ -756,14 +755,13 @@
       {
         id: "lab-terminal",
         title: "Lab Terminal",
-        subtitle: "Mentorship decks",
+        subtitle: "Building Intro deck",
         anchor: { u: 0.78, v: 0.32 },
         resource: {
           title: "Lab Terminal",
-          body: "Core mentorship and automation slide decks.",
+          body: "Download the building an introduction mentorship deck.",
           files: [
             { label: "Building an Introduction", href: "Teaching/Building%20an%20Introduction.pptx" },
-            { label: "Trust in Automation", href: "Teaching/Trust%20in%20Automation.pptx" },
           ],
         },
         color: "#ff5fd1",
@@ -771,14 +769,13 @@
       {
         id: "insight-hub",
         title: "Insight Hub",
-        subtitle: "Project decks",
+        subtitle: "Trust Automation deck",
         anchor: { u: 0.35, v: 0.72 },
         resource: {
           title: "Insight Hub",
-          body: "Project presentation decks available for direct download.",
+          body: "Download the trust in automation mentorship deck.",
           files: [
-            { label: "HFES FIPRED Print", href: "projects/HFESFIPREDPrint.pptx" },
-            { label: "Website Template", href: "app/site-template/Website.pptx" },
+            { label: "Trust in Automation", href: "Teaching/Trust%20in%20Automation.pptx" },
           ],
         },
         color: "#7dff9a",
