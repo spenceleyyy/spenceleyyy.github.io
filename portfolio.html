@@ -2726,7 +2726,7 @@
       const x = ((rect.left + rect.width / 2) - viewportRect.left) / viewportRect.width;
       const y = ((rect.top + rect.height / 2) - viewportRect.top) / viewportRect.height;
       const frameSize = Math.max(rect.width, rect.height);
-      const spotSize = clamp(frameSize * 1.05, 300, 640);
+      const spotSize = clamp(frameSize * 0.62, 180, 360);
       const clampedX = clamp(x, 0.02, 0.98) * 100;
       const clampedY = clamp(y, 0.02, 0.98) * 100;
       viewport.style.setProperty("--spot-x", `${clampedX}%`);
