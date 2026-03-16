@@ -967,21 +967,11 @@
       display: flex;
       align-items: flex-end;
       gap: 1.4rem;
-      padding: 0.55rem 0.85rem;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
       pointer-events: none;
     }
 
     .persistent-controls-item {
-      display: grid;
-      justify-items: center;
-      gap: 0.3rem;
-      min-width: 70px;
+      display: block;
     }
 
     .persistent-controls-item img {
@@ -993,15 +983,6 @@
 
     .persistent-controls-item.enter img {
       height: 40px;
-    }
-
-    .persistent-controls-item span {
-      font-size: 0.58rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(0, 0, 0, 0.68);
-      font-family: "Sora", sans-serif;
-      white-space: nowrap;
     }
 
     .key-group {
@@ -1444,7 +1425,6 @@
       .persistent-controls {
         bottom: 12px;
         gap: 0.9rem;
-        padding: 0.45rem 0.65rem;
       }
 
       .persistent-controls-item img {
@@ -1714,11 +1694,9 @@
   <div class="persistent-controls" aria-hidden="true">
     <div class="persistent-controls-item arrows">
       <img src="Portfolio/Arrows.png" alt="" />
-      <span>Move</span>
     </div>
     <div class="persistent-controls-item enter">
       <img src="Portfolio/ENTER.png" alt="" />
-      <span>Open</span>
     </div>
   </div>
   <div class="char-controls" id="char-controls">
