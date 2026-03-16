@@ -970,7 +970,7 @@
       pointer-events: none;
     }
 
-    .art-overlay.active ~ .persistent-controls {
+    .persistent-controls.hidden {
       display: none;
     }
 
@@ -1763,6 +1763,7 @@
     const detailsMeta = document.querySelector(".details-meta");
     const detailsSections = document.querySelector(".details-sections");
     const detailsLinks = document.querySelector(".details-links");
+    const persistentControls = document.querySelector(".persistent-controls");
     const prevBtn = document.querySelector(".art-arrow.left");
     const nextBtn = document.querySelector(".art-arrow.right");
     const closeBtn = document.querySelector(".art-close");
@@ -2765,6 +2766,7 @@
       updateSpotlightByIndex(targetId);
       setDetailsOpen(false);
       isViewingArt = true;
+      if (persistentControls) persistentControls.classList.add("hidden");
       lowerMusic();
       focusOnFrame(targetId, () => {
         overlay.classList.add("active");
@@ -2777,6 +2779,7 @@
       overlay.setAttribute("aria-hidden", "true");
       setDetailsOpen(false);
       isViewingArt = false;
+      if (persistentControls) persistentControls.classList.remove("hidden");
       updateNearbyFrame();
       restoreMusic();
       restoreRoomView();
