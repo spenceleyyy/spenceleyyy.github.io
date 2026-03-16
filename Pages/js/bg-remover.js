@@ -271,6 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const bgSensitivityValue = document.getElementById('bg-sensitivity-value');
             const bgFeather = document.getElementById('bg-feather');
             const bgFeatherValue = document.getElementById('bg-feather-value');
+            const processingText = processingContainer?.querySelector('p');
+            let aiPipelinePromise = null;
+            let aiPipeline = null;
+            let aiMaskCache = null;
 
             const updateControlDisplays = () => {
                 if (bgSensitivity && bgSensitivityValue) {
@@ -281,6 +285,159 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
             updateControlDisplays();
+
+            const smoothstep = (edge0, edge1, x) => {
+                if (edge0 === edge1) return x >= edge1 ? 1 : 0;
+                const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+                return t * t * (3 - 2 * t);
+            };
+
+            const setProcessingMessage = (message) => {
+                if (processingText) processingText.textContent = message;
+            };
+
+            const toMaskArrayFromImageData = (imgData) => {
+                const src = imgData.data;
+                const out = new Uint8ClampedArray(imgData.width * imgData.height);
+                const useAlpha = src.length >= out.length * 4;
+                for (let i = 0; i < out.length; i++) {
+                    out[i] = useAlpha ? src[i * 4 + 3] : src[i * 4];
+                }
+                return out;
+            };
+
+            const resizeMaskToImage = (maskArr, srcW, srcH, targetW, targetH) => {
+                if (srcW === targetW && srcH === targetH) return maskArr;
+                const srcCanvas = document.createElement('canvas');
+                srcCanvas.width = srcW;
+                srcCanvas.height = srcH;
+                const srcCtx = srcCanvas.getContext('2d', { willReadFrequently: true });
+                const rgba = new Uint8ClampedArray(srcW * srcH * 4);
+                for (let i = 0; i < maskArr.length; i++) {
+                    const a = maskArr[i];
+                    const p = i * 4;
+                    rgba[p] = a;
+                    rgba[p + 1] = a;
+                    rgba[p + 2] = a;
+                    rgba[p + 3] = 255;
+                }
+                srcCtx.putImageData(new ImageData(rgba, srcW, srcH), 0, 0);
+
+                const outCanvas = document.createElement('canvas');
+                outCanvas.width = targetW;
+                outCanvas.height = targetH;
+                const outCtx = outCanvas.getContext('2d', { willReadFrequently: true });
+                outCtx.drawImage(srcCanvas, 0, 0, targetW, targetH);
+                const outData = outCtx.getImageData(0, 0, targetW, targetH);
+                const out = new Uint8ClampedArray(targetW * targetH);
+                for (let i = 0; i < out.length; i++) out[i] = outData.data[i * 4];
+                return out;
+            };
+
+            const normalizeModelMask = async (maskLike, targetW, targetH) => {
+                if (!maskLike) return null;
+
+                // Transformers RawImage-like object
+                if (typeof maskLike.toCanvas === 'function') {
+                    const canvas = await maskLike.toCanvas();
+                    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const rawMask = toMaskArrayFromImageData(imgData);
+                    return resizeMaskToImage(rawMask, canvas.width, canvas.height, targetW, targetH);
+                }
+
+                if (maskLike instanceof HTMLCanvasElement) {
+                    const ctx = maskLike.getContext('2d', { willReadFrequently: true });
+                    const imgData = ctx.getImageData(0, 0, maskLike.width, maskLike.height);
+                    const rawMask = toMaskArrayFromImageData(imgData);
+                    return resizeMaskToImage(rawMask, maskLike.width, maskLike.height, targetW, targetH);
+                }
+
+                if (maskLike instanceof ImageData) {
+                    const rawMask = toMaskArrayFromImageData(maskLike);
+                    return resizeMaskToImage(rawMask, maskLike.width, maskLike.height, targetW, targetH);
+                }
+
+                if (maskLike?.data && Number.isFinite(maskLike.width) && Number.isFinite(maskLike.height)) {
+                    const typed = maskLike.data;
+                    const pxCount = maskLike.width * maskLike.height;
+                    const out = new Uint8ClampedArray(pxCount);
+                    if (typed.length >= pxCount * 4) {
+                        for (let i = 0; i < pxCount; i++) out[i] = typed[i * 4];
+                    } else {
+                        for (let i = 0; i < pxCount; i++) out[i] = typed[i];
+                    }
+                    return resizeMaskToImage(out, maskLike.width, maskLike.height, targetW, targetH);
+                }
+
+                return null;
+            };
+
+            const ensureAIPipeline = async () => {
+                if (aiPipeline) return aiPipeline;
+                if (aiPipelinePromise) return aiPipelinePromise;
+
+                aiPipelinePromise = (async () => {
+                    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+                    env.allowLocalModels = false;
+                    env.useBrowserCache = true;
+
+                    const candidates = ['briaai/RMBG-1.4', 'Xenova/modnet'];
+                    let lastError = null;
+                    for (const modelId of candidates) {
+                        try {
+                            const loaded = await pipeline('image-segmentation', modelId, { quantized: true });
+                            aiPipeline = loaded;
+                            return aiPipeline;
+                        } catch (err) {
+                            lastError = err;
+                        }
+                    }
+                    throw lastError || new Error('No compatible segmentation model could be loaded.');
+                })();
+
+                return aiPipelinePromise;
+            };
+
+            const buildAIMask = async (img) => {
+                const pipe = await ensureAIPipeline();
+                const result = await pipe(img, { threshold: 0, mask_threshold: 0 });
+                const width = img.naturalWidth || img.width;
+                const height = img.naturalHeight || img.height;
+
+                // Direct single mask shape
+                if (result?.mask) {
+                    const direct = await normalizeModelMask(result.mask, width, height);
+                    if (direct) return direct;
+                }
+
+                // List of semantic masks
+                if (Array.isArray(result) && result.length) {
+                    const combined = new Float32Array(width * height);
+                    let anyForeground = false;
+
+                    for (const item of result) {
+                        const label = String(item?.label || '').toLowerCase();
+                        if (label.includes('background')) continue;
+                        const mask = await normalizeModelMask(item?.mask, width, height);
+                        if (!mask) continue;
+                        anyForeground = true;
+                        const weight = Number.isFinite(item?.score) ? clamp(item.score, 0.1, 1) : 1;
+                        for (let i = 0; i < mask.length; i++) {
+                            const v = (mask[i] / 255) * weight;
+                            if (v > combined[i]) combined[i] = v;
+                        }
+                    }
+
+                    if (anyForeground) {
+                        const out = new Uint8ClampedArray(width * height);
+                        for (let i = 0; i < out.length; i++) out[i] = Math.round(combined[i] * 255);
+                        return out;
+                    }
+                }
+
+                return null;
+            };
 
             const sampleEdgeColors = (imageData) => {
                 const { data, width, height } = imageData;
@@ -683,7 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return out;
             };
 
-            const applyBackgroundRemoval = () => {
+            const applyHeuristicBackgroundRemoval = () => {
                 if (!processedCanvas || !uploadedImage) return;
                 try {
                     const ctx = processedCanvas.getContext('2d', { willReadFrequently: true });
@@ -742,32 +899,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
 
-            const processBackground = ({ skipLoader = false } = {}) => {
-                if (!uploadedImage) return;
-                const finalize = () => {
-                    requestAnimationFrame(() => {
-                        try {
-                            applyBackgroundRemoval();
-                            previewContainer.style.display = 'grid';
-                            bgOutput.style.display = 'block';
-                            processingContainer.style.display = 'none';
-                        } catch (e) {
-                            console.error("Animation frame error", e);
-                            processingContainer.innerHTML = '<p style="color: #ff6b6b">Error processing image</p>';
-                        }
-                    });
-                };
+            const applyAIMaskToCanvas = (mask) => {
+                if (!processedCanvas || !uploadedImage || !mask) return false;
+                const ctx = processedCanvas.getContext('2d', { willReadFrequently: true });
+                processedCanvas.width = uploadedImage.width;
+                processedCanvas.height = uploadedImage.height;
+                ctx.drawImage(uploadedImage, 0, 0);
 
-                if (skipLoader) {
-                    finalize();
-                    return;
+                const imageData = ctx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+                const data = imageData.data;
+                const total = processedCanvas.width * processedCanvas.height;
+                const sensitivityValue = bgSensitivity ? Number(bgSensitivity.value) : 65;
+                const clampedSensitivity = clamp(sensitivityValue, 30, 95);
+                const sensitivityNorm = (clampedSensitivity - 30) / 65;
+                const featherValue = bgFeather ? Number(bgFeather.value) : 2;
+                const featherRadius = clamp(Math.round(featherValue), 0, 6);
+
+                // Higher sensitivity removes more weak foreground pixels.
+                const cutoff = 72 + sensitivityNorm * 98;
+                const softness = 18 + (1 - sensitivityNorm) * 22;
+                const alphaBase = new Uint8ClampedArray(total);
+                for (let i = 0; i < total; i++) {
+                    const confidence = mask[i];
+                    const a = smoothstep(cutoff - softness, cutoff + softness, confidence) * 255;
+                    alphaBase[i] = Math.round(a);
                 }
+                const alphaMask = boxBlurMask(alphaBase, processedCanvas.width, processedCanvas.height, featherRadius);
+                for (let i = 0; i < total; i++) data[i * 4 + 3] = alphaMask[i];
+                ctx.putImageData(imageData, 0, 0);
+                return true;
+            };
 
-                processingContainer.style.display = 'block';
-                previewContainer.style.display = 'none';
-                bgOutput.style.display = 'none';
+            const applyBackgroundRemoval = async () => {
+                if (!processedCanvas || !uploadedImage) return;
+                try {
+                    if (!aiMaskCache) {
+                        setProcessingMessage('Loading AI model...');
+                        aiMaskCache = await buildAIMask(uploadedImage);
+                    }
+                    if (aiMaskCache && applyAIMaskToCanvas(aiMaskCache)) {
+                        setProcessingMessage('AI matte complete.');
+                        return;
+                    }
+                    throw new Error('AI mask unavailable.');
+                } catch (aiError) {
+                    console.warn('AI remover unavailable, falling back to heuristic method.', aiError);
+                    setProcessingMessage('Using classic edge model...');
+                    applyHeuristicBackgroundRemoval();
+                }
+            };
 
-                setTimeout(finalize, 50);
+            const processBackground = async ({ skipLoader = false } = {}) => {
+                if (!uploadedImage) return;
+                try {
+                    if (!skipLoader) {
+                        setProcessingMessage('Preparing matte...');
+                        processingContainer.style.display = 'block';
+                        previewContainer.style.display = 'none';
+                        bgOutput.style.display = 'none';
+                    }
+                    await applyBackgroundRemoval();
+                    previewContainer.style.display = 'grid';
+                    bgOutput.style.display = 'block';
+                    processingContainer.style.display = 'none';
+                } catch (e) {
+                    console.error('Background removal error', e);
+                    setProcessingMessage('Error processing image');
+                }
             };
 
             const handleImageUpload = (file) => {
@@ -785,6 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 reader.onload = (e) => {
                     uploadedImage = new Image();
                     uploadedImage.onload = () => {
+                        aiMaskCache = null;
                         originalPreview.src = uploadedImage.src;
                         try {
                             const ctx = processedCanvas.getContext('2d', { willReadFrequently: true });
@@ -833,12 +1032,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            removeBgBtn?.addEventListener('click', () => {
+            removeBgBtn?.addEventListener('click', async () => {
                 if (!uploadedImage) {
                     console.warn('Upload an image before processing.');
                     return;
                 }
-                processBackground();
+                await processBackground();
             });
 
             let sliderTimeout;
@@ -847,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (uploadedImage && previewContainer.style.display === 'grid') {
                     clearTimeout(sliderTimeout);
                     sliderTimeout = setTimeout(() => {
-                        processBackground({ skipLoader: true });
+                        processBackground({ skipLoader: true }).catch((err) => console.error(err));
                     }, 50);
                 }
             });
@@ -856,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (uploadedImage && previewContainer.style.display === 'grid') {
                     clearTimeout(sliderTimeout);
                     sliderTimeout = setTimeout(() => {
-                        processBackground({ skipLoader: true });
+                        processBackground({ skipLoader: true }).catch((err) => console.error(err));
                     }, 50);
                 }
             });
