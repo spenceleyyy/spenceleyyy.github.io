@@ -2749,11 +2749,11 @@
     }
 
     function triggerWalk() {
+      playFootstepSound();
       if (!walkAction) return;
       walkAction.paused = false;
       walkAction.enabled = true;
       walkAction.play();
-      playFootstepSound();
       clearTimeout(walkTimeout);
       walkTimeout = setTimeout(() => {
         if (walkAction) walkAction.paused = true;
