@@ -2710,7 +2710,6 @@
       const rot = Math.atan2(dirX, dirY) * (180 / Math.PI);
       const scale = 1 + (Math.random() - 0.5) * 2 * footstepScaleVariance;
       footstepHistory.unshift({ x: stepX, y: stepY, rot, scale, time: performance.now(), fadeStart: null });
-      playFootstepSound();
       if (footstepHistory.length > maxFootsteps) {
         const oldest = footstepHistory[footstepHistory.length - 1];
         if (oldest && !oldest.fadeStart) {
@@ -2754,6 +2753,7 @@
       walkAction.paused = false;
       walkAction.enabled = true;
       walkAction.play();
+      playFootstepSound();
       clearTimeout(walkTimeout);
       walkTimeout = setTimeout(() => {
         if (walkAction) walkAction.paused = true;
