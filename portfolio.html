@@ -806,6 +806,12 @@
       transform: translate(-50%, -50%) translate(var(--char-x), var(--char-z)) translateZ(var(--char-y));
     }
 
+    .character-plane.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     .character {
       position: absolute;
       left: 0;
@@ -1529,6 +1535,9 @@
     <audio id="bg-audio" preload="auto" loop>
       <source src="Portfolio/Gallery%20in%20Soft%20Shoes.mp3" type="audio/mpeg" />
     </audio>
+    <audio id="footstep-audio" preload="auto">
+      <source src="Portfolio/Gallery%20in%20Soft%20Shoes.mp3" type="audio/mpeg" />
+    </audio>
     <section class="gallery-viewport" id="gallery-scene" aria-label="3D gallery preview">
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
         <div class="face back">
@@ -1789,6 +1798,7 @@
     window.__sceneBooted = true;
     const root = document.documentElement;
     const room = document.querySelector(".room");
+    const characterPlane = document.querySelector(".character-plane");
     const character = document.querySelector(".character");
     const characterLayer = document.getElementById("character-layer");
     const viewport = document.querySelector(".gallery-viewport");
@@ -1940,8 +1950,11 @@
       4: "Portfolio/4.png",
     };
     const audioEl = document.getElementById("bg-audio");
+    const footstepAudioEl = document.getElementById("footstep-audio");
     const musicDefaultVolume = 0.35;
     const musicLowVolume = 0.12;
+    const footstepVolume = 0.3;
+    let lastFootstepSoundAt = 0;
     const projectData = {
       1: {
         title: "Atlas Quest",
@@ -2269,6 +2282,10 @@
       if (!audioEl) return;
       audioEl.volume = musicDefaultVolume;
       audioEl.muted = true;
+      if (footstepAudioEl) {
+        footstepAudioEl.volume = footstepVolume;
+        footstepAudioEl.muted = true;
+      }
       const tryPlay = () => {
         audioEl.play().then(() => {
           audioEl.muted = false;
@@ -2280,9 +2297,21 @@
       const resume = () => {
         audioEl.muted = false;
         audioEl.play().catch(() => {});
+        if (footstepAudioEl) {
+          footstepAudioEl.muted = false;
+        }
       };
       window.addEventListener("pointerdown", resume, { once: true });
       window.addEventListener("keydown", resume, { once: true });
+    }
+
+    function playFootstepSound() {
+      if (!footstepAudioEl || isViewingArt) return;
+      const now = performance.now();
+      if (now - lastFootstepSoundAt < 120) return;
+      lastFootstepSoundAt = now;
+      footstepAudioEl.currentTime = 0;
+      footstepAudioEl.play().catch(() => {});
     }
 
     function lowerMusic() {
@@ -2681,6 +2710,7 @@
       const rot = Math.atan2(dirX, dirY) * (180 / Math.PI);
       const scale = 1 + (Math.random() - 0.5) * 2 * footstepScaleVariance;
       footstepHistory.unshift({ x: stepX, y: stepY, rot, scale, time: performance.now(), fadeStart: null });
+      playFootstepSound();
       if (footstepHistory.length > maxFootsteps) {
         const oldest = footstepHistory[footstepHistory.length - 1];
         if (oldest && !oldest.fadeStart) {
@@ -2811,6 +2841,7 @@
       updateSpotlightByIndex(targetId);
       setDetailsOpen(false);
       isViewingArt = true;
+      if (characterPlane) characterPlane.classList.add("hidden");
       if (persistentControls) persistentControls.classList.add("hidden");
       lowerMusic();
       focusOnFrame(targetId, () => {
@@ -2824,6 +2855,7 @@
       overlay.setAttribute("aria-hidden", "true");
       setDetailsOpen(false);
       isViewingArt = false;
+      if (characterPlane) characterPlane.classList.remove("hidden");
       if (persistentControls) persistentControls.classList.remove("hidden");
       updateNearbyFrame();
       restoreMusic();
