@@ -96,8 +96,8 @@
     <section class="cv-header">
       <h1>CV</h1>
       <div class="cv-actions">
-        <a class="download-button" href="Spenceley_CV2026.docx" download>Download CV</a>
-        <a class="download-button ghost" href="Spenceley_CV2026.docx" target="_blank" rel="noopener">Open .docx</a>
+        <a class="download-button" href="CV/Spenceley_CV2026.pdf" download>Download CV</a>
+        <a class="download-button ghost" href="CV/Spenceley_CV2026.docx" target="_blank" rel="noopener">Open .docx</a>
       </div>
     </section>
 
@@ -110,15 +110,14 @@
     </p>
   </main>
 
-  <script src="navigation.js"></script>
+  <script src="js/navigation.js"></script>
   <script>
     const viewer = document.getElementById('cv-viewer');
-    const fileName = 'Spenceley_CV2026.docx';
-    const fileUrl = new URL(fileName, window.location.href).href;
-    viewer.src = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+    const previewFile = 'CV/Spenceley_CV2026.pdf';
+    viewer.src = previewFile;
 
     const updatedLabel = document.getElementById('cv-updated');
-    fetch(fileName, { method: 'HEAD' })
+    fetch(previewFile, { method: 'HEAD' })
       .then((response) => {
         const lastModified = response.headers.get('Last-Modified');
         if (!lastModified) {
