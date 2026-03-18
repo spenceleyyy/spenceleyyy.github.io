@@ -249,9 +249,9 @@ main {
 }
 
 .people-timeline {
-    max-width: 1200px;
+    max-width: 1700px;
     margin: 5rem auto 0;
-    padding: 0 6% 6rem;
+    padding: 0 clamp(1.5rem, 4vw, 5rem) 6rem;
     display: flex;
     flex-direction: column;
     gap: 7rem;
@@ -274,7 +274,7 @@ main {
     box-shadow: 0 50px 120px rgba(0, 0, 0, 0.45);
     transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1), 
                 box-shadow 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-    width: min(1100px, 100%);
+    width: min(1500px, 100%);
     margin: 0 auto;
 }
 
