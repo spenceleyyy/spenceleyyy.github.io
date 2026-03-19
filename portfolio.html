@@ -1842,7 +1842,7 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 3.5,
-      z: 0,
+      z: 2000,
       yaw: -180,
       floor: 880,
     };
@@ -2245,7 +2245,7 @@
 
     function getSpawnZ() {
       const walls = getWallBoundaries();
-      return (walls.minZ + walls.maxZ) * 0.5;
+      return clamp(spawnConfig.z, walls.minZ, walls.maxZ);
     }
 
     function spawnCharacter() {
