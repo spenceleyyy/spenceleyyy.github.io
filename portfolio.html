@@ -1842,7 +1842,7 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 0,
-      z: -1800,
+      z: 3200,
       yaw: -180,
       floor: 880,
     };
@@ -2224,7 +2224,7 @@
       // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
       const insetX = Math.max(1410, roomMetrics.width * 0.3525);
       const backWallInset = Math.max(1300, roomMetrics.depth * 0.165);
-      const frontWallInset = Math.max(1300, roomMetrics.depth * 0.165);
+      const frontWallInset = Math.max(650, roomMetrics.depth * 0.0825);
       return {
         left: extents.left + insetX,
         right: extents.right - insetX,
