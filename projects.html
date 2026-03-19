@@ -50,8 +50,9 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.08);
         }
         .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: none;
+            width: 100%;
+            margin: 0;
             padding: 0.85rem 0;
             display: flex;
             justify-content: space-between;
@@ -116,7 +117,14 @@
             left: 0;
             min-width: 220px;
             background: var(--bg-panel);
-            display: none !important;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 10px;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.26);
+        }
+        .dropdown:hover .dropdown-menu,
+        .dropdown:focus-within .dropdown-menu {
+            display: block;
         }
         .dropdown .caret {
             display: none;
@@ -623,10 +631,10 @@
             --color-text-body: #A294A6;
             --color-text-light: #641E4F;
             --color-white: #FFFBEB;
-            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.05), transparent 30%),
-                        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.04), transparent 25%),
-                        repeating-linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 6px, transparent 6px, transparent 12px),
-                        var(--color-background-main);
+            background:
+                        radial-gradient(circle at 14% 12%, rgba(232, 144, 190, 0.2), transparent 38%),
+                        radial-gradient(circle at 86% 88%, rgba(90, 199, 255, 0.2), transparent 35%),
+                        linear-gradient(145deg, #0f2530 0%, #1a2a3c 45%, #3a2444 100%);
             color: var(--ink);
             padding: 0 5vw 4rem;
         }
@@ -663,7 +671,7 @@
         body.mode-list .logo-image {
             height: 46px;
             width: auto;
-            filter: grayscale(1) contrast(1.1);
+            filter: none;
         }
         body.mode-list .full-name {
             color: var(--color-text-dark);
@@ -681,7 +689,7 @@
         }
 
         #list-view {
-            max-width: 1400px;
+            max-width: 1550px;
             margin: 0 auto;
         }
         body.mode-list .page-header {
@@ -709,12 +717,12 @@
             width: 100%;
             margin: 0 auto 2rem;
             overflow: hidden;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border-radius: 0;
+            box-shadow: none;
             cursor: pointer;
             transition: transform 0.3s;
             position: relative;
-            background: var(--color-background-secondary);
+            background: transparent;
         }
         body.mode-list .poster-container:hover {
             transform: scale(1.005);
@@ -722,17 +730,17 @@
         body.mode-list .poster-image {
             width: 100%;
             height: auto;
-            max-height: 600px;
-            object-fit: contain;
+            max-height: 760px;
+            object-fit: cover;
             display: block;
             margin: 0 auto;
             transition: opacity 0.3s;
-            background: var(--color-background-secondary);
-            min-height: 200px;
+            background: transparent;
+            min-height: 0;
             font-size: 1rem;
             color: var(--color-text-body);
             text-align: center;
-            line-height: 200px;
+            line-height: normal;
         }
         body.mode-list .dual-image-container {
             width: 100%;
@@ -745,7 +753,7 @@
             margin: 0;
         }
         body.mode-list .project-details {
-            max-width: 1000px;
+            max-width: 1120px;
             margin: 0 auto;
         }
         body.mode-list .project-title {
@@ -757,7 +765,7 @@
             line-height: 1.25;
         }
         body.mode-list .project-authors {
-            font-size: 1.125rem;
+            font-size: 1.24rem;
             color: var(--color-text-body);
             margin-bottom: 1.5rem;
             font-weight: 400;
@@ -788,9 +796,9 @@
             vertical-align: middle;
         }
         body.mode-list .project-abstract {
-            font-size: 1.05rem;
+            font-size: 1.16rem;
             color: var(--color-text-body);
-            line-height: 1.75;
+            line-height: 1.85;
             text-align: justify;
         }
         body.mode-list .project-abstract p {
