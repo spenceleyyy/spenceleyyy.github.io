@@ -1954,7 +1954,7 @@
     const musicDefaultVolume = 0.35;
     const musicLowVolume = 0.12;
     const footstepVolume = 0.3;
-    let lastFootstepSoundAt = 0;
+    let footstepStopTimeout = null;
     const projectData = {
       1: {
         title: "Atlas Quest",
@@ -2285,6 +2285,7 @@
       if (footstepAudioEl) {
         footstepAudioEl.volume = footstepVolume;
         footstepAudioEl.muted = true;
+        footstepAudioEl.loop = true;
       }
       const tryPlay = () => {
         audioEl.play().then(() => {
@@ -2307,11 +2308,16 @@
 
     function playFootstepSound() {
       if (!footstepAudioEl || isViewingArt) return;
-      const now = performance.now();
-      if (now - lastFootstepSoundAt < 120) return;
-      lastFootstepSoundAt = now;
-      footstepAudioEl.currentTime = 0;
-      footstepAudioEl.play().catch(() => {});
+      if (footstepAudioEl.paused) {
+        footstepAudioEl.currentTime = 0;
+        footstepAudioEl.play().catch(() => {});
+      }
+      if (footstepStopTimeout) clearTimeout(footstepStopTimeout);
+      footstepStopTimeout = setTimeout(() => {
+        if (!footstepAudioEl) return;
+        footstepAudioEl.pause();
+        footstepAudioEl.currentTime = 0;
+      }, 220);
     }
 
     function lowerMusic() {
@@ -2841,6 +2847,10 @@
       updateSpotlightByIndex(targetId);
       setDetailsOpen(false);
       isViewingArt = true;
+      if (footstepAudioEl) {
+        footstepAudioEl.pause();
+        footstepAudioEl.currentTime = 0;
+      }
       if (characterPlane) characterPlane.classList.add("hidden");
       if (persistentControls) persistentControls.classList.add("hidden");
       lowerMusic();
