@@ -2522,8 +2522,8 @@ function updateCompare(){
 /* ═══════════════════════════════════════════════
    APPLE HEALTH — SYNC & IMPORT
 ═══════════════════════════════════════════════ */
-const getHealthData  = () => store.getData('health') || {};
-const saveHealthData = d  => store.setData('health', d);
+function getHealthData()  { return store.getData('health') || {}; }
+function saveHealthData(d) { store.setData('health', d); }
 
 /* Merge a single day's payload from Shortcuts URL params */
 function mergeShortcutsHealth(params){
