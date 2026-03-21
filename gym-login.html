@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Atlas Quest" />
   <title>Atlas Quest</title>
   <link rel="icon" href="logos/RSlogoUPDATED.png" />
   <style>
@@ -57,12 +60,8 @@
     .scroll-fade:nth-child(3) { transition-delay: .12s; }
     .scroll-fade:nth-child(4) { transition-delay: .18s; }
     .scroll-fade:nth-child(5) { transition-delay: .24s; }
-    /* CSS fallback: active-screen elements always animate in */
-    .screen.active .scroll-fade { animation: slideUp .45s cubic-bezier(.25,.46,.45,.94) both; }
-    .screen.active .scroll-fade:nth-child(2) { animation-delay: .06s; }
-    .screen.active .scroll-fade:nth-child(3) { animation-delay: .12s; }
-    .screen.active .scroll-fade:nth-child(4) { animation-delay: .18s; }
-    .screen.active .scroll-fade:nth-child(5) { animation-delay: .24s; }
+    /* CSS fallback: active-screen elements always visible */
+    .screen.active .scroll-fade { opacity: 1; transform: translateY(0); }
 
     @keyframes slideUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
     @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
@@ -1728,6 +1727,13 @@ $('logoutBtn').addEventListener('click',()=>{
   const s=store.getCurrent();
   if(s && store.getUsers()[s]){ currentUser=s; enterApp(); }
 })();
+
+// iOS BFCache restore (app woken from memory, JS doesn't re-run)
+window.addEventListener('pageshow', e=>{
+  if(e.persisted){
+    document.querySelectorAll('.screen.active .scroll-fade').forEach(el=>el.classList.add('visible'));
+  }
+});
 
 /* ═══════════════════════════════════════════════
    HOME
