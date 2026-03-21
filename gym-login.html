@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Atlas Quest" />
@@ -60,8 +62,8 @@
     .scroll-fade:nth-child(3) { transition-delay: .12s; }
     .scroll-fade:nth-child(4) { transition-delay: .18s; }
     .scroll-fade:nth-child(5) { transition-delay: .24s; }
-    /* CSS fallback: active-screen elements always visible */
-    .screen.active .scroll-fade { opacity: 1; transform: translateY(0); }
+    /* Active-screen elements always visible instantly — no transition, no delay */
+    .screen.active .scroll-fade { opacity: 1 !important; transform: translateY(0) !important; transition: none !important; }
 
     @keyframes slideUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
     @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
@@ -1724,8 +1726,13 @@ $('logoutBtn').addEventListener('click',()=>{
   $('ln').value=''; $('lp').value='';
 });
 (function init(){
-  const s=store.getCurrent();
-  if(s && store.getUsers()[s]){ currentUser=s; enterApp(); }
+  try {
+    const s=store.getCurrent();
+    if(s && store.getUsers()[s]){ currentUser=s; enterApp(); }
+  } catch(e) {
+    document.body.insertAdjacentHTML('afterbegin',
+      `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#c0392b;color:#fff;padding:14px 16px;font-family:monospace;font-size:12px;white-space:pre-wrap">JS ERROR: ${e.message}\n${e.stack||''}</div>`);
+  }
 })();
 
 // iOS BFCache restore (app woken from memory, JS doesn't re-run)
