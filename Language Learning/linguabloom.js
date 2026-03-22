@@ -1007,6 +1007,22 @@
     const scriptModeSelect = document.getElementById("scriptModeSelect");
     const focusSelect = document.getElementById("focusSelect");
     const views = [viewWelcome, viewLanguage, viewLevels, viewLesson].filter(Boolean);
+    const levelSheet = document.getElementById("levelSheet");
+    const levelSheetBackdrop = document.getElementById("levelSheetBackdrop");
+    const sheetIcon = document.getElementById("sheetIcon");
+    const sheetIconWrap = document.getElementById("sheetIconWrap");
+    const sheetTitle = document.getElementById("sheetTitle");
+    const sheetDesc = document.getElementById("sheetDesc");
+    const sheetStarBadge = document.getElementById("sheetStarBadge");
+    const sheetStartBtn = document.getElementById("sheetStartBtn");
+    const navLearnBtn = document.getElementById("navLearn");
+    const navStatsBtn = document.getElementById("navStats");
+    const viewStats = document.getElementById("viewStats");
+    const statsStreakBig = document.getElementById("statsStreakBig");
+    const statsXpVal = document.getElementById("statsXpVal");
+    const statsDoneVal = document.getElementById("statsDoneVal");
+    const weekDots = document.getElementById("weekDots");
+    const unitProgressList = document.getElementById("unitProgressList");
     let languageNavTimer = null;
 
     const getTodayStr = () => new Date().toDateString();
@@ -1041,6 +1057,14 @@
 
     const saveCompletedLevels = (set) => {
       localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set]));
+    };
+
+    const getTotalXp = () => { const s = loadStreak(); return s.totalXp || 0; };
+    const addTotalXp = (amount) => {
+      if (!amount || amount <= 0) return;
+      const s = loadStreak();
+      s.totalXp = (s.totalXp || 0) + amount;
+      localStorage.setItem(STREAK_KEY, JSON.stringify(s));
     };
 
     const normalize = (text) => {
@@ -1473,6 +1497,7 @@
             id: step.id || `${difficulty}-${idx}`,
             title: step.title,
             description: step.description,
+            group: step.group,
             newWords: groupData.newWords || [],
             items
           };
@@ -1858,11 +1883,21 @@
       if (levelsHearts) levelsHearts.textContent = state.hearts;
       if (streakStat) streakStat.textContent = getStreakCount();
 
-      const nodeIcons = ["▶", "📘", "⭐", "🎯", "🔒"];
+      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥" };
+      const nodeIcons = ["⭐", "📘", "🎯", "💬", "🔥"];
       DIFFICULTY_ORDER.forEach((difficulty, unitIndex) => {
         const unit = document.createElement("div");
         unit.className = "unit-block";
-        unit.innerHTML = `<div class="unit-label">Unit ${unitIndex + 1} · ${DIFFICULTY_LABELS[difficulty]}</div>`;
+        unit.dataset.difficulty = difficulty;
+        const diffModules = CURRICULUM[difficulty] || [];
+        const completedInDiff = diffModules.filter(m => completedLevels.has(m.id)).length;
+        unit.innerHTML = `<div class="unit-section-card">
+          <div class="unit-section-icon">${diffIcons[difficulty]}</div>
+          <div>
+            <div class="unit-section-name">Unit ${unitIndex + 1} · ${DIFFICULTY_LABELS[difficulty]}</div>
+            <div class="unit-section-sub">${completedInDiff}/${diffModules.length} completed</div>
+          </div>
+        </div>`;
         const path = document.createElement("div");
         path.className = "level-path";
         const maxUnlocked = unitIndex < diffIndex
@@ -1885,7 +1920,7 @@
           btn.setAttribute("aria-label", module.title);
           btn.addEventListener("click", () => {
             if (isLocked) return;
-            startLesson(difficulty, idx);
+            showLevelSheet(difficulty, idx, module, isDone);
           });
           path.appendChild(btn);
         });
@@ -2078,6 +2113,7 @@
       const completedLevels = getCompletedLevels();
       completedLevels.add(module.id);
       saveCompletedLevels(completedLevels);
+      addTotalXp(state.sessionXp);
       const lesson = getLesson();
       const levels = lesson.levels?.[state.difficulty] || [];
       if (state.levelIndex < levels.length - 1) {
@@ -2090,6 +2126,109 @@
         }
       }
       saveProgress();
+    };
+
+    let sheetPendingDifficulty = null;
+    let sheetPendingIdx = null;
+
+    const showLevelSheet = (difficulty, idx, module, isDone) => {
+      if (!levelSheet) return;
+      sheetPendingDifficulty = difficulty;
+      sheetPendingIdx = idx;
+      const groupIcons = { greetings: "👋", polite: "🙏", directions: "🗺", cafe: "☕", travel: "✈️", shopping: "🛍", plans: "📅", opinions: "💬", problems: "🆘" };
+      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥" };
+      const icon = groupIcons[module.group] || diffIcons[difficulty] || "⭐";
+      if (sheetIcon) sheetIcon.textContent = icon;
+      if (sheetIconWrap) {
+        sheetIconWrap.style.background = isDone ? "var(--green-light)" : "";
+        sheetIconWrap.style.borderColor = isDone ? "var(--green)" : "";
+        sheetIconWrap.style.boxShadow = isDone ? "0 4px 0 var(--green-dark)" : "";
+      }
+      if (sheetTitle) sheetTitle.textContent = module.title;
+      if (sheetDesc) sheetDesc.textContent = module.description || "";
+      if (sheetStarBadge) {
+        sheetStarBadge.textContent = isDone ? "★★★" : "☆☆☆";
+        sheetStarBadge.style.background = isDone ? "var(--yellow-light)" : "var(--surface)";
+        sheetStarBadge.style.color = isDone ? "var(--yellow-dark)" : "var(--muted)";
+        sheetStarBadge.style.borderColor = isDone ? "var(--yellow)" : "var(--border)";
+      }
+      if (sheetStartBtn) sheetStartBtn.textContent = isDone ? "Practice Again" : "Start Lesson";
+      levelSheet.classList.add("open");
+    };
+
+    const closeLevelSheet = () => {
+      if (!levelSheet) return;
+      levelSheet.classList.remove("open");
+      sheetPendingDifficulty = null;
+      sheetPendingIdx = null;
+    };
+
+    const renderStatsView = () => {
+      if (!statsStreakBig) return;
+      const streak = getStreakCount();
+      const completedCount = getCompletedLevels().size;
+      statsStreakBig.textContent = streak;
+      if (statsXpVal) statsXpVal.textContent = getTotalXp();
+      if (statsDoneVal) statsDoneVal.textContent = completedCount;
+
+      if (weekDots) {
+        weekDots.innerHTML = "";
+        const dayNames = ["M","T","W","T","F","S","S"];
+        const today = new Date();
+        const dow = today.getDay(); // 0=Sun
+        const streak_data = loadStreak();
+        const todayStr = getTodayStr();
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(today);
+          const offset = ((dow === 0 ? 7 : dow) - 1) - i;
+          d.setDate(today.getDate() - offset + i - ((dow === 0 ? 7 : dow) - 1));
+          // Simpler: go from Monday of this week
+          const monday = new Date(today);
+          monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+          const day = new Date(monday);
+          day.setDate(monday.getDate() + i);
+          const dayStr = day.toDateString();
+          const isDone = streak_data.lastDate === dayStr || (dayStr === todayStr && streak_data.lastDate === todayStr);
+          const wrap = document.createElement("div");
+          wrap.className = "week-dot-wrap";
+          const dot = document.createElement("div");
+          dot.className = "week-dot" + (isDone ? " done" : "");
+          dot.textContent = isDone ? "🔥" : "";
+          const label = document.createElement("div");
+          label.className = "week-dot-label";
+          label.textContent = dayNames[i];
+          wrap.appendChild(dot);
+          wrap.appendChild(label);
+          weekDots.appendChild(wrap);
+        }
+      }
+
+      if (unitProgressList) {
+        unitProgressList.innerHTML = "";
+        const completedLevels = getCompletedLevels();
+        const diffColors = { beginner: "var(--green)", intermediate: "var(--blue)", advanced: "var(--orange)" };
+        DIFFICULTY_ORDER.forEach((diff) => {
+          const modules = CURRICULUM[diff] || [];
+          const done = modules.filter(m => completedLevels.has(m.id)).length;
+          const pct = modules.length ? Math.round((done / modules.length) * 100) : 0;
+          const item = document.createElement("div");
+          item.className = "unit-progress-item";
+          item.innerHTML = `
+            <div class="unit-progress-header">
+              <span class="unit-progress-name">${DIFFICULTY_LABELS[diff]}</span>
+              <span class="unit-progress-pct">${done}/${modules.length}</span>
+            </div>
+            <div class="unit-progress-bar">
+              <div class="unit-progress-fill" style="width:0%;background:${diffColors[diff]}"></div>
+            </div>`;
+          unitProgressList.appendChild(item);
+          // Animate bar in after paint
+          requestAnimationFrame(() => {
+            const fill = item.querySelector(".unit-progress-fill");
+            if (fill) fill.style.width = pct + "%";
+          });
+        });
+      }
     };
 
     const playTone = (good) => {
@@ -2628,6 +2767,38 @@
         if (btns[idx]) btns[idx].click();
       }
     });
+
+    if (sheetStartBtn) {
+      sheetStartBtn.addEventListener("click", () => {
+        const diff = sheetPendingDifficulty;
+        const idx = sheetPendingIdx;
+        closeLevelSheet();
+        if (diff !== null && idx !== null) startLesson(diff, idx);
+      });
+    }
+
+    if (levelSheetBackdrop) {
+      levelSheetBackdrop.addEventListener("click", closeLevelSheet);
+    }
+
+    if (navLearnBtn) {
+      navLearnBtn.addEventListener("click", () => {
+        navLearnBtn.classList.add("active");
+        navStatsBtn?.classList.remove("active");
+        viewLevels?.classList.add("active");
+        viewStats?.classList.remove("active");
+      });
+    }
+
+    if (navStatsBtn) {
+      navStatsBtn.addEventListener("click", () => {
+        navStatsBtn.classList.add("active");
+        navLearnBtn?.classList.remove("active");
+        viewStats?.classList.add("active");
+        viewLevels?.classList.remove("active");
+        renderStatsView();
+      });
+    }
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("linguabloom-sw.js?v=50").catch(() => {});

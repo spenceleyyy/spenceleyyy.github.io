@@ -43,6 +43,47 @@
       </div>
       <div class="levels-map" id="levelsGrid"></div>
     </section>
+
+    <section class="view stats-view" id="viewStats">
+      <div class="stats-scroll">
+        <div class="stats-hero">
+          <div class="stats-hero-flame">🔥</div>
+          <div class="stats-hero-number" id="statsStreakBig">0</div>
+          <div class="stats-hero-label">Day Streak</div>
+        </div>
+        <div class="stats-cards">
+          <div class="scard scard-xp">
+            <div class="scard-icon">⭐</div>
+            <div class="scard-value" id="statsXpVal">0</div>
+            <div class="scard-label">Total XP</div>
+          </div>
+          <div class="scard scard-done">
+            <div class="scard-icon">✓</div>
+            <div class="scard-value" id="statsDoneVal">0</div>
+            <div class="scard-label">Completed</div>
+          </div>
+        </div>
+        <div class="stats-block">
+          <div class="stats-block-title">Weekly Activity</div>
+          <div class="week-dots" id="weekDots"></div>
+        </div>
+        <div class="stats-block">
+          <div class="stats-block-title">Progress</div>
+          <div class="unit-progress-list" id="unitProgressList"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-tab active" id="navLearn">
+        <div class="nav-icon">🌱</div>
+        <div class="nav-label">Learn</div>
+      </button>
+      <button class="nav-tab" id="navStats">
+        <div class="nav-icon">📊</div>
+        <div class="nav-label">Stats</div>
+      </button>
+    </nav>
   </div>
 
   <div class="modal" id="settingsModal">
@@ -97,6 +138,24 @@
   </div>
 
   <div class="feedback" id="feedback"></div>
+
+  <div class="level-sheet" id="levelSheet">
+    <div class="level-sheet-backdrop" id="levelSheetBackdrop"></div>
+    <div class="level-sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-icon-wrap" id="sheetIconWrap">
+        <span id="sheetIcon">⭐</span>
+      </div>
+      <h3 class="sheet-title" id="sheetTitle">Level</h3>
+      <p class="sheet-desc" id="sheetDesc">Description</p>
+      <div class="sheet-badge-row">
+        <div class="sheet-badge" id="sheetStarBadge">★★★</div>
+        <div class="sheet-badge sheet-badge-xp">+10 XP per ✓</div>
+      </div>
+      <button class="btn btn-primary sheet-start" id="sheetStartBtn">Start Lesson</button>
+    </div>
+  </div>
+
   <script src="linguabloom.js" defer></script>
 </body>
 </html>
