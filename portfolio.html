@@ -1,3 +1,10 @@
+<!-- need to make blog entries for each of the guest lectures from the class 
+ so, lets add a little "doodle" black whole in the middle of the room so 
+ that area can be a little though dump area, where you stand on it to see some blog posts.
+
+ Maybe for this, we can add a little sign coming out of the 
+--->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2224,7 +2231,8 @@
       // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
       const insetX = Math.max(1410, roomMetrics.width * 0.3525);
       const backWallInset = Math.max(1300, roomMetrics.depth * 0.165);
-      const frontWallInset = Math.max(650, roomMetrics.depth * 0.0825);
+      // Keep a small safety margin from the open front edge, but allow full room traversal.
+      const frontWallInset = Math.max(140, roomMetrics.depth * 0.0175);
       return {
         left: extents.left + insetX,
         right: extents.right - insetX,
