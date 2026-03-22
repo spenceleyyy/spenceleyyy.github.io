@@ -7,9 +7,10 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <meta name="apple-mobile-web-app-title" content="Atlas Quest" />
-  <title>Atlas Quest</title>
+  <meta name="apple-mobile-web-app-title" content="Let's Go" />
+  <title>Let's Go</title>
   <link rel="icon" href="logos/RSlogoUPDATED.png" />
+  <link rel="apple-touch-icon" href="logos/RSlogoUPDATED.png" />
   <style>
     /* ── DESIGN TOKENS ────────────────────────── */
     :root {
@@ -521,56 +522,15 @@
 </head>
 <body>
 
-<!-- ━━━━━━━━ AUTH ━━━━━━━━ -->
-<main class="auth-view" id="authView">
-  <div class="auth-shell">
-    <div class="auth-logo">
-      <div class="auth-logo-mark">
-        <svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
-          <path d="M16 4v24M8 10l8-6 8 6M4 20h6M22 20h6"/>
-        </svg>
-      </div>
-      <div class="auth-logo-name">Atlas Quest</div>
-      <div class="auth-logo-sub">Your personal fitness companion</div>
-    </div>
-    <div class="auth-seg">
-      <button class="active" data-auth="login">Log In</button>
-      <button data-auth="signup">Sign Up</button>
-    </div>
-    <form class="auth-panel active" id="loginForm">
-      <div class="auth-field"><label>Name</label><input id="ln" autocomplete="username" required /></div>
-      <div class="auth-field"><label>Password</label><input id="lp" type="password" autocomplete="current-password" required /></div>
-      <button class="btn-primary full" type="submit">Continue</button>
-      <div class="status-msg" id="lStatus"></div>
-    </form>
-    <form class="auth-panel" id="signupForm">
-      <div class="auth-field"><label>Name</label><input id="sn" autocomplete="username" required /></div>
-      <div class="auth-field"><label>Password</label><input id="sp" type="password" autocomplete="new-password" required /></div>
-      <details class="auth-details">
-        <summary>More details (optional)</summary>
-        <div class="auth-details-body">
-          <div class="auth-field"><label>Email</label><input id="se" type="email" autocomplete="email" /></div>
-          <div class="auth-field"><label>Goal</label><select id="sg"><option value="">—</option><option value="fat-loss">Lose fat</option><option value="muscle">Build muscle</option><option value="performance">Performance</option><option value="maintain">Maintain</option></select></div>
-          <div class="auth-field"><label>Training days / wk</label><input id="sd" type="number" min="1" max="7" /></div>
-          <div class="auth-field"><label>Height (in)</label><input id="sh" type="number" step=".1" /></div>
-          <div class="auth-field"><label>Weight (lbs)</label><input id="sw" type="number" step=".1" /></div>
-          <div class="auth-field"><label>Goal weight (lbs)</label><input id="sgw" type="number" step=".1" /></div>
-        </div>
-      </details>
-      <button class="btn-primary full" type="submit">Create Account</button>
-      <div class="status-msg" id="sStatus"></div>
-    </form>
-  </div>
-</main>
 
 <!-- ━━━━━━━━ APP ━━━━━━━━ -->
-<main class="app-view hidden" id="appView">
+<main class="app-view" id="appView">
   <div class="app-shell">
 
     <header class="app-header">
       <button class="back-btn" id="backBtn" hidden>← Back</button>
       <div class="hdr-center">
-        <div class="hdr-label">Atlas Quest</div>
+        <div class="hdr-label">Let's Go</div>
         <h1 id="screenTitle">Home</h1>
       </div>
       <div class="hdr-avatar" id="hdrAvatar">AQ</div>
@@ -1057,10 +1017,6 @@
             <div id="healthLastSync" class="hidden" style="font-size:.74rem;color:var(--label3);text-align:center;padding-top:2px;"></div>
           </div>
         </div>
-        <div class="section-header scroll-fade"><h2>Account</h2></div>
-        <div class="card scroll-fade">
-          <div style="padding:14px 16px;"><button class="btn-ghost" id="logoutBtn" style="width:100%;text-align:center;color:var(--rose);">Log Out</button></div>
-        </div>
       </div>
 
       <!-- PHOTO TIMELINE -->
@@ -1155,12 +1111,12 @@
   <div class="overlay-sheet">
     <div class="overlay-handle"></div>
     <div class="overlay-title">Set Up Daily Health Sync</div>
-    <div class="overlay-sub">Create a Shortcut on your iPhone to send today's health data to Atlas Quest automatically every morning.</div>
+    <div class="overlay-sub">Create a Shortcut on your iPhone to send today's health data to Let's Go automatically every morning.</div>
     <div class="health-step">
       <div class="health-step-num">1</div>
       <div>
         <div class="health-step-title">Open Shortcuts → tap +</div>
-        <div class="health-step-desc">Create a new blank Shortcut. Give it a name like "Atlas Quest Sync".</div>
+        <div class="health-step-desc">Create a new blank Shortcut. Give it a name like "Let's Go Sync".</div>
       </div>
     </div>
     <div class="health-step">
@@ -1565,7 +1521,7 @@ const TEMPLATES = [
 /* ═══════════════════════════════════════════════
    APP STATE & STORAGE
 ═══════════════════════════════════════════════ */
-let currentUser = null, screenHistory = [], activeWorkout = null;
+let currentUser = 'me', screenHistory = [], activeWorkout = null;
 let restInterval = null, restSecsLeft = 0;
 let selectedFoodItem = null, labelScanB64 = null, photoEstB64 = null;
 let pendingAiFood = null, coachImgB64 = null;
@@ -1574,15 +1530,10 @@ let currentHistFilter = 'all', currentExCat = 'All', currentFoodCat = 'All';
 let strengthExFilter = null, photoFilter = 'all';
 
 const store = {
-  getUsers:   ()  => JSON.parse(localStorage.getItem('aq_users') || '{}'),
-  saveUsers:  u   => localStorage.setItem('aq_users', JSON.stringify(u)),
-  getCurrent: ()  => localStorage.getItem('aq_current'),
-  setCurrent: n   => localStorage.setItem('aq_current', n),
-  clearCurrent:() => localStorage.removeItem('aq_current'),
   getApiKey:  ()  => localStorage.getItem('aq_apikey') || '',
   setApiKey:  k   => localStorage.setItem('aq_apikey', k),
-  getData(key){ const u=store.getUsers(); return u[currentUser]?.[key]; },
-  setData(key,val){ const u=store.getUsers(); if(!u[currentUser]) u[currentUser]={}; u[currentUser][key]=val; store.saveUsers(u); },
+  getData(key){ const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); return u['me']?.[key]; },
+  setData(key,val){ const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); if(!u['me']) u['me']={}; u['me'][key]=val; localStorage.setItem('aq_users',JSON.stringify(u)); },
   getWorkouts:    () => store.getData('workouts')    || [],
   saveWorkouts:   w  => store.setData('workouts', w),
   getFoodLogs:    () => store.getData('foodLogs')    || {},
@@ -1603,10 +1554,6 @@ const fmtDate  = d  => new Date(d).toLocaleDateString('en-US',{month:'short',day
 const fmtDur   = ms => { const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000); return `${m}m ${s}s`; };
 const clamp    = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
 
-async function hashPw(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
 function fileToB64(file) {
   return new Promise(res => { const r=new FileReader(); r.onload=e=>res(e.target.result.split(',')[1]); r.readAsDataURL(file); });
 }
@@ -1679,57 +1626,26 @@ $('fabSheet').addEventListener('click',e=>{
   if(item){ $('fabSheet').classList.add('hidden'); showScreen(item.dataset.dest); }
 });
 
-/* ═══════════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════════ */
-$('loginForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const name=$('ln').value.trim(), pw=$('lp').value;
-  const users=store.getUsers();
-  if(!users[name]){ $('lStatus').textContent='No account found.'; return; }
-  if(users[name].password !== await hashPw(pw)){ $('lStatus').textContent='Wrong password.'; return; }
-  store.setCurrent(name); currentUser=name; enterApp();
-});
-$('signupForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const name=$('sn').value.trim(), pw=$('sp').value;
-  const users=store.getUsers();
-  if(!name){ $('sStatus').textContent='Enter a name.'; return; }
-  if(users[name]){ $('sStatus').textContent='Name already taken.'; return; }
-  if(pw.length<4){ $('sStatus').textContent='Password too short.'; return; }
-  users[name]={ password:await hashPw(pw), email:$('se').value.trim(), goal:$('sg').value,
-    trainingDays:+$('sd').value||3, height:+$('sh').value||0, weight:+$('sw').value||0,
-    goalWeight:+$('sgw').value||0, joinedAt:Date.now() };
-  store.saveUsers(users); store.setCurrent(name); currentUser=name; enterApp();
-});
-document.querySelectorAll('.auth-seg button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.auth-seg button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.auth-panel').forEach(p=>p.classList.remove('active'));
-    $(`${btn.dataset.auth}Form`).classList.add('active');
-  });
-});
 function enterApp(){
-  $('authView').classList.add('hidden'); $('appView').classList.remove('hidden');
-  $('hdrAvatar').textContent=currentUser.slice(0,2).toUpperCase();
+  $('appView').classList.remove('hidden');
   showScreen('home',false); screenHistory=['home'];
-  // Apply any pending Shortcuts health sync
   const pending = sessionStorage.getItem('pendingHealthSync');
   if(pending){ mergeShortcutsHealth(new URLSearchParams(pending)); sessionStorage.removeItem('pendingHealthSync'); }
   updateHealthLastSync();
   fetchAndApplyWeather();
 }
-$('logoutBtn').addEventListener('click',()=>{
-  store.clearCurrent(); currentUser=null; screenHistory=[];
-  $('appView').classList.add('hidden'); $('authView').classList.remove('hidden');
-  $('ln').value=''; $('lp').value='';
-});
-(function init(){
+// Migrate: if existing data under any username, copy to 'me'
+(function migrate(){
   try {
-    const s=store.getCurrent();
-    if(s && store.getUsers()[s]){ currentUser=s; enterApp(); }
-  } catch(e) {
+    const u = JSON.parse(localStorage.getItem('aq_users')||'{}');
+    if (!u['me']) {
+      const first = Object.keys(u).find(k=>k!=='me');
+      if (first) { u['me'] = u[first]; delete u[first]; localStorage.setItem('aq_users', JSON.stringify(u)); }
+    }
+  } catch(_) {}
+})();
+(function init(){
+  try { enterApp(); } catch(e) {
     document.body.insertAdjacentHTML('afterbegin',
       `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#c0392b;color:#fff;padding:14px 16px;font-family:monospace;font-size:12px;white-space:pre-wrap">JS ERROR: ${e.message}\n${e.stack||''}</div>`);
   }
@@ -1746,8 +1662,8 @@ window.addEventListener('pageshow', e=>{
    HOME
 ═══════════════════════════════════════════════ */
 function renderHome(){
-  const u=store.getUsers()[currentUser]||{};
-  $('heroName').textContent=currentUser.split(' ')[0];
+  const u=JSON.parse(localStorage.getItem('aq_users')||'{}')['me']||{};
+  $('heroName').textContent=u.name?u.name.split(' ')[0]:'You';
   const goal=store.getCalGoal();
   const consumed=(store.getFoodLogs()[todayKey()]||[]).reduce((s,l)=>s+l.calories,0);
   const target=goal?.calories||0, left=target?Math.max(0,target-consumed):0;
@@ -2131,7 +2047,7 @@ $('calForm').addEventListener('submit',e=>{
   const bmr=sex==='male'?10*wKg+6.25*hCm-5*age+5:10*wKg+6.25*hCm-5*age-161;
   const cal=Math.round(bmr*act-wl*500), pro=Math.round(wLbs*.8), fat=Math.round(cal*.25/9), carbs=Math.round((cal-pro*4-fat*9)/4);
   store.saveCalGoal({calories:cal,protein:pro,carbs,fat});
-  const u=store.getUsers(); if(u[currentUser]){ u[currentUser].height=hIn; u[currentUser].weight=wLbs; store.saveUsers(u); }
+  { const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); if(!u['me']) u['me']={}; u['me'].height=hIn; u['me'].weight=wLbs; localStorage.setItem('aq_users',JSON.stringify(u)); }
   renderFoodHome();
 });
 $('editCalBtn').addEventListener('click',()=>{ store.saveCalGoal(null); renderFoodHome(); });
@@ -2423,9 +2339,9 @@ async function sendCoachMessage(){
   appendMsg('user',text,coachImgB64?$('coachImgThumb').src:null);
   $('coachInput').value=''; const imgB64=coachImgB64; coachImgB64=null; $('coachImgPrev').classList.add('hidden'); $('coachImgFile').value='';
   const loadEl=appendMsg('bot','…',null,true);
-  const u=store.getUsers()[currentUser]||{}, ws=store.getWorkouts().slice(-10), goal=store.getCalGoal(), weights=store.getWeights().slice(-5);
-  const sys=`You are Atlas Quest AI Coach — a knowledgeable, encouraging personal trainer and nutritionist.
-User: ${currentUser} | Goal: ${u.goal||'not set'} | Height: ${u.height||'?'}" | Weight: ${weights[weights.length-1]?.val||'?'} lbs | Calorie target: ${goal?.calories||'?'} kcal
+  const u=JSON.parse(localStorage.getItem('aq_users')||'{}')['me']||{}, ws=store.getWorkouts().slice(-10), goal=store.getCalGoal(), weights=store.getWeights().slice(-5);
+  const sys=`You are Let's Go AI Coach — a knowledgeable, encouraging personal trainer and nutritionist.
+Goal: ${u.goal||'not set'} | Height: ${u.height||'?'}" | Weight: ${weights[weights.length-1]?.val||'?'} lbs | Calorie target: ${goal?.calories||'?'} kcal
 Recent workouts: ${JSON.stringify(ws.map(w=>({name:w.name,date:new Date(w.date).toLocaleDateString(),exercises:w.exercises.map(e=>({name:e.name,sets:e.sets.length,top:Math.max(0,...e.sets.map(s=>s.weight||0))}))}))).slice(0,900)}
 Today's food: ${JSON.stringify((store.getFoodLogs()[todayKey()]||[]).map(l=>({name:l.name,cal:l.calories})))}
 You have tools to log workouts, food, and weight directly into the app — use them whenever the user reports what they did or asks you to record something. Be concise and encouraging.`;
@@ -2464,10 +2380,9 @@ function appendMsgHTML(html){
    PROFILE
 ═══════════════════════════════════════════════ */
 function renderProfile(){
-  const u=store.getUsers()[currentUser]||{}, goal=store.getCalGoal();
-  $('profileName').textContent=currentUser; $('hdrAvatar').textContent=currentUser.slice(0,2).toUpperCase();
-  $('profileAvatar').textContent=currentUser.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  $('profileSub').textContent=u.goal?u.goal.replace('-',' '):'Atlas Quest';
+  const u=JSON.parse(localStorage.getItem('aq_users')||'{}')['me']||{}, goal=store.getCalGoal();
+  $('profileAvatar').textContent=u.name?u.name.slice(0,2).toUpperCase():'ME';
+  $('profileSub').textContent=u.goal?u.goal.replace('-',' '):'Let\'s Go';
   $('prEmail').textContent=u.email||'—'; $('prGoal').textContent=u.goal?u.goal.replace('-',' '):'—';
   $('prHeight').textContent=u.height?u.height+'"':'—'; $('prWeight').textContent=u.weight?u.weight+' lbs':'—';
   $('prCal').textContent=goal?goal.calories+' kcal':'—'; $('apiKeyInput').value=store.getApiKey()?'••••••••••••':'';
@@ -2700,7 +2615,7 @@ async function importHealthXML(file){
   setP(100);
 
   $('himTitle').textContent = 'Import Complete';
-  setSub('Your Health data is now in Atlas Quest.');
+  setSub('Your Health data is now in Let\'s Go.');
   $('himResults').classList.remove('hidden');
   $('himWt').textContent    = newWeights.length;
   $('himSteps').textContent = Object.keys(stepsByDay).length;
