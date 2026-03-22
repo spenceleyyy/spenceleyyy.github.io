@@ -9,8 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Let's Go" />
   <title>Let's Go</title>
-  <link rel="icon" href="logos/RSlogoUPDATED.png" />
-  <link rel="apple-touch-icon" href="logos/RSlogoUPDATED.png" />
+  <link rel="icon" href="logos/RSlogoFIT.png" />
+  <link rel="apple-touch-icon" href="logos/RSlogoFIT.png" />
   <style>
     /* ── DESIGN TOKENS ────────────────────────── */
     :root {
@@ -48,6 +48,8 @@
     /* ── RESET ───────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; height: 100%; }
+    html { height: -webkit-fill-available; }
+    body { min-height: -webkit-fill-available; }
     body { font-family: var(--font); background: var(--bg); color: var(--label);
            -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
     button, input, select, textarea { font-family: inherit; }
@@ -118,7 +120,7 @@
     .status-msg { font-size:.8rem; color:var(--label2); text-align:left; min-height:1rem; }
 
     /* ── APP SHELL ────────────────────────────── */
-    .app-view { height:100vh; display:flex; flex-direction:column; }
+    .app-view { height:100vh; height:-webkit-fill-available; height:100dvh; display:flex; flex-direction:column; }
     .app-shell { display:flex; flex-direction:column; height:100%; overflow:hidden; }
 
     .app-header {
@@ -522,6 +524,29 @@
 </head>
 <body>
 
+
+<!-- ONBOARDING -->
+<div id="onboardingView" class="hidden" style="position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-top) + 48px) 24px calc(var(--safe-bottom) + 40px);box-sizing:border-box;">
+  <div style="text-align:center;margin-bottom:32px;">
+    <img src="logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
+    <div style="font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--label);">Welcome</div>
+    <div style="font-size:.88rem;color:var(--label2);margin-top:6px;">Tell us about yourself to get started.</div>
+  </div>
+  <div style="display:grid;gap:14px;max-width:400px;margin:0 auto;">
+    <div class="auth-field"><label>Your Name</label><input id="obName" type="text" placeholder="e.g. Alex" autocomplete="given-name" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="auth-field"><label>Gender</label><select id="obGender"><option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+      <div class="auth-field"><label>Age</label><input id="obAge" type="number" min="13" max="99" placeholder="25" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="auth-field"><label>Height (in)</label><input id="obHeight" type="number" step=".5" placeholder="70" /></div>
+      <div class="auth-field"><label>Weight (lbs)</label><input id="obWeight" type="number" step=".1" placeholder="160" /></div>
+    </div>
+    <div class="auth-field"><label>Primary Goal</label><select id="obGoal"><option value="">Select…</option><option value="fat-loss">Lose Fat</option><option value="muscle">Build Muscle</option><option value="performance">Performance</option><option value="maintain">Maintain</option></select></div>
+    <div class="status-msg" id="obStatus" style="color:var(--rose);min-height:18px;"></div>
+    <button class="btn-primary full lg" id="obContinueBtn">Let's Go →</button>
+  </div>
+</div>
 
 <!-- ━━━━━━━━ APP ━━━━━━━━ -->
 <main class="app-view" id="appView">
@@ -970,9 +995,22 @@
       <!-- PROFILE -->
       <div class="screen" data-screen="profile">
         <div class="profile-avatar scroll-fade">
-          <div class="avatar-circle" id="profileAvatar">AQ</div>
+          <label for="profilePicInput" style="cursor:pointer;">
+            <div class="avatar-circle" id="profileAvatar" style="overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;">
+              <img id="profilePicImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;position:absolute;inset:0;" />
+              <span id="profileAvatarInitials">ME</span>
+            </div>
+          </label>
+          <input type="file" id="profilePicInput" accept="image/*" class="hidden" />
           <div class="profile-name" id="profileName">--</div>
           <div class="profile-sub" id="profileSub">--</div>
+        </div>
+        <div class="card scroll-fade">
+          <div class="card-inner" style="display:grid;gap:12px;">
+            <div class="auth-field"><label>Display Name</label><input id="editProfileName" type="text" placeholder="Your name" /></div>
+            <button class="btn-primary full" id="saveProfileBtn">Save Name</button>
+            <div class="status-msg" id="profileSaveStatus"></div>
+          </div>
         </div>
         <div class="section-header scroll-fade"><h2>Details</h2></div>
         <div class="card scroll-fade">
@@ -1643,13 +1681,53 @@ function enterApp(){
       if (first) { u['me'] = u[first]; delete u[first]; localStorage.setItem('aq_users', JSON.stringify(u)); }
     }
   } catch(_) {}
+  // If 'me' already has data, they're an existing user — skip onboarding
+  try {
+    const _me = JSON.parse(localStorage.getItem('aq_users')||'{}')['me'];
+    if (_me && Object.keys(_me).length > 0 && !localStorage.getItem('aq_onboarded')) {
+      localStorage.setItem('aq_onboarded','1');
+    }
+  } catch(_2) {}
 })();
 (function init(){
-  try { enterApp(); } catch(e) {
+  try {
+    if(!localStorage.getItem('aq_onboarded')){
+      $('onboardingView').classList.remove('hidden');
+    } else {
+      enterApp();
+    }
+  } catch(e) {
     document.body.insertAdjacentHTML('afterbegin',
       `<div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#c0392b;color:#fff;padding:14px 16px;font-family:monospace;font-size:12px;white-space:pre-wrap">JS ERROR: ${e.message}\n${e.stack||''}</div>`);
   }
 })();
+
+/* ── ONBOARDING ─────────────────────────── */
+$('obContinueBtn').addEventListener('click',()=>{
+  const name=$('obName').value.trim();
+  const gender=$('obGender').value;
+  const age=parseInt($('obAge').value,10);
+  const height=parseFloat($('obHeight').value);
+  const weight=parseFloat($('obWeight').value);
+  const goal=$('obGoal').value;
+  if(!name){$('obStatus').textContent='Please enter your name.';return;}
+  if(!gender){$('obStatus').textContent='Please select a gender.';return;}
+  if(!age||age<13){$('obStatus').textContent='Please enter a valid age.';return;}
+  if(!height){$('obStatus').textContent='Please enter your height.';return;}
+  if(!weight){$('obStatus').textContent='Please enter your weight.';return;}
+  if(!goal){$('obStatus').textContent='Please select a goal.';return;}
+  store.setData('name',name);
+  store.setData('gender',gender);
+  store.setData('age',age);
+  store.setData('height',height);
+  store.setData('weight',weight);
+  store.setData('goal',goal);
+  const ws=store.getWeights();
+  if(ws.length===0){ws.push({val:weight,date:Date.now(),dateKey:todayKey()});store.saveWeights(ws);}
+  localStorage.setItem('aq_onboarded','1');
+  $('onboardingView').classList.add('hidden');
+  enterApp();
+});
 
 // iOS BFCache restore (app woken from memory, JS doesn't re-run)
 window.addEventListener('pageshow', e=>{
@@ -2380,14 +2458,24 @@ function appendMsgHTML(html){
    PROFILE
 ═══════════════════════════════════════════════ */
 function renderProfile(){
-  const u=JSON.parse(localStorage.getItem('aq_users')||'{}')['me']||{}, goal=store.getCalGoal();
-  $('profileAvatar').textContent=u.name?u.name.slice(0,2).toUpperCase():'ME';
-  $('profileSub').textContent=u.goal?u.goal.replace('-',' '):'Let\'s Go';
-  $('prEmail').textContent=u.email||'—'; $('prGoal').textContent=u.goal?u.goal.replace('-',' '):'—';
-  $('prHeight').textContent=u.height?u.height+'"':'—'; $('prWeight').textContent=u.weight?u.weight+' lbs':'—';
-  $('prCal').textContent=goal?goal.calories+' kcal':'—'; $('apiKeyInput').value=store.getApiKey()?'••••••••••••':'';
+  const u=JSON.parse(localStorage.getItem('aq_users')||'{}')['me']||{};
+  const goal=store.getCalGoal();
+  // Avatar
+  const img=$('profilePicImg'), ini=$('profileAvatarInitials');
+  if(u.profilePic){ img.src=u.profilePic; img.style.display='block'; ini.style.display='none'; }
+  else { img.style.display='none'; ini.style.display=''; ini.textContent=u.name?u.name.slice(0,2).toUpperCase():'ME'; }
+  $('hdrAvatar').textContent=u.name?u.name.slice(0,2).toUpperCase():'ME';
+  $('profileName').textContent=u.name||'Your Name';
+  $('editProfileName').value=u.name||'';
+  $('profileSub').textContent=u.goal?u.goal.replace('-',' '):"Let's Go";
+  $('prEmail').textContent=u.email||'—';
+  $('prGoal').textContent=u.goal?u.goal.replace('-',' '):'—';
+  $('prHeight').textContent=u.height?u.height+'"':'—';
+  $('prWeight').textContent=u.weight?u.weight+' lbs':'—';
+  $('prCal').textContent=goal?goal.calories+' kcal':'—';
+  $('apiKeyInput').value=store.getApiKey()?'••••••••••••':'';
   const photos=store.getPhotos().slice(-4).reverse();
-  $('profilePhotoGrid').innerHTML=photos.map(p=>`<div class="photo-tile"><img src="${p.data}" alt="" /><div class="photo-tile-date">${fmtDate(p.date)}</div></div>`).join('');
+  $('profilePhotoGrid').innerHTML=photos.map(p=>`<div class="photo-tile"><img src="${p.data}" alt=""/><div class="photo-tile-date">${fmtDate(p.date)}</div></div>`).join('');
 }
 $('saveApiKey').addEventListener('click',()=>{
   const val=$('apiKeyInput').value.trim();
@@ -2395,6 +2483,35 @@ $('saveApiKey').addEventListener('click',()=>{
   store.setApiKey(val); $('apiKeyStatus').textContent='Saved!'; $('apiKeyStatus').style.color='var(--mint)'; $('apiKeyInput').value='••••••••••••';
   setTimeout(()=>$('apiKeyStatus').textContent='',2000);
 });
+
+$('saveProfileBtn').addEventListener('click',()=>{
+  const name=$('editProfileName').value.trim();
+  if(!name){$('profileSaveStatus').textContent='Enter a name.';return;}
+  store.setData('name',name);
+  $('profileSaveStatus').textContent='Saved!';
+  $('profileSaveStatus').style.color='var(--mint)';
+  setTimeout(()=>$('profileSaveStatus').textContent='',2000);
+  renderProfile();
+});
+
+$('profilePicInput').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  // Resize to max 300px before storing to save localStorage space
+  const img=new Image(), reader=new FileReader();
+  reader.onload=ev=>{
+    img.onload=()=>{
+      const MAX=300, canvas=document.createElement('canvas');
+      const scale=Math.min(1,MAX/Math.max(img.width,img.height));
+      canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      store.setData('profilePic',canvas.toDataURL('image/jpeg',0.8));
+      renderProfile();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
 $('progressPhotoInput').addEventListener('change',async e=>{
   const file=e.target.files[0]; if(!file) return;
   const reader=new FileReader(); reader.onload=ev=>{ const photos=store.getPhotos(); photos.push({data:ev.target.result,date:Date.now()}); store.savePhotos(photos); renderProfile(); }; reader.readAsDataURL(file);
