@@ -901,13 +901,13 @@
       top: 50%;
       width: 980px;
       height: 980px;
-      transform: translate(-50%, -50%) translateZ(2px);
+      transform: translate(-50%, -50%) translateZ(10px);
       background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
-      opacity: 0.88;
-      mix-blend-mode: multiply;
+      opacity: 1;
+      mix-blend-mode: normal;
       pointer-events: none;
-      z-index: 0;
-      filter: contrast(1.05);
+      z-index: 3;
+      filter: contrast(1.2) saturate(0.95);
     }
 
     .footstep {
@@ -1865,7 +1865,7 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 0,
-      z: 3600,
+      z: 4600,
       yaw: -180,
       floor: 880,
     };
