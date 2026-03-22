@@ -1973,9 +1973,17 @@
           ${englishLine}
         </div>
       `;
+      const continueClass = correct ? 'btn-continue-good' : 'btn-continue-bad';
+      feedback.innerHTML += `<button class="btn feedback-continue-btn ${continueClass}" id="feedbackContinueBtn">${correct ? 'Continue' : 'Got it'}</button>`;
       feedback.classList.toggle("good", Boolean(correct));
       feedback.classList.toggle("bad", !correct);
       feedback.classList.add("show");
+      const lessonActions = document.querySelector('.lesson-actions');
+      if (lessonActions) lessonActions.style.visibility = 'hidden';
+      document.getElementById('feedbackContinueBtn')?.addEventListener('click', () => {
+        if (state.pendingAdvance) advanceTask();
+        else hideAnswerFeedback();
+      });
       if (native) speak(native);
       if (task.type === "choice") {
         document.querySelectorAll(".choice-btn").forEach(btn => {
@@ -1995,6 +2003,8 @@
       document.querySelectorAll(".choice-btn.correct, .choice-btn.incorrect").forEach(btn => {
         btn.classList.remove("correct", "incorrect");
       });
+      const lessonActions = document.querySelector('.lesson-actions');
+      if (lessonActions) lessonActions.style.visibility = '';
     };
 
     const advanceTask = () => {
@@ -2193,7 +2203,7 @@
       progressText.textContent = `${shownIndex}/${total || 0}`;
       const percent = total ? (shownIndex / total) * 100 : 0;
       progressFill.style.width = `${percent}%`;
-      if (heartPanel) heartPanel.textContent = state.hearts;
+      if (heartPanel) heartPanel.innerHTML = '<span style="color:#FF4B4B">' + '❤'.repeat(state.hearts) + '</span>' + '<span style="opacity:0.25">❤</span>'.repeat(Math.max(0, 3 - state.hearts));
       if (xpPanel) xpPanel.textContent = state.xp;
       if (levelsXp) levelsXp.textContent = state.xp;
       if (levelsHearts) levelsHearts.textContent = state.hearts;

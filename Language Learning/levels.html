@@ -19,6 +19,11 @@
         <span>LB</span>
         LinguaBloom
       </div>
+      <div class="levels-stats">
+        <div class="stat-pill streak">🔥 <span id="streakStat">0</span></div>
+        <div class="stat-pill xp">⭐ <span id="levelsXp">0</span></div>
+        <div class="stat-pill hearts">❤ <span id="levelsHearts">3</span></div>
+      </div>
       <div class="top-actions">
         <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
         <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
@@ -27,14 +32,6 @@
 
     <section class="view active levels-view" id="viewLevels">
       <div class="levels-header">
-        <div class="levels-top">
-          <div class="stat-pill" id="levelsLanguage">🌎</div>
-          <div class="levels-stats">
-            <div class="stat-pill">🔥 <span id="streakStat">2</span></div>
-            <div class="stat-pill">⭐ <span id="levelsXp">0</span></div>
-            <div class="stat-pill">❤ <span id="levelsHearts">5</span></div>
-          </div>
-        </div>
         <div class="unit-banner">
           <div class="unit-text">
             <h2 id="levelsTitle">Unit 1</h2>
@@ -42,6 +39,7 @@
           </div>
           <button class="unit-guide" type="button" aria-label="Unit guide">📘</button>
         </div>
+        <div id="levelsLanguage" style="display:none"></div>
       </div>
       <div class="levels-map" id="levelsGrid"></div>
     </section>
