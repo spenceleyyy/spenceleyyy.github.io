@@ -2230,9 +2230,9 @@
       const extents = getRoomExtents();
       // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
       const insetX = Math.max(1410, roomMetrics.width * 0.3525);
-      const backWallInset = Math.max(1300, roomMetrics.depth * 0.165);
-      // Keep a small safety margin from the open front edge, but allow full room traversal.
-      const frontWallInset = Math.max(140, roomMetrics.depth * 0.0175);
+      // Disable depth clamps so movement is not blocked by an artificial front/back Z boundary.
+      const backWallInset = 0;
+      const frontWallInset = 0;
       return {
         left: extents.left + insetX,
         right: extents.right - insetX,
