@@ -2244,16 +2244,15 @@
     function ensureCharacterInBounds() {
       const walls = getWallBoundaries();
       const nextX = clamp(charX, walls.left, walls.right);
-      const nextZ = clamp(charZ, walls.minZ, walls.maxZ);
-      const changed = nextX !== charX || nextZ !== charZ;
+      const nextZ = charZ;
+      const changed = nextX !== charX;
       charX = nextX;
       charZ = nextZ;
       return changed;
     }
 
     function getSpawnZ() {
-      const walls = getWallBoundaries();
-      return clamp(spawnConfig.z, walls.minZ, walls.maxZ);
+      return spawnConfig.z;
     }
 
     function spawnCharacter() {
@@ -3104,7 +3103,7 @@
 
           // Apply movement with viewport-independent boundaries
           charX = clamp(charX + dx, walls.left, walls.right);
-          charZ = clamp(charZ + dz, walls.minZ, walls.maxZ);
+          charZ = charZ + dz;
 
           updateCharacter();
           updateNearbyFrame();
@@ -3141,8 +3140,7 @@
     function setCharZ(value) {
       const next = Number(value);
       if (Number.isNaN(next)) return;
-      const walls = getWallBoundaries();
-      charZ = clamp(next, walls.minZ, walls.maxZ);
+      charZ = next;
       updateCharacter();
       updateCharReadout();
     }
@@ -3246,7 +3244,7 @@
         // Use viewport-independent wall boundaries
         const walls = getWallBoundaries();
         charX = clamp(charOffsetX + dx, walls.left, walls.right);
-        charZ = clamp(charOffsetZ - dy, walls.minZ, walls.maxZ);
+        charZ = charOffsetZ - dy;
       }
       updateCharacter();
       updateNearbyFrame();
