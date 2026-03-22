@@ -1,4 +1,6 @@
     const STORAGE_KEY = "linguabloom-progress-v2";
+    const STREAK_KEY = "linguabloom-streak";
+    const COMPLETED_KEY = "linguabloom-completed";
     const LEVELS_PER_DIFFICULTY = 5;
     const DIFFICULTY_ORDER = ["beginner", "intermediate", "advanced"];
     const DIFFICULTY_LABELS = {
@@ -938,7 +940,8 @@
       pendingAdvance: false,
       activeVoiceName: "",
       wordStats: {},
-      currentAudio: ""
+      currentAudio: "",
+      sessionXp: 0
     };
 
     const viewWelcome = document.getElementById("viewWelcome");
@@ -1005,6 +1008,40 @@
     const focusSelect = document.getElementById("focusSelect");
     const views = [viewWelcome, viewLanguage, viewLevels, viewLesson].filter(Boolean);
     let languageNavTimer = null;
+
+    const getTodayStr = () => new Date().toDateString();
+
+    const loadStreak = () => {
+      try { return JSON.parse(localStorage.getItem(STREAK_KEY) || '{}'); } catch (_e) { return {}; }
+    };
+
+    const getStreakCount = () => {
+      const s = loadStreak();
+      const today = getTodayStr();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      if (s.lastDate === today || s.lastDate === yesterday) return s.count || 0;
+      return 0;
+    };
+
+    const recordStreakDay = () => {
+      const s = loadStreak();
+      const today = getTodayStr();
+      if (s.lastDate === today) return;
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      const newCount = s.lastDate === yesterday ? (s.count || 0) + 1 : 1;
+      localStorage.setItem(STREAK_KEY, JSON.stringify({ lastDate: today, count: newCount }));
+    };
+
+    const getCompletedLevels = () => {
+      try {
+        const arr = JSON.parse(localStorage.getItem(COMPLETED_KEY) || '[]');
+        return new Set(arr);
+      } catch (_e) { return new Set(); }
+    };
+
+    const saveCompletedLevels = (set) => {
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify([...set]));
+    };
 
     const normalize = (text) => {
       return text
@@ -1809,6 +1846,7 @@
       if (!levelsGrid) return;
       levelsGrid.innerHTML = "";
       const lesson = getLesson();
+      const completedLevels = getCompletedLevels();
       const diffIndex = DIFFICULTY_ORDER.indexOf(state.difficulty);
       const activeModule = getModule();
       if (levelsTitle) levelsTitle.textContent = `Unit ${diffIndex + 1}`;
@@ -1818,7 +1856,7 @@
       if (levelsLanguage) levelsLanguage.textContent = lesson.label;
       if (levelsXp) levelsXp.textContent = state.xp;
       if (levelsHearts) levelsHearts.textContent = state.hearts;
-      if (streakStat) streakStat.textContent = Math.min(7, Math.max(1, state.correctCount || 1));
+      if (streakStat) streakStat.textContent = getStreakCount();
 
       const nodeIcons = ["▶", "📘", "⭐", "🎯", "🔒"];
       DIFFICULTY_ORDER.forEach((difficulty, unitIndex) => {
@@ -1838,9 +1876,11 @@
           btn.type = "button";
           btn.className = "path-node";
           const isLocked = idx > maxUnlocked;
+          const isDone = completedLevels.has(module.id);
           if (isLocked) btn.classList.add("locked");
+          else if (isDone) btn.classList.add("done");
           if (difficulty === state.difficulty && idx === state.levelIndex) btn.classList.add("active");
-          btn.textContent = nodeIcons[idx % nodeIcons.length];
+          btn.textContent = isDone ? "✓" : nodeIcons[idx % nodeIcons.length];
           btn.title = module.title;
           btn.setAttribute("aria-label", module.title);
           btn.addEventListener("click", () => {
@@ -1876,6 +1916,7 @@
       state.hearts = 3;
       state.xp = 0;
       state.correctCount = 0;
+      state.sessionXp = 0;
       if (checkBtn) checkBtn.textContent = "Check";
       populateSpeakerOptions();
       applyLevelVoice();
@@ -1936,12 +1977,24 @@
       feedback.classList.toggle("bad", !correct);
       feedback.classList.add("show");
       if (native) speak(native);
+      if (task.type === "choice") {
+        document.querySelectorAll(".choice-btn").forEach(btn => {
+          if (btn.dataset.option === task.answer) {
+            btn.classList.add("correct");
+          } else if (!correct && btn.dataset.option === state.selectedOption) {
+            btn.classList.add("incorrect");
+          }
+        });
+      }
     };
 
     const hideAnswerFeedback = () => {
       if (!feedback) return;
       feedback.classList.remove("show", "good", "bad");
       feedback.textContent = "";
+      document.querySelectorAll(".choice-btn.correct, .choice-btn.incorrect").forEach(btn => {
+        btn.classList.remove("correct", "incorrect");
+      });
     };
 
     const advanceTask = () => {
@@ -1949,16 +2002,84 @@
       state.index += 1;
       hideAnswerFeedback();
       if (state.index >= state.tasks.length) {
-        if (promptTitle) promptTitle.textContent = "Session complete!";
-        if (promptText) promptText.textContent = "Great work — start a new round?";
-        if (choiceGrid) choiceGrid.innerHTML = "";
-        if (inputArea) inputArea.style.display = "none";
-        if (checkBtn) checkBtn.textContent = "New Session";
+        const completedModule = getModule();
+        recordStreakDay();
+        markLevelComplete();
         updateStatus();
+        showCompletionScreen(completedModule);
         return;
       }
       if (checkBtn) checkBtn.textContent = "Check";
       renderTask();
+    };
+
+    const spawnConfetti = (container) => {
+      const colors = ['#ff8d62','#7bcf9d','#c4cdfa','#f6b0b6','#f6d0a0','#f6f2b6','#cdaef0'];
+      for (let i = 0; i < 70; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.cssText = `left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};width:${5+Math.random()*8}px;height:${8+Math.random()*10}px;animation-delay:${Math.random()*1}s;animation-duration:${1.4+Math.random()*0.8}s;transform:rotate(${Math.random()*360}deg);`;
+        container.appendChild(piece);
+      }
+    };
+
+    const showCompletionScreen = (completedModule) => {
+      const xpEarned = state.sessionXp || 0;
+      const streak = getStreakCount();
+      const existing = document.getElementById('completionOverlay');
+      if (existing) existing.remove();
+      const overlay = document.createElement('div');
+      overlay.className = 'completion-overlay';
+      overlay.id = 'completionOverlay';
+      const moduleTitle = completedModule ? escapeHTML(completedModule.title) : '';
+      overlay.innerHTML = `
+        <div class="completion-card">
+          <div class="completion-emoji">🎉</div>
+          <h2 class="completion-title">Lesson Complete!</h2>
+          ${moduleTitle ? `<p class="completion-module">${moduleTitle}</p>` : ''}
+          <div class="completion-stats">
+            <div class="completion-stat">
+              <span class="stat-big">+${xpEarned}</span>
+              <span class="stat-label">XP earned</span>
+            </div>
+            <div class="completion-stat">
+              <span class="stat-big">🔥 ${streak}</span>
+              <span class="stat-label">day streak</span>
+            </div>
+            <div class="completion-stat">
+              <span class="stat-big">❤ ${state.hearts}</span>
+              <span class="stat-label">lives left</span>
+            </div>
+          </div>
+          <button class="btn btn-primary completion-continue" id="completionContinueBtn">Continue →</button>
+        </div>`;
+      spawnConfetti(overlay);
+      document.body.appendChild(overlay);
+      requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('visible')));
+      document.getElementById('completionContinueBtn').addEventListener('click', () => {
+        overlay.remove();
+        window.location.href = 'levels.html';
+      });
+    };
+
+    const markLevelComplete = () => {
+      const module = getModule();
+      if (!module) return;
+      const completedLevels = getCompletedLevels();
+      completedLevels.add(module.id);
+      saveCompletedLevels(completedLevels);
+      const lesson = getLesson();
+      const levels = lesson.levels?.[state.difficulty] || [];
+      if (state.levelIndex < levels.length - 1) {
+        state.levelIndex += 1;
+      } else {
+        const diffIdx = DIFFICULTY_ORDER.indexOf(state.difficulty);
+        if (diffIdx < DIFFICULTY_ORDER.length - 1) {
+          state.difficulty = DIFFICULTY_ORDER[diffIdx + 1];
+          state.levelIndex = 0;
+        }
+      }
+      saveProgress();
     };
 
     const playTone = (good) => {
@@ -2085,6 +2206,7 @@
       task.options.forEach((option) => {
         const btn = document.createElement("button");
         btn.className = "choice-btn";
+        btn.dataset.option = option;
         btn.innerHTML = renderTextWithDefinitions(option, { romanize: true });
         btn.addEventListener("click", () => {
           document.querySelectorAll(".choice-btn").forEach((b) => b.classList.remove("selected"));
@@ -2284,6 +2406,7 @@
       recordWordStats(trackingText, correct);
       if (correct) {
         state.xp += 10;
+        state.sessionXp = (state.sessionXp || 0) + 10;
         state.correctCount += 1;
         showAnswerFeedback(task, true);
       } else {
@@ -2314,6 +2437,7 @@
         state.tasks = buildTasks();
         state.index = 0;
         state.correctCount = 0;
+        state.sessionXp = 0;
         if (checkBtn) checkBtn.textContent = "Check";
         renderTask();
         return;
@@ -2328,12 +2452,10 @@
       }
       state.index += 1;
       if (state.index >= state.tasks.length) {
-        promptTitle.textContent = "Session complete!";
-        promptText.textContent = "Great work — start a new round?";
-        choiceGrid.innerHTML = "";
-        inputArea.style.display = "none";
-        if (checkBtn) checkBtn.textContent = "New Session";
-        updateStatus();
+        const completedModule = getModule();
+        recordStreakDay();
+        markLevelComplete();
+        showCompletionScreen(completedModule);
         return;
       }
       renderTask();
