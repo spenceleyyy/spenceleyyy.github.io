@@ -895,6 +895,21 @@
       opacity: 0.6;
     }
 
+    .floor-center-decal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 980px;
+      height: 980px;
+      transform: translate(-50%, -50%) translateZ(2px);
+      background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
+      opacity: 0.88;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 0;
+      filter: contrast(1.05);
+    }
+
     .footstep {
       position: absolute;
       left: var(--step-x, 0px);
@@ -1664,6 +1679,7 @@
         </div>
         <div class="face floor">
           <div id="floor-shadow" aria-hidden="true"></div>
+          <div class="floor-center-decal" aria-hidden="true"></div>
           <div class="character-plane" aria-hidden="true">
             <div class="character-shadow" aria-hidden="true"></div>
             <div class="character" aria-hidden="true">
@@ -1849,7 +1865,7 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 0,
-      z: 3200,
+      z: 3600,
       yaw: -180,
       floor: 880,
     };
