@@ -255,7 +255,10 @@
       width: var(--room-w);
       height: var(--room-d);
       transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / 2));
-      background: linear-gradient(180deg, #fafaf8 0%, #f6f6f4 100%);
+      background:
+        url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / 1300px 1300px no-repeat,
+        linear-gradient(180deg, #fafaf8 0%, #f6f6f4 100%);
+      background-blend-mode: multiply, normal;
     }
 
     .face.floor::before {
