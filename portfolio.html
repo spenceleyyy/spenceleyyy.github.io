@@ -901,13 +901,14 @@
       top: 50%;
       width: 1300px;
       height: 1300px;
-      transform: translate(-50%, -50%) translateZ(6px);
+      transform: translate(-50%, -50%) rotateX(180deg) translateZ(-6px);
       background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
       opacity: 1;
       mix-blend-mode: normal;
       pointer-events: none;
       z-index: 2;
       filter: contrast(1.35) brightness(0.92);
+      backface-visibility: hidden;
     }
 
     .footstep {
