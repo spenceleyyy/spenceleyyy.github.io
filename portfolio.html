@@ -901,13 +901,13 @@
       top: 50%;
       width: 1500px;
       height: 1500px;
-      transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / 2 - 2px));
+      transform: translate(-50%, -50%) rotateX(180deg) translateZ(6px);
       background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
-      opacity: 0.92;
+      opacity: 0.95;
       mix-blend-mode: multiply;
       pointer-events: none;
       z-index: 2;
-      filter: contrast(1.4) brightness(0.9);
+      filter: contrast(1.45) brightness(0.9);
       backface-visibility: hidden;
     }
 
@@ -1680,6 +1680,7 @@
         </div>
         <div class="face floor">
           <div id="floor-shadow" aria-hidden="true"></div>
+          <div class="floor-center-decal" aria-hidden="true"></div>
           <div class="character-plane" aria-hidden="true">
             <div class="character-shadow" aria-hidden="true"></div>
             <div class="character" aria-hidden="true">
@@ -1694,7 +1695,6 @@
           <div class="floor-ring ring-5" aria-hidden="true"></div>
           <div class="floor-ring ring-6" aria-hidden="true"></div>
         </div>
-        <div class="floor-center-decal" aria-hidden="true"></div>
         <div class="face ceiling">
           <!-- Track lights for left wall -->
           <div class="track-light left-1" aria-hidden="true"></div>
