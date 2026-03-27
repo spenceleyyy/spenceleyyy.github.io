@@ -259,7 +259,15 @@
     }
 
     .face.floor::before {
-      display: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / 1700px 1700px no-repeat;
+      opacity: 0.68;
+      filter: contrast(2) brightness(0.72);
+      transform: translateZ(2px);
+      pointer-events: none;
+      z-index: 1;
     }
 
     .face.ceiling {
@@ -913,11 +921,11 @@
       height: 1500px;
       transform: translate(-50%, -50%) translateZ(4px);
       background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
-      opacity: 0.9;
-      mix-blend-mode: normal;
+      opacity: 0.92;
+      mix-blend-mode: multiply;
       pointer-events: none;
-      z-index: 2;
-      filter: contrast(1.4) brightness(0.92);
+      z-index: 3;
+      filter: contrast(1.9) brightness(0.75);
       backface-visibility: visible;
     }
 
