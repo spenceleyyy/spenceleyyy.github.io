@@ -521,9 +521,32 @@
     .import-result-row { display:flex; justify-content:space-between; padding:7px 20px; font-size:.84rem; }
     .import-result-row strong { color:var(--violet); font-variant-numeric:tabular-nums; }
   </style>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
+
+<!-- AUTH -->
+<div id="authView" class="hidden" style="position:fixed;inset:0;z-index:600;background:var(--bg2);overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:center;justify-content:center;padding:48px 24px;box-sizing:border-box;">
+  <div style="width:min(380px,100%);">
+    <div style="text-align:center;margin-bottom:36px;">
+      <img src="logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
+      <div style="font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--label);">Let's Go</div>
+      <div style="font-size:.88rem;color:var(--label2);margin-top:6px;">Sign in or create an account.</div>
+    </div>
+    <div class="auth-seg" style="margin-bottom:24px;">
+      <button id="authTabSignIn" class="active" onclick="switchAuthTab('signin')">Sign In</button>
+      <button id="authTabSignUp" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <div style="display:grid;gap:14px;">
+      <div class="auth-field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email" /></div>
+      <div class="auth-field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+      <div class="status-msg" id="authStatus" style="color:var(--rose);min-height:18px;"></div>
+      <button class="btn-primary full lg" id="authSubmitBtn" onclick="handleAuthSubmit()">Sign In</button>
+    </div>
+  </div>
+</div>
 
 <!-- ONBOARDING -->
 <div id="onboardingView" class="hidden" style="position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-top) + 48px) 24px calc(var(--safe-bottom) + 40px);box-sizing:border-box;">
@@ -1039,6 +1062,12 @@
         </div>
         <div class="photo-grid" id="profilePhotoGrid" style="margin:0 16px 12px;border-radius:var(--radius);overflow:hidden;"></div>
         <div style="padding:0 16px 10px;" class="scroll-fade"><button class="btn-ghost" id="viewTimelineBtn" style="width:100%;text-align:center;">View Full Timeline</button></div>
+        <div class="section-header scroll-fade"><h2>Account</h2></div>
+        <div class="card scroll-fade">
+          <div class="card-inner">
+            <button class="btn-ghost full" id="signOutBtn" style="color:var(--rose);text-align:center;">Sign Out</button>
+          </div>
+        </div>
         <div class="section-header scroll-fade"><h2>Apple Health</h2></div>
         <div class="card scroll-fade">
           <div class="card-inner" style="display:flex;flex-direction:column;gap:10px;">
@@ -1188,6 +1217,25 @@
 
 <script>
 'use strict';
+
+/* ═══════════════════════════════════════════════
+   SUPABASE CONFIG
+   1. Create a project at https://supabase.com
+   2. Run this SQL in the Supabase SQL editor:
+      create table user_data (
+        id uuid references auth.users primary key,
+        data jsonb not null default '{}',
+        updated_at timestamptz default now()
+      );
+      alter table user_data enable row level security;
+      create policy "own data only" on user_data
+        for all using (auth.uid() = id);
+   3. Replace the two placeholder values below
+      with your project URL and anon key.
+═══════════════════════════════════════════════ */
+const SUPABASE_URL      = 'https://grflsepatlfgimruwrfz.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Xmo72uRzD4-kr9lnaGqNzQ_KMiuTweZ';
+const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ═══════════════════════════════════════════════
    EXERCISE POSE SVG ILLUSTRATIONS
@@ -1571,7 +1619,38 @@ const store = {
   getApiKey:  ()  => localStorage.getItem('aq_apikey') || '',
   setApiKey:  k   => localStorage.setItem('aq_apikey', k),
   getData(key){ const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); return u['me']?.[key]; },
-  setData(key,val){ const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); if(!u['me']) u['me']={}; u['me'][key]=val; localStorage.setItem('aq_users',JSON.stringify(u)); },
+  setData(key,val){
+    const u=JSON.parse(localStorage.getItem('aq_users')||'{}');
+    if(!u['me']) u['me']={};
+    u['me'][key]=val;
+    localStorage.setItem('aq_users',JSON.stringify(u));
+    store._pushToCloud();
+  },
+  // Fire-and-forget cloud sync — writes the full user blob to Supabase in the background
+  async _pushToCloud(){
+    try {
+      const { data:{ user } } = await _sb.auth.getUser();
+      if (!user) return;
+      const d = JSON.parse(localStorage.getItem('aq_users')||'{}')['me'] || {};
+      await _sb.from('user_data').upsert({ id: user.id, data: d, updated_at: new Date().toISOString() });
+    } catch(_) {}
+  },
+  // Pull the latest cloud blob into localStorage (called on login)
+  async _pullFromCloud(){
+    try {
+      const { data:{ user } } = await _sb.auth.getUser();
+      if (!user) return false;
+      const { data } = await _sb.from('user_data').select('data').eq('id', user.id).single();
+      if (data?.data && Object.keys(data.data).length > 0) {
+        const u = JSON.parse(localStorage.getItem('aq_users')||'{}');
+        u['me'] = data.data;
+        localStorage.setItem('aq_users', JSON.stringify(u));
+        localStorage.setItem('aq_onboarded', '1');
+        return true;
+      }
+      return false;
+    } catch(_) { return false; }
+  },
   getWorkouts:    () => store.getData('workouts')    || [],
   saveWorkouts:   w  => store.setData('workouts', w),
   getFoodLogs:    () => store.getData('foodLogs')    || {},
@@ -1681,7 +1760,6 @@ function enterApp(){
       if (first) { u['me'] = u[first]; delete u[first]; localStorage.setItem('aq_users', JSON.stringify(u)); }
     }
   } catch(_) {}
-  // If 'me' already has data, they're an existing user — skip onboarding
   try {
     const _me = JSON.parse(localStorage.getItem('aq_users')||'{}')['me'];
     if (_me && Object.keys(_me).length > 0 && !localStorage.getItem('aq_onboarded')) {
@@ -1689,12 +1767,22 @@ function enterApp(){
     }
   } catch(_2) {}
 })();
-(function init(){
+
+(async function init(){
   try {
-    if(!localStorage.getItem('aq_onboarded')){
-      $('onboardingView').classList.remove('hidden');
+    const { data:{ session } } = await _sb.auth.getSession();
+    if (session) {
+      // Logged in — pull latest cloud data, then enter app
+      store.setData('email', session.user.email);
+      await store._pullFromCloud();
+      if (localStorage.getItem('aq_onboarded')) {
+        enterApp();
+      } else {
+        $('onboardingView').classList.remove('hidden');
+      }
     } else {
-      enterApp();
+      // Not logged in — show auth screen
+      $('authView').classList.remove('hidden');
     }
   } catch(e) {
     document.body.insertAdjacentHTML('afterbegin',
@@ -2859,6 +2947,68 @@ async function fetchAndApplyWeather(){
     }catch(_){}
   },()=>{},{timeout:8000,maximumAge:900000});
 }
+
+/* ═══════════════════════════════════════════════
+   AUTH HANDLERS
+═══════════════════════════════════════════════ */
+let _authMode = 'signin';
+
+function switchAuthTab(mode){
+  _authMode = mode;
+  $('authTabSignIn').classList.toggle('active', mode==='signin');
+  $('authTabSignUp').classList.toggle('active', mode==='signup');
+  $('authSubmitBtn').textContent = mode==='signin' ? 'Sign In' : 'Create Account';
+  $('authStatus').textContent = '';
+}
+
+async function handleAuthSubmit(){
+  const email    = $('authEmail').value.trim();
+  const password = $('authPassword').value;
+  if (!email || !password) { $('authStatus').textContent = 'Please fill in both fields.'; return; }
+  $('authSubmitBtn').disabled = true;
+
+  if (_authMode === 'signin') {
+    $('authStatus').textContent = 'Signing in…';
+    const { error } = await _sb.auth.signInWithPassword({ email, password });
+    if (error) { $('authStatus').textContent = error.message; $('authSubmitBtn').disabled=false; return; }
+    const { data:{ session } } = await _sb.auth.getSession();
+    store.setData('email', session.user.email);
+    await store._pullFromCloud();
+    $('authView').classList.add('hidden');
+    if (localStorage.getItem('aq_onboarded')) enterApp();
+    else $('onboardingView').classList.remove('hidden');
+
+  } else {
+    if (password.length < 6) { $('authStatus').textContent = 'Password must be at least 6 characters.'; $('authSubmitBtn').disabled=false; return; }
+    $('authStatus').textContent = 'Creating account…';
+    const { data, error } = await _sb.auth.signUp({ email, password });
+    if (error) { $('authStatus').textContent = error.message; $('authSubmitBtn').disabled=false; return; }
+    // Some Supabase projects require email confirmation — handle both cases
+    if (data.session) {
+      store.setData('email', email);
+      $('authView').classList.add('hidden');
+      $('onboardingView').classList.remove('hidden');
+    } else {
+      $('authStatus').textContent = 'Check your email to confirm your account, then sign in.';
+      $('authStatus').style.color = 'var(--mint)';
+      switchAuthTab('signin');
+    }
+  }
+  $('authSubmitBtn').disabled = false;
+}
+
+async function signOut(){
+  await _sb.auth.signOut();
+  localStorage.removeItem('aq_users');
+  localStorage.removeItem('aq_onboarded');
+  $('appView').classList.add('hidden');
+  $('authView').classList.remove('hidden');
+  $('authStatus').textContent = '';
+  $('authEmail').value = '';
+  $('authPassword').value = '';
+}
+
+$('signOutBtn').addEventListener('click', signOut);
 
 /* ── INIT ── */
 // Process pending Shortcuts health sync params
