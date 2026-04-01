@@ -520,6 +520,43 @@
     .import-progress-fill { height:100%; background:var(--violet); border-radius:99px; width:0; transition:width .4s; }
     .import-result-row { display:flex; justify-content:space-between; padding:7px 20px; font-size:.84rem; }
     .import-result-row strong { color:var(--violet); font-variant-numeric:tabular-nums; }
+
+    /* ── TOAST ───────────────────────────────── */
+    #toast { position:fixed; bottom:calc(84px + var(--safe-bottom) + 12px); left:50%; transform:translateX(-50%) translateY(20px);
+      background:var(--label); color:#fff; padding:.6rem 1.1rem; border-radius:99px;
+      font-size:.82rem; font-weight:500; white-space:nowrap; pointer-events:none;
+      opacity:0; transition:opacity .2s, transform .2s; z-index:9000; }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    #toast .toast-undo { background:none; border:none; color:var(--mint); font-size:.82rem; font-weight:700;
+      cursor:pointer; padding:0 0 0 10px; pointer-events:all; }
+
+    /* ── MACRO TARGETS ───────────────────────── */
+    .macro-targets { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:0 16px 12px; }
+    .macro-target-item { background:var(--bg2); border-radius:var(--radius-sm); padding:9px 10px; box-shadow:var(--shadow-xs); }
+    .macro-target-lbl { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--label3); }
+    .macro-target-bar-wrap { height:4px; background:var(--surface); border-radius:99px; margin:5px 0 4px; overflow:hidden; }
+    .macro-target-bar { height:100%; border-radius:99px; transition:width .4s; }
+    .macro-target-nums { font-size:.72rem; color:var(--label2); }
+
+    /* ── STEPPER ─────────────────────────────── */
+    .stepper { display:flex; align-items:center; gap:8px; }
+    .stepper-btn { width:32px; height:32px; border-radius:50%; background:var(--surface); border:none;
+      font-size:1.1rem; font-weight:600; cursor:pointer; display:grid; place-items:center; color:var(--label); flex-shrink:0; }
+    .stepper input { width:64px; text-align:center; }
+
+    /* ── PREV SESSIONS ───────────────────────── */
+    .prev-sessions { display:grid; gap:3px; margin-bottom:2px; }
+    .prev-session-row { font-size:.78rem; color:var(--label2); }
+    .prev-session-row strong { color:var(--label); }
+
+    /* ── SET HISTORY EDIT ────────────────────── */
+    .set-history-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:.5px solid var(--sep); gap:8px; }
+    .set-history-row:last-child { border-bottom:none; }
+    .set-del-btn { background:none; border:none; color:var(--label3); cursor:pointer; font-size:.85rem; padding:2px 4px; flex-shrink:0; }
+    .set-del-btn:active { color:var(--rose); }
+
+    /* ── PROFILE EDIT INLINE ─────────────────── */
+    .profile-edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   </style>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -544,9 +581,13 @@
       <div class="auth-field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
       <div class="status-msg" id="authStatus" style="color:var(--rose);min-height:18px;"></div>
       <button class="btn-primary full lg" id="authSubmitBtn" onclick="handleAuthSubmit()">Sign In</button>
+      <div style="text-align:center;margin-top:4px;">
+        <button style="background:none;border:none;color:var(--label2);font-size:.8rem;cursor:pointer;" onclick="handleForgotPassword()">Forgot password?</button>
+      </div>
     </div>
   </div>
 </div>
+<div id="toast"></div>
 
 <!-- ONBOARDING -->
 <div id="onboardingView" class="hidden" style="position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-top) + 48px) 24px calc(var(--safe-bottom) + 40px);box-sizing:border-box;">
@@ -763,6 +804,10 @@
           <div style="padding:14px 16px 4px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--violet);">New Personal Records</div>
           <div id="donePrList"></div>
         </div>
+        <div class="card scroll-fade hidden" id="done1rmCard">
+          <div style="padding:14px 16px 4px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--sky);">Estimated 1-Rep Max</div>
+          <div id="done1rmList"></div>
+        </div>
         <div style="padding:16px;display:grid;gap:10px;" class="scroll-fade">
           <button class="btn-primary full" id="doneNewBtn">Start Another Workout</button>
           <button class="btn-ghost full" id="doneHomeBtn" style="width:100%;text-align:center;padding:.75rem;">Go Home</button>
@@ -816,6 +861,23 @@
             </div>
           </div>
         </div>
+        <div class="macro-targets hidden" id="macroTargetsRow">
+          <div class="macro-target-item">
+            <div class="macro-target-lbl" style="color:var(--sky);">Protein</div>
+            <div class="macro-target-bar-wrap"><div class="macro-target-bar" id="mbarP" style="background:var(--sky);width:0%;"></div></div>
+            <div class="macro-target-nums"><span id="mtP">0</span>g / <span id="mtPGoal">0</span>g</div>
+          </div>
+          <div class="macro-target-item">
+            <div class="macro-target-lbl" style="color:var(--amber);">Carbs</div>
+            <div class="macro-target-bar-wrap"><div class="macro-target-bar" id="mbarC" style="background:var(--amber);width:0%;"></div></div>
+            <div class="macro-target-nums"><span id="mtC">0</span>g / <span id="mtCGoal">0</span>g</div>
+          </div>
+          <div class="macro-target-item">
+            <div class="macro-target-lbl" style="color:var(--rose);">Fat</div>
+            <div class="macro-target-bar-wrap"><div class="macro-target-bar" id="mbarF" style="background:var(--rose);width:0%;"></div></div>
+            <div class="macro-target-nums"><span id="mtF">0</span>g / <span id="mtFGoal">0</span>g</div>
+          </div>
+        </div>
         <div id="calSetupCard" class="hidden">
           <div class="section-header"><h2>Set Up Calories</h2></div>
           <div class="card">
@@ -827,10 +889,24 @@
                   <div class="input-field"><label>Height (in)</label><input id="calH" type="number" step=".1" /></div>
                   <div class="input-field"><label>Weight (lbs)</label><input id="calW" type="number" step=".1" /></div>
                 </div>
-                <div class="input-field"><label>Activity Level</label><select id="calAct"><option value="1.2">Sedentary</option><option value="1.375">Light</option><option value="1.55" selected>Moderate</option><option value="1.725">Very Active</option><option value="1.9">Athlete</option></select></div>
+                <div class="input-field"><label>Activity Level</label><select id="calAct">
+                  <option value="1.2">Sedentary — desk job, little/no exercise</option>
+                  <option value="1.375">Light — 1–3 workouts/week</option>
+                  <option value="1.55" selected>Moderate — 3–5 workouts/week</option>
+                  <option value="1.725">Very Active — 6–7 workouts/week</option>
+                  <option value="1.9">Athlete — 2× daily training</option>
+                </select></div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                   <div class="input-field"><label>Goal weight</label><input id="calGW" type="number" step=".1" /></div>
-                  <div class="input-field"><label>Weekly change</label><select id="calWL"><option value="0">Maintain</option><option value="0.5">−0.5 lbs</option><option value="1">−1 lb</option><option value="1.5">−1.5 lbs</option><option value="2">−2 lbs</option></select></div>
+                  <div class="input-field"><label>Weekly change</label><select id="calWL">
+                    <option value="0">Maintain</option>
+                    <option value="-0.5">+0.5 lbs (bulk)</option>
+                    <option value="-1">+1 lb (bulk)</option>
+                    <option value="0.5">−0.5 lbs (cut)</option>
+                    <option value="1">−1 lb (cut)</option>
+                    <option value="1.5">−1.5 lbs (cut)</option>
+                    <option value="2">−2 lbs (cut)</option>
+                  </select></div>
                 </div>
                 <button class="btn-primary full" type="submit">Set Calories</button>
                 <div class="status-msg" id="calStatus"></div>
@@ -889,7 +965,13 @@
             <div class="macro-item"><div class="macro-val" id="flC">0g</div><div class="macro-label">Carbs</div></div>
             <div class="macro-item"><div class="macro-val" id="flF">0g</div><div class="macro-label">Fat</div></div>
           </div>
-          <div class="serving-row"><label>Servings</label><input class="serving-input" id="flServings" type="number" step=".5" value="1" /></div>
+          <div class="serving-row"><label>Servings</label>
+            <div class="stepper">
+              <button class="stepper-btn" id="flServMinus">−</button>
+              <input class="serving-input" id="flServings" type="number" step=".5" value="1" style="width:64px;text-align:center;" />
+              <button class="stepper-btn" id="flServPlus">+</button>
+            </div>
+          </div>
         </div>
         <div class="card scroll-fade">
           <div class="card-row"><span class="card-row-label" id="flName">--</span><span class="card-row-right" id="flBrand">--</span></div>
@@ -989,11 +1071,14 @@
         <div class="api-notice hidden" id="apiNotice">
           Add your Claude API key in <a href="#" id="goToApiKey">Profile</a> to enable AI coaching. Get one free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
         </div>
-        <div class="coach-chips-row" id="coachChipsRow">
-          <button class="coach-chip" data-chip="Analyze my recent workouts and give me personalized feedback.">Analyze workouts</button>
-          <button class="coach-chip" data-chip="Design a workout plan for my goals and training history.">Build a plan</button>
-          <button class="coach-chip" data-chip="What should I focus on to fix my weak points?">Weak points</button>
-          <button class="coach-chip" data-chip="Review my nutrition — am I eating enough protein?">Nutrition check</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 4px;">
+          <div class="coach-chips-row" id="coachChipsRow" style="padding:0;flex:1;overflow-x:auto;">
+            <button class="coach-chip" data-chip="Analyze my recent workouts and give me personalized feedback.">Analyze workouts</button>
+            <button class="coach-chip" data-chip="Design a workout plan for my goals and training history.">Build a plan</button>
+            <button class="coach-chip" data-chip="What should I focus on to fix my weak points?">Weak points</button>
+            <button class="coach-chip" data-chip="Review my nutrition — am I eating enough protein?">Nutrition check</button>
+          </div>
+          <button id="clearChatBtn" style="background:none;border:none;color:var(--label3);font-size:.72rem;cursor:pointer;white-space:nowrap;padding:0 0 0 8px;">Clear</button>
         </div>
         <div class="coach-messages" id="coachMsgs"></div>
         <div class="coach-bar">
@@ -1031,16 +1116,18 @@
         <div class="card scroll-fade">
           <div class="card-inner" style="display:grid;gap:12px;">
             <div class="auth-field"><label>Display Name</label><input id="editProfileName" type="text" placeholder="Your name" /></div>
-            <button class="btn-primary full" id="saveProfileBtn">Save Name</button>
+            <div class="profile-edit-grid">
+              <div class="auth-field"><label>Height (in)</label><input id="editProfileHeight" type="number" step=".5" placeholder="70" /></div>
+              <div class="auth-field"><label>Weight (lbs)</label><input id="editProfileWeight" type="number" step=".1" placeholder="160" /></div>
+            </div>
+            <div class="auth-field"><label>Goal</label><select id="editProfileGoal"><option value="fat-loss">Lose Fat</option><option value="muscle">Build Muscle</option><option value="performance">Performance</option><option value="maintain">Maintain</option></select></div>
+            <button class="btn-primary full" id="saveProfileBtn">Save Profile</button>
             <div class="status-msg" id="profileSaveStatus"></div>
           </div>
         </div>
         <div class="section-header scroll-fade"><h2>Details</h2></div>
         <div class="card scroll-fade">
           <div class="card-row"><span class="card-row-label">Email</span><span class="card-row-right" id="prEmail">--</span></div>
-          <div class="card-row"><span class="card-row-label">Goal</span><span class="card-row-right" id="prGoal">--</span></div>
-          <div class="card-row"><span class="card-row-label">Height</span><span class="card-row-right" id="prHeight">--</span></div>
-          <div class="card-row"><span class="card-row-label">Weight</span><span class="card-row-right" id="prWeight">--</span></div>
           <div class="card-row"><span class="card-row-label">Calorie Target</span><span class="card-row-right" id="prCal">--</span></div>
         </div>
         <div class="section-header scroll-fade"><h2>AI Coach — API Key</h2></div>
@@ -1671,6 +1758,30 @@ const fmtDate  = d  => new Date(d).toLocaleDateString('en-US',{month:'short',day
 const fmtDur   = ms => { const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000); return `${m}m ${s}s`; };
 const clamp    = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
 
+/* ── TOAST ───────────────────────────────────── */
+let _toastTimer = null;
+function showToast(msg, undoFn=null, duration=3000){
+  const t = $('toast');
+  t.innerHTML = msg + (undoFn ? `<button class="toast-undo" id="toastUndo">Undo</button>` : '');
+  if(undoFn) $('toastUndo').onclick = () => { undoFn(); hideToast(); };
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(hideToast, duration);
+}
+function hideToast(){ $('toast').classList.remove('show'); }
+
+/* ── WEB AUDIO BEEP ────────────────────��─────── */
+function beep(freq=880, dur=0.15, vol=0.3){
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = freq; gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+dur);
+    osc.start(); osc.stop(ctx.currentTime+dur);
+  } catch(_) {}
+}
+
 function fileToB64(file) {
   return new Promise(res => { const r=new FileReader(); r.onload=e=>res(e.target.result.split(',')[1]); r.readAsDataURL(file); });
 }
@@ -1718,7 +1829,7 @@ function showScreen(name, push=true) {
   if(name==='trends')         renderTrends();
   if(name==='food')           renderFoodHome();
   if(name==='food-search')    renderFoodSearch();
-  if(name==='coach')          checkApiKey();
+  if(name==='coach'){ checkApiKey(); if($('coachMsgs').childElementCount===0) _restoreCoachHistory(); }
   if(name==='profile')        renderProfile();
   if(name==='photo-timeline') renderTimeline();
   if(name==='active-workout') renderActiveWorkout();
@@ -1871,10 +1982,11 @@ $('logWeightBtn').addEventListener('click',()=>{
   if(!$('weightLogForm').classList.contains('hidden')) $('weightInput').focus();
 });
 $('saveWeightBtn').addEventListener('click',()=>{
-  const v=parseFloat($('weightInput').value); if(!v) return;
+  const v=parseFloat($('weightInput').value);
+  if(!v||v<=0||v>1500){ showToast('Enter a valid weight'); return; }
   const w=store.getWeights(); w.push({val:v,date:Date.now(),dateKey:todayKey()});
   store.saveWeights(w); $('weightLogForm').classList.add('hidden'); $('weightInput').value='';
-  drawWeightChart(); renderHome();
+  drawWeightChart(); renderHome(); showToast(`Weight logged: ${v} lbs`);
 });
 
 /* ═══════════════════════════════════════════════
@@ -2042,15 +2154,26 @@ function updateExBanner(){
   $('setTitle').textContent=`Set ${ex.sets.length+1}`;
   $('prevExBtn').disabled=activeWorkout.currentIdx===0;
   $('nextExBtn').disabled=activeWorkout.currentIdx===activeWorkout.exercises.length-1;
-  const prev=getPrevPerformance(ex.id);
-  $('setPrev').textContent=prev||'No previous data for this exercise.';
+  updateExBannerPrev(ex.id);
 }
 function getPrevPerformance(exId){
+  const sessions=[];
   for(const s of store.getWorkouts().slice().reverse()){
     const f=s.exercises.find(e=>e.id===exId);
-    if(f&&f.sets.length>0){ const b=f.sets.reduce((a,s)=>(s.weight||0)>(a.weight||0)?s:a,f.sets[0]); return `Last: ${b.weight||0} lbs × ${b.reps||0} reps`; }
+    if(f&&f.sets.length>0){ sessions.push({date:s.date,sets:f.sets}); if(sessions.length>=3) break; }
   }
-  return null;
+  if(!sessions.length) return null;
+  return sessions.map((s,i)=>{
+    const best=s.sets.reduce((a,x)=>(x.weight||0)>(a.weight||0)?x:a,s.sets[0]);
+    const label=i===0?'Last':i===1?'2 ago':'3 ago';
+    return `<div class="prev-session-row"><strong>${label}</strong> — ${best.weight||0} lbs × ${best.reps||0} · ${s.sets.length} sets</div>`;
+  }).join('');
+}
+function updateExBannerPrev(exId){
+  const prev=getPrevPerformance(exId);
+  const el=$('setPrev');
+  if(prev){ el.innerHTML=`<div class="prev-sessions">${prev}</div>`; }
+  else { el.textContent='No previous data for this exercise.'; }
 }
 function bindWorkoutInputs(){
   $('setRpe').oninput=()=>$('rpeVal').textContent=$('setRpe').value;
@@ -2064,19 +2187,36 @@ function bindWorkoutInputs(){
 }
 function logSet(){
   const w=parseFloat($('setW').value)||0, r=parseInt($('setR').value)||0, rpe=parseInt($('setRpe').value)||7;
+  if(r<=0){ showToast('Enter reps before logging'); $('setR').focus(); return; }
+  if(w<0){ showToast('Weight can\'t be negative'); return; }
   activeWorkout.exercises[activeWorkout.currentIdx].sets.push({weight:w,reps:r,rpe,timestamp:Date.now()});
   $('setW').value=w; $('setR').value='';
   renderSetHistory(); updateExBanner(); startRest(120);
 }
 function renderSetHistory(){
   const ex=activeWorkout.exercises[activeWorkout.currentIdx];
-  $('setHistoryList').innerHTML=ex.sets.length===0?'<div style="padding:8px 0;color:var(--label2);font-size:.8rem;">No sets yet.</div>':
-    ex.sets.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid var(--sep);font-size:.85rem;">
-      <span style="color:var(--label2);">Set ${i+1}</span>
-      <span><b>${s.weight||0}</b> lbs × <b>${s.reps||0}</b> reps <span style="color:var(--label3);">RPE ${s.rpe}</span></span></div>`).join('');
+  if(ex.sets.length===0){ $('setHistoryList').innerHTML='<div style="padding:8px 0;color:var(--label2);font-size:.8rem;">No sets yet.</div>'; return; }
+  $('setHistoryList').innerHTML=ex.sets.map((s,i)=>`
+    <div class="set-history-row">
+      <span style="color:var(--label2);font-size:.82rem;min-width:42px;">Set ${i+1}</span>
+      <span style="flex:1;font-size:.85rem;"><b>${s.weight||0}</b> lbs × <b>${s.reps||0}</b> reps <span style="color:var(--label3);">RPE ${s.rpe}</span></span>
+      <button class="set-del-btn" data-si="${i}">✕</button>
+    </div>`).join('');
+  $('setHistoryList').querySelectorAll('.set-del-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=parseInt(btn.dataset.si);
+      activeWorkout.exercises[activeWorkout.currentIdx].sets.splice(idx,1);
+      renderSetHistory(); updateExBanner();
+      showToast('Set removed');
+    });
+  });
 }
 function startRest(secs){ clearRest(); restSecsLeft=secs; $('restBanner').classList.remove('hidden'); updateRestDisplay();
-  restInterval=setInterval(()=>{ restSecsLeft--; if(restSecsLeft<=0) clearRest(); else updateRestDisplay(); },1000); }
+  restInterval=setInterval(()=>{
+    restSecsLeft--;
+    if(restSecsLeft<=0){ clearRest(); beep(660,.12); setTimeout(()=>beep(880,.18),160); showToast('Rest complete — time to go!'); }
+    else { updateRestDisplay(); if(restSecsLeft<=3) beep(440,.08,0.15); }
+  },1000); }
 function updateRestDisplay(){ const m=Math.floor(restSecsLeft/60),s=restSecsLeft%60; $('restTime').textContent=`${m}:${String(s).padStart(2,'0')}`; }
 function clearRest(){ clearInterval(restInterval); $('restBanner').classList.add('hidden'); }
 
@@ -2112,6 +2252,16 @@ function renderDone(){
   if(prs.length){ $('donePrCard').classList.remove('hidden');
     $('donePrList').innerHTML=prs.map(p=>`<div class="card-row"><div class="card-row-label">${p.name}</div><div class="card-row-right" style="color:var(--violet);font-weight:600;">${p.weight}×${p.reps}</div></div>`).join('');
   } else $('donePrCard').classList.add('hidden');
+  // Estimated 1RM via Epley formula: w * (1 + reps/30)
+  const oneRMs=w.exercises.map(ex=>{
+    const best=ex.sets.filter(s=>(s.weight||0)>0&&(s.reps||0)>0).reduce((b,s)=>{
+      const e1rm=(s.weight)*(1+s.reps/30); return e1rm>(b.e1rm||0)?{...s,e1rm}:b;
+    },{});
+    return best.e1rm?{name:ex.name,e1rm:Math.round(best.e1rm),weight:best.weight,reps:best.reps}:null;
+  }).filter(Boolean);
+  if(oneRMs.length){ $('done1rmCard').classList.remove('hidden');
+    $('done1rmList').innerHTML=oneRMs.map(r=>`<div class="card-row"><div class="card-row-label">${r.name}</div><div class="card-row-right" style="color:var(--sky);font-weight:600;">${r.e1rm} lbs est.</div></div>`).join('');
+  } else $('done1rmCard').classList.add('hidden');
   $('doneNewBtn').onclick=()=>showScreen('exercise-select');
   $('doneHomeBtn').onclick=()=>{ screenHistory=['home']; showScreen('home',false); };
 }
@@ -2219,11 +2369,11 @@ $('calForm').addEventListener('submit',e=>{
 $('editCalBtn').addEventListener('click',()=>{ store.saveCalGoal(null); renderFoodHome(); });
 function renderFoodRing(){
   const goal=store.getCalGoal(), logs=store.getFoodLogs()[todayKey()]||[];
-  const consumed=logs.reduce((s,l)=>s+l.calories,0), p=logs.reduce((s,l)=>s+(l.protein||0),0);
-  const c=logs.reduce((s,l)=>s+(l.carbs||0),0), f=logs.reduce((s,l)=>s+(l.fat||0),0);
+  const consumed=logs.reduce((s,l)=>s+l.calories,0), p=Math.round(logs.reduce((s,l)=>s+(l.protein||0),0));
+  const c=Math.round(logs.reduce((s,l)=>s+(l.carbs||0),0)), f=Math.round(logs.reduce((s,l)=>s+(l.fat||0),0));
   const left=Math.max(0,goal.calories-consumed);
   $('foodRingVal').textContent=left; $('calTarget').textContent=goal.calories+' kcal'; $('calConsumed').textContent=consumed+' kcal';
-  $('macroP').textContent=`P ${Math.round(p)}g`; $('macroC').textContent=`C ${Math.round(c)}g`; $('macroF').textContent=`F ${Math.round(f)}g`;
+  $('macroP').textContent=`P ${p}g`; $('macroC').textContent=`C ${c}g`; $('macroF').textContent=`F ${f}g`;
   const circ=232, pct=clamp(consumed/goal.calories,0,1);
   $('foodRing').style.strokeDashoffset=circ-pct*circ; $('foodRing').style.stroke=pct>1?'var(--rose)':'var(--mint)';
   $('ringVal').textContent=left; $('calRing').style.strokeDashoffset=226-pct*226;
@@ -2231,6 +2381,14 @@ function renderFoodRing(){
   $('macroBarRow').querySelector('.p').style.flex=(p*4/total)*100;
   $('macroBarRow').querySelector('.c').style.flex=(c*4/total)*100;
   $('macroBarRow').querySelector('.f').style.flex=(f*9/total)*100;
+  // Macro targets
+  const gP=goal.protein||0, gC=goal.carbs||0, gF=goal.fat||0;
+  $('macroTargetsRow').classList.toggle('hidden', !gP&&!gC&&!gF);
+  if(gP||gC||gF){
+    $('mtP').textContent=p; $('mtPGoal').textContent=gP; $('mbarP').style.width=clamp(p/Math.max(gP,1),0,1)*100+'%';
+    $('mtC').textContent=c; $('mtCGoal').textContent=gC; $('mbarC').style.width=clamp(c/Math.max(gC,1),0,1)*100+'%';
+    $('mtF').textContent=f; $('mtFGoal').textContent=gF; $('mbarF').style.width=clamp(f/Math.max(gF,1),0,1)*100+'%';
+  }
 }
 function renderTodayLog(){
   const logs=store.getFoodLogs()[todayKey()]||[];
@@ -2253,8 +2411,13 @@ function renderTodayLog(){
   }).join('');
   $('foodLogGroups').querySelectorAll('[data-del]').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      const all=store.getFoodLogs(); all[todayKey()].splice(parseInt(btn.dataset.del),1);
+      const all=store.getFoodLogs(), idx=parseInt(btn.dataset.del);
+      const removed=all[todayKey()].splice(idx,1)[0];
       store.saveFoodLogs(all); renderFoodRing(); renderTodayLog();
+      showToast(`Removed ${removed.name}`, ()=>{
+        const a=store.getFoodLogs(); if(!a[todayKey()]) a[todayKey()]=[];
+        a[todayKey()].splice(idx,0,removed); store.saveFoodLogs(a); renderFoodRing(); renderTodayLog();
+      });
     });
   });
   observeScrollFade();
@@ -2308,6 +2471,8 @@ function openFoodLog(food){
   $('flServings').value=1; updateFoodLogMacros(); showScreen('food-log');
 }
 $('flServings').addEventListener('input',updateFoodLogMacros);
+$('flServMinus').addEventListener('click',()=>{ const v=Math.max(0.5,(parseFloat($('flServings').value)||1)-0.5); $('flServings').value=v; updateFoodLogMacros(); });
+$('flServPlus').addEventListener('click',()=>{ const v=(parseFloat($('flServings').value)||1)+0.5; $('flServings').value=v; updateFoodLogMacros(); });
 function updateFoodLogMacros(){
   if(!selectedFoodItem) return;
   const s=parseFloat($('flServings').value)||1;
@@ -2414,6 +2579,7 @@ function checkApiKey(){ const k=store.getApiKey(); $('apiNotice').classList.togg
 $('coachSend').addEventListener('click',sendCoachMessage);
 $('coachInput').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendCoachMessage(); } });
 document.querySelectorAll('.coach-chip').forEach(chip=>chip.addEventListener('click',()=>{ $('coachInput').value=chip.dataset.chip; sendCoachMessage(); }));
+$('clearChatBtn').addEventListener('click',()=>{ $('coachMsgs').innerHTML=''; _coachMsgHistory.length=0; sessionStorage.removeItem('coachHistory'); });
 $('coachImgFile').addEventListener('change',async e=>{ const f=e.target.files[0]; if(!f) return; coachImgB64=await fileToB64(f); $('coachImgThumb').src=URL.createObjectURL(f); $('coachImgPrev').classList.remove('hidden'); $('coachImgPrev').style.display='flex'; });
 $('clearCoachImg').addEventListener('click',()=>{ coachImgB64=null; $('coachImgPrev').classList.add('hidden'); $('coachImgFile').value=''; });
 /* ── Tool definitions for Claude function calling ── */
@@ -2513,14 +2679,17 @@ Today's food: ${JSON.stringify((store.getFoodLogs()[todayKey()]||[]).map(l=>({na
 You have tools to log workouts, food, and weight directly into the app — use them whenever the user reports what they did or asks you to record something. Be concise and encouraging.`;
   try{
     const mc=imgB64?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},{type:'text',text:text||'Analyze this.'}]:[{type:'text',text}];
+    // Build conversation history (last 8 turns, text-only for past messages)
+    const histMsgs=_coachMsgHistory.slice(-8,-1).map(m=>({role:m.role,content:m.text}));
+    const allMsgs=[...histMsgs,{role:'user',content:mc}];
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
-      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1024,system:sys,tools:COACH_TOOLS,messages:[{role:'user',content:mc}]})});
+      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1024,system:sys,tools:COACH_TOOLS,messages:allMsgs})});
     if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||`Error ${resp.status}`); }
     const data=await resp.json(); loadEl.remove();
     const textBlocks=data.content.filter(b=>b.type==='text');
     const toolBlocks=data.content.filter(b=>b.type==='tool_use');
-    if(textBlocks.length) appendMsg('bot',textBlocks.map(b=>b.text).join('\n'));
+    if(textBlocks.length){ const t=textBlocks.map(b=>b.text).join('\n'); appendMsg('bot',t); }
     for(const block of toolBlocks){
       const html=executeTool(block.name,block.input);
       if(html) appendMsgHTML(html);
@@ -2530,11 +2699,21 @@ You have tools to log workouts, food, and weight directly into the app — use t
     if(!textBlocks.length&&!toolBlocks.length) appendMsg('bot',data.content[0]?.text||'No response.');
   }catch(err){ loadEl.remove(); appendMsg('bot','Error: '+err.message); }
 }
-function appendMsg(role,text,imgSrc=null,loading=false){
+const _coachMsgHistory = [];
+function _saveCoachHistory(){ try{ sessionStorage.setItem('coachHistory', JSON.stringify(_coachMsgHistory.slice(-40))); }catch(_){} }
+function _restoreCoachHistory(){
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('coachHistory')||'[]');
+    saved.forEach(m=>{ if(!m.loading) appendMsg(m.role, m.text, m.imgSrc||null, false, true); });
+  } catch(_) {}
+}
+function appendMsg(role,text,imgSrc=null,loading=false,_replay=false){
   const el=document.createElement('div'); el.className=`msg ${role}${loading?' loading':''}`;
   el.innerHTML=loading?text:text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
   if(imgSrc){ const img=document.createElement('img'); img.src=imgSrc; el.appendChild(img); }
-  $('coachMsgs').appendChild(el); $('coachMsgs').scrollTop=$('coachMsgs').scrollHeight; return el;
+  $('coachMsgs').appendChild(el); $('coachMsgs').scrollTop=$('coachMsgs').scrollHeight;
+  if(!loading&&!_replay){ _coachMsgHistory.push({role,text,imgSrc}); _saveCoachHistory(); }
+  return el;
 }
 function appendMsgHTML(html){
   const el=document.createElement('div'); el.className='msg bot'; el.style.padding='0'; el.style.background='none'; el.style.boxShadow='none';
@@ -2555,12 +2734,12 @@ function renderProfile(){
   $('hdrAvatar').textContent=u.name?u.name.slice(0,2).toUpperCase():'ME';
   $('profileName').textContent=u.name||'Your Name';
   $('editProfileName').value=u.name||'';
+  $('editProfileHeight').value=u.height||'';
+  $('editProfileWeight').value=u.weight||'';
+  if(u.goal) $('editProfileGoal').value=u.goal;
   $('profileSub').textContent=u.goal?u.goal.replace('-',' '):"Let's Go";
   $('prEmail').textContent=u.email||'—';
-  $('prGoal').textContent=u.goal?u.goal.replace('-',' '):'—';
-  $('prHeight').textContent=u.height?u.height+'"':'—';
-  $('prWeight').textContent=u.weight?u.weight+' lbs':'—';
-  $('prCal').textContent=goal?goal.calories+' kcal':'—';
+  $('prCal').textContent=goal?`${goal.calories} kcal · P${goal.protein}g C${goal.carbs}g F${goal.fat}g`:'—';
   $('apiKeyInput').value=store.getApiKey()?'••••••••••••':'';
   const photos=store.getPhotos().slice(-4).reverse();
   $('profilePhotoGrid').innerHTML=photos.map(p=>`<div class="photo-tile"><img src="${p.data}" alt=""/><div class="photo-tile-date">${fmtDate(p.date)}</div></div>`).join('');
@@ -2574,12 +2753,19 @@ $('saveApiKey').addEventListener('click',()=>{
 
 $('saveProfileBtn').addEventListener('click',()=>{
   const name=$('editProfileName').value.trim();
+  const h=parseFloat($('editProfileHeight').value);
+  const w=parseFloat($('editProfileWeight').value);
+  const goal=$('editProfileGoal').value;
   if(!name){$('profileSaveStatus').textContent='Enter a name.';return;}
   store.setData('name',name);
+  if(h>0) store.setData('height',h);
+  if(w>0){ store.setData('weight',w); const ws=store.getWeights(); ws.push({val:w,date:Date.now(),dateKey:todayKey()}); store.saveWeights(ws); }
+  if(goal) store.setData('goal',goal);
   $('profileSaveStatus').textContent='Saved!';
   $('profileSaveStatus').style.color='var(--mint)';
   setTimeout(()=>$('profileSaveStatus').textContent='',2000);
   renderProfile();
+  showToast('Profile updated');
 });
 
 $('profilePicInput').addEventListener('change',e=>{
@@ -2622,7 +2808,18 @@ function buildTimelineGrid(){
   if(photoFilter==='7') photos=photos.filter(p=>p.date>now-7*864e5);
   if(photoFilter==='30') photos=photos.filter(p=>p.date>now-30*864e5);
   if(photoFilter==='90') photos=photos.filter(p=>p.date>now-90*864e5);
-  $('timelineGrid').innerHTML=photos.map((p,i)=>`<div class="photo-tile" data-pi="${i}"><img src="${p.data}" alt="" loading="lazy"/><div class="photo-tile-date">${fmtDate(p.date)}</div></div>`).join('');
+  $('timelineGrid').innerHTML=photos.map((p,i)=>`<div class="photo-tile" data-pi="${i}" data-pdate="${p.date}" style="position:relative;"><img src="${p.data}" alt="" loading="lazy"/><div class="photo-tile-date">${fmtDate(p.date)}</div><button class="photo-del-btn" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;display:grid;place-items:center;z-index:2;">✕</button></div>`).join('');
+  $('timelineGrid').querySelectorAll('.photo-del-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const pdate=parseInt(btn.closest('.photo-tile').dataset.pdate);
+      const allPhotos=store.getPhotos(), realIdx=allPhotos.findIndex(p=>p.date===pdate);
+      if(realIdx<0) return;
+      const removed=allPhotos.splice(realIdx,1)[0];
+      store.savePhotos(allPhotos); buildTimelineGrid(); renderProfile();
+      showToast('Photo deleted', ()=>{ const a=store.getPhotos(); a.splice(realIdx,0,removed); store.savePhotos(a); buildTimelineGrid(); renderProfile(); });
+    });
+  });
   $('timelineGrid').querySelectorAll('.photo-tile').forEach(tile=>{
     tile.addEventListener('click',()=>{
       const photo=photos[parseInt(tile.dataset.pi)];
@@ -2995,6 +3192,16 @@ async function handleAuthSubmit(){
     }
   }
   $('authSubmitBtn').disabled = false;
+}
+
+async function handleForgotPassword(){
+  const email=$('authEmail').value.trim();
+  if(!email){ $('authStatus').textContent='Enter your email above first.'; return; }
+  $('authStatus').textContent='Sending reset email…';
+  const { error } = await _sb.auth.resetPasswordForEmail(email, { redirectTo: location.href });
+  if(error){ $('authStatus').textContent=error.message; return; }
+  $('authStatus').textContent='Reset email sent! Check your inbox.';
+  $('authStatus').style.color='var(--mint)';
 }
 
 async function signOut(){
