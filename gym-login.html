@@ -557,6 +557,128 @@
 
     /* ── PROFILE EDIT INLINE ─────────────────── */
     .profile-edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+    /* ── ACTIVE WORKOUT (new) ─────────────────── */
+    .aw-header { display:flex; align-items:center; justify-content:space-between;
+      padding:10px 16px; background:var(--bg2); border-bottom:.5px solid var(--sep); }
+    .aw-timer { font-size:.82rem; font-weight:700; font-variant-numeric:tabular-nums;
+      color:var(--label2); background:var(--surface); padding:.3rem .7rem; border-radius:99px; }
+    .aw-quit-btn { background:none; border:none; color:var(--label3); font-size:.82rem;
+      font-weight:600; cursor:pointer; padding:.3rem .5rem; }
+
+    .aw-progress-bar { display:flex; gap:5px; align-items:center; justify-content:center;
+      padding:10px 16px 4px; }
+    .aw-dot { width:8px; height:8px; border-radius:50%; background:var(--sep); transition:all .2s; flex-shrink:0; }
+    .aw-dot.done { background:var(--mint); }
+    .aw-dot.current { background:var(--violet); width:24px; border-radius:99px; }
+
+    .aw-ex-card { background:var(--bg2); margin:10px 16px 0; border-radius:var(--radius);
+      box-shadow:var(--shadow-xs); padding:16px; }
+    .aw-ex-name-big { font-size:1.3rem; font-weight:800; letter-spacing:-.03em; margin-bottom:2px; }
+    .aw-ex-meta { font-size:.74rem; color:var(--label2); margin-bottom:10px; }
+    .aw-prev-inline { font-size:.74rem; color:var(--label2); background:var(--surface);
+      border-radius:var(--radius-xs); padding:6px 10px; margin-bottom:12px; line-height:1.6; }
+
+    .aw-inputs-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    .aw-input-block { display:flex; flex-direction:column; gap:4px; }
+    .aw-input-lbl { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--label3); text-align:center; }
+    .aw-stepper { display:flex; align-items:center; gap:0; background:var(--surface); border-radius:var(--radius-sm); overflow:hidden; }
+    .aw-step-btn { background:none; border:none; width:40px; height:48px; font-size:1.3rem; font-weight:500;
+      cursor:pointer; color:var(--violet); display:grid; place-items:center; flex-shrink:0; }
+    .aw-step-btn:active { background:var(--violet-lt); }
+    .aw-step-input { flex:1; background:none; border:none; text-align:center; font-size:1.1rem;
+      font-weight:700; color:var(--label); height:48px; min-width:0; }
+    .aw-step-input:focus { outline:none; background:var(--violet-lt); border-radius:4px; }
+
+    .aw-rpe-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+    .aw-rpe-toggle { background:none; border:none; font-size:.74rem; color:var(--label3);
+      cursor:pointer; display:flex; align-items:center; gap:4px; }
+    .aw-rpe-panel { flex:1; display:flex; align-items:center; gap:8px; }
+    .aw-rpe-panel input[type=range] { flex:1; }
+    .aw-rpe-val { font-size:.82rem; font-weight:700; color:var(--violet); min-width:24px; }
+
+    .aw-log-btn { width:100%; padding:1rem; background:var(--violet); color:#fff;
+      border:none; border-radius:var(--radius-sm); font-size:1rem; font-weight:700;
+      cursor:pointer; letter-spacing:.01em; transition:opacity .15s, transform .1s;
+      box-shadow:0 4px 14px rgba(139,127,220,.4); }
+    .aw-log-btn:active { opacity:.85; transform:scale(.98); }
+    .aw-log-btn.bodyweight { background:var(--mint); box-shadow:0 4px 14px rgba(94,203,150,.35); }
+
+    .aw-rest-bar { display:flex; align-items:center; justify-content:space-between;
+      background:var(--violet); color:#fff; margin:10px 16px 0; border-radius:var(--radius-sm);
+      padding:10px 14px; animation:slideUp .2s ease; }
+    .aw-rest-label { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; opacity:.75; }
+    .aw-rest-time { font-size:1.4rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .aw-rest-btns { display:flex; gap:6px; }
+    .aw-rest-btns button { background:rgba(255,255,255,.2); border:none; color:#fff;
+      padding:.3rem .7rem; border-radius:8px; font-size:.8rem; font-weight:600; cursor:pointer; }
+
+    .aw-sets-section { margin:10px 16px 0; }
+    .aw-sets-hdr { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+      color:var(--label3); margin-bottom:6px; }
+    .aw-set-row { display:flex; align-items:center; gap:8px; padding:6px 0;
+      border-bottom:.5px solid var(--sep); }
+    .aw-set-row:last-child { border-bottom:none; }
+    .aw-set-num { font-size:.74rem; color:var(--label3); min-width:38px; }
+    .aw-set-data { flex:1; font-size:.88rem; }
+    .aw-set-del { background:none; border:none; color:var(--label3); cursor:pointer;
+      font-size:.8rem; padding:4px 6px; border-radius:6px; }
+    .aw-set-del:active { color:var(--rose); background:var(--rose-lt); }
+
+    .aw-nav-row { display:flex; gap:8px; padding:10px 16px 0; }
+    .aw-nav-row button { flex:1; background:var(--surface); border:none; border-radius:var(--radius-sm);
+      padding:.65rem; font-size:.85rem; font-weight:600; color:var(--label2); cursor:pointer; }
+    .aw-nav-row button:disabled { opacity:.35; }
+    .aw-overview-btn { flex:1.5 !important; color:var(--violet) !important; background:var(--violet-lt) !important; }
+
+    .aw-actions-row { display:flex; gap:8px; padding:8px 16px 16px; }
+
+    /* Exercise overview sheet */
+    .aw-overview-sheet { position:fixed; inset:0; z-index:300; background:rgba(26,22,48,.5);
+      backdrop-filter:blur(4px); display:flex; flex-direction:column; justify-content:flex-end; }
+    .aw-overview-inner { background:var(--bg2); border-radius:28px 28px 0 0;
+      padding:0 0 calc(20px + var(--safe-bottom)); max-height:70vh; overflow-y:auto; }
+    .aw-ov-ex { display:flex; align-items:center; gap:12px; padding:12px 20px;
+      border-bottom:.5px solid var(--sep); cursor:pointer; }
+    .aw-ov-ex:last-child { border-bottom:none; }
+    .aw-ov-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; background:var(--sep); }
+    .aw-ov-dot.done { background:var(--mint); }
+    .aw-ov-dot.current { background:var(--violet); }
+    .aw-ov-name { font-size:.9rem; font-weight:600; flex:1; }
+    .aw-ov-sets { font-size:.74rem; color:var(--label2); }
+    .aw-ov-cur { background:var(--violet-lt); }
+
+    /* Exercise select — list view */
+    .ex-list { display:flex; flex-direction:column; padding:0 16px 16px; gap:2px; }
+    .ex-list-item { display:flex; align-items:center; gap:12px; background:var(--bg2);
+      border-radius:var(--radius-sm); padding:11px 14px; cursor:pointer;
+      box-shadow:var(--shadow-xs); transition:all .12s; }
+    .ex-list-item.selected { background:var(--violet-lt); box-shadow:0 0 0 2px var(--violet); }
+    .ex-list-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .ex-list-body { flex:1; min-width:0; }
+    .ex-list-name { font-size:.9rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ex-list-cat { font-size:.7rem; color:var(--label2); margin-top:1px; }
+    .ex-list-check { width:20px; height:20px; border-radius:50%; background:var(--violet);
+      display:grid; place-items:center; flex-shrink:0;
+      opacity:0; transform:scale(.6); transition:all .15s; }
+    .ex-list-item.selected .ex-list-check { opacity:1; transform:scale(1); }
+    .ex-list-check svg { width:11px; height:11px; stroke:#fff; stroke-width:2.5; }
+    .ex-recent-hdr { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+      color:var(--label3); padding:12px 16px 6px; }
+
+    /* Template categories */
+    .tmpl-section-hdr { font-size:.62rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:var(--label3); padding:14px 16px 6px; }
+    .tmpl-scroll { display:flex; gap:10px; padding:0 16px 4px; overflow-x:auto;
+      scrollbar-width:none; -ms-overflow-style:none; }
+    .tmpl-scroll::-webkit-scrollbar { display:none; }
+    .tmpl-card { background:var(--bg2); border-radius:var(--radius); box-shadow:var(--shadow-xs);
+      padding:14px 16px; min-width:160px; cursor:pointer; flex-shrink:0; transition:all .15s; }
+    .tmpl-card:active { transform:scale(.97); }
+    .tmpl-card-name { font-size:.9rem; font-weight:700; margin-bottom:4px; }
+    .tmpl-card-tags { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px; }
+    .tmpl-tag { font-size:.62rem; font-weight:700; padding:2px 7px; border-radius:99px; background:var(--violet-lt); color:var(--violet); }
+    .tmpl-card-count { font-size:.72rem; color:var(--label2); }
   </style>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -710,11 +832,10 @@
 
       <!-- WORKOUT HOME -->
       <div class="screen" data-screen="workout-home">
-        <div style="padding:20px 16px 14px;" class="scroll-fade">
-          <button class="btn-primary full lg" id="startWorkoutBtn">Start New Workout</button>
+        <div style="padding:20px 16px 12px;" class="scroll-fade">
+          <button class="btn-primary full lg" id="startWorkoutBtn">+ Start Empty Workout</button>
         </div>
-        <div class="section-header scroll-fade"><h2>Templates</h2></div>
-        <div class="card scroll-fade" id="templateList"></div>
+        <div id="templateSections"></div>
         <div class="section-header scroll-fade"><h2>Recent Sessions</h2><button class="see-all" id="viewHistoryBtn">See All</button></div>
         <div class="card scroll-fade" id="recentList"></div>
       </div>
@@ -722,11 +843,21 @@
       <!-- EXERCISE SELECT -->
       <div class="screen" data-screen="exercise-select">
         <div class="queue-wrap scroll-fade">
-          <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--label2);">Selected</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--label2);">Selected (<span id="queueCount">0</span>)</div>
+            <button style="background:none;border:none;color:var(--label3);font-size:.72rem;cursor:pointer;" id="clearQueueBtn">Clear</button>
+          </div>
           <div class="queue-chips" id="workoutQueue"><span style="font-size:.78rem;color:var(--label3);">Tap exercises below to add</span></div>
           <button class="btn-primary full" id="beginWorkoutBtn" disabled>Begin Workout</button>
         </div>
-        <div class="chip-row scroll-fade" id="exCatChips">
+        <div class="search-wrap scroll-fade" style="padding-bottom:4px;">
+          <div class="search-input-row">
+            <svg class="search-icon-el" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--label3)"><circle cx="9" cy="9" r="6"/><path d="M14 14l3 3"/></svg>
+            <input id="exSearch" class="search-input" placeholder="Search exercises…" />
+            <button class="search-clear hidden" id="exSearchClear">✕</button>
+          </div>
+        </div>
+        <div class="chip-row scroll-fade" style="padding-top:0;" id="exCatChips">
           <button class="chip on" data-cat="All">All</button>
           <button class="chip" data-cat="Chest">Chest</button>
           <button class="chip" data-cat="Back">Back</button>
@@ -736,49 +867,95 @@
           <button class="chip" data-cat="Core">Core</button>
           <button class="chip" data-cat="Cardio">Cardio</button>
         </div>
-        <div class="search-wrap scroll-fade">
-          <div class="search-input-row">
-            <svg class="search-icon-el" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--label3)"><circle cx="9" cy="9" r="6"/><path d="M14 14l3 3"/></svg>
-            <input id="exSearch" class="search-input" placeholder="Search exercises…" />
-          </div>
+        <div id="exRecentSection">
+          <div class="ex-recent-hdr hidden" id="exRecentHdr">Recently Used</div>
+          <div class="ex-list" id="exRecentList"></div>
         </div>
-        <div class="ex-grid" id="exGrid"></div>
+        <div class="ex-list" id="exGrid"></div>
       </div>
 
       <!-- ACTIVE WORKOUT -->
       <div class="screen" data-screen="active-workout">
-        <div class="aw-ex-banner">
-          <div class="aw-ex-name" id="awExName">Exercise</div>
-          <div class="aw-ex-sub"  id="awExSub">Set 1 · Exercise 1 of 1</div>
-          <div class="aw-nav">
-            <button class="aw-nav-btn" id="prevExBtn" disabled>← Prev</button>
-            <button class="aw-nav-btn" id="nextExBtn">Next →</button>
-          </div>
+        <!-- Workout header: name + live timer + quit -->
+        <div class="aw-header">
+          <div style="font-size:.88rem;font-weight:700;color:var(--label);" id="awWorkoutName">Workout</div>
+          <div class="aw-timer" id="awTimer">0:00</div>
+          <button class="aw-quit-btn" id="awQuitBtn">✕ Quit</button>
         </div>
-        <div class="rest-banner hidden" id="restBanner">
-          <div><div class="rest-sub">Rest</div><div class="rest-time" id="restTime">2:00</div></div>
-          <div class="rest-btns"><button id="skipRest">Skip</button><button id="addRest">+30s</button></div>
-        </div>
-        <div class="set-card">
-          <div class="set-card-title" id="setTitle">Set 1</div>
-          <div class="set-prev" id="setPrev">No previous data for this exercise.</div>
-          <div class="set-inputs">
-            <div><label class="set-input-lbl" for="setW">Weight (lbs)</label><input class="set-num-input" id="setW" type="number" step="2.5" placeholder="135" inputmode="decimal" /></div>
-            <div><label class="set-input-lbl" for="setR">Reps</label><input class="set-num-input" id="setR" type="number" step="1" placeholder="10" inputmode="numeric" /></div>
+        <!-- Progress dots -->
+        <div class="aw-progress-bar" id="awProgressDots"></div>
+        <!-- Current exercise card -->
+        <div class="aw-ex-card">
+          <div class="aw-ex-name-big" id="awExName">Exercise</div>
+          <div class="aw-ex-meta" id="awExSub">Set 1 · Exercise 1 of 1</div>
+          <div class="aw-prev-inline" id="setPrev">No previous data for this exercise.</div>
+          <!-- Weight + Reps steppers -->
+          <div class="aw-inputs-row">
+            <div class="aw-input-block">
+              <div class="aw-input-lbl">Weight (lbs)</div>
+              <div class="aw-stepper">
+                <button class="aw-step-btn" id="setWMinus">−</button>
+                <input class="aw-step-input" id="setW" type="number" step="2.5" placeholder="0" inputmode="decimal" />
+                <button class="aw-step-btn" id="setWPlus">+</button>
+              </div>
+              <div style="display:flex;gap:4px;margin-top:4px;">
+                <button class="btn-ghost" id="setBW" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">BW</button>
+                <button class="btn-ghost" id="setWHalf" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">½</button>
+              </div>
+            </div>
+            <div class="aw-input-block">
+              <div class="aw-input-lbl">Reps</div>
+              <div class="aw-stepper">
+                <button class="aw-step-btn" id="setRMinus">−</button>
+                <input class="aw-step-input" id="setR" type="number" step="1" placeholder="10" inputmode="numeric" />
+                <button class="aw-step-btn" id="setRPlus">+</button>
+              </div>
+              <div style="display:flex;gap:4px;margin-top:4px;">
+                <button class="btn-ghost" id="setR5" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">5</button>
+                <button class="btn-ghost" id="setR8" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">8</button>
+                <button class="btn-ghost" id="setR10" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">10</button>
+                <button class="btn-ghost" id="setR12" style="flex:1;padding:.3rem;font-size:.68rem;text-align:center;">12</button>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="set-input-lbl" for="setRpe">RPE — <span id="rpeVal">7</span> / 10</label>
-            <input id="setRpe" type="range" min="1" max="10" value="7" style="width:100%;margin-top:6px;" />
+          <!-- RPE (collapsed by default) -->
+          <div class="aw-rpe-row" id="rpeRow">
+            <button class="aw-rpe-toggle" id="rpeToggle">⊕ Rate effort (RPE)</button>
+            <div class="aw-rpe-panel hidden" id="rpePanel">
+              <input id="setRpe" type="range" min="1" max="10" value="7" />
+              <span class="aw-rpe-val"><span id="rpeVal">7</span>/10</span>
+            </div>
           </div>
-          <button class="log-btn" id="logSetBtn">Log Set</button>
+          <button class="aw-log-btn" id="logSetBtn">Log Set ✓</button>
         </div>
-        <div class="set-history" style="padding:0 16px 10px;">
-          <div class="set-history-hdr">Logged sets</div>
+        <!-- Rest timer -->
+        <div class="aw-rest-bar hidden" id="restBanner">
+          <div><div class="aw-rest-label">Rest</div><div class="aw-rest-time" id="restTime">2:00</div></div>
+          <div class="aw-rest-btns"><button id="skipRest">Skip</button><button id="addRest">+30s</button></div>
+        </div>
+        <!-- Logged sets -->
+        <div class="aw-sets-section">
+          <div class="aw-sets-hdr" id="setsHdr">Sets logged</div>
           <div id="setHistoryList"></div>
         </div>
-        <div style="display:flex;gap:10px;padding:10px 16px 0;">
-          <button class="btn-ghost" id="addMoreExBtn" style="flex:1;">+ Add Exercise</button>
-          <button class="btn-primary" id="finishWorkoutBtn" style="flex:1;">Finish Workout</button>
+        <!-- Prev / Overview / Next nav -->
+        <div class="aw-nav-row">
+          <button id="prevExBtn" disabled>← Prev</button>
+          <button class="aw-overview-btn" id="awOverviewBtn">All Exercises ▾</button>
+          <button id="nextExBtn">Next →</button>
+        </div>
+        <!-- Add / Finish -->
+        <div class="aw-actions-row">
+          <button class="btn-ghost" id="addMoreExBtn" style="flex:1;">+ Add</button>
+          <button class="btn-primary" id="finishWorkoutBtn" style="flex:1.5;">Finish Workout</button>
+        </div>
+      </div>
+      <!-- Exercise overview sheet (hidden) -->
+      <div class="aw-overview-sheet hidden" id="awOverviewSheet">
+        <div class="aw-overview-inner">
+          <div class="overlay-handle"></div>
+          <div class="overlay-title">Exercises</div>
+          <div id="awOverviewList"></div>
         </div>
       </div>
 
@@ -1618,15 +1795,21 @@ const FOOD_DB = RAW_FOODS.map(r=>({id:r[0],name:r[1],brand:r[2],serving:r[3],cal
    EXERCISE DATABASE
 ═══════════════════════════════════════════════ */
 const EXERCISES = [
+// Chest
 {id:'ex1', name:'Bench Press',cat:'Chest',tip:'Grip slightly wider than shoulder-width. Slight arch.'},
 {id:'ex2', name:'Incline Bench Press',cat:'Chest',tip:'30–45° incline targets upper pecs.'},
 {id:'ex3', name:'Dumbbell Fly',cat:'Chest',tip:'Feel the stretch at the bottom. Control the negative.'},
 {id:'ex4', name:'Cable Fly',cat:'Chest',tip:'Keep slight bend in elbows throughout.'},
-{id:'ex5', name:'Push-Up',cat:'Chest',tip:'Full range. Slow the negative for more tension.'},
-{id:'ex6', name:'Chest Dip',cat:'Chest',tip:'Lean forward for more chest activation.'},
+{id:'ex5', name:'Push-Up',cat:'Chest',tip:'Full range. Slow the negative for more tension.',bw:true},
+{id:'ex6', name:'Chest Dip',cat:'Chest',tip:'Lean forward for more chest activation.',bw:true},
 {id:'ex7', name:'Decline Bench Press',cat:'Chest',tip:'Targets lower chest. Feet secured on pad.'},
 {id:'ex8', name:'Pec Deck',cat:'Chest',tip:'Squeeze at the peak. Don\'t lock elbows out.'},
-{id:'ex9', name:'Pull-Up',cat:'Back',tip:'Full hang at the bottom. Drive elbows down.'},
+{id:'ex56',name:'Dumbbell Bench Press',cat:'Chest',tip:'Greater range of motion than barbell. Control the stretch.'},
+{id:'ex57',name:'Incline Dumbbell Fly',cat:'Chest',tip:'Arms slightly bent. Stretch fully at the bottom.'},
+{id:'ex58',name:'Landmine Press',cat:'Chest',tip:'Single arm or double. Great for upper chest and shoulders.'},
+{id:'ex59',name:'Dips (Chest)',cat:'Chest',tip:'Lean forward 30°. Wide elbows to hit lower chest.'},
+// Back
+{id:'ex9', name:'Pull-Up',cat:'Back',tip:'Full hang at the bottom. Drive elbows down.',bw:true},
 {id:'ex10',name:'Barbell Row',cat:'Back',tip:'Keep back flat. Pull to lower chest.'},
 {id:'ex11',name:'Lat Pulldown',cat:'Back',tip:'Pull to upper chest. Lean slightly back.'},
 {id:'ex12',name:'Cable Row',cat:'Back',tip:'Squeeze scapulae at the end of each rep.'},
@@ -1634,12 +1817,24 @@ const EXERCISES = [
 {id:'ex14',name:'T-Bar Row',cat:'Back',tip:'Neutral spine throughout. Drive elbows back.'},
 {id:'ex15',name:'Deadlift',cat:'Back',tip:'Hinge at the hips. Bar stays close to legs.'},
 {id:'ex16',name:'Face Pull',cat:'Back',tip:'Pull to forehead level. Great for rear delts.'},
+{id:'ex60',name:'Chest-Supported Row',cat:'Chest',tip:'Chest on pad eliminates lower back stress. Focus on lats.'},
+{id:'ex61',name:'Pendlay Row',cat:'Back',tip:'Bar returns to floor each rep. Explosive pull.'},
+{id:'ex62',name:'Seal Row',cat:'Back',tip:'Chest supported on bench. Full range of motion.'},
+{id:'ex63',name:'Single-Arm Cable Row',cat:'Back',tip:'Greater rotation allows fuller lat stretch.'},
+{id:'ex64',name:'Straight-Arm Pulldown',cat:'Back',tip:'Arms straight. Drive elbows to hips.'},
+// Shoulders
 {id:'ex17',name:'Overhead Press',cat:'Shoulders',tip:'Bar path slightly back. Full lockout.'},
 {id:'ex18',name:'Lateral Raise',cat:'Shoulders',tip:'Lead with elbows. Slight forward lean.'},
 {id:'ex19',name:'Front Raise',cat:'Shoulders',tip:'Raise to shoulder height. Control down.'},
 {id:'ex20',name:'Arnold Press',cat:'Shoulders',tip:'Rotate from palms-in to palms-out as you press.'},
 {id:'ex21',name:'Dumbbell Shoulder Press',cat:'Shoulders',tip:'Neutral spine. Full range of motion.'},
 {id:'ex22',name:'Upright Row',cat:'Shoulders',tip:'Keep bar close to body. Lead with elbows.'},
+{id:'ex65',name:'Cable Lateral Raise',cat:'Shoulders',tip:'Constant tension through full range. Use light weight.'},
+{id:'ex66',name:'Rear Delt Fly',cat:'Shoulders',tip:'Bend forward 45°. Lead with elbows out.'},
+{id:'ex67',name:'Machine Shoulder Press',cat:'Shoulders',tip:'Adjust seat so handles are at shoulder height.'},
+{id:'ex68',name:'Push Press',cat:'Shoulders',tip:'Small leg drive to initiate the press. Lock out fully.'},
+{id:'ex69',name:'Shrug',cat:'Shoulders',tip:'Straight arms. Lift traps straight up, don\'t roll.'},
+// Arms
 {id:'ex23',name:'Barbell Curl',cat:'Arms',tip:'Keep elbows pinned at sides. No swinging.'},
 {id:'ex24',name:'Dumbbell Curl',cat:'Arms',tip:'Supinate at the top for peak contraction.'},
 {id:'ex25',name:'Hammer Curl',cat:'Arms',tip:'Neutral grip targets brachialis and forearms.'},
@@ -1647,48 +1842,87 @@ const EXERCISES = [
 {id:'ex27',name:'Tricep Pushdown',cat:'Arms',tip:'Keep elbows locked at sides. Full lockout.'},
 {id:'ex28',name:'Skull Crusher',cat:'Arms',tip:'Lower bar to forehead. Keep elbows in.'},
 {id:'ex29',name:'Overhead Tricep Extension',cat:'Arms',tip:'Full stretch at the bottom position.'},
-{id:'ex30',name:'Tricep Dip',cat:'Arms',tip:'Keep body upright for more tricep focus.'},
-{id:'ex31',name:'Chin-Up',cat:'Arms',tip:'Underhand grip. More bicep involvement.'},
+{id:'ex30',name:'Tricep Dip',cat:'Arms',tip:'Keep body upright for more tricep focus.',bw:true},
+{id:'ex31',name:'Chin-Up',cat:'Arms',tip:'Underhand grip. More bicep involvement.',bw:true},
+{id:'ex70',name:'Cable Curl',cat:'Arms',tip:'Constant tension. Keep upper arms still.'},
+{id:'ex71',name:'EZ Bar Curl',cat:'Arms',tip:'Angled grip reduces wrist strain.'},
+{id:'ex72',name:'Concentration Curl',cat:'Arms',tip:'Elbow on inner thigh. Full supination at top.'},
+{id:'ex73',name:'Close-Grip Bench',cat:'Arms',tip:'Hands inside shoulder width. Elbows tucked.'},
+{id:'ex74',name:'Cable Tricep Extension',cat:'Arms',tip:'Rope attachment. Spread rope at bottom for peak contraction.'},
+{id:'ex75',name:'Tricep Kickback',cat:'Arms',tip:'Upper arm parallel to floor. Extend fully.'},
+// Legs
 {id:'ex32',name:'Squat',cat:'Legs',tip:'Depth to parallel. Keep chest up and core tight.'},
 {id:'ex33',name:'Leg Press',cat:'Legs',tip:'Feet shoulder-width. Don\'t lock out knees at top.'},
 {id:'ex34',name:'Romanian Deadlift',cat:'Legs',tip:'Hinge at hips. Feel the hamstring stretch.'},
 {id:'ex35',name:'Leg Curl',cat:'Legs',tip:'Full contraction. Control the negative.'},
 {id:'ex36',name:'Leg Extension',cat:'Legs',tip:'Full lockout at top. Pause and squeeze.'},
 {id:'ex37',name:'Calf Raise',cat:'Legs',tip:'Full range. Pause at top and at full stretch.'},
-{id:'ex38',name:'Bulgarian Split Squat',cat:'Legs',tip:'Front shin vertical. Deep range of motion.'},
+{id:'ex38',name:'Bulgarian Split Squat',cat:'Legs',tip:'Front shin vertical. Deep range of motion.',bw:true},
 {id:'ex39',name:'Hack Squat',cat:'Legs',tip:'Feet forward for more glute. Full depth.'},
-{id:'ex40',name:'Glute Bridge',cat:'Legs',tip:'Drive through heels. Squeeze glutes at top.'},
-{id:'ex41',name:'Walking Lunge',cat:'Legs',tip:'Keep front knee over ankle throughout.'},
-{id:'ex42',name:'Plank',cat:'Core',tip:'Neutral spine. Don\'t let hips drop or rise.'},
-{id:'ex43',name:'Crunches',cat:'Core',tip:'Focus on the contraction, not the range.'},
-{id:'ex44',name:'Hanging Leg Raise',cat:'Core',tip:'Control the swing. Full range of motion.'},
+{id:'ex40',name:'Glute Bridge',cat:'Legs',tip:'Drive through heels. Squeeze glutes at top.',bw:true},
+{id:'ex41',name:'Walking Lunge',cat:'Legs',tip:'Keep front knee over ankle throughout.',bw:true},
+{id:'ex76',name:'Hip Thrust',cat:'Legs',tip:'Bar on hip crease. Squeeze glutes at the top.'},
+{id:'ex77',name:'Front Squat',cat:'Legs',tip:'Elbows high. Upright torso. More quad focus.'},
+{id:'ex78',name:'Goblet Squat',cat:'Legs',tip:'Hold dumbbell at chest. Great for beginners.'},
+{id:'ex79',name:'Sumo Deadlift',cat:'Legs',tip:'Wide stance, toes out. Hips closer to bar.'},
+{id:'ex80',name:'Step-Up',cat:'Legs',tip:'Drive through front heel. Full hip extension.'},
+{id:'ex81',name:'Seated Calf Raise',cat:'Legs',tip:'Targets soleus. Full range, slow and controlled.'},
+{id:'ex82',name:'Nordic Curl',cat:'Legs',tip:'Eccentric hamstring exercise. Extremely challenging.'},
+// Core
+{id:'ex42',name:'Plank',cat:'Core',tip:'Neutral spine. Don\'t let hips drop or rise.',bw:true},
+{id:'ex43',name:'Crunches',cat:'Core',tip:'Focus on the contraction, not the range.',bw:true},
+{id:'ex44',name:'Hanging Leg Raise',cat:'Core',tip:'Control the swing. Full range of motion.',bw:true},
 {id:'ex45',name:'Cable Crunch',cat:'Core',tip:'Round your spine down. Pull with abs, not arms.'},
 {id:'ex46',name:'Ab Wheel Rollout',cat:'Core',tip:'Keep back flat. Only go as far as controlled.'},
-{id:'ex47',name:'Russian Twist',cat:'Core',tip:'Keep feet elevated for more difficulty.'},
-{id:'ex48',name:'Mountain Climbers',cat:'Core',tip:'Keep hips level. Drive knees up fast.'},
-{id:'ex49',name:'Treadmill Run',cat:'Cardio',tip:'Maintain conversational pace for fat burn.'},
-{id:'ex50',name:'Cycling',cat:'Cardio',tip:'Resistance should feel challenging but sustainable.'},
-{id:'ex51',name:'Rowing Machine',cat:'Cardio',tip:'60% legs / 30% back / 10% arms.'},
-{id:'ex52',name:'Jump Rope',cat:'Cardio',tip:'Land softly. Wrists do the rotation work.'},
-{id:'ex53',name:'Stairmaster',cat:'Cardio',tip:'Don\'t lean on handles. Full step each rep.'},
-{id:'ex54',name:'HIIT Sprints',cat:'Cardio',tip:'30s on / 30s off. 10–20 rounds.'},
-{id:'ex55',name:'Elliptical',cat:'Cardio',tip:'Keep resistance high enough to feel challenged.'},
+{id:'ex47',name:'Russian Twist',cat:'Core',tip:'Keep feet elevated for more difficulty.',bw:true},
+{id:'ex48',name:'Mountain Climbers',cat:'Core',tip:'Keep hips level. Drive knees up fast.',bw:true},
+{id:'ex83',name:'Dead Bug',cat:'Core',tip:'Lower back pressed into floor the entire time.',bw:true},
+{id:'ex84',name:'Side Plank',cat:'Core',tip:'Hips raised. Stack or stagger feet.',bw:true},
+{id:'ex85',name:'Pallof Press',cat:'Core',tip:'Anti-rotation drill. Press and hold at full extension.'},
+{id:'ex86',name:'Toes to Bar',cat:'Core',tip:'Engage lats first. Control the swing.',bw:true},
+{id:'ex87',name:'Dragon Flag',cat:'Core',tip:'Keep body rigid like a plank. Brutally effective.',bw:true},
+// Cardio
+{id:'ex49',name:'Treadmill Run',cat:'Cardio',tip:'Maintain conversational pace for fat burn.',bw:true},
+{id:'ex50',name:'Cycling',cat:'Cardio',tip:'Resistance should feel challenging but sustainable.',bw:true},
+{id:'ex51',name:'Rowing Machine',cat:'Cardio',tip:'60% legs / 30% back / 10% arms.',bw:true},
+{id:'ex52',name:'Jump Rope',cat:'Cardio',tip:'Land softly. Wrists do the rotation work.',bw:true},
+{id:'ex53',name:'Stairmaster',cat:'Cardio',tip:'Don\'t lean on handles. Full step each rep.',bw:true},
+{id:'ex54',name:'HIIT Sprints',cat:'Cardio',tip:'30s on / 30s off. 10–20 rounds.',bw:true},
+{id:'ex55',name:'Elliptical',cat:'Cardio',tip:'Keep resistance high enough to feel challenged.',bw:true},
+{id:'ex88',name:'Battle Ropes',cat:'Cardio',tip:'Alternate or simultaneous waves. Keep core braced.',bw:true},
+{id:'ex89',name:'Box Jump',cat:'Cardio',tip:'Land softly with bent knees. Step down, don\'t jump.',bw:true},
+{id:'ex90',name:'Burpees',cat:'Cardio',tip:'Chest to floor. Full hip extension at the top.',bw:true},
+{id:'ex91',name:'Sled Push',cat:'Cardio',tip:'Low hips, forward lean. Drive through heels.'},
+{id:'ex92',name:'Assault Bike',cat:'Cardio',tip:'Arms and legs together. Brutal — short intervals are best.',bw:true},
 ];
 
 /* ═══════════════════════════════════════════════
    WORKOUT TEMPLATES
 ═══════════════════════════════════════════════ */
 const TEMPLATES = [
-{name:'Push Day',    exercises:['ex1','ex2','ex17','ex18','ex27','ex28']},
-{name:'Pull Day',    exercises:['ex9','ex10','ex11','ex12','ex23','ex24']},
-{name:'Leg Day',     exercises:['ex32','ex34','ex35','ex37','ex38']},
-{name:'Upper Body',  exercises:['ex1','ex10','ex17','ex23','ex27']},
-{name:'Lower Body',  exercises:['ex32','ex33','ex34','ex35','ex37']},
-{name:'Full Body',   exercises:['ex1','ex10','ex32','ex17','ex42']},
-{name:'Chest Focus', exercises:['ex1','ex2','ex3','ex4','ex7','ex8']},
-{name:'Back Focus',  exercises:['ex9','ex10','ex11','ex12','ex13','ex15']},
-{name:'Arm Day',     exercises:['ex23','ex24','ex25','ex27','ex28','ex29']},
-{name:'Core & Cardio',exercises:['ex49','ex42','ex44','ex45','ex48']},
+// PPL splits
+{name:'Push A',      group:'PPL Splits', tags:['Chest','Shoulders','Triceps'], exercises:['ex1','ex2','ex17','ex18','ex27','ex28']},
+{name:'Push B',      group:'PPL Splits', tags:['Chest','Shoulders','Triceps'], exercises:['ex56','ex57','ex21','ex65','ex73','ex74']},
+{name:'Pull A',      group:'PPL Splits', tags:['Back','Biceps'], exercises:['ex9','ex10','ex11','ex12','ex23','ex24']},
+{name:'Pull B',      group:'PPL Splits', tags:['Back','Biceps'], exercises:['ex15','ex61','ex64','ex70','ex71','ex25']},
+{name:'Leg Day',     group:'PPL Splits', tags:['Quads','Hamstrings','Glutes'], exercises:['ex32','ex34','ex35','ex36','ex37','ex38']},
+// Upper/Lower splits
+{name:'Upper Body',  group:'Upper / Lower', tags:['Chest','Back','Shoulders'], exercises:['ex1','ex10','ex17','ex56','ex63','ex67']},
+{name:'Lower Body',  group:'Upper / Lower', tags:['Legs','Glutes'], exercises:['ex32','ex33','ex34','ex76','ex37','ex81']},
+{name:'Shoulders & Arms', group:'Upper / Lower', tags:['Shoulders','Arms'], exercises:['ex17','ex18','ex65','ex23','ex70','ex27','ex74']},
+{name:'Glute & Hamstring', group:'Upper / Lower', tags:['Glutes','Hamstrings'], exercises:['ex76','ex34','ex82','ex35','ex80','ex37']},
+// Full body
+{name:'Full Body A', group:'Full Body', tags:['All Muscle Groups'], exercises:['ex1','ex10','ex32','ex17','ex42','ex49']},
+{name:'Full Body B', group:'Full Body', tags:['All Muscle Groups'], exercises:['ex56','ex61','ex76','ex21','ex84','ex50']},
+{name:'Beginner',    group:'Full Body', tags:['All Muscle Groups'], exercises:['ex5','ex9','ex78','ex18','ex37','ex42']},
+{name:'Powerlifting',group:'Full Body', tags:['Strength'], exercises:['ex32','ex1','ex15']},
+// Specialty
+{name:'Chest Focus', group:'Specialty', tags:['Chest'], exercises:['ex1','ex2','ex56','ex57','ex4','ex8']},
+{name:'Back Focus',  group:'Specialty', tags:['Back'], exercises:['ex9','ex10','ex11','ex12','ex62','ex64']},
+{name:'Arm Day',     group:'Specialty', tags:['Biceps','Triceps'], exercises:['ex23','ex71','ex25','ex27','ex28','ex29']},
+{name:'Core & Cardio',group:'Specialty',tags:['Core','Cardio'], exercises:['ex49','ex42','ex44','ex45','ex48','ex83']},
+{name:'HIIT',        group:'Specialty', tags:['Cardio'], exercises:['ex54','ex89','ex90','ex88','ex52','ex92']},
+{name:'Bodyweight',  group:'Specialty', tags:['No Equipment'], exercises:['ex5','ex9','ex38','ex42','ex44','ex87']},
 ];
 
 /* ═══════════════════════════════════════════════
@@ -1968,7 +2202,7 @@ function renderHome(){
   const days=new Set(Object.keys(store.getFoodLogs()).filter(k=>k>=sevenDaysAgo()));
   const avgCal=days.size>0?Math.round(weekLogs.reduce((s,l)=>s+l.calories,0)/days.size):0;
   $('hAvgCal').textContent=avgCal>0?`${avgCal} kcal`:'--';
-  $('qWorkout').onclick=()=>showScreen('exercise-select');
+  $('qWorkout').onclick=()=>activeWorkout?showScreen('active-workout'):showScreen('workout-home');
   $('qFood').onclick=()=>showScreen('food-search');
   $('qCoach').onclick=()=>showScreen('coach');
   renderHealthStats();
@@ -2049,111 +2283,217 @@ function drawBarChart(canvas,data,labels,color='#8b7fdc',height=120){
 /* ═══════════════════════════════════════════════
    WORKOUT HOME
 ═══════════════════════════════════════════════ */
+const CAT_COLORS={'Chest':'#eb8c6a','Back':'#6aafe8','Shoulders':'#92c8e8','Arms':'#e8a07a','Legs':'#5ecb96','Core':'#eb7090','Cardio':'#e8b84b'};
+
 function renderWorkoutHome(){
-  $('templateList').innerHTML=TEMPLATES.map(t=>`
-    <div class="card-row template-row" data-tname="${encodeURIComponent(t.name)}">
-      <div class="card-row-left">
-        <div style="width:32px;height:32px;background:var(--violet-lt);border-radius:8px;display:grid;place-items:center;flex-shrink:0;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"><path d="M6.5 6.5h11M3 12h18M6.5 17.5h11"/><circle cx="4.5" cy="6.5" r="1.5"/><circle cx="19.5" cy="6.5" r="1.5"/><circle cx="4.5" cy="17.5" r="1.5"/><circle cx="19.5" cy="17.5" r="1.5"/></svg>
-        </div>
-        <div><div class="card-row-label">${t.name}</div><div class="card-row-sub">${t.exercises.length} exercises</div></div>
-      </div>
-      <div class="card-row-right">›</div>
-    </div>`).join('');
-  $('templateList').querySelectorAll('.template-row').forEach(row=>{
-    row.addEventListener('click',()=>{
-      const t=TEMPLATES.find(x=>x.name===decodeURIComponent(row.dataset.tname));
+  // Grouped template sections with horizontal scroll cards
+  const groups=[...new Set(TEMPLATES.map(t=>t.group||'Other'))];
+  $('templateSections').innerHTML=groups.map(grp=>{
+    const ts=TEMPLATES.filter(t=>(t.group||'Other')===grp);
+    return `<div class="section-header scroll-fade"><h2>${grp}</h2></div>
+    <div class="tmpl-scroll scroll-fade">
+      ${ts.map(t=>`
+        <div class="tmpl-card" data-tname="${encodeURIComponent(t.name)}">
+          <div class="tmpl-card-name">${t.name}</div>
+          <div class="tmpl-card-tags">${(t.tags||[]).map(tag=>`<span class="tmpl-tag">${tag}</span>`).join('')}</div>
+          <div class="tmpl-card-count">${t.exercises.length} exercises</div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+  $('templateSections').querySelectorAll('.tmpl-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const t=TEMPLATES.find(x=>x.name===decodeURIComponent(card.dataset.tname));
       if(t) startFromTemplate(t);
     });
   });
-  const workouts=store.getWorkouts().slice().reverse().slice(0,5);
-  $('recentList').innerHTML=workouts.length?workouts.map(w=>`
-    <div class="card-row">
+  // Recent sessions — clickable to repeat
+  const all=store.getWorkouts();
+  const workouts=all.slice().reverse().slice(0,5);
+  $('recentList').innerHTML=workouts.length?workouts.map((w,i)=>`
+    <div class="card-row repeat-row" data-wi="${all.length-1-i}" style="cursor:pointer;">
       <div class="card-row-left"><div>
         <div class="card-row-label">${w.name||'Workout'}</div>
         <div class="card-row-sub">${fmtDate(w.date)} · ${w.exercises.length} exercises · ${fmtDur(w.duration)}</div>
       </div></div>
+      <div class="card-row-right" style="font-size:.75rem;color:var(--violet);">▶ Repeat</div>
     </div>`).join(''):'<div style="padding:14px 16px;color:var(--label2);font-size:.85rem;">No sessions yet.</div>';
-  $('startWorkoutBtn').onclick=()=>showScreen('exercise-select');
+  $('recentList').querySelectorAll('.repeat-row').forEach(row=>{
+    row.addEventListener('click',()=>{
+      const w=store.getWorkouts()[parseInt(row.dataset.wi)];
+      if(w){ workoutQueue=w.exercises.map(e=>e.id); beginWorkout(w.name+' (Repeat)'); }
+    });
+  });
+  $('startWorkoutBtn').onclick=()=>{ workoutQueue=[]; beginWorkout('Workout'); };
   $('viewHistoryBtn').onclick=()=>showScreen('workout-history');
 }
 
 /* ═══════════════════════════════════════════════
-   EXERCISE SELECT — 2-column muscle icon grid
+   EXERCISE SELECT — list view with recently used
 ═══════════════════════════════════════════════ */
 let workoutQueue=[];
 function renderExerciseSelect(){
-  workoutQueue=[]; renderQueue(); renderExGrid();
-  $('beginWorkoutBtn').addEventListener('click', beginWorkout);
-  $('exSearch').addEventListener('input', renderExGrid);
+  // If there's an active workout, we're adding mid-session — don't wipe existing queue
+  const addingMid=!!activeWorkout;
+  if(!addingMid) workoutQueue=[];
+  renderQueue(); renderExGrid();
+  $('clearQueueBtn').onclick=()=>{ workoutQueue=[]; renderQueue(); renderExGrid(); };
+  const btn=$('beginWorkoutBtn');
+  btn.textContent=addingMid?'Add to Workout':'Begin Workout';
+  btn.onclick=addingMid?addExercisesToWorkout:beginWorkout;
+  const searchEl=$('exSearch'), clearBtn=$('exSearchClear');
+  searchEl.addEventListener('input',()=>{
+    clearBtn.classList.toggle('hidden',!searchEl.value);
+    if(searchEl.value){ $('exRecentHdr').classList.add('hidden'); $('exRecentList').innerHTML=''; }
+    else renderRecentlyUsed();
+    renderExGrid();
+  });
+  clearBtn.addEventListener('click',()=>{
+    searchEl.value=''; clearBtn.classList.add('hidden');
+    renderRecentlyUsed(); renderExGrid();
+  });
   document.querySelectorAll('#exCatChips .chip').forEach(chip=>{
     chip.addEventListener('click',()=>{
       document.querySelectorAll('#exCatChips .chip').forEach(c=>c.classList.remove('on'));
       chip.classList.add('on'); currentExCat=chip.dataset.cat; renderExGrid();
     });
   });
+  renderRecentlyUsed();
+}
+function renderRecentlyUsed(){
+  const recent=[], seen=new Set();
+  for(const w of store.getWorkouts().slice().reverse().slice(0,10)){
+    for(const ex of (w.exercises||[])){
+      if(!seen.has(ex.id)){ seen.add(ex.id); recent.push(ex.id); }
+      if(recent.length>=6) break;
+    }
+    if(recent.length>=6) break;
+  }
+  if(recent.length){
+    $('exRecentHdr').classList.remove('hidden');
+    $('exRecentList').innerHTML=recent.map(id=>EXERCISES.find(e=>e.id===id)).filter(Boolean).map(ex=>exListItem(ex)).join('');
+    bindExListItems($('exRecentList'));
+  } else {
+    $('exRecentHdr').classList.add('hidden');
+    $('exRecentList').innerHTML='';
+  }
 }
 function renderQueue(){
+  const count=workoutQueue.length;
+  $('queueCount').textContent=count;
   const qc=$('workoutQueue');
-  if(workoutQueue.length===0){ qc.innerHTML='<span style="font-size:.78rem;color:var(--label3);">Tap exercises below to add</span>'; }
+  if(count===0){ qc.innerHTML='<span style="font-size:.78rem;color:var(--label3);">Tap exercises below to add</span>'; }
   else {
     qc.innerHTML=workoutQueue.map(id=>{
       const ex=EXERCISES.find(e=>e.id===id);
-      return `<div class="chip on queue-chip" data-qid="${id}" style="font-size:.72rem;padding:.28rem .65rem;">${ex.name} ×</div>`;
+      return `<div class="chip on queue-chip" data-qid="${id}" style="font-size:.72rem;padding:.28rem .65rem;">${ex?ex.name:id} ×</div>`;
     }).join('');
     qc.querySelectorAll('.queue-chip').forEach(chip=>{
-      chip.addEventListener('click',()=>{ workoutQueue=workoutQueue.filter(id=>id!==chip.dataset.qid); renderQueue(); renderExGrid(); });
+      chip.addEventListener('click',()=>{ workoutQueue=workoutQueue.filter(id=>id!==chip.dataset.qid); renderQueue(); renderExGrid(); renderRecentlyUsed(); });
     });
   }
-  $('beginWorkoutBtn').disabled=workoutQueue.length===0;
+  $('beginWorkoutBtn').disabled=count===0;
 }
 function renderExGrid(){
-  const q=$('exSearch').value.toLowerCase();
+  const q=($('exSearch').value||'').toLowerCase();
   const filtered=EXERCISES.filter(ex=>(currentExCat==='All'||ex.cat===currentExCat)&&(!q||ex.name.toLowerCase().includes(q)));
-  $('exGrid').innerHTML=filtered.map(ex=>{
-    const sel=workoutQueue.includes(ex.id);
-    const pose=POSE_SVGS[getPoseForExercise(ex)]||POSE_SVGS.squat;
-    const muscle=MUSCLE_SVGS[ex.cat]||MUSCLE_SVGS.Cardio;
-    return `<div class="ex-card${sel?' sel':''}" data-exid="${ex.id}">
-      <div class="ex-card-img">
-        <div class="pose-svg">${pose}</div>
-        <div class="muscle-badge">${muscle}</div>
-      </div>
-      <div class="ex-card-body">
-        <div class="ex-card-name">${ex.name}</div>
-        <div class="ex-card-cat">${ex.cat}</div>
-        <div class="ex-card-check">Added ✓</div>
-      </div>
-    </div>`;
-  }).join('');
-  $('exGrid').querySelectorAll('.ex-card').forEach(card=>{
-    card.addEventListener('click',()=>{
-      const id=card.dataset.exid;
+  $('exGrid').innerHTML=filtered.map(ex=>exListItem(ex)).join('');
+  bindExListItems($('exGrid'));
+}
+function exListItem(ex){
+  const sel=workoutQueue.includes(ex.id);
+  const col=CAT_COLORS[ex.cat]||'#888';
+  return `<div class="ex-list-item${sel?' selected':''}" data-exid="${ex.id}">
+    <div class="ex-list-dot" style="background:${col};"></div>
+    <div class="ex-list-body">
+      <div class="ex-list-name">${ex.name}${ex.bw?'<span style="font-size:.65rem;color:var(--label3);margin-left:4px;">BW</span>':''}</div>
+      <div class="ex-list-cat">${ex.cat}</div>
+    </div>
+    <div class="ex-list-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>`;
+}
+function bindExListItems(container){
+  container.querySelectorAll('.ex-list-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const id=item.dataset.exid;
       if(workoutQueue.includes(id)) workoutQueue=workoutQueue.filter(x=>x!==id);
       else workoutQueue.push(id);
       renderQueue(); renderExGrid();
+      if(!$('exSearch').value) renderRecentlyUsed();
     });
   });
 }
-function startFromTemplate(t){ workoutQueue=[...t.exercises]; beginWorkout(t.name); }
+let _fromTemplate=false;
+function startFromTemplate(t){ workoutQueue=[...t.exercises]; _fromTemplate=true; beginWorkout(t.name); }
 function beginWorkout(nameOrEv){
   const name=typeof nameOrEv==='string'?nameOrEv:'Workout';
   activeWorkout={ name, startTime:Date.now(), currentIdx:0,
-    exercises:workoutQueue.map(id=>({id,name:EXERCISES.find(e=>e.id===id)?.name||id,sets:[]})) };
+    exercises:workoutQueue.map(id=>{ const ex=EXERCISES.find(e=>e.id===id); return {id,name:ex?.name||id,bw:ex?.bw||false,sets:[]}; })
+  };
+  showScreen('active-workout');
+}
+function addExercisesToWorkout(){
+  // Append newly selected exercises to the live workout
+  workoutQueue.forEach(id=>{
+    if(!activeWorkout.exercises.find(e=>e.id===id)){
+      const ex=EXERCISES.find(e=>e.id===id);
+      activeWorkout.exercises.push({id,name:ex?.name||id,bw:ex?.bw||false,sets:[]});
+    }
+  });
+  // Jump to the first newly added exercise
+  if(workoutQueue.length>0){
+    const firstNew=activeWorkout.exercises.findIndex(e=>e.id===workoutQueue[0]);
+    if(firstNew>=0) activeWorkout.currentIdx=firstNew;
+  }
   showScreen('active-workout');
 }
 
 /* ═══════════════════════════════════════════════
    ACTIVE WORKOUT
 ═══════════════════════════════════════════════ */
-function renderActiveWorkout(){ if(!activeWorkout) return; updateExBanner(); renderSetHistory(); bindWorkoutInputs(); }
+let _awTimerInterval=null;
+function renderActiveWorkout(){
+  if(!activeWorkout) return;
+  $('awWorkoutName').textContent=activeWorkout.name;
+  if(_awTimerInterval) clearInterval(_awTimerInterval);
+  function _tick(){ const secs=Math.floor((Date.now()-activeWorkout.startTime)/1000); $('awTimer').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`; }
+  _tick(); _awTimerInterval=setInterval(_tick,1000);
+  if(activeWorkout.exercises.length===0){
+    _renderEmptyExState(); renderSetHistory(); bindWorkoutInputs(); return;
+  }
+  updateExBanner(); renderSetHistory(); bindWorkoutInputs();
+}
+function _renderEmptyExState(){
+  $('awProgressDots').innerHTML='';
+  $('awExName').textContent='No exercises yet';
+  $('awExSub').textContent='Tap "+ Add" below to pick your first exercise';
+  $('setPrev').textContent='';
+  $('setW').value=''; $('setR').value='';
+  $('setHistoryList').innerHTML='';
+  $('logSetBtn').style.display='none';
+  $('prevExBtn').disabled=true; $('nextExBtn').disabled=true;
+  $('awOverviewBtn').disabled=true;
+}
+function renderProgressDots(){
+  $('awProgressDots').innerHTML=activeWorkout.exercises.map((ex,i)=>{
+    let cls='aw-dot'; if(i<activeWorkout.currentIdx) cls+=' done'; else if(i===activeWorkout.currentIdx) cls+=' current';
+    return `<div class="${cls}" title="${ex.name}"></div>`;
+  }).join('');
+}
 function updateExBanner(){
+  $('logSetBtn').style.display=''; $('awOverviewBtn').disabled=false;
   const ex=activeWorkout.exercises[activeWorkout.currentIdx];
   $('awExName').textContent=ex.name;
-  $('awExSub').textContent=`Set ${ex.sets.length+1} · Exercise ${activeWorkout.currentIdx+1} of ${activeWorkout.exercises.length}`;
-  $('setTitle').textContent=`Set ${ex.sets.length+1}`;
+  $('awExSub').textContent=`Exercise ${activeWorkout.currentIdx+1} of ${activeWorkout.exercises.length} · Set ${ex.sets.length+1}`;
   $('prevExBtn').disabled=activeWorkout.currentIdx===0;
   $('nextExBtn').disabled=activeWorkout.currentIdx===activeWorkout.exercises.length-1;
+  renderProgressDots();
+  if(ex.sets.length===0){
+    for(const s of store.getWorkouts().slice().reverse()){
+      const f=s.exercises.find(e=>e.id===ex.id);
+      if(f&&f.sets.length>0){ const lw=f.sets[f.sets.length-1].weight; if(lw>0) $('setW').value=lw; break; }
+    }
+  }
+  $('setBW').style.opacity=ex.bw?'1':'0.4';
   updateExBannerPrev(ex.id);
 }
 function getPrevPerformance(exId){
@@ -2172,19 +2512,54 @@ function getPrevPerformance(exId){
 function updateExBannerPrev(exId){
   const prev=getPrevPerformance(exId);
   const el=$('setPrev');
-  if(prev){ el.innerHTML=`<div class="prev-sessions">${prev}</div>`; }
-  else { el.textContent='No previous data for this exercise.'; }
+  if(prev) el.innerHTML=`<div class="prev-sessions">${prev}</div>`;
+  else el.textContent='No previous data for this exercise.';
 }
 function bindWorkoutInputs(){
+  $('setWMinus').onclick=()=>{ const v=parseFloat($('setW').value)||0; $('setW').value=Math.max(0,+(v-2.5).toFixed(1)); };
+  $('setWPlus').onclick=()=>{ const v=parseFloat($('setW').value)||0; $('setW').value=+(v+2.5).toFixed(1); };
+  $('setBW').onclick=()=>$('setW').value=0;
+  $('setWHalf').onclick=()=>{ const v=parseFloat($('setW').value)||0; $('setW').value=+(v/2).toFixed(1); };
+  $('setRMinus').onclick=()=>{ const v=parseInt($('setR').value)||0; $('setR').value=Math.max(0,v-1); };
+  $('setRPlus').onclick=()=>{ const v=parseInt($('setR').value)||0; $('setR').value=v+1; };
+  $('setR5').onclick=()=>$('setR').value=5;
+  $('setR8').onclick=()=>$('setR').value=8;
+  $('setR10').onclick=()=>$('setR').value=10;
+  $('setR12').onclick=()=>$('setR').value=12;
+  $('rpeToggle').onclick=()=>{
+    const p=$('rpePanel'); p.classList.toggle('hidden');
+    $('rpeToggle').textContent=p.classList.contains('hidden')?'⊕ Rate effort (RPE)':'⊖ Rate effort (RPE)';
+  };
   $('setRpe').oninput=()=>$('rpeVal').textContent=$('setRpe').value;
   $('logSetBtn').onclick=logSet;
   $('prevExBtn').onclick=()=>{ activeWorkout.currentIdx--; updateExBanner(); renderSetHistory(); };
   $('nextExBtn').onclick=()=>{ activeWorkout.currentIdx++; updateExBanner(); renderSetHistory(); };
-  $('addMoreExBtn').onclick=()=>showScreen('exercise-select');
+  $('addMoreExBtn').onclick=()=>{ workoutQueue=[]; showScreen('exercise-select'); };
   $('finishWorkoutBtn').onclick=finishWorkout;
   $('skipRest').onclick=()=>clearRest();
   $('addRest').onclick=()=>{ restSecsLeft+=30; updateRestDisplay(); };
+  $('awQuitBtn').onclick=()=>{
+    if(confirm('Quit workout? Progress will be lost.')){
+      clearRest(); if(_awTimerInterval){clearInterval(_awTimerInterval);_awTimerInterval=null;} activeWorkout=null; showScreen('workout-home');
+    }
+  };
+  $('awOverviewBtn').onclick=openOverview;
+  $('awOverviewSheet').onclick=(e)=>{ if(e.target===$('awOverviewSheet')) closeOverview(); };
 }
+function openOverview(){
+  if(!activeWorkout) return;
+  $('awOverviewList').innerHTML=activeWorkout.exercises.map((ex,i)=>`
+    <div class="aw-ov-ex${i===activeWorkout.currentIdx?' aw-ov-cur':''}" data-ovi="${i}" style="cursor:pointer;">
+      <div class="aw-ov-dot${i<activeWorkout.currentIdx?' done':i===activeWorkout.currentIdx?' current':''}"></div>
+      <div class="aw-ov-name">${ex.name}</div>
+      <div class="aw-ov-sets">${ex.sets.length} set${ex.sets.length!==1?'s':''}</div>
+    </div>`).join('');
+  $('awOverviewList').querySelectorAll('.aw-ov-ex').forEach(row=>{
+    row.addEventListener('click',()=>{ activeWorkout.currentIdx=parseInt(row.dataset.ovi); closeOverview(); updateExBanner(); renderSetHistory(); });
+  });
+  $('awOverviewSheet').classList.remove('hidden');
+}
+function closeOverview(){ $('awOverviewSheet').classList.add('hidden'); }
 function logSet(){
   const w=parseFloat($('setW').value)||0, r=parseInt($('setR').value)||0, rpe=parseInt($('setRpe').value)||7;
   if(r<=0){ showToast('Enter reps before logging'); $('setR').focus(); return; }
@@ -2225,6 +2600,7 @@ function clearRest(){ clearInterval(restInterval); $('restBanner').classList.add
 ═══════════════════════════════════════════════ */
 function finishWorkout(){
   if(!activeWorkout) return; clearRest();
+  if(_awTimerInterval){ clearInterval(_awTimerInterval); _awTimerInterval=null; }
   const workout={ id:Date.now(), name:activeWorkout.name, date:Date.now(), dateKey:todayKey(),
     duration:Date.now()-activeWorkout.startTime, exercises:activeWorkout.exercises.filter(ex=>ex.sets.length>0) };
   if(workout.exercises.length===0){ alert('Log at least one set first!'); return; }
