@@ -930,8 +930,12 @@
         </div>
         <!-- Rest timer -->
         <div class="aw-rest-bar hidden" id="restBanner">
-          <div><div class="aw-rest-label">Rest</div><div class="aw-rest-time" id="restTime">2:00</div></div>
-          <div class="aw-rest-btns"><button id="skipRest">Skip</button><button id="addRest">+30s</button></div>
+          <div><div class="aw-rest-label" id="restLabel">Rest</div><div class="aw-rest-time" id="restTime">2:00</div></div>
+          <div class="aw-rest-btns">
+            <button id="switchExBtn">Switch ↔</button>
+            <button id="skipRest">Skip</button>
+            <button id="addRest">+30s</button>
+          </div>
         </div>
         <!-- Logged sets -->
         <div class="aw-sets-section">
@@ -2536,6 +2540,7 @@ function bindWorkoutInputs(){
   $('nextExBtn').onclick=()=>{ activeWorkout.currentIdx++; updateExBanner(); renderSetHistory(); };
   $('addMoreExBtn').onclick=()=>{ workoutQueue=[]; showScreen('exercise-select'); };
   $('finishWorkoutBtn').onclick=finishWorkout;
+  $('switchExBtn').onclick=openOverview;
   $('skipRest').onclick=()=>clearRest();
   $('addRest').onclick=()=>{ restSecsLeft+=30; updateRestDisplay(); };
   $('awQuitBtn').onclick=()=>{
@@ -2566,7 +2571,14 @@ function logSet(){
   if(w<0){ showToast('Weight can\'t be negative'); return; }
   activeWorkout.exercises[activeWorkout.currentIdx].sets.push({weight:w,reps:r,rpe,timestamp:Date.now()});
   $('setW').value=w; $('setR').value='';
-  renderSetHistory(); updateExBanner(); startRest(120);
+  renderSetHistory(); updateExBanner();
+  // If already resting (superset mid-rest), keep the timer running instead of resetting
+  if(restSecsLeft>0){ updateRestLabel(); }
+  else { startRest(120); }
+}
+function updateRestLabel(){
+  // Called when a set is logged during an active rest (superset scenario)
+  $('restLabel').textContent='Rest (superset)';
 }
 function renderSetHistory(){
   const ex=activeWorkout.exercises[activeWorkout.currentIdx];
@@ -2586,7 +2598,7 @@ function renderSetHistory(){
     });
   });
 }
-function startRest(secs){ clearRest(); restSecsLeft=secs; $('restBanner').classList.remove('hidden'); updateRestDisplay();
+function startRest(secs){ clearRest(); restSecsLeft=secs; $('restBanner').classList.remove('hidden'); $('restLabel').textContent='Rest'; updateRestDisplay();
   restInterval=setInterval(()=>{
     restSecsLeft--;
     if(restSecsLeft<=0){ clearRest(); beep(660,.12); setTimeout(()=>beep(880,.18),160); showToast('Rest complete — time to go!'); }
