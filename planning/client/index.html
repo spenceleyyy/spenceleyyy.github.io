@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planning with Rob</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#E8A598" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Planning" />
+</head>
+<body>
+
+  <!-- ── Top nav ─────────────────────────────────────────────────────────── -->
+  <div class="top-nav">
+    <div class="brand-wrap">
+      <img src="logo.png" alt="Planning with Rob" class="logo-img" />
+      <div class="logo-text">Planning <span class="logo-accent">with Rob</span></div>
+    </div>
+    <div class="nav-links">
+      <span>Overview</span>
+      <span>Initiatives</span>
+      <span>Features</span>
+      <span>Roadmap</span>
+    </div>
+    <div class="nav-actions">
+      <button id="settingsBtn" class="btn-lavender">⚙ Settings</button>
+      <button id="editLayoutBtn" class="nav-btn">⊞ Rearrange</button>
+      <button id="chatToggleBtn" class="btn-sky">✦ Ask Claude</button>
+    </div>
+  </div>
+
+  <!-- ── Claude Chat Panel ───────────────────────────────────────────────── -->
+  <div id="chatPanel" class="chat-panel hidden">
+    <div class="chat-header">
+      <span class="chat-title">✦ Ask Claude about your plans</span>
+      <button id="chatCloseBtn" class="chat-close">✕</button>
+    </div>
+    <!-- Shows when no API key configured -->
+    <div id="chatSetup" class="chat-setup-prompt hidden">
+      <div class="chat-setup-icon">🔑</div>
+      <div class="chat-setup-text">
+        Add your Anthropic API key in <strong>Settings</strong> to start chatting with Claude about your plans.
+      </div>
+      <button class="btn-lavender" id="chatOpenSettings">Open Settings</button>
+    </div>
+    <!-- Chat interface -->
+    <div id="chatInterface" class="hidden" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <div id="chatMessages" class="chat-messages">
+        <div class="chat-msg assistant">
+          <div class="chat-bubble">Hey! I have full context on all your initiatives, features, and deadlines. Ask me anything — what to focus on today, what's overdue, or say "add a subtask to…" and I'll handle it.</div>
+        </div>
+      </div>
+      <div class="chat-sms-row">
+        <button id="smsSummaryBtn" class="chat-sms-btn">📱 Send me a text summary now</button>
+      </div>
+      <form id="chatForm" class="chat-input-row">
+        <input id="chatInput" type="text" placeholder="Ask about your tasks, or say 'add…'" autocomplete="off" />
+        <button type="submit" class="chat-send-btn blue-btn">Send</button>
+      </form>
+    </div>
+  </div>
+  <div id="chatBackdrop" class="chat-backdrop hidden"></div>
+
+  <!-- ── Settings Modal ──────────────────────────────────────────────────── -->
+  <div id="settingsModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Settings</div>
+        <button id="settingsClose" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <div class="settings-section">
+          <div class="settings-section-title">Claude AI — Anthropic API</div>
+          <div id="apiStatusBadge" class="api-status warn">
+            <div class="api-status-dot"></div>
+            No API key configured
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Anthropic API Key</label>
+            <input type="password" id="settingsApiKey" placeholder="sk-ant-..." autocomplete="off" />
+            <div class="settings-hint">Get your key at <strong>console.anthropic.com</strong>. Stored only in your browser — never sent anywhere except Anthropic's servers.</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">📱 SMS Text Reminders — Twilio</div>
+          <div class="settings-hint" style="margin-top:-4px">Get AI-generated daily summaries texted to your phone. Free Twilio trial gives you ~$15 credit (hundreds of texts). Sign up at <strong>twilio.com</strong>.</div>
+          <div class="settings-field">
+            <label class="settings-label">Twilio Account SID</label>
+            <input type="text" id="settingsTwilioSid" placeholder="ACxxxxxxxxxxxxxxxx" autocomplete="off" />
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Twilio Auth Token</label>
+            <input type="password" id="settingsTwilioToken" placeholder="your auth token" autocomplete="off" />
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Your Twilio Phone Number (sends from)</label>
+            <input type="tel" id="settingsTwilioFrom" placeholder="+16085550000" />
+          </div>
+          <div class="settings-field">
+            <label class="settings-label">Your Personal Phone Number (receives texts)</label>
+            <input type="tel" id="settingsTwilioTo" placeholder="+16085551234" />
+          </div>
+          <div class="settings-hint">⚠ With a Twilio free trial you must verify your personal number at <strong>console.twilio.com → Verified Caller IDs</strong> before texts will arrive.</div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button id="settingsCancel" class="white-btn">Cancel</button>
+        <button id="settingsSave" class="btn-mint">Save settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Page ────────────────────────────────────────────────────────────── -->
+  <div class="page-wrap">
+    <div class="page-header">
+      <div>
+        <div class="crumb">Dashboard</div>
+        <div class="title-row">
+          <h1>My planning dashboard</h1>
+        </div>
+        <div class="filter-row">
+          <div class="filter-pill">Daily timeline</div>
+          <div class="filter-pill">Drag bars to edit dates</div>
+          <div class="filter-pill">Color by initiative</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="saveBtn" class="btn-mint">💾 Save</button>
+        <button id="exportBtn" class="btn-sky">↓ Export</button>
+        <label class="btn-yellow file-btn">
+          ↑ Import
+          <input id="importInput" type="file" accept="application/json" />
+        </label>
+        <button id="resetBtn" class="white-btn danger-btn">Reset</button>
+      </div>
+    </div>
+
+    <!-- Add forms -->
+    <div class="editor-shell">
+      <div class="editor-card">
+        <div class="editor-title">➕ Add initiative</div>
+        <form id="initiativeForm" class="form-grid">
+          <input id="initiativeName"   type="text" placeholder="Initiative name" required />
+          <input id="initiativeOwner"  type="text" placeholder="Owner" />
+          <input id="initiativeStart"  type="date" required />
+          <input id="initiativeEnd"    type="date" required />
+          <input id="initiativeStatus" type="text" placeholder="Status label" />
+          <input id="initiativeNotes"  type="text" placeholder="Notes" />
+          <button type="submit" class="blue-btn">Add initiative</button>
+        </form>
+      </div>
+      <div class="editor-card">
+        <div class="editor-title">➕ Add feature</div>
+        <form id="featureForm" class="form-grid feature-grid">
+          <input id="featureName"      type="text"   placeholder="Feature name" required />
+          <select id="featureInitiative"></select>
+          <input id="featurePriority"  type="number" min="0" step="1" placeholder="Priority (0–100)" />
+          <input id="featureProgress"  type="number" min="0" max="100" step="1" placeholder="Progress %" />
+          <input id="featureType"      type="text"   placeholder="Type" />
+          <input id="featureMilestone" type="text"   placeholder="Milestone" />
+          <input id="featureStart"     type="date"   required />
+          <input id="featureEnd"       type="date"   required />
+          <button type="submit" class="blue-btn">Add feature</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="editor-shell subtasks-shell">
+      <div class="editor-card">
+        <div class="editor-title">➕ Add subtask</div>
+        <form id="subtaskForm" class="form-grid feature-grid">
+          <input id="subtaskName"     type="text" placeholder="Subtask name" required />
+          <select id="subtaskFeature"></select>
+          <input id="subtaskOwner"    type="text" placeholder="Owner" />
+          <input id="subtaskDeadline" type="date" required />
+          <select id="subtaskStatus">
+            <option>Not started</option>
+            <option>In progress</option>
+            <option>Blocked</option>
+            <option>Done</option>
+          </select>
+          <input id="subtaskNotes" type="text" placeholder="Notes" />
+          <button type="submit" class="blue-btn">Add subtask</button>
+        </form>
+      </div>
+    </div>
+
+    <section class="section-title">Strategy overview</section>
+    <div id="panelGrid" class="panel-grid"></div>
+  </div>
+
+  <!-- ── Panel templates ─────────────────────────────────────────────────── -->
+  <template id="panel-template-roadmap">
+    <section class="panel-card panel-span-2" data-panel="roadmap">
+      <div class="panel-header">
+        <div class="panel-title">Timeline roadmap</div>
+        <div class="panel-actions">
+          <button id="roadmapFullscreenBtn" class="white-btn roadmap-fullscreen-btn" type="button">⛶ Full screen</button>
+          <button class="move-btn" data-dir="up">↑</button>
+          <button class="move-btn" data-dir="down">↓</button>
+        </div>
+      </div>
+      <div class="roadmap-toolbar">Expand an initiative to see features and subtasks. Drag bars to change dates.</div>
+      <div class="timeline-scroll">
+        <div class="roadmap-table" id="roadmapTable">
+          <div class="roadmap-head left-col sticky-col">Items</div>
+          <div id="timelineHeader" class="timeline-header-grid"></div>
+          <div id="roadmapRows" class="roadmap-body"></div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="panel-template-features">
+    <section class="panel-card panel-span-2" data-panel="features">
+      <div class="panel-header">
+        <div class="panel-title">Features</div>
+        <div class="panel-actions">
+          <button class="move-btn" data-dir="up">↑</button>
+          <button class="move-btn" data-dir="down">↓</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead><tr>
+          <th>Feature</th><th>Initiative</th><th>Priority</th>
+          <th>Progress</th><th>Type</th><th>Milestone</th>
+          <th>Start</th><th>End</th><th></th>
+        </tr></thead>
+        <tbody id="featuresBody"></tbody>
+      </table>
+      <div id="featuresEmpty" class="empty-state"><span class="empty-state-icon">📋</span>No features yet — add one above</div>
+    </section>
+  </template>
+
+  <template id="panel-template-subtasks">
+    <section class="panel-card panel-span-2" data-panel="subtasks">
+      <div class="panel-header">
+        <div class="panel-title">Subtasks &amp; deadlines</div>
+        <div class="panel-actions">
+          <button class="move-btn" data-dir="up">↑</button>
+          <button class="move-btn" data-dir="down">↓</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead><tr>
+          <th>Subtask</th><th>Feature</th><th>Owner</th>
+          <th>Deadline</th><th>Status</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="subtasksBody"></tbody>
+      </table>
+      <div id="subtasksEmpty" class="empty-state"><span class="empty-state-icon">✅</span>No subtasks yet — add one above</div>
+    </section>
+  </template>
+
+  <template id="panel-template-deadlines">
+    <section class="panel-card" data-panel="deadlines">
+      <div class="panel-header">
+        <div class="panel-title">Upcoming deadlines</div>
+        <div class="panel-actions">
+          <button class="move-btn" data-dir="up">↑</button>
+          <button class="move-btn" data-dir="down">↓</button>
+        </div>
+      </div>
+      <div id="deadlineList" class="deadline-list"></div>
+      <div id="deadlineEmpty" class="empty-state"><span class="empty-state-icon">📅</span>No deadlines yet</div>
+    </section>
+  </template>
+
+  <template id="panel-template-donut">
+    <section class="panel-card" data-panel="donut">
+      <div class="panel-header">
+        <div class="panel-title">Subtasks by status</div>
+        <div class="panel-actions">
+          <button class="move-btn" data-dir="up">↑</button>
+          <button class="move-btn" data-dir="down">↓</button>
+        </div>
+      </div>
+      <div class="donut-wrap">
+        <canvas id="donutCanvas" width="200" height="200"></canvas>
+        <div id="donutLegend" class="legend"></div>
+        <div id="donutEmpty" class="empty-state"><span class="empty-state-icon">🍩</span>No subtask data yet</div>
+      </div>
+    </section>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>

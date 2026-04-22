@@ -1,0 +1,129 @@
+# Northstar — Deploy Guide
+# Takes about 20 minutes total. No prior server experience needed.
+
+══════════════════════════════════════════════════════
+STEP 1 — Supabase (database, free)
+══════════════════════════════════════════════════════
+
+1. Go to https://supabase.com and sign up (free)
+2. Click "New project" — name it "northstar"
+3. Wait ~2 minutes for it to set up
+4. Go to: SQL Editor → New query
+5. Paste the entire contents of server/schema.sql and click "Run"
+6. Go to: Settings → API
+7. Copy two values:
+   - "Project URL" → this is your SUPABASE_URL
+   - "anon public" key → this is your SUPABASE_ANON_KEY
+
+
+══════════════════════════════════════════════════════
+STEP 2 — Twilio (SMS, free trial)
+══════════════════════════════════════════════════════
+
+1. Go to https://twilio.com and sign up (free trial, ~$15 credit)
+2. On the dashboard, note your:
+   - Account SID → TWILIO_ACCOUNT_SID
+   - Auth Token → TWILIO_AUTH_TOKEN
+3. Click "Get a phone number" → buy a free trial number
+   - This is your TWILIO_PHONE_FROM
+4. Your personal phone number is TWILIO_PHONE_TO (include country code, e.g. +16085551234)
+5. With a trial account you must "verify" your personal number:
+   - Go to: Phone Numbers → Verified Caller IDs → Add your number
+
+
+══════════════════════════════════════════════════════
+STEP 3 — GitHub (required for Railway)
+══════════════════════════════════════════════════════
+
+1. Go to https://github.com and sign up if you don't have an account
+2. Create a new repository called "northstar"
+3. Upload all files from the server/ folder to the repo
+   (or use: git init, git add ., git commit -m "init", git push)
+
+
+══════════════════════════════════════════════════════
+STEP 4 — Railway (server hosting, free tier)
+══════════════════════════════════════════════════════
+
+1. Go to https://railway.app and sign up with GitHub
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Select your "northstar" repo
+4. Railway auto-detects Node.js and deploys it
+5. Go to your project → Variables → Add all these:
+
+   SUPABASE_URL          = (from Step 1)
+   SUPABASE_ANON_KEY     = (from Step 1)
+   ANTHROPIC_API_KEY     = (from https://console.anthropic.com/settings/keys)
+   TWILIO_ACCOUNT_SID    = (from Step 2)
+   TWILIO_AUTH_TOKEN     = (from Step 2)
+   TWILIO_PHONE_FROM     = (your Twilio number, e.g. +16085550000)
+   TWILIO_PHONE_TO       = (your personal number, e.g. +16085551234)
+
+6. Railway shows you a public URL like: https://northstar-production.up.railway.app
+   → Copy this URL
+
+
+══════════════════════════════════════════════════════
+STEP 5 — Connect frontend to backend
+══════════════════════════════════════════════════════
+
+Open client/index.html and add this line right before </head>:
+
+  <script>window.NORTHSTAR_API_URL = "https://YOUR-RAILWAY-URL.up.railway.app";</script>
+
+Replace YOUR-RAILWAY-URL with what Railway gave you in Step 4.
+
+
+══════════════════════════════════════════════════════
+STEP 6 — Host the frontend (free, instant)
+══════════════════════════════════════════════════════
+
+Option A — Netlify Drop (simplest):
+1. Go to https://app.netlify.com/drop
+2. Drag your entire client/ folder onto the page
+3. You get a URL like: https://random-name-123.netlify.app
+4. That's your app URL
+
+Option B — GitHub Pages:
+1. Push client/ to a GitHub repo
+2. Settings → Pages → Deploy from main branch
+3. Your app is at: https://yourusername.github.io/northstar
+
+
+══════════════════════════════════════════════════════
+STEP 7 — Install on your iPhone
+══════════════════════════════════════════════════════
+
+1. Open your app URL in Safari on your iPhone
+2. Tap the Share button (square with arrow)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add"
+
+The app now appears on your home screen like a native app.
+It works offline and syncs when you have internet.
+
+
+══════════════════════════════════════════════════════
+STEP 8 — Test everything
+══════════════════════════════════════════════════════
+
+1. Open your app in a browser
+2. Click "💬 Ask Claude" → type "What should I focus on today?"
+3. To test SMS: open your app URL + /api/send-summary in the browser
+   (e.g. https://northstar-production.up.railway.app/api/send-summary)
+   → You should get a text within 30 seconds
+
+Daily texts arrive automatically at 8am (server time).
+
+
+══════════════════════════════════════════════════════
+WHAT CLAUDE CAN DO (examples)
+══════════════════════════════════════════════════════
+
+"What's due this week?"
+"What's overdue?"
+"What should I work on today?"
+"Mark the Video Analysis subtask as done"
+"Add a subtask called 'Review draft' to Paper Writing, due May 20"
+"How behind am I on the EOC initiative?"
+"Summarize everything I have going on"
