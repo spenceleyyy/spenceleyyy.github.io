@@ -77,7 +77,8 @@
             top: 0;
             width: 100%;
             /* UPDATED: Use semi-transparent version of new dark background */
-            background: rgba(23, 45, 51, 0.85); 
+            background: rgba(23, 45, 51, 0.85);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             backdrop-filter: saturate(180%) blur(20px);
             padding: 1.2rem 5%;
             z-index: 1000;
@@ -218,6 +219,7 @@
             background: linear-gradient(135deg, rgba(71, 48, 79, 0.6) 0%, rgba(23, 45, 51, 0.4) 100%); 
             border-radius: 24px;
             padding: 3rem;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(232, 144, 190, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -305,6 +307,7 @@
             font-family: var(--font-display);
             font-size: 1rem;
             transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
         
@@ -505,6 +508,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center; 
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 2.5rem; 
         }
@@ -618,6 +622,7 @@
             padding: 2rem;
             border-radius: 20px;
             border: 1px solid rgba(232, 144, 190, 0.1);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             position: relative; /* Needed for checkered background */
@@ -790,6 +795,7 @@
             padding: 3rem 5%;
             font-size: 0.875rem;
             border-top: 1px solid rgba(232, 144, 190, 0.1);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
         

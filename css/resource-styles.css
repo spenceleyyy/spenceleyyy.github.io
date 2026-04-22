@@ -29,6 +29,7 @@ nav {
     top: 0;
     width: 100%;
     background: rgba(23, 45, 51, 0.85);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     backdrop-filter: saturate(180%) blur(20px);
     padding: 1.2rem 5%;
     z-index: 1000;
@@ -128,6 +129,7 @@ nav {
     left: 50%;
     transform: translateX(-50%);
     background: rgba(23, 45, 51, 0.95);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
     backdrop-filter: saturate(180%) blur(20px);
     border: 1px solid rgba(232, 144, 190, 0.2);
     border-radius: 12px;

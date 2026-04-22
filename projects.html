@@ -147,6 +147,7 @@
         .hero-video {
             position: relative;
             width: 100%;
+            height: clamp(560px, 100vh, 960px);
             height: clamp(560px, 100svh, 960px);
             min-height: 560px;
             overflow: hidden;
@@ -651,6 +652,7 @@
             position: sticky;
             top: 0;
             background: rgba(23, 45, 51, 0.9);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             backdrop-filter: saturate(180%) blur(20px);
             border-bottom: 0.5px solid rgba(255,255,255,0.1);
             box-shadow: 0 8px 0 rgba(0,0,0,0.45);
@@ -849,6 +851,7 @@
             display: none;
             justify-content: center;
             align-items: center;
+            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
             opacity: 0;
             transition: opacity 0.3s ease;
