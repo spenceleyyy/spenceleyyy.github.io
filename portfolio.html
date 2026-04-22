@@ -3764,15 +3764,23 @@
       spawnCharacter();
     }
     ensureCharacterInBounds();
-    refreshRoomFitScale();
-    updateRoomScale();
-    updateRoomShift();
     updateRotation();
     updateCharacter();
     updateNearbyFrame();
     updateRailReadout(null);
     initRailModels();
     initCharacterRenderer();
+    // Defer scale computation so the browser applies the correct rotation (2deg, not
+    // the CSS default 52deg) before we measure bounding rects. Chrome accurately
+    // computes 3D-projected bounding boxes, so measuring at 52deg caused it to
+    // calculate a huge scale factor that made the gallery appear zoomed in.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        refreshRoomFitScale();
+        updateRoomScale();
+        updateRoomShift();
+      });
+    });
   </script>
 </body>
 </html>
