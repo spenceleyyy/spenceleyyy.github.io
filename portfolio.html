@@ -82,13 +82,13 @@
       font-family: "Sora", sans-serif;
     }
     .nav-content {
-      max-width: 1100px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 0.85rem 6vw;
+      padding: 1rem 3.2vw;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 1.2rem;
     }
     .logo-link {
       display: inline-flex;
@@ -98,26 +98,26 @@
       color: inherit;
     }
     .logo-image {
-      width: 34px;
-      height: 34px;
+      width: 42px;
+      height: 42px;
     }
     .full-name {
-      font-size: 0.75rem;
+      font-size: 0.9rem;
       letter-spacing: 0.22em;
       text-transform: uppercase;
     }
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 1.2rem;
+      gap: 1.05rem;
       list-style: none;
       margin: 0;
       padding: 0;
     }
     .nav-links a {
       text-decoration: none;
-      font-size: 0.72rem;
-      letter-spacing: 0.22em;
+      font-size: 0.86rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: inherit;
       position: relative;
@@ -1491,6 +1491,26 @@
       cursor: pointer;
     }
 
+    @media (max-width: 1200px) {
+      .logo-image {
+        width: 36px;
+        height: 36px;
+      }
+
+      .full-name {
+        font-size: 0.75rem;
+      }
+
+      .nav-links {
+        gap: 0.8rem;
+      }
+
+      .nav-links a {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+      }
+    }
+
     @media (max-width: 900px) {
       .ui-hints {
         bottom: 4vh;
@@ -1513,6 +1533,20 @@
     }
 
     @media (max-width: 640px) {
+      .logo-image {
+        width: 30px;
+        height: 30px;
+      }
+
+      .full-name {
+        font-size: 0.64rem;
+        letter-spacing: 0.16em;
+      }
+
+      .nav-links a {
+        font-size: 0.64rem;
+      }
+
       .ui-hints {
         display: none;
       }
@@ -1953,7 +1987,8 @@
     let hiddenOppositeWall = null;
     const modelSources = [
       "Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
-      "Portfolio/Character_Model/Meshy_AI_Animation_Walking_withSkin.glb",
+      "Portfolio/Character_Model/Meshy_AI_Animation_Running_withSkin.glb",
+      "models/crossy_road_chicken_rigged.glb",
     ];
     const railModelSource = "Portfolio/hedge.glb";
     let readoutTimer = null;
@@ -3307,6 +3342,7 @@
         source,
         (gltf) => {
           characterModel = gltf.scene;
+          let skinnedMeshCount = 0;
           characterModel.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = false;
@@ -3325,7 +3361,20 @@
                 }
               }
             }
+            if (child.isSkinnedMesh) {
+              skinnedMeshCount += 1;
+              child.bindMode = THREE.AttachedBindMode;
+              if (typeof child.normalizeSkinWeights === "function") {
+                child.normalizeSkinWeights();
+              }
+            }
           });
+          // Meshy exports can occasionally fail to include valid skinning data in a browser;
+          // if no skinned mesh is present, try the next source.
+          if (skinnedMeshCount === 0 && index < modelSources.length - 1) {
+            loadCharacterModel(loader, index + 1);
+            return;
+          }
           const box = new THREE.Box3().setFromObject(characterModel);
           const size = box.getSize(new THREE.Vector3());
           const desiredHeight = 1.0;
