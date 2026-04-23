@@ -2414,18 +2414,21 @@
     }
 
     function refreshRoomFitScale() {
-      if (!room || !viewport) return;
+      if (!viewport) return;
       const viewportRect = viewport.getBoundingClientRect();
       if (!viewportRect.width || !viewportRect.height) return;
-      const rect = room.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), baseRoomScale);
-      const focusSafe = Math.max(focusZoom, 0.001);
-      const unzoomedScale = currentScale / focusSafe;
-      const scaleX = viewportRect.width / rect.width;
-      const scaleY = viewportRect.height / rect.height;
-      const factor = Math.max(scaleX, scaleY);
-      roomFitScale = clamp(unzoomedScale * factor, 0.75, 1.8);
+      // Compute scale mathematically instead of using getBoundingClientRect() on the
+      // 3D room element. Chrome accurately projects 3D transforms into 2D bounding
+      // rects while Safari does not, producing wildly different scale factors.
+      // Solve for s such that the back wall width exactly fills the viewport:
+      //   roomWidth * s * perspective / (perspective − (shiftZ + halfDepth * s)) = vw
+      // Rearranging: s = vw*(perspective − shiftZ) / (roomWidth*perspective + halfDepth*vw)
+      const vw = viewportRect.width;
+      const perspective = 1200; // matches CSS perspective on .gallery-viewport
+      const halfDepth = roomMetrics.depth / 2; // 4000
+      const fitScale = (vw * (perspective - baseRoomShiftZ)) /
+                       (roomMetrics.width * perspective + halfDepth * vw);
+      roomFitScale = clamp(fitScale, 0.75, 1.8);
     }
 
     function updateRoomScale() {
@@ -3764,23 +3767,15 @@
       spawnCharacter();
     }
     ensureCharacterInBounds();
+    refreshRoomFitScale();
+    updateRoomScale();
+    updateRoomShift();
     updateRotation();
     updateCharacter();
     updateNearbyFrame();
     updateRailReadout(null);
     initRailModels();
     initCharacterRenderer();
-    // Defer scale computation so the browser applies the correct rotation (2deg, not
-    // the CSS default 52deg) before we measure bounding rects. Chrome accurately
-    // computes 3D-projected bounding boxes, so measuring at 52deg caused it to
-    // calculate a huge scale factor that made the gallery appear zoomed in.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        refreshRoomFitScale();
-        updateRoomScale();
-        updateRoomShift();
-      });
-    });
   </script>
 </body>
 </html>
