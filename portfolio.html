@@ -67,9 +67,7 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      min-height: 100vh;
       min-height: 100svh;
-      height: 100vh;
       height: 100svh;
     }
 
@@ -80,7 +78,6 @@
       z-index: 50;
       background: rgba(246, 242, 237, 0.94);
       border-bottom: 1px solid var(--line);
-      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
       font-family: "Sora", sans-serif;
     }
@@ -180,24 +177,19 @@
       flex: 1 1 auto;
       width: 100%;
       height: auto;
-      min-height: calc(100vh - var(--nav-height));
       min-height: calc(100svh - var(--nav-height));
       display: flex;
       align-items: center;
       justify-content: center;
       background: radial-gradient(ellipse at 50% 40%, #fdfdfb 0%, #f8f8f6 60%, #f4f4f2 100%);
-      overflow: hidden; /* Clip here, not on the perspective container */
     }
 
     .gallery-viewport {
       position: relative;
       width: 100%;
       height: 100%;
-      min-height: calc(100vh - var(--nav-height));
       min-height: calc(100svh - var(--nav-height));
-      /* overflow removed from perspective container — Chrome/Firefox clip 3D in 2D
-         space when overflow:hidden is on the same element as perspective, which
-         slices off the rotated room faces.  Clipping is handled by .gallery-stage. */
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -267,15 +259,7 @@
     }
 
     .face.floor::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / 1700px 1700px no-repeat;
-      opacity: 0.68;
-      filter: contrast(2) brightness(0.72);
-      transform: translateZ(2px);
-      pointer-events: none;
-      z-index: 1;
+      display: none;
     }
 
     .face.ceiling {
@@ -503,16 +487,6 @@
       height: 2px;
       background: rgba(0, 0, 0, 0.4);
       transform: translateX(-50%);
-    }
-
-    .wall-subtitle {
-      margin-top: 1.6rem;
-      width: 100%;
-      text-align: center;
-      font-size: 120px;
-      font-style: italic;
-      line-height: 1.15;
-      color: rgba(0, 0, 0, 0.72);
     }
 
     .wall-body {
@@ -927,14 +901,14 @@
       top: 50%;
       width: 1500px;
       height: 1500px;
-      transform: translate(-50%, -50%) translateZ(4px);
+      transform: translate(-50%, -50%) rotateX(180deg) translateZ(-6px);
       background: url("Portfolio/black-scribbled-circular-pattern-on-a-white-background-abstract-graphic-circle-vector.jpg") center / contain no-repeat;
-      opacity: 0.92;
+      opacity: 0.95;
       mix-blend-mode: multiply;
       pointer-events: none;
-      z-index: 3;
-      filter: contrast(1.9) brightness(0.75);
-      backface-visibility: visible;
+      z-index: 2;
+      filter: contrast(1.45) brightness(0.9);
+      backface-visibility: hidden;
     }
 
     .footstep {
@@ -1166,8 +1140,8 @@
       background:
         linear-gradient(180deg, rgba(252, 253, 253, 0.98) 0%, rgba(244, 248, 249, 0.94) 58%, rgba(229, 241, 244, 0.94) 100%),
         linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(246, 250, 251, 0.98) 56%, rgba(226, 242, 245, 0.98) 100%);
-      -webkit-backdrop-filter: blur(7px) saturate(138%);
       backdrop-filter: blur(7px) saturate(138%);
+      -webkit-backdrop-filter: blur(7px) saturate(138%);
       box-shadow:
         0 18px 28px -12px rgba(0, 0, 0, 0.34),
         0 30px 42px -24px rgba(0, 0, 0, 0.28),
@@ -1488,7 +1462,6 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       font-family: "Sora", sans-serif;
-      -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
     }
 
@@ -1592,8 +1565,7 @@
       <div class="room" role="img" aria-label="Minimal 3D gallery room">
         <div class="face back">
           <div class="wall-text">
-            <div class="wall-title">Robert J. Spenceley</div>
-            <div class="wall-subtitle">A tree falls the way it leans. Be careful which way you lean. - Dr. Seuss</div>
+            <div class="wall-title">My Portfolio</div>
             <div class="wall-body">
               This page is comprised of projects I have developed as course or personal projects. Each of these projects has aimed to address a problem that I face in everyday life. Projects are developed with principles of psychology, human factors, and engineering integrated. Note that many of these projects were developed in coordination with LLMs.
             </div>
@@ -1894,7 +1866,7 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 0,
-      z: 3000,
+      z: 4600,
       yaw: -180,
       floor: 880,
     };
@@ -2009,10 +1981,10 @@
     let footstepStopTimeout = null;
     const projectData = {
       1: {
-        title: "Let's Go",
-        subtitle: "I love fitness, but I do not love the apps :(. That said, here is my attempt at a fitness app! )",
-        summary: "Let's Go is a an all-in-one fitness app, that lets you track meals, workouts, physique progress, & more! The app allows you to connect Claude, with you own API key, of course, which will give you feedback on your progress and workouts. Workouts cna be customized, and your strength can be tracked!" ,
-        meta: ["Local Tracking", "iOS-ready UI", "Workout Plans", "Calorie Tracker"],
+        title: "Atlas Quest",
+        subtitle: "Photo-first fitness companion with local coaching, logging, and progress tracking.",
+        summary: "Log workouts, meals, and progress without friction. Built for fast gym flows: image-based exercise cards, photo logging, and a local planner that adapts to your goals.",
+        meta: ["Local AI coach", "Offline friendly", "iOS-ready UI"],
         links: [
           { label: "Open demo", href: "gym-login.html" },
           { label: "Download demo", href: "gym-login.html", download: "atlas-quest.html" },
@@ -2021,15 +1993,15 @@
           {
             title: "Test on iPhone",
             list: [
-              "Go to spenceley.github.io/gym-login.html",
-              "In the bottom right corner of safari, press the ... icon -> View More -> Add to Home Screen -> Ensure 'Open as web app' option is checked. ",
-              "Get after it!.",
+              "Start a local server (e.g., python3 -m http.server).",
+              "Open http://YOUR-IP:8000/gym-login.html on your iPhone.",
+              "Add to Home Screen for a full-screen feel.",
             ],
-            body: "",
+            body: "Requires both devices on the same Wi-Fi network.",
           },
           {
             title: "Local model notes",
-            body: "Let's Go runs fully locally, with your data staying on your device. While connecting AI tools is availible, users who do not wish to conenct Claude will not miss any of the major benefits",
+            body: "Atlas Quest uses a fully local planner for now. No API keys or servers required to generate weekly splits.",
           },
         ],
       },
@@ -2414,21 +2386,18 @@
     }
 
     function refreshRoomFitScale() {
-      if (!viewport) return;
+      if (!room || !viewport) return;
       const viewportRect = viewport.getBoundingClientRect();
       if (!viewportRect.width || !viewportRect.height) return;
-      // Compute scale mathematically instead of using getBoundingClientRect() on the
-      // 3D room element. Chrome accurately projects 3D transforms into 2D bounding
-      // rects while Safari does not, producing wildly different scale factors.
-      // Solve for s such that the back wall width exactly fills the viewport:
-      //   roomWidth * s * perspective / (perspective − (shiftZ + halfDepth * s)) = vw
-      // Rearranging: s = vw*(perspective − shiftZ) / (roomWidth*perspective + halfDepth*vw)
-      const vw = viewportRect.width;
-      const perspective = 1200; // matches CSS perspective on .gallery-viewport
-      const halfDepth = roomMetrics.depth / 2; // 4000
-      const fitScale = (vw * (perspective - baseRoomShiftZ)) /
-                       (roomMetrics.width * perspective + halfDepth * vw);
-      roomFitScale = clamp(fitScale, 0.75, 1.8);
+      const rect = room.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), baseRoomScale);
+      const focusSafe = Math.max(focusZoom, 0.001);
+      const unzoomedScale = currentScale / focusSafe;
+      const scaleX = viewportRect.width / rect.width;
+      const scaleY = viewportRect.height / rect.height;
+      const factor = Math.max(scaleX, scaleY);
+      roomFitScale = clamp(unzoomedScale * factor, 0.75, 1.8);
     }
 
     function updateRoomScale() {
