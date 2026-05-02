@@ -637,24 +637,28 @@
     .project-placeholder {
       position: absolute;
       inset: 0;
-      padding: 1rem 0.9rem;
+      padding: 0.8rem;
       display: flex;
       flex-direction: column;
-      gap: 0.55rem;
+      gap: 0.4rem;
       color: rgba(0, 0, 0, 0.78);
       font-family: "Inter", sans-serif;
-      text-align: left;
+      text-align: center;
       overflow: hidden;
+      justify-content: center;
+      align-items: center;
     }
 
     .project-course {
-      margin: auto 0;
-      font-size: 0.9rem;
-      letter-spacing: 0.16em;
+      margin: 0;
+      font-size: 2.1rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-weight: 700;
-      color: rgba(0, 0, 0, 0.78);
+      color: rgba(0, 0, 0, 0.84);
       text-align: center;
+      line-height: 1.05;
+      text-wrap: balance;
     }
 
     .face.right .art-caption {
@@ -760,7 +764,7 @@
     .face.left .frame-4 { width: 9%; top: 20%; left: 72%; }
     .face.left .frame-9 { display: none; }
 
-    .face.right .frame-5 { width: 9%; top: 20%; left: 26%; }
+    .face.right .frame-5 { width: 12%; top: 20%; left: 26%; }
     .face.right .frame-6 { width: 9%; top: 20%; left: 44%; }
     .face.right .frame-7 { width: 9%; top: 20%; left: 62%; }
     .face.right .frame-8 { width: 9%; top: 20%; left: 80%; }
@@ -776,6 +780,31 @@
 
     .face.right .art-surface {
       transform: translateZ(0) rotateY(180deg);
+    }
+
+    .art-modal.frame-5 .art-surface {
+      background:
+        linear-gradient(180deg, #f9f9f7 0%, #efefed 100%) !important;
+      border: 2px solid #d7ccb0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .art-modal.frame-5 .art-surface::before {
+      content: "ISyE 552";
+      font-family: "Sora", "Inter", sans-serif;
+      font-size: clamp(2rem, 5.2vw, 4.2rem);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.85);
+      padding: 0 1rem;
+      line-height: 1.1;
+    }
+
+    .art-modal.frame-5 .art-surface::after {
+      display: none;
     }
 
 
