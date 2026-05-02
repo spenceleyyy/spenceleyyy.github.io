@@ -648,29 +648,13 @@
     }
 
     .project-course {
-      font-size: 0.54rem;
-      letter-spacing: 0.14em;
+      margin: auto 0;
+      font-size: 0.9rem;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.6);
-    }
-
-    .project-header {
-      margin: 0;
-      font-size: 0.76rem;
-      line-height: 1.2;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.82);
-    }
-
-    .project-body {
-      margin: 0;
-      font-size: 0.59rem;
-      line-height: 1.35;
-      color: rgba(0, 0, 0, 0.68);
-      letter-spacing: 0.01em;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.78);
+      text-align: center;
     }
 
     .face.right .art-caption {
@@ -770,16 +754,16 @@
       background: #f6f6f6 url("Portfolio/2.png") center / cover no-repeat;
     }
 
-    .face.left .frame-1 { width: 9%; top: 20%; left: 18%; }
-    .face.left .frame-2 { width: 9%; top: 20%; left: 36%; }
-    .face.left .frame-3 { width: 9%; top: 20%; left: 54%; }
-    .face.left .frame-4 { width: 9%; top: 20%; left: 72%; }
+    .face.left .frame-1 { display: none; }
+    .face.left .frame-2 { display: none; }
+    .face.left .frame-3 { display: none; }
+    .face.left .frame-4 { display: none; }
     .face.left .frame-9 { display: none; }
 
-    .face.right .frame-5 { width: 9%; top: 20%; left: 26%; }
-    .face.right .frame-6 { width: 9%; top: 20%; left: 44%; }
-    .face.right .frame-7 { width: 9%; top: 20%; left: 62%; }
-    .face.right .frame-8 { width: 9%; top: 20%; left: 80%; }
+    .face.right .frame-5 { width: 16%; top: 18%; left: 50%; transform: translateX(-50%) translateZ(8px); }
+    .face.right .frame-6 { display: none; }
+    .face.right .frame-7 { display: none; }
+    .face.right .frame-8 { display: none; }
     .face.right .frame-10 { display: none; }
 
     .face.right .art-frame {
@@ -1646,7 +1630,7 @@
           <div class="rail back-rail" data-rail="back"></div>
         </div>
         <div class="face left">
-          <div class="art-frame frame-1" data-art="1" data-project="workout">
+          <div class="art-frame frame-1" data-art="1">
             <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
@@ -1658,7 +1642,7 @@
               <span class="plaque-subtitle">Workout app</span>
             </div>
           </div>
-          <div class="art-frame frame-2" data-art="2" data-project="journal">
+          <div class="art-frame frame-2" data-art="2">
             <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
@@ -1670,7 +1654,7 @@
               <span class="plaque-subtitle">Reflective writing</span>
             </div>
           </div>
-          <div class="art-frame frame-3" data-art="3" data-project="translator">
+          <div class="art-frame frame-3" data-art="3">
             <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
@@ -1682,7 +1666,7 @@
               <span class="plaque-subtitle">Photo translator</span>
             </div>
           </div>
-          <div class="art-frame frame-4" data-art="4" data-project="language">
+          <div class="art-frame frame-4" data-art="4">
             <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
@@ -1707,12 +1691,10 @@
           </div>
         </div>
         <div class="face right">
-          <div class="art-frame frame-5 placeholder" data-art="5">
+          <div class="art-frame frame-5 placeholder" data-art="5" data-project="isye552">
             <span class="art-surface" aria-hidden="true">
               <span class="project-placeholder">
                 <span class="project-course">ISyE 552</span>
-                <span class="project-header">Dr. Parijat - Guest Lecture </span>
-                <span class="project-body">I found Dr. Parijat's lecture on human factors in industry to be incredibly inspirational. During my introduction to research in my undergrad, I had several faculty members explain to me the importance of story telling in research dissemination, and I think this lecture really brought me back to the importance of story telling, and framing my work in terms of why it is important over what I am doing. I found it particularly important to hear this sentiment echoed by someone in industry, and understanding how the outcomes can shape the way that products are used. Particularly, I found the discussion about research as an input, not a decision, to be particularly valuable. I interpret this considering the whole experimental environment, as well as who it impacts.This has really inspired me to take due care throughtout the whole process of designing a study.</span>
               </span>
             </span>
             <span class="frame-depth" aria-hidden="true">
@@ -1722,13 +1704,7 @@
             </span>
           </div>
           <div class="art-frame frame-6 placeholder" data-art="6">
-            <span class="art-surface" aria-hidden="true">
-              <span class="project-placeholder">
-                <span class="project-course">ISyE 552</span>
-                <span class="project-header">Dr. Karthikeyan - Guest Lecture</span>
-                <span class="project-body">Getting to connect with Dr. Karthikeyan was an absolute prvilage! While I found both of his talks fascinating, I have gained valuable insights from my one-on-one meeting. Specifically, I asked him about my famous debate on impact, and what he had to say really made an impact on me (ironically). In addition to the work that he does at Apple (which he could not disclose much about), he told me that he found coming to UW-Madison to be a way that he could make an impact. This really opened my eyes to the fact I have the power to make an impact in whatever way I want, and impact doesn't have to appear through my work, and rather, can take on many forms. </span>
-              </span>
-            </span>
+            <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
               <span class="frame-side right"></span>
@@ -1736,13 +1712,7 @@
             </span>
           </div>
           <div class="art-frame frame-7 placeholder" data-art="7">
-            <span class="art-surface" aria-hidden="true">
-              <span class="project-placeholder">
-                <span class="project-course">ISyE 552</span>
-                <span class="project-header">Dr. Hao - Guest Lecture</span>
-                <span class="project-body"> </span>
-              </span>
-            </span>
+            <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
               <span class="frame-side right"></span>
@@ -1750,13 +1720,7 @@
             </span>
           </div>
           <div class="art-frame frame-8 placeholder" data-art="8">
-            <span class="art-surface" aria-hidden="true">
-              <span class="project-placeholder">
-                <span class="project-course">ISyE 552</span>
-                <span class="project-header">Dr. Cha - Guest Lecture</span>
-                <span class="project-body">I find Dr. Cha's work to be really inspirational given that we solve adjacent problems, with much different focuses. While I am not particularly interested in anything within the medical realm, it is useful to see the rigor required in those settings, and the importance of understanding context and culture. Something that I personally have a really hard time with is imaging the exact scenarios in which a worker could make an error, and how we can design around these issues, but after hearing her talk, I understand the importance of proper design considerations.</span>
-              </span>
-            </span>
+            <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
               <span class="frame-side right"></span>
@@ -2066,10 +2030,7 @@
     const frameRatioById = new Map();
     const ratioProbeById = new Map();
     const artImageById = {
-      1: "Portfolio/1.png",
-      2: "Portfolio/2.png",
-      3: "Portfolio/3.png",
-      4: "Portfolio/4.png",
+      5: "Portfolio/1.png",
     };
     const audioEl = document.getElementById("bg-audio");
     const footstepAudioEl = document.getElementById("footstep-audio");
@@ -2078,79 +2039,30 @@
     const footstepVolume = 0.3;
     let footstepStopTimeout = null;
     const projectData = {
-      1: {
-        title: "Atlas Quest",
-        subtitle: "Photo-first fitness companion with local coaching, logging, and progress tracking.",
-        summary: "Log workouts, meals, and progress without friction. Built for fast gym flows: image-based exercise cards, photo logging, and a local planner that adapts to your goals.",
-        meta: ["Local AI coach", "Offline friendly", "iOS-ready UI"],
-        links: [
-          { label: "Open demo", href: "gym-login.html" },
-          { label: "Download demo", href: "gym-login.html", download: "atlas-quest.html" },
-        ],
+      5: {
+        title: "ISyE 552",
+        subtitle: "Course project portfolio overview.",
+        summary: "Use this detail view to document your four ISyE 552 projects.",
+        meta: ["ISyE 552", "4 Projects", "Placeholder Ready"],
+        links: [],
         sections: [
           {
-            title: "Test on iPhone",
-            list: [
-              "Start a local server (e.g., python3 -m http.server).",
-              "Open http://YOUR-IP:8000/gym-login.html on your iPhone.",
-              "Add to Home Screen for a full-screen feel.",
-            ],
-            body: "Requires both devices on the same Wi-Fi network.",
+            title: "Project 1 Header",
+            body: "Project 1 body text placeholder. Add your writeup here.",
           },
           {
-            title: "Local model notes",
-            body: "Atlas Quest uses a fully local planner for now. No API keys or servers required to generate weekly splits.",
+            title: "Project 2 Header",
+            body: "Project 2 body text placeholder. Add your writeup here.",
+          },
+          {
+            title: "Project 3 Header",
+            body: "Project 3 body text placeholder. Add your writeup here.",
+          },
+          {
+            title: "Project 4 Header",
+            body: "Project 4 body text placeholder. Add your writeup here.",
           },
         ],
-      },
-      2: {
-        title: "Journal Studio",
-        subtitle: "Minimal writing space with focus-first typography and structured prompts.",
-        summary: "A clean, intentional journaling flow designed to reduce friction and keep the focus on reflection.",
-        meta: ["Web app", "Reflection"],
-        links: [{ label: "Open", href: "journal.html" }],
-        sections: [],
-      },
-      3: {
-        title: "Travel Buddy",
-        subtitle: "Camera-first translator that reflows new language directly on top of the photo.",
-        summary: "Photo, voice, and typed translations in one flow. Built for travelers: point the camera, detect the language, translate on top of the image, and save the result.",
-        meta: ["iOS-ready", "On-device OCR", "Offline cache"],
-        links: [
-          { label: "Open demo", href: "photo-translator.html" },
-          { label: "Download demo", href: "photo-translator.html", download: "travel-buddy.html" },
-          { label: "Download iPhone setup", href: "travel-buddy-ios-setup.command", download: true },
-        ],
-        sections: [
-          {
-            title: "Install on iPhone",
-            list: [
-              "Download travel-buddy-ios-setup.command and double-click it.",
-              "When Xcode opens, click Run to install on your iPhone.",
-              "On first launch, trust the developer profile in Settings.",
-            ],
-            body: "Requires Node.js, Xcode, and an Apple developer account. Re-run the script after any UI changes.",
-          },
-          {
-            title: "One-time setup details",
-            list: [
-              "Add native/ios/TravelBuddyTranslatePlugin.swift to the App target for offline translation.",
-              "Add NSCameraUsageDescription in Info.plist and set the deployment target to iOS 17+.",
-            ],
-          },
-          {
-            title: "Offline mode",
-            body: "Travel Buddy caches recent translations locally. For full offline translation, add the iOS plugin file and download language packs in Settings > Translate (requires iOS 17+).",
-          },
-        ],
-      },
-      4: {
-        title: "LinguaBloom",
-        subtitle: "Language learning flow with gentle pacing, visual progress, and guided practice.",
-        summary: "A calm learning loop that balances pacing, progress, and practice prompts for steady habit building.",
-        meta: ["Product concept", "Education"],
-        links: [{ label: "Open", href: "Language%20Learning/language-learning.html" }],
-        sections: [],
       },
     };
 
