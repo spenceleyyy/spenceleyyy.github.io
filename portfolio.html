@@ -764,7 +764,7 @@
     .face.right .frame-6 { width: 9%; top: 20%; left: 44%; }
     .face.right .frame-7 { width: 9%; top: 20%; left: 62%; }
     .face.right .frame-8 { width: 9%; top: 20%; left: 80%; }
-    .face.right .frame-10 { width: 12%; top: 45%; left: 53%; transform: translateX(-50%) translateZ(8px); }
+    .face.right .frame-10 { display: none; }
 
     .face.right .art-frame {
       transform: translateZ(8px);
@@ -1691,8 +1691,12 @@
           </div>
         </div>
         <div class="face right">
-          <div class="art-frame frame-5 placeholder" data-art="5">
-            <span class="art-surface" aria-hidden="true"></span>
+          <div class="art-frame frame-5 placeholder" data-art="5" data-project="isye552">
+            <span class="art-surface" aria-hidden="true">
+              <span class="project-placeholder">
+                <span class="project-course">ISyE 552</span>
+              </span>
+            </span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
               <span class="frame-side right"></span>
@@ -1723,12 +1727,8 @@
               <span class="frame-side bottom"></span>
             </span>
           </div>
-          <div class="art-frame frame-10 placeholder" data-art="10" data-project="isye552">
-            <span class="art-surface" aria-hidden="true">
-              <span class="project-placeholder">
-                <span class="project-course">ISyE 552</span>
-              </span>
-            </span>
+          <div class="art-frame frame-10 placeholder" data-art="10">
+            <span class="art-surface" aria-hidden="true"></span>
             <span class="frame-depth" aria-hidden="true">
               <span class="frame-side left"></span>
               <span class="frame-side right"></span>
@@ -2034,7 +2034,7 @@
       2: "Portfolio/2.png",
       3: "Portfolio/3.png",
       4: "Portfolio/4.png",
-      10: "Portfolio/1.png",
+      5: "Portfolio/1.png",
     };
     const audioEl = document.getElementById("bg-audio");
     const footstepAudioEl = document.getElementById("footstep-audio");
@@ -2117,7 +2117,7 @@
         links: [{ label: "Open", href: "Language%20Learning/language-learning.html" }],
         sections: [],
       },
-      10: {
+      5: {
         title: "ISyE 552",
         subtitle: "Course project portfolio overview.",
         summary: "Use this detail view to document your four ISyE 552 projects.",
