@@ -323,58 +323,6 @@
             margin-top: 3.5rem;
         }
 
-        .top-project-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1.25rem;
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto 2rem;
-        }
-
-        .top-project-box {
-            border: 1px solid #c8c8c8;
-            border-radius: 14px;
-            padding: 1rem 1.05rem 0.95rem;
-            background: #f4f4f4;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-            display: grid;
-            gap: 0.65rem;
-        }
-
-        .top-project-box h3 {
-            margin: 0;
-            font-family: 'Fredoka', sans-serif;
-            font-size: clamp(1.05rem, 1.6vw, 1.28rem);
-            font-weight: 600;
-            letter-spacing: 0.01em;
-            color: #101010;
-        }
-
-        .top-project-box p {
-            margin: 0;
-            color: #4a4a4a;
-            line-height: 1.45;
-            font-size: 0.98rem;
-        }
-
-        .top-project-box .project-link {
-            display: inline-flex;
-            width: 100%;
-            justify-content: center;
-            border-color: #1a1a1a;
-            border-width: 1.2px;
-            background: #fbfbfb;
-            color: #111;
-            font-weight: 600;
-            padding: 0.45rem 1rem;
-        }
-
-        .top-project-box .project-link:hover {
-            background: #111;
-            color: #fff;
-        }
-
         .page-intro {
             padding: 4rem 5vw 2rem;
             max-width: 1200px;
@@ -767,6 +715,19 @@
         body.mode-list .project-section {
             margin-bottom: 5rem;
         }
+        body.mode-list .project-section-grid {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto 3.5rem;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+            box-sizing: border-box;
+        }
+        body.mode-list .project-section-grid .project-section {
+            margin-bottom: 0;
+        }
         body.mode-list .poster-container {
             width: 100%;
             margin: 0 auto 2rem;
@@ -964,7 +925,7 @@
             body.mode-list .dual-image-container {
                 grid-template-columns: 1fr;
             }
-            .top-project-grid {
+            body.mode-list .project-section-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1112,19 +1073,6 @@
             <div class="story-gap-spacer" aria-hidden="true"></div>
             <div class="content-shell">
                 <main class="projects-list">
-                    <section class="top-project-grid" aria-label="New PHRI projects">
-                        <article class="top-project-box" id="project-phri-ania">
-                            <h3>Ania_ISyE</h3>
-                            <p>New PHRI project entry. Open the PDF to view the full document.</p>
-                            <a href="projects/Ania_ISyE.pdf" target="_blank" class="project-link">Open PDF →</a>
-                        </article>
-                        <article class="top-project-box" id="project-phri-spenceley">
-                            <h3>Spenceley_PHRI</h3>
-                            <p>New PHRI project entry. Open the PDF to view the full document.</p>
-                            <a href="projects/Spenceley_Phri.pdf" target="_blank" class="project-link">Open PDF →</a>
-                        </article>
-                    </section>
-
                     <section class="project-block detail-block" id="fipred-details">
                         <div class="project-title-row">
                             <span class="project-tag">01</span>
@@ -1257,17 +1205,35 @@
             <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
         </div>
 
-        <section class="top-project-grid" aria-label="New PHRI projects">
-            <article class="top-project-box">
-                <h3>Ania_ISyE</h3>
-                <p>New PHRI project entry. Open the PDF to view the full document.</p>
-                <a href="projects/Ania_ISyE.pdf" target="_blank" class="project-link">Open PDF →</a>
-            </article>
-            <article class="top-project-box">
-                <h3>Spenceley_PHRI</h3>
-                <p>New PHRI project entry. Open the PDF to view the full document.</p>
-                <a href="projects/Spenceley_Phri.pdf" target="_blank" class="project-link">Open PDF →</a>
-            </article>
+        <section class="project-section-grid" aria-label="New PHRI projects">
+            <div class="project-section" id="project-phri-ania">
+                <div class="poster-container" data-src="projects/Ania_ISyE.pdf">
+                    <img src="projects/Ania_ISyE.pdf" alt="Ania ISyE Project PDF" class="poster-image"
+                         onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Ania_ISyE.pdf';"
+                    >
+                </div>
+                <div class="project-details">
+                    <h2 class="project-title">Ania_ISyE</h2>
+                    <div class="project-abstract">
+                        <p>New PHRI project entry. Open the PDF to view the full document.</p>
+                    </div>
+                    <a href="projects/Ania_ISyE.pdf" target="_blank" class="project-link">Open PDF →</a>
+                </div>
+            </div>
+            <div class="project-section" id="project-phri-spenceley">
+                <div class="poster-container" data-src="projects/Spenceley_Phri.pdf">
+                    <img src="projects/Spenceley_Phri.pdf" alt="Spenceley PHRI Project PDF" class="poster-image"
+                         onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Spenceley_Phri.pdf';"
+                    >
+                </div>
+                <div class="project-details">
+                    <h2 class="project-title">Spenceley_PHRI</h2>
+                    <div class="project-abstract">
+                        <p>New PHRI project entry. Open the PDF to view the full document.</p>
+                    </div>
+                    <a href="projects/Spenceley_Phri.pdf" target="_blank" class="project-link">Open PDF →</a>
+                </div>
+            </div>
         </section>
 
         <div class="project-section">
