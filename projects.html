@@ -323,6 +323,13 @@
             margin-top: 3.5rem;
         }
 
+        .storyboard-phri-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
         .page-intro {
             padding: 4rem 5vw 2rem;
             max-width: 1200px;
@@ -925,6 +932,9 @@
             body.mode-list .dual-image-container {
                 grid-template-columns: 1fr;
             }
+            .storyboard-phri-grid {
+                grid-template-columns: 1fr;
+            }
             body.mode-list .project-section-grid {
                 grid-template-columns: 1fr;
             }
@@ -1073,6 +1083,50 @@
             <div class="story-gap-spacer" aria-hidden="true"></div>
             <div class="content-shell">
                 <main class="projects-list">
+                    <section class="storyboard-phri-grid" aria-label="PHRI projects">
+                        <article class="project-card" id="project-phri-ania">
+                            <div class="project-card__badge">00</div>
+                            <h2 class="project-card__title">An EEG Investigation of Error-Related Negativity in Human-Robot Interactions</h2>
+                            <div class="project-card__grid">
+                                <div class="project-card__text">
+                                    <p class="project-authors">
+                                        <span class="author-name">Gugulski</span>,
+                                        <span class="author-name">Spenceley</span>,
+                                        & <span class="author-name">Mehta</span>
+                                    </p>
+                                    <div class="project-abstract">
+                                        <p>New PHRI project entry. Open the poster preview to view the full PDF.</p>
+                                    </div>
+                                </div>
+                                <div class="project-card__media">
+                                    <figure>
+                                        <img src="projects/Ania_ISyE.pdf" alt="Ania ISyE Project PDF">
+                                    </figure>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="project-card" id="project-phri-spenceley">
+                            <div class="project-card__badge">00</div>
+                            <h2 class="project-card__title">Are you ready for this? An evaluation of motor-readiness cortical potentials while co-lifting with an unreliable robot partner.</h2>
+                            <div class="project-card__grid">
+                                <div class="project-card__text">
+                                    <p class="project-authors">
+                                        <span class="author-name">Spenceley</span>
+                                        & <span class="author-name">Mehta</span>
+                                    </p>
+                                    <div class="project-abstract">
+                                        <p>New PHRI project entry. Open the poster preview to view the full PDF.</p>
+                                    </div>
+                                </div>
+                                <div class="project-card__media">
+                                    <figure>
+                                        <img src="projects/Spenceley_Phri.pdf" alt="Spenceley PHRI Project PDF">
+                                    </figure>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
                     <section class="project-block detail-block" id="fipred-details">
                         <div class="project-title-row">
                             <span class="project-tag">01</span>
@@ -1206,32 +1260,39 @@
         </div>
 
         <section class="project-section-grid" aria-label="New PHRI projects">
-            <div class="project-section" id="project-phri-ania">
+            <div class="project-section">
                 <div class="poster-container" data-src="projects/Ania_ISyE.pdf">
                     <img src="projects/Ania_ISyE.pdf" alt="Ania ISyE Project PDF" class="poster-image"
                          onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Ania_ISyE.pdf';"
                     >
                 </div>
                 <div class="project-details">
-                    <h2 class="project-title">Ania_ISyE</h2>
+                    <h2 class="project-title">An EEG Investigation of Error-Related Negativity in Human-Robot Interactions</h2>
+                    <p class="project-authors">
+                        <span class="author-name">Gugulski</span>,
+                        <span class="author-name">Spenceley</span>,
+                        & <span class="author-name">Mehta</span>
+                    </p>
                     <div class="project-abstract">
-                        <p>New PHRI project entry. Open the PDF to view the full document.</p>
+                        <p>New PHRI project entry. Open the poster preview to view the full PDF.</p>
                     </div>
-                    <a href="projects/Ania_ISyE.pdf" target="_blank" class="project-link">Open PDF →</a>
                 </div>
             </div>
-            <div class="project-section" id="project-phri-spenceley">
+            <div class="project-section">
                 <div class="poster-container" data-src="projects/Spenceley_Phri.pdf">
                     <img src="projects/Spenceley_Phri.pdf" alt="Spenceley PHRI Project PDF" class="poster-image"
                          onerror="this.onerror=null; this.alt='Image failed to load. Click to open full-size file: Spenceley_Phri.pdf';"
                     >
                 </div>
                 <div class="project-details">
-                    <h2 class="project-title">Spenceley_PHRI</h2>
+                    <h2 class="project-title">Are you ready for this? An evaluation of motor-readiness cortical potentials while co-lifting with an unreliable robot partner.</h2>
+                    <p class="project-authors">
+                        <span class="author-name">Spenceley</span>
+                        & <span class="author-name">Mehta</span>
+                    </p>
                     <div class="project-abstract">
-                        <p>New PHRI project entry. Open the PDF to view the full document.</p>
+                        <p>New PHRI project entry. Open the poster preview to view the full PDF.</p>
                     </div>
-                    <a href="projects/Spenceley_Phri.pdf" target="_blank" class="project-link">Open PDF →</a>
                 </div>
             </div>
         </section>
