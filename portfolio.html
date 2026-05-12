@@ -67,7 +67,9 @@
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      min-height: 100vh;
       min-height: 100svh;
+      height: 100vh;
       height: 100svh;
     }
 
@@ -78,6 +80,7 @@
       z-index: 50;
       background: rgba(246, 242, 237, 0.94);
       border-bottom: 1px solid var(--line);
+      -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
       font-family: "Sora", sans-serif;
     }
@@ -177,6 +180,7 @@
       flex: 1 1 auto;
       width: 100%;
       height: auto;
+      min-height: calc(100vh - var(--nav-height));
       min-height: calc(100svh - var(--nav-height));
       display: flex;
       align-items: center;
@@ -188,6 +192,7 @@
       position: relative;
       width: 100%;
       height: 100%;
+      min-height: calc(100vh - var(--nav-height));
       min-height: calc(100svh - var(--nav-height));
       overflow: hidden;
       display: flex;
@@ -2504,15 +2509,29 @@
 
     function refreshRoomFitScale() {
       if (!room || !viewport) return;
-      const viewportRect = viewport.getBoundingClientRect();
-      if (!viewportRect.width || !viewportRect.height) return;
-      const rect = room.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
+      const vw = viewport.clientWidth || window.innerWidth;
+      const vh = viewport.clientHeight || window.innerHeight;
+      if (!vw || !vh) return;
       const currentScale = readCssNumber(getComputedStyle(root).getPropertyValue("--room-scale"), baseRoomScale);
       const focusSafe = Math.max(focusZoom, 0.001);
       const unzoomedScale = currentScale / focusSafe;
-      const scaleX = viewportRect.width / rect.width;
-      const scaleY = viewportRect.height / rect.height;
+      // Use analytical geometry instead of getBoundingClientRect to avoid
+      // Chrome vs Safari inconsistencies: Chrome includes the full preserve-3d
+      // child extent in the bounding rect, Safari does not, causing Chrome to
+      // compute a much smaller scale factor and the room to appear too distant.
+      const perspStr = getComputedStyle(viewport).perspective;
+      const persp = (perspStr && perspStr !== "none") ? readCssNumber(perspStr, 1200) : 1200;
+      const zShift = Math.abs(baseRoomShiftZ);
+      const rotXRad = readCssNumber(getComputedStyle(root).getPropertyValue("--room-rot-x"), 52) * Math.PI / 180;
+      const perspFactor = persp / (persp + zShift);
+      // Screen width: room CSS width projected at room-center Z distance.
+      // Screen height: floor depth (sin rotX) + wall height (cos rotX), both projected.
+      // The 0.94 coefficient on floor depth is a perspective-averaging correction
+      // (near floor edge has higher persp factor than far edge; 0.94 * center ≈ average).
+      const screenW = roomMetrics.width * perspFactor * unzoomedScale;
+      const screenH = (roomMetrics.depth * Math.sin(rotXRad) * 0.94 + roomMetrics.height * Math.cos(rotXRad)) * perspFactor * unzoomedScale;
+      const scaleX = vw / screenW;
+      const scaleY = vh / screenH;
       const factor = Math.max(scaleX, scaleY);
       roomFitScale = clamp(unzoomedScale * factor, 0.75, 1.8);
     }
