@@ -1210,7 +1210,8 @@
             const downloadQrBtn = $('download-qr');
             const generatedUrlDisplay = $('generated-url-display');
 
-            const DEFAULT_LOGO_PATH = 'logos/RSlogoUPDATED.png';
+            const DEFAULT_LOGO_PATH = 'logos/NeuroErgoHead.pdf';
+            const DEFAULT_LOGO_FALLBACK_PATH = 'logos/NeuroErgoHead.png';
             const QR_SIZE = 600;
             let currentQRCanvas = null;
             let customLogoDataUrl = null;
@@ -1262,11 +1263,17 @@
                 context.restore();
 
                 const logo = new Image();
+                let triedFallback = false;
                 logo.crossOrigin = 'anonymous';
                 logo.onload = () => {
                     context.drawImage(logo, centerX - logoSize / 2, centerY - logoSize / 2, logoSize, logoSize);
                 };
                 logo.onerror = () => {
+                    if (!triedFallback && logo.src.includes(DEFAULT_LOGO_PATH)) {
+                        triedFallback = true;
+                        logo.src = DEFAULT_LOGO_FALLBACK_PATH;
+                        return;
+                    }
                     context.fillStyle = '#111111';
                     context.font = `${Math.floor(logoSize / 3)}px 'SF Pro Display', sans-serif`;
                     context.textAlign = 'center';
