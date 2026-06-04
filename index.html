@@ -430,6 +430,200 @@
             font-size: 0.875rem;
             border-top: 0.5px solid rgba(255,255,255,0.1);
         }
+
+        /* --- GALLERY STYLES --- */
+        #gallery {
+            padding: 8rem 5%;
+        }
+
+        .gallery-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+
+        .gallery-container {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 20px;
+            aspect-ratio: 5/4;
+            background: var(--color-background-secondary);
+        }
+
+        .gallery-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            width: 100%;
+        }
+
+        .gallery-item {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-text {
+            color: var(--color-white);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 2rem;
+            letter-spacing: -0.5px;
+            animation: slideInUp 0.4s ease;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-arrow {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--color-background-main);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .gallery-arrow:hover {
+            background: #e0609d;
+            transform: scale(1.1);
+            box-shadow: 0 8px 24px rgba(232, 144, 190, 0.4);
+        }
+
+        .gallery-arrow:active {
+            transform: scale(0.95);
+        }
+
+        .gallery-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(232, 144, 190, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .gallery-dot.active {
+            background: var(--color-primary);
+            width: 16px;
+            height: 16px;
+        }
+
+        .gallery-dot:hover {
+            background: rgba(232, 144, 190, 0.6);
+        }
+
+        @media (max-width: 1100px) {
+            .gallery-wrapper {
+                gap: 1rem;
+            }
+
+            .gallery-arrow {
+                width: 42px;
+                height: 42px;
+                font-size: 1.25rem;
+            }
+
+            .gallery-text {
+                font-size: 1.25rem;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-wrapper {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .gallery-container {
+                aspect-ratio: 4/3;
+            }
+
+            .gallery-arrow {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .gallery-arrow-left {
+                left: 1rem;
+            }
+
+            .gallery-arrow-right {
+                right: 1rem;
+            }
+
+            .gallery-text {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+        }
+        
         @media (max-width: 1100px) {
             nav {
                 padding: 1rem 1.25rem;
@@ -531,6 +725,58 @@
             <p class="subtitle">2nd year PhD student at UW-Madison - <a href="https://neuroergolab.org/" target="_blank" style="color: var(--color-primary); text-decoration: none;">Neuroergonomics Lab</a>.</p>
             <a href="#about" class="cta-button">Learn more</a>
             <a href="#contact" class="secondary-button">Get in touch</a>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <div class="content-wrapper">
+            <h2>Photo gallery.</h2>
+            <div class="gallery-wrapper">
+                <button class="gallery-arrow gallery-arrow-left" aria-label="Previous photo">
+                    <span>‹</span>
+                </button>
+                
+                <div class="gallery-container">
+                    <div class="gallery-track">
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x400/e890be/172D33?text=Lab+Work" alt="Lab work">
+                            <div class="gallery-overlay">
+                                <p class="gallery-text">Conducting experiments in the lab</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x400/c77dff/172D33?text=Team+Collaboration" alt="Team collaboration">
+                            <div class="gallery-overlay">
+                                <p class="gallery-text">Collaborating with my research team</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x400/9d4efd/172D33?text=EEG+Setup" alt="EEG setup">
+                            <div class="gallery-overlay">
+                                <p class="gallery-text">EEG data collection in progress</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x400/e890be/172D33?text=Robot+Interaction" alt="Robot interaction">
+                            <div class="gallery-overlay">
+                                <p class="gallery-text">Human-robot collaboration research</p>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://via.placeholder.com/500x400/c77dff/172D33?text=Data+Analysis" alt="Data analysis">
+                            <div class="gallery-overlay">
+                                <p class="gallery-text">Analyzing complex neural data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="gallery-arrow gallery-arrow-right" aria-label="Next photo">
+                    <span>›</span>
+                </button>
+            </div>
+            
+            <div class="gallery-dots" id="gallery-dots"></div>
         </div>
     </section>
 
@@ -815,6 +1061,128 @@
                 window.scrollTo(0, 0);
             }, 10);
         });
+
+        // --- 4. PHOTO GALLERY ---
+        class Gallery {
+            constructor() {
+                this.currentIndex = 0;
+                this.autoScrollInterval = null;
+                this.autoScrollDelay = 5000; // 5 seconds
+
+                this.track = document.querySelector('.gallery-track');
+                this.container = document.querySelector('.gallery-container');
+                this.items = document.querySelectorAll('.gallery-item');
+                this.leftArrow = document.querySelector('.gallery-arrow-left');
+                this.rightArrow = document.querySelector('.gallery-arrow-right');
+                this.dotsContainer = document.getElementById('gallery-dots');
+
+                this.init();
+            }
+
+            init() {
+                this.createDots();
+                this.attachEventListeners();
+                this.startAutoScroll();
+
+                // Pause auto-scroll on hover
+                this.container?.addEventListener('mouseenter', () => this.pauseAutoScroll());
+                this.container?.addEventListener('mouseleave', () => this.resumeAutoScroll());
+            }
+
+            createDots() {
+                this.items.forEach((_, index) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('gallery-dot');
+                    if (index === 0) dot.classList.add('active');
+                    dot.setAttribute('aria-label', `Go to photo ${index + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.dotsContainer?.appendChild(dot);
+                });
+            }
+
+            updateDots() {
+                const dots = document.querySelectorAll('.gallery-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentIndex);
+                });
+            }
+
+            updateTrack() {
+                if (this.track) {
+                    const offset = -this.currentIndex * 100;
+                    this.track.style.transform = `translateX(${offset}%)`;
+                }
+                this.updateDots();
+            }
+
+            next() {
+                this.currentIndex = (this.currentIndex + 1) % this.items.length;
+                this.updateTrack();
+            }
+
+            prev() {
+                this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
+                this.updateTrack();
+            }
+
+            goToSlide(index) {
+                this.currentIndex = index;
+                this.updateTrack();
+                this.resetAutoScroll();
+            }
+
+            startAutoScroll() {
+                this.autoScrollInterval = setInterval(() => this.next(), this.autoScrollDelay);
+            }
+
+            pauseAutoScroll() {
+                if (this.autoScrollInterval) {
+                    clearInterval(this.autoScrollInterval);
+                    this.autoScrollInterval = null;
+                }
+            }
+
+            resumeAutoScroll() {
+                if (!this.autoScrollInterval) {
+                    this.startAutoScroll();
+                }
+            }
+
+            resetAutoScroll() {
+                this.pauseAutoScroll();
+                this.resumeAutoScroll();
+            }
+
+            attachEventListeners() {
+                this.leftArrow?.addEventListener('click', () => {
+                    this.prev();
+                    this.resetAutoScroll();
+                });
+
+                this.rightArrow?.addEventListener('click', () => {
+                    this.next();
+                    this.resetAutoScroll();
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft') {
+                        this.prev();
+                        this.resetAutoScroll();
+                    } else if (e.key === 'ArrowRight') {
+                        this.next();
+                        this.resetAutoScroll();
+                    }
+                });
+            }
+        }
+
+        // Initialize gallery when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new Gallery());
+        } else {
+            new Gallery();
+        }
     </script>
 </body>
 </html>
