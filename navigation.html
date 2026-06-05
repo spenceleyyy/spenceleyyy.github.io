@@ -12,6 +12,65 @@
             --nav-hover-9: #7fe7ff;
         }
 
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(23, 45, 51, 0.92);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+            padding: 1.25rem 4%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .nav-content {
+            width: min(100%, 1400px);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-image {
+            height: 60px;
+            width: auto;
+        }
+
+        .full-name {
+            font-size: 1.75rem;
+            font-weight: 400;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            font-size: 1rem;
+            color: var(--color-text-dark, #FFFFED);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            display: block;
+            padding: 0.5rem 0;
+            transition: color 0.25s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus {
+            color: var(--nav-hover-1);
+        }
+
+        .dropdown-menu {
+            min-width: 220px;
+        }
+
         body.mentorship-page nav .nav-content {
             position: relative;
         }
