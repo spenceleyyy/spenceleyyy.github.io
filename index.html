@@ -456,8 +456,9 @@
             flex: 1;
             overflow: hidden;
             border-radius: 24px;
-            aspect-ratio: 16 / 9;
-            max-height: 760px;
+            /* Use viewport-based height so photos are much taller while width remains 100vw */
+            height: min(80vh, 900px);
+            max-height: 900px;
             min-height: 520px;
             background: var(--color-background-secondary);
         }
