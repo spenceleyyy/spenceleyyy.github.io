@@ -456,10 +456,10 @@
             flex: 1;
             overflow: hidden;
             border-radius: 24px;
-            /* Use viewport-based height so photos are much taller while width remains 100vw */
-            height: min(80vh, 900px);
-            max-height: 900px;
-            min-height: 520px;
+            /* Taller viewport-based height to avoid cropping */
+            height: min(92vh, 1100px);
+            max-height: 1100px;
+            min-height: 640px;
             background: var(--color-background-secondary);
         }
 
@@ -481,10 +481,15 @@
         }
 
         .gallery-item img {
-            width: 100%;
+            /* Scale images to the container height to avoid vertical cropping */
             height: 100%;
-            object-fit: cover;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            background: var(--color-background-secondary);
             transition: transform 0.35s ease;
+            display: block;
+            margin: 0 auto;
         }
 
         .gallery-item:hover img {
