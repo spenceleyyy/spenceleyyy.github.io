@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RS | Apps</title>
+        <link rel="icon" href="logos/RSlogoUPDATED.png">
+        <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/apps-styles.css">
+        <style>/* small override so nav placeholder doesn't jump */ body.apps-page{padding-top:88px}</style>
+    </head>
+    <body class="apps-page">
+        <div id="nav-placeholder"></div>
+
+        <main class="content-shell">
+            <section class="project-card">
+                <div class="project-card__badge">Apps</div>
+                <h1 class="project-card__title">Interactive Apps</h1>
+                <div id="apps-container">
+                    <!-- cards will be rendered here -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer" style="text-align:center;padding:2rem 0;color:#9ca3a8">
+            <p>&copy; Robert J. Spenceley</p>
+        </footer>
+
+        <div id="lightbox" aria-hidden="true">
+            <button id="lightbox-close" aria-label="Close preview">✕</button>
+            <div id="lightbox-content"></div>
+        </div>
+
+        <script>
+            // Load navigation partial so the nav stays consistent across pages
+            fetch('navigation.html')
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('nav-placeholder').innerHTML = html;
+                    // Mark active nav link
+                    try {
+                        const anchor = document.querySelector('#nav-placeholder a[href="apps.html"]');
+                        if (anchor) {
+                            const li = anchor.closest('li');
+                            if (li) li.classList.add('active');
+                        }
+                    } catch (e) { /* ignore */ }
+                })
+                .catch(() => { /* silent fallback */ });
+
+            // Apps data (use pages located inside the `app/` folder)
+            const apps = [
+                { id: 'gym-adventure', title: 'Gym Adventure', desc: 'Interactive mini-game and demo for gym workflows.', preview: 'app/gym-adventure.html', download: 'app/gym-adventure.html', full: 'app/gym-adventure.html' },
+                { id: 'gym-login', title: 'Gym Login Demo', desc: 'Login UI and demo for the gym project.', preview: 'app/gym-login.html', download: 'app/gym-login.html', full: 'app/gym-login.html' },
+                { id: 'photo-translator', title: 'Travel Buddy (Photo Translator)', desc: 'Translate text from photos and get quick travel assistance.', preview: 'app/photo-translator.html', download: 'app/photo-translator.html', full: 'app/photo-translator.html' },
+                { id: 'piano-lab', title: 'Piano Lab', desc: 'Small interactive piano and sound demo.', preview: 'app/piano-lab.html', download: 'app/piano-lab.html', full: 'app/piano-lab.html' },
+                { id: 'language-learning', title: 'Language Learning', desc: 'Interactive language learning maps and lessons.', preview: 'app/language-learning.html', download: 'app/language-learning.html', full: 'app/language-learning.html' }
+            ];
+
+            const container = document.getElementById('apps-container');
+
+            function createCard(app) {
+                const section = document.createElement('section');
+                section.className = 'project-card';
+                section.innerHTML = `
+                    <div class="project-card__grid">
+                        <div class="project-card__media">
+                            <figure>
+                                <div class="preview-frame" data-src="${app.preview}" role="button" tabindex="0" aria-label="Open preview of ${app.title}">
+                                    <iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
+                                </div>
+                            </figure>
+                        </div>
+                        <div class="project-card__text">
+                            <h3>${app.title}</h3>
+                            <p>${app.desc}</p>
+                            <div class="project-card__links">
+                                <a class="btn btn-download" href="${app.download}" download>Download</a>
+                                <a class="btn" href="${app.full}" target="_blank" rel="noopener">Open full page</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // wire lightbox open
+                const preview = section.querySelector('.preview-frame');
+                preview.addEventListener('click', () => openLightbox(app.preview, app.title));
+                preview.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') openLightbox(app.preview, app.title); });
+
+                return section;
+            }
+
+            apps.forEach(a => container.appendChild(createCard(a)));
+
+            // Lightbox
+            const lightbox = document.getElementById('lightbox');
+            const lightboxContent = document.getElementById('lightbox-content');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            function openLightbox(src, title) {
+                lightboxContent.innerHTML = `<iframe src="${src}" title="${title} (preview)" sandbox="allow-scripts allow-same-origin"></iframe>`;
+                lightbox.setAttribute('aria-hidden', 'false');
+                lightbox.classList.add('open');
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('open');
+                lightbox.setAttribute('aria-hidden', 'true');
+                lightboxContent.innerHTML = '';
+            }
+
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+        </script>
+    </body>
+    </html>

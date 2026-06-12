@@ -1,0 +1,82 @@
+:root{
+  --card-bg: #0f1a1b;
+  --card-border: rgba(255,255,255,0.04);
+  --accent: #e890be;
+  --muted: #a9a3a9;
+}
+*{box-sizing:border-box}
+body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background:#071216; color:#fff; margin:0}
+.apps-main{max-width:1200px;margin:0 auto;padding:2rem}
+.apps-hero{margin-bottom:1.5rem}
+.apps-hero h1{font-size:2rem;margin-bottom:0.25rem}
+.apps-hero .lead{color:var(--muted)}
+.apps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.app-card{background:var(--card-bg);border:1px solid var(--card-border);padding:1rem;border-radius:12px;display:flex;gap:1rem;align-items:flex-start}
+.app-preview{width:44%;height:220px;border-radius:8px;overflow:hidden;background:#031113;display:flex;align-items:center;justify-content:center}
+.app-preview iframe{width:100%;height:100%;border:0}
+.app-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.app-meta{width:56%;display:flex;flex-direction:column;gap:0.5rem}
+.app-title{margin:0;font-size:1.125rem}
+.app-desc{color:var(--muted);margin:0}
+.app-actions{margin-top:auto;display:flex;gap:0.5rem}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 0.9rem;border-radius:8px;text-decoration:none;font-weight:600}
+.btn-download{background:var(--accent);color:#071216}
+.btn-secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+
+/* Project-like card styles to match projects page */
+.project-card{border:1px solid rgba(255,255,255,0.04);border-radius:18px;padding:1.5rem;background:#071216;max-width:1100px;margin:0 auto;color:#fff}
+.project-card__badge{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);font-weight:600;margin-bottom:0.5rem}
+.project-card__title{font-size:1.75rem;margin:0 0 1rem 0}
+.project-card__grid{display:grid;grid-template-columns:1fr minmax(280px,0.6fr);gap:1.25rem;align-items:start}
+.project-card__media figure{margin:0}
+.project-card__media iframe{width:100%;height:320px;border:0;border-radius:12px;box-shadow:0 18px 30px rgba(0,0,0,0.4)}
+.project-card__text p{color:var(--muted);line-height:1.6}
+.project-card__links{display:flex;gap:0.75rem;margin-top:0.5rem}
+.project-card__links .btn{padding:0.6rem 1rem;border-radius:10px}
+
+@media (max-width:900px){
+  .project-card__grid{grid-template-columns:1fr}
+  .project-card__media iframe{height:240px}
+}
+
+/* Lightbox styles */
+#lightbox{position:fixed;inset:0;background:rgba(2,6,7,0.72);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity 200ms ease}
+#lightbox.open{opacity:1;pointer-events:auto}
+#lightbox-content{width:min(1100px,96vw);height:min(820px,90vh);background:#000;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+#lightbox-content iframe{width:100%;height:100%;border:0}
+#lightbox-close{position:absolute;right:18px;top:18px;background:transparent;border:0;color:#fff;font-size:20px;padding:8px;border-radius:8px;cursor:pointer}
+
+.preview-frame{width:100%;height:320px;display:block;cursor:pointer;border-radius:12px;overflow:hidden}
+.preview-frame iframe{width:100%;height:100%;border:0}
+
+:root{
+  --card-bg: #0f1a1b;
+  --card-border: rgba(255,255,255,0.04);
+  --accent: #e890be;
+  --muted: #a9a3a9;
+}
+*{box-sizing:border-box}
+body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background:#071216; color:#fff; margin:0; padding-top:88px}
+.apps-main{max-width:1200px;margin:0 auto;padding:2rem}
+.apps-hero{margin-bottom:1.5rem}
+.apps-hero h1{font-size:2rem;margin-bottom:0.25rem}
+.apps-hero .lead{color:var(--muted)}
+.apps-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.app-card{background:var(--card-bg);border:1px solid var(--card-border);padding:1rem;border-radius:12px;display:flex;gap:1rem;align-items:flex-start}
+.app-preview{width:44%;height:220px;border-radius:8px;overflow:hidden;background:#031113;display:flex;align-items:center;justify-content:center}
+.app-preview iframe{width:100%;height:100%;border:0}
+.app-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.app-meta{width:56%;display:flex;flex-direction:column;gap:0.5rem}
+.app-title{margin:0;font-size:1.125rem}
+.app-desc{color:var(--muted);margin:0}
+.app-actions{margin-top:auto;display:flex;gap:0.5rem}
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 0.9rem;border-radius:8px;text-decoration:none;font-weight:600}
+.btn-download{background:var(--accent);color:#071216}
+.btn-secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+
+@media (max-width:900px){
+  .apps-grid{grid-template-columns:1fr}
+  .app-card{flex-direction:column}
+  .app-preview,.app-meta{width:100%}
+  body.apps-page{padding-top:100px}
+}
