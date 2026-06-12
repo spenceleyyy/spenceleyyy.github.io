@@ -1,6 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RS | Apps</title>
+  <link rel="icon" href="logos/RSlogoUPDATED.png">
+  <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/apps-styles.css">
+  <style>
+    /* Provide the same root color variable used by the nav */
+    :root{ --color-text-dark: #FFFFED; }
+  </style>
+</head>
+<body class="apps-page">
+
+  <!-- Inlined nav copied from navigation.html to ensure exact match -->
+  <nav class="nav-solid" aria-label="Main Navigation">
+    <style>
+      :root {
+        --nav-hover-1: #e890be;
+        --nav-hover-2: #9ad7ff;
+        --nav-hover-3: #73ffa0;
+        --nav-hover-4: #f7c948;
+        --nav-hover-5: #ff9f80;
+        --nav-hover-6: #c77dff;
+        --nav-hover-7: #8be4c5;
+        --nav-hover-8: #b6f5d1;
+        --nav-hover-9: #7fe7ff;
+      }
+      nav{position:fixed;top:0;width:100%;background:rgba(23,45,51,0.92);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);padding:1.25rem 4%;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.14)}
+      .nav-content{width:min(100%,1400px);margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+      .logo-image{height:60px;width:auto}
+      .full-name{font-size:1.75rem;font-weight:400}
+      .nav-links{display:flex;flex-wrap:wrap;gap:1.8rem;align-items:center;margin-left:auto;list-style:none;padding:0;margin:0}
+      .nav-links li{list-style:none}
+      .nav-links a{font-size:1rem;color:var(--color-text-dark,#FFFFED);text-decoration:none;font-weight:500;display:block;padding:0.5rem 0;transition:color 0.25s}
+      .nav-links a:hover,.nav-links a:focus{color:var(--nav-hover-1)}
+      .dropdown-menu{min-width:220px;display:none;position:absolute;right:0;background:transparent}
+      .dropdown:hover>.dropdown-menu{display:block}
+    </style>
+    <div class="nav-content">
+      <a href="index.html" class="logo-link">
+        <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
+        <span class="full-name">Robert J. Spenceley</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="projects.html">Research</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li class="active"><a href="apps.html">Apps</a></li>
+        <li><a href="mentorship.html">Mentorship</a></li>
+        <li><a href="people.html">People</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Misc <span class="caret">▾</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="qr-generator.html">QR Code Generator</a></li>
+            <li><a href="bg-remover.html">Background Remover</a></li>
+            <li><a href="image-converter.html">Image Converter</a></li>
+            <li><a href="link-shortener.html">Link Shortener</a></li>
+            <li><a href="photo-translator.html">Travel Buddy</a></li>
+            <li><a href="Language%20Learning/language-learning.html">Language Learning</a></li>
+            <li><a href="logo-slide-numbers.html">Logo Slide Numbers</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle">Resources <span class="caret">▾</span></a>
+          <ul class="dropdown-menu">
+            <li><a href="page-designer.html">Page Designer</a></li>
+            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+          </ul>
+        </li>
+        <li><a href="cv.html">CV</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="content-shell" style="padding-top:2.25rem">
+    <section class="project-card">
+      <div class="project-card__badge">Apps</div>
+      <h1 class="project-card__title">Interactive Apps</h1>
+      <div id="apps-container"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer" style="text-align:center;padding:2rem 0;color:#9ca3a8">
+    <p>&copy; Robert J. Spenceley</p>
+  </footer>
+
+  <div id="lightbox" aria-hidden="true">
+    <button id="lightbox-close" aria-label="Close preview">✕</button>
+    <div id="lightbox-content"></div>
+  </div>
+
+  <script>
+    const apps = [
+      { id: 'gym-adventure', title: 'Gym Adventure', desc: 'Interactive mini-game and demo for gym workflows.', preview: 'app/gym-adventure.html', download: 'app/gym-adventure.html', full: 'app/gym-adventure.html' },
+      { id: 'gym-login', title: 'Gym Login Demo', desc: 'Login UI and demo for the gym project.', preview: 'app/gym-login.html', download: 'app/gym-login.html', full: 'app/gym-login.html' },
+      { id: 'photo-translator', title: 'Travel Buddy (Photo Translator)', desc: 'Translate text from photos and get quick travel assistance.', preview: 'app/photo-translator.html', download: 'app/photo-translator.html', full: 'app/photo-translator.html' },
+      { id: 'piano-lab', title: 'Piano Lab', desc: 'Small interactive piano and sound demo.', preview: 'app/piano-lab.html', download: 'app/piano-lab.html', full: 'app/piano-lab.html' },
+      { id: 'language-learning', title: 'Language Learning', desc: 'Interactive language learning maps and lessons.', preview: 'app/language-learning.html', download: 'app/language-learning.html', full: 'app/language-learning.html' }
+    ];
+
+    const container = document.getElementById('apps-container');
+
+    function createCard(app){
+      const section = document.createElement('section');
+      section.className = 'project-card';
+      section.innerHTML = `
+        <div class="project-card__grid">
+          <div class="project-card__media"><figure><div class="preview-frame" role="button" tabindex="0"><iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe></div></figure></div>
+          <div class="project-card__text"><h3>${app.title}</h3><p>${app.desc}</p><div class="project-card__links"><a class="btn btn-download" href="${app.download}" download>Download</a><a class="btn" href="${app.full}" target="_blank" rel="noopener">Open full page</a></div></div>
+        </div>
+      `;
+      const preview = section.querySelector('.preview-frame');
+      preview.addEventListener('click', ()=> openLightbox(app.preview, app.title));
+      preview.addEventListener('keydown', (e)=> { if(e.key==='Enter' || e.key===' ') openLightbox(app.preview, app.title); });
+      return section;
+    }
+
+    apps.forEach(a=> container.appendChild(createCard(a)));
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxContent = document.getElementById('lightbox-content');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src,title){ lightboxContent.innerHTML = `<iframe src="${src}" title="${title} (preview)" sandbox="allow-scripts allow-same-origin"></iframe>`; lightbox.setAttribute('aria-hidden','false'); lightbox.classList.add('open'); }
+    function closeLightbox(){ lightbox.classList.remove('open'); lightbox.setAttribute('aria-hidden','true'); lightboxContent.innerHTML = ''; }
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e)=> { if(e.target===lightbox) closeLightbox(); });
+    document.addEventListener('keydown', (e)=> { if(e.key==='Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!DOCTYPE html>
@@ -15,7 +150,126 @@
         <style>/* small override so nav placeholder doesn't jump */ body.apps-page{padding-top:88px}</style>
     </head>
     <body class="apps-page">
-        <div id="nav-placeholder"></div>
+        <nav class="nav-solid" aria-label="Main Navigation">
+            <style>
+                :root {
+                    --nav-hover-1: #e890be;
+                    --nav-hover-2: #9ad7ff;
+                    --nav-hover-3: #73ffa0;
+                    --nav-hover-4: #f7c948;
+                    --nav-hover-5: #ff9f80;
+                    --nav-hover-6: #c77dff;
+                    --nav-hover-7: #8be4c5;
+                    --nav-hover-8: #b6f5d1;
+                    --nav-hover-9: #7fe7ff;
+                }
+
+                nav {
+                    position: fixed;
+                    top: 0;
+                    width: 100%;
+                    background: rgba(23, 45, 51, 0.92);
+                    -webkit-backdrop-filter: saturate(180%) blur(20px);
+                    backdrop-filter: saturate(180%) blur(20px);
+                    padding: 1.25rem 4%;
+                    z-index: 1000;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+                }
+
+                .nav-content {
+                    width: min(100%, 1400px);
+                    margin: 0 auto;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 1rem;
+                }
+
+                .logo-image {
+                    height: 60px;
+                    width: auto;
+                }
+
+                .full-name {
+                    font-size: 1.75rem;
+                    font-weight: 400;
+                }
+
+                .nav-links {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1.8rem;
+                    align-items: center;
+                    margin-left: auto;
+                }
+
+                .nav-links a {
+                    font-size: 1rem;
+                    color: var(--color-text-dark, #FFFFED);
+                    text-decoration: none;
+                    font-weight: 500;
+                    position: relative;
+                    display: block;
+                    padding: 0.5rem 0;
+                    transition: color 0.25s ease;
+                }
+
+                .nav-links a:hover,
+                .nav-links a:focus {
+                    color: var(--nav-hover-1);
+                }
+
+                .dropdown-menu {
+                    min-width: 220px;
+                }
+
+                nav .nav-content {
+                    width: 100%;
+                    max-width: none;
+                    margin: 0;
+                    justify-content: flex-start;
+                }
+
+                nav .nav-links {
+                    margin-left: auto;
+                }
+            </style>
+            <div class="nav-content">
+                <a href="index.html" class="logo-link">
+                    <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
+                    <span class="full-name">Robert J. Spenceley</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="projects.html">Research</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="apps.html">Apps</a></li>
+                    <li><a href="mentorship.html">Mentorship</a></li>
+                    <li><a href="people.html">People</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Misc <span class="caret">▾</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="qr-generator.html">QR Code Generator</a></li>
+                            <li><a href="bg-remover.html">Background Remover</a></li>
+                            <li><a href="image-converter.html">Image Converter</a></li>
+                            <li><a href="link-shortener.html">Link Shortener</a></li>
+                            <li><a href="photo-translator.html">Travel Buddy</a></li>
+                            <li><a href="Language%20Learning/language-learning.html">Language Learning</a></li>
+                            <li><a href="logo-slide-numbers.html">Logo Slide Numbers</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Resources <span class="caret">▾</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="page-designer.html">Page Designer</a></li>
+                            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="cv.html">CV</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
 
         <main class="content-shell">
             <section class="project-card">
@@ -41,15 +295,25 @@
             fetch('navigation.html')
                 .then(r => r.text())
                 .then(html => {
-                    document.getElementById('nav-placeholder').innerHTML = html;
-                    // Mark active nav link
-                    try {
-                        const anchor = document.querySelector('#nav-placeholder a[href="apps.html"]');
+                    // Parse and prepend the nav element to the document body so it behaves like other pages
+                    const tmp = document.createElement('div');
+                    tmp.innerHTML = html;
+                    const navEl = tmp.querySelector('nav');
+                    if (navEl) {
+                        // remove any existing nav inserted earlier
+                        const existing = document.querySelector('body > nav');
+                        if (existing) existing.remove();
+                        document.body.prepend(navEl);
+                        // mark active link
+                        const anchor = navEl.querySelector('a[href="apps.html"]');
                         if (anchor) {
                             const li = anchor.closest('li');
                             if (li) li.classList.add('active');
                         }
-                    } catch (e) { /* ignore */ }
+                    } else {
+                        // fallback: insert into placeholder
+                        document.getElementById('nav-placeholder').innerHTML = html;
+                    }
                 })
                 .catch(() => { /* silent fallback */ });
 

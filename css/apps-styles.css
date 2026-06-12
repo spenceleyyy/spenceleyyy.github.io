@@ -49,6 +49,28 @@ body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
 .preview-frame{width:100%;height:320px;display:block;cursor:pointer;border-radius:12px;overflow:hidden}
 .preview-frame iframe{width:100%;height:100%;border:0}
 
+/* Ensure navigation inserted via #nav-placeholder displays correctly on this page */
+#nav-placeholder > nav{position:fixed !important;top:0;left:0;right:0;width:100%;z-index:1200}
+#nav-placeholder .nav-content{max-width:1200px;margin:0 auto}
+#nav-placeholder .nav-links li.active > a{outline:0;border-color:currentColor}
+
+/* Make room for nav */
+body.apps-page{padding-top:88px}
+
+/* Stronger nav layout overrides to prevent page CSS from breaking nav */
+#nav-placeholder nav{background:rgba(23,45,51,0.92) !important}
+#nav-placeholder nav .nav-content{display:flex !important;align-items:center !important;justify-content:flex-start !important;padding:0.9rem 4% !important}
+#nav-placeholder .logo-link{display:flex;align-items:center;gap:0.75rem}
+#nav-placeholder .nav-links{list-style:none;margin:0;padding:0;display:flex;gap:1.6rem;align-items:center;margin-left:auto}
+#nav-placeholder .nav-links li{list-style:none}
+
+/* Hide dropdown menus until hovered explicitly */
+#nav-placeholder .dropdown-menu{display:none !important;position:absolute !important}
+#nav-placeholder .dropdown:hover > .dropdown-menu{display:block !important}
+
+/* Prevent large bullets or center-list artifacts */
+#nav-placeholder .nav-links > li::before{content:none}
+
 :root{
   --card-bg: #0f1a1b;
   --card-border: rgba(255,255,255,0.04);
