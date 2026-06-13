@@ -695,7 +695,7 @@
 <div id="authView" class="hidden" style="position:fixed;inset:0;z-index:600;background:var(--bg2);overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:center;justify-content:center;padding:48px 24px;box-sizing:border-box;">
   <div style="width:min(380px,100%);">
     <div style="text-align:center;margin-bottom:36px;">
-      <img src="logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
+      <img src="../logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
       <div style="font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--label);">Let's Go</div>
       <div style="font-size:.88rem;color:var(--label2);margin-top:6px;">Sign in or create an account.</div>
     </div>
@@ -719,7 +719,7 @@
 <!-- ONBOARDING -->
 <div id="onboardingView" class="hidden" style="position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:calc(var(--safe-top) + 48px) 24px calc(var(--safe-bottom) + 40px);box-sizing:border-box;">
   <div style="text-align:center;margin-bottom:32px;">
-    <img src="logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
+    <img src="../logos/RSlogoFIT.png" style="width:72px;height:72px;border-radius:18px;margin-bottom:16px;" alt="logo" />
     <div style="font-size:1.7rem;font-weight:800;letter-spacing:-.03em;color:var(--label);">Welcome</div>
     <div style="font-size:.88rem;color:var(--label2);margin-top:6px;">Tell us about yourself to get started.</div>
   </div>
@@ -1315,9 +1315,16 @@
         <div class="section-header scroll-fade"><h2>AI Coach — API Key</h2></div>
         <div class="card scroll-fade">
           <div class="card-inner">
-            <div style="font-size:.8rem;color:var(--label2);line-height:1.5;margin-bottom:12px;">Your key stays on this device. Get one at <a href="https://console.anthropic.com" target="_blank" style="color:var(--violet);font-weight:600;">console.anthropic.com</a>.</div>
-            <div class="input-field" style="margin-bottom:10px;"><label>API Key</label><input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="font-family:var(--mono);font-size:.82rem;" /></div>
-            <button class="btn-primary" id="saveApiKey">Save Key</button>
+            <div style="font-size:.8rem;color:var(--label2);line-height:1.5;margin-bottom:12px;">Your key stays on this device. Get one from <a href="https://console.anthropic.com" target="_blank" style="color:var(--violet);font-weight:600;">Anthropic (Claude)</a> or <a href="https://platform.openai.com" target="_blank" style="color:var(--violet);font-weight:600;">OpenAI (ChatGPT)</a>.</div>
+            <div class="input-field" style="margin-bottom:8px;">
+              <label>Provider</label>
+              <select id="apiProviderSelect" style="font-size:.92rem;padding:.5rem;border-radius:8px;">
+                <option value="anthropic">Anthropic — Claude</option>
+                <option value="openai">OpenAI — ChatGPT</option>
+              </select>
+            </div>
+            <div class="input-field" style="margin-bottom:10px;"><label>API Key</label><input id="apiKeyInput" type="password" placeholder="Paste your API key…" style="font-family:var(--mono);font-size:.82rem;" /></div>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><button class="btn-primary" id="saveApiKey">Save Key</button><button class="btn-ghost" id="clearApiKey" style="padding:.5rem .8rem">Clear</button></div>
             <div class="status-msg" id="apiKeyStatus" style="margin-top:8px;"></div>
           </div>
         </div>
@@ -1993,8 +2000,20 @@ let currentHistFilter = 'all', currentExCat = 'All', currentFoodCat = 'All';
 let strengthExFilter = null, photoFilter = 'all';
 
 const store = {
-  getApiKey:  ()  => localStorage.getItem('aq_apikey') || '',
-  setApiKey:  k   => localStorage.setItem('aq_apikey', k),
+  // API key storage supports both Anthropic and OpenAI keys.
+  // Use keys: 'aq_apikey_anthropic' and 'aq_apikey_openai'.
+  getApiKey: (provider) => {
+    if (provider === 'openai') return localStorage.getItem('aq_apikey_openai') || '';
+    if (provider === 'anthropic') return localStorage.getItem('aq_apikey_anthropic') || '';
+    // No provider specified: prefer Anthropic, then OpenAI, then legacy key
+    return localStorage.getItem('aq_apikey_anthropic') || localStorage.getItem('aq_apikey_openai') || localStorage.getItem('aq_apikey') || '';
+  },
+  setApiKey: (k, provider = 'anthropic') => {
+    if (provider === 'openai') localStorage.setItem('aq_apikey_openai', k);
+    else localStorage.setItem('aq_apikey_anthropic', k);
+    // remember the preferred provider
+    localStorage.setItem('aq_api_provider', provider);
+  },
   getData(key){ const u=JSON.parse(localStorage.getItem('aq_users')||'{}'); return u['me']?.[key]; },
   setData(key,val){
     const u=JSON.parse(localStorage.getItem('aq_users')||'{}');
@@ -3254,13 +3273,30 @@ function renderProfile(){
   $('prEmail').textContent=u.email||'—';
   $('prCal').textContent=goal?`${goal.calories} kcal · P${goal.protein}g C${goal.carbs}g F${goal.fat}g`:'—';
   $('apiKeyInput').value=store.getApiKey()?'••••••••••••':'';
+  // Provider select: reflect preferred provider
+  const pref = localStorage.getItem('aq_api_provider') || (store.getApiKey('anthropic')? 'anthropic' : (store.getApiKey('openai')? 'openai' : 'anthropic'));
+  const sel = $('apiProviderSelect'); if(sel) sel.value = pref;
+  if(sel) {
+    const ph = pref === 'openai' ? 'sk-... (OpenAI key)' : 'sk-ant-... (Anthropic key)';
+    $('apiKeyInput').placeholder = ph;
+  }
   const photos=store.getPhotos().slice(-4).reverse();
   $('profilePhotoGrid').innerHTML=photos.map(p=>`<div class="photo-tile"><img src="${p.data}" alt=""/><div class="photo-tile-date">${fmtDate(p.date)}</div></div>`).join('');
 }
 $('saveApiKey').addEventListener('click',()=>{
   const val=$('apiKeyInput').value.trim();
-  if(!val||val==='••••••••••••'){ $('apiKeyStatus').textContent='Enter a key.'; return; }
-  store.setApiKey(val); $('apiKeyStatus').textContent='Saved!'; $('apiKeyStatus').style.color='var(--mint)'; $('apiKeyInput').value='••••••••••••';
+  const sel = $('apiProviderSelect'); const provider = sel? sel.value : 'anthropic';
+  if(!val||val==='••••••••••••'){ $('apiKeyStatus').textContent='Enter a key.'; $('apiKeyStatus').style.color='var(--rose)'; return; }
+  store.setApiKey(val, provider);
+  $('apiKeyStatus').textContent='Saved!'; $('apiKeyStatus').style.color='var(--mint)'; $('apiKeyInput').value='••••••••••••';
+  setTimeout(()=>$('apiKeyStatus').textContent='',2000);
+});
+
+$('clearApiKey').addEventListener('click',()=>{
+  const sel = $('apiProviderSelect'); const provider = sel? sel.value : 'anthropic';
+  if(provider === 'openai') localStorage.removeItem('aq_apikey_openai');
+  else localStorage.removeItem('aq_apikey_anthropic');
+  $('apiKeyStatus').textContent='Cleared'; $('apiKeyStatus').style.color='var(--rose)'; $('apiKeyInput').value='';
   setTimeout(()=>$('apiKeyStatus').textContent='',2000);
 });
 
