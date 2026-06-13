@@ -8,39 +8,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/apps-styles.css">
   <style>
-    /* Provide the same root color variable used by the nav */
-    :root{ --color-text-dark: #FFFFED; }
+    :root { --color-text-dark: #FFFFED; }
   </style>
 </head>
 <body class="apps-page">
 
-  <!-- Inlined nav copied from navigation.html to ensure exact match -->
   <nav class="nav-solid" aria-label="Main Navigation">
     <style>
       :root {
-        --nav-hover-1: #e890be;
-        --nav-hover-2: #9ad7ff;
-        --nav-hover-3: #73ffa0;
-        --nav-hover-4: #f7c948;
-        --nav-hover-5: #ff9f80;
-        --nav-hover-6: #c77dff;
-        --nav-hover-7: #8be4c5;
-        --nav-hover-8: #b6f5d1;
-        --nav-hover-9: #7fe7ff;
+        --nav-hover-1: #e890be; --nav-hover-2: #9ad7ff; --nav-hover-3: #73ffa0;
+        --nav-hover-4: #f7c948; --nav-hover-5: #ff9f80; --nav-hover-6: #c77dff;
+        --nav-hover-7: #8be4c5; --nav-hover-8: #b6f5d1; --nav-hover-9: #7fe7ff;
       }
-      nav{position:fixed;top:0;width:100%;background:rgba(23,45,51,0.92);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);padding:1.25rem 4%;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.14)}
-      .nav-content{width:min(100%,1400px);margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-      .logo-image{height:60px;width:auto}
-      .full-name{font-size:1.75rem;font-weight:400}
-      .nav-links{display:flex;flex-wrap:wrap;gap:1.8rem;align-items:center;margin-left:auto;list-style:none;padding:0;margin:0}
-      .nav-links li{list-style:none}
-      .nav-links a{font-size:1rem;color:var(--color-text-dark,#FFFFED);text-decoration:none;font-weight:500;display:block;padding:0.5rem 0;transition:color 0.25s}
-      .nav-links a:hover,.nav-links a:focus{color:var(--nav-hover-1)}
-      .dropdown-menu{min-width:220px;display:none;position:absolute;right:0;background:transparent}
-      .dropdown:hover>.dropdown-menu{display:block}
+      nav { position:fixed; top:0; width:100%; background:rgba(23,45,51,0.92);
+        -webkit-backdrop-filter:saturate(180%) blur(20px); backdrop-filter:saturate(180%) blur(20px);
+        padding:1.25rem 4%; z-index:1000; border-bottom:1px solid rgba(255,255,255,0.14); }
+      .nav-content { width:min(100%,1400px); margin:0 auto; display:flex;
+        justify-content:space-between; align-items:center; gap:1rem; }
+      .logo-image { height:60px; width:auto; }
+      .full-name  { font-size:1.75rem; font-weight:400; }
+      .nav-links  { display:flex; flex-wrap:wrap; gap:1.8rem; align-items:center;
+        margin-left:auto; list-style:none; padding:0; margin:0; }
+      .nav-links li  { list-style:none; }
+      .nav-links a   { font-size:1rem; color:var(--color-text-dark,#FFFFED); text-decoration:none;
+        font-weight:500; display:block; padding:0.5rem 0; transition:color 0.25s; }
+      .nav-links a:hover, .nav-links a:focus { color:var(--nav-hover-1); }
+      .dropdown-menu { min-width:220px; display:none; position:absolute; right:0; background:transparent; }
+      .dropdown:hover>.dropdown-menu { display:block; }
     </style>
     <div class="nav-content">
-      <a href="index.html" class="logo-link">
+      <a href="index.html" class="logo-link" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:inherit">
         <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
         <span class="full-name">Robert J. Spenceley</span>
       </a>
@@ -51,23 +48,21 @@
         <li class="active"><a href="apps.html">Apps</a></li>
         <li><a href="mentorship.html">Mentorship</a></li>
         <li><a href="people.html">People</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle">Misc <span class="caret">▾</span></a>
-          <ul class="dropdown-menu">
-            <li><a href="qr-generator.html">QR Code Generator</a></li>
-            <li><a href="bg-remover.html">Background Remover</a></li>
-            <li><a href="image-converter.html">Image Converter</a></li>
-            <li><a href="link-shortener.html">Link Shortener</a></li>
-            <li><a href="photo-translator.html">Travel Buddy</a></li>
-            <li><a href="Language%20Learning/language-learning.html">Language Learning</a></li>
-            <li><a href="logo-slide-numbers.html">Logo Slide Numbers</a></li>
+        <li class="dropdown" style="position:relative">
+          <a href="#" class="dropdown-toggle">Misc <span>▾</span></a>
+          <ul class="dropdown-menu" style="background:rgba(23,45,51,0.96);border-radius:10px;padding:8px 0;list-style:none;margin:4px 0 0">
+            <li style="list-style:none"><a href="qr-generator.html" style="padding:8px 18px;display:block">QR Code Generator</a></li>
+            <li style="list-style:none"><a href="bg-remover.html"   style="padding:8px 18px;display:block">Background Remover</a></li>
+            <li style="list-style:none"><a href="image-converter.html" style="padding:8px 18px;display:block">Image Converter</a></li>
+            <li style="list-style:none"><a href="link-shortener.html"  style="padding:8px 18px;display:block">Link Shortener</a></li>
+            <li style="list-style:none"><a href="logo-slide-numbers.html" style="padding:8px 18px;display:block">Logo Slide Numbers</a></li>
           </ul>
         </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle">Resources <span class="caret">▾</span></a>
-          <ul class="dropdown-menu">
-            <li><a href="page-designer.html">Page Designer</a></li>
-            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
+        <li class="dropdown" style="position:relative">
+          <a href="#" class="dropdown-toggle">Resources <span>▾</span></a>
+          <ul class="dropdown-menu" style="background:rgba(23,45,51,0.96);border-radius:10px;padding:8px 0;list-style:none;margin:4px 0 0">
+            <li style="list-style:none"><a href="page-designer.html"  style="padding:8px 18px;display:block">Page Designer</a></li>
+            <li style="list-style:none"><a href="data-analysis.html"  style="padding:8px 18px;display:block">Interactive Data Analysis</a></li>
           </ul>
         </li>
         <li><a href="cv.html">CV</a></li>
@@ -95,292 +90,82 @@
 
   <script>
     const apps = [
-      { id: 'gym-adventure', title: 'Gym Adventure', desc: 'Interactive mini-game and demo for gym workflows.', preview: 'app/gym-adventure.html', download: 'app/gym-adventure.html', full: 'app/gym-adventure.html' },
-      { id: 'gym-login', title: 'Gym Login Demo', desc: 'Login UI and demo for the gym project.', preview: 'app/gym-login.html', download: 'app/gym-login.html', full: 'app/gym-login.html' },
-      { id: 'photo-translator', title: 'Travel Buddy (Photo Translator)', desc: 'Translate text from photos and get quick travel assistance.', preview: 'app/photo-translator.html', download: 'app/photo-translator.html', full: 'app/photo-translator.html' },
-      { id: 'piano-lab', title: 'Piano Lab', desc: 'Small interactive piano and sound demo.', preview: 'app/piano-lab.html', download: 'app/piano-lab.html', full: 'app/piano-lab.html' },
-      { id: 'language-learning', title: 'Language Learning', desc: 'Interactive language learning maps and lessons.', preview: 'app/language-learning.html', download: 'app/language-learning.html', full: 'app/language-learning.html' }
+      {
+        id: 'language-learning',
+        title: 'LinguaBloom — Language Learning',
+        desc: 'Interactive language learning with a Duolingo-style path, 3D globe, and an AI voice coach powered by Claude or GPT-4o.',
+        preview: 'Language%20Learning/language-select.html',
+        full:    'Language%20Learning/language-learning.html'
+      },
+      {
+        id: 'photo-translator',
+        title: 'Travel Buddy (Photo Translator)',
+        desc: 'Translate text from photos and get quick travel assistance.',
+        preview: 'app/photo-translator.html',
+        full:    'app/photo-translator.html'
+      },
+      {
+        id: 'gym-adventure',
+        title: 'Gym Adventure',
+        desc: 'Interactive mini-game and demo for gym workflows.',
+        preview: 'app/gym-adventure.html',
+        full:    'app/gym-adventure.html'
+      },
     ];
 
     const container = document.getElementById('apps-container');
 
-    function createCard(app){
+    function createCard(app) {
       const section = document.createElement('section');
       section.className = 'project-card';
+      section.style.marginTop = '1.5rem';
       section.innerHTML = `
         <div class="project-card__grid">
-          <div class="project-card__media"><figure><div class="preview-frame" role="button" tabindex="0"><iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe></div></figure></div>
-          <div class="project-card__text"><h3>${app.title}</h3><p>${app.desc}</p><div class="project-card__links"><a class="btn btn-download" href="${app.download}" download>Download</a><a class="btn" href="${app.full}" target="_blank" rel="noopener">Open full page</a></div></div>
+          <div class="project-card__media">
+            <figure>
+              <div class="preview-frame" role="button" tabindex="0" aria-label="Open preview of ${app.title}">
+                <iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
+              </div>
+            </figure>
+          </div>
+          <div class="project-card__text">
+            <h3 style="margin:0 0 0.5rem">${app.title}</h3>
+            <p>${app.desc}</p>
+            <div class="project-card__links">
+              <a class="btn btn-download" href="${app.full}" target="_blank" rel="noopener">Open App</a>
+            </div>
+          </div>
         </div>
       `;
-      const preview = section.querySelector('.preview-frame');
-      preview.addEventListener('click', ()=> openLightbox(app.preview, app.title));
-      preview.addEventListener('keydown', (e)=> { if(e.key==='Enter' || e.key===' ') openLightbox(app.preview, app.title); });
+      const frame = section.querySelector('.preview-frame');
+      frame.addEventListener('click', () => openLightbox(app.preview, app.title));
+      frame.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') openLightbox(app.preview, app.title);
+      });
       return section;
     }
 
-    apps.forEach(a=> container.appendChild(createCard(a)));
+    apps.forEach(a => container.appendChild(createCard(a)));
 
-    const lightbox = document.getElementById('lightbox');
+    const lightbox        = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightbox-content');
-    const lightboxClose = document.getElementById('lightbox-close');
+    const lightboxClose   = document.getElementById('lightbox-close');
 
-    function openLightbox(src,title){ lightboxContent.innerHTML = `<iframe src="${src}" title="${title} (preview)" sandbox="allow-scripts allow-same-origin"></iframe>`; lightbox.setAttribute('aria-hidden','false'); lightbox.classList.add('open'); }
-    function closeLightbox(){ lightbox.classList.remove('open'); lightbox.setAttribute('aria-hidden','true'); lightboxContent.innerHTML = ''; }
+    function openLightbox(src, title) {
+      lightboxContent.innerHTML = `<iframe src="${src}" title="${title} preview" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      lightbox.setAttribute('aria-hidden', 'false');
+      lightbox.classList.add('open');
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightboxContent.innerHTML = '';
+    }
+
     lightboxClose.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e)=> { if(e.target===lightbox) closeLightbox(); });
-    document.addEventListener('keydown', (e)=> { if(e.key==='Escape') closeLightbox(); });
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
   </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>RS | Apps</title>
-        <link rel="icon" href="logos/RSlogoUPDATED.png">
-        <link href="https://fonts.googleapis.com/css2?family=Style+Script&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="css/apps-styles.css">
-        <style>/* small override so nav placeholder doesn't jump */ body.apps-page{padding-top:88px}</style>
-    </head>
-    <body class="apps-page">
-        <nav class="nav-solid" aria-label="Main Navigation">
-            <style>
-                :root {
-                    --nav-hover-1: #e890be;
-                    --nav-hover-2: #9ad7ff;
-                    --nav-hover-3: #73ffa0;
-                    --nav-hover-4: #f7c948;
-                    --nav-hover-5: #ff9f80;
-                    --nav-hover-6: #c77dff;
-                    --nav-hover-7: #8be4c5;
-                    --nav-hover-8: #b6f5d1;
-                    --nav-hover-9: #7fe7ff;
-                }
-
-                nav {
-                    position: fixed;
-                    top: 0;
-                    width: 100%;
-                    background: rgba(23, 45, 51, 0.92);
-                    -webkit-backdrop-filter: saturate(180%) blur(20px);
-                    backdrop-filter: saturate(180%) blur(20px);
-                    padding: 1.25rem 4%;
-                    z-index: 1000;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-                }
-
-                .nav-content {
-                    width: min(100%, 1400px);
-                    margin: 0 auto;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    gap: 1rem;
-                }
-
-                .logo-image {
-                    height: 60px;
-                    width: auto;
-                }
-
-                .full-name {
-                    font-size: 1.75rem;
-                    font-weight: 400;
-                }
-
-                .nav-links {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 1.8rem;
-                    align-items: center;
-                    margin-left: auto;
-                }
-
-                .nav-links a {
-                    font-size: 1rem;
-                    color: var(--color-text-dark, #FFFFED);
-                    text-decoration: none;
-                    font-weight: 500;
-                    position: relative;
-                    display: block;
-                    padding: 0.5rem 0;
-                    transition: color 0.25s ease;
-                }
-
-                .nav-links a:hover,
-                .nav-links a:focus {
-                    color: var(--nav-hover-1);
-                }
-
-                .dropdown-menu {
-                    min-width: 220px;
-                }
-
-                nav .nav-content {
-                    width: 100%;
-                    max-width: none;
-                    margin: 0;
-                    justify-content: flex-start;
-                }
-
-                nav .nav-links {
-                    margin-left: auto;
-                }
-            </style>
-            <div class="nav-content">
-                <a href="index.html" class="logo-link">
-                    <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
-                    <span class="full-name">Robert J. Spenceley</span>
-                </a>
-                <ul class="nav-links">
-                    <li><a href="index.html#about">About</a></li>
-                    <li><a href="projects.html">Research</a></li>
-                    <li><a href="portfolio.html">Portfolio</a></li>
-                    <li><a href="apps.html">Apps</a></li>
-                    <li><a href="mentorship.html">Mentorship</a></li>
-                    <li><a href="people.html">People</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">Misc <span class="caret">▾</span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="qr-generator.html">QR Code Generator</a></li>
-                            <li><a href="bg-remover.html">Background Remover</a></li>
-                            <li><a href="image-converter.html">Image Converter</a></li>
-                            <li><a href="link-shortener.html">Link Shortener</a></li>
-                            <li><a href="photo-translator.html">Travel Buddy</a></li>
-                            <li><a href="Language%20Learning/language-learning.html">Language Learning</a></li>
-                            <li><a href="logo-slide-numbers.html">Logo Slide Numbers</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">Resources <span class="caret">▾</span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="page-designer.html">Page Designer</a></li>
-                            <li><a href="data-analysis.html">Interactive Data Analysis</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="cv.html">CV</a></li>
-                    <li><a href="index.html#contact">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-
-        <main class="content-shell">
-            <section class="project-card">
-                <div class="project-card__badge">Apps</div>
-                <h1 class="project-card__title">Interactive Apps</h1>
-                <div id="apps-container">
-                    <!-- cards will be rendered here -->
-                </div>
-            </section>
-        </main>
-
-        <footer class="site-footer" style="text-align:center;padding:2rem 0;color:#9ca3a8">
-            <p>&copy; Robert J. Spenceley</p>
-        </footer>
-
-        <div id="lightbox" aria-hidden="true">
-            <button id="lightbox-close" aria-label="Close preview">✕</button>
-            <div id="lightbox-content"></div>
-        </div>
-
-        <script>
-            // Load navigation partial so the nav stays consistent across pages
-            fetch('navigation.html')
-                .then(r => r.text())
-                .then(html => {
-                    // Parse and prepend the nav element to the document body so it behaves like other pages
-                    const tmp = document.createElement('div');
-                    tmp.innerHTML = html;
-                    const navEl = tmp.querySelector('nav');
-                    if (navEl) {
-                        // remove any existing nav inserted earlier
-                        const existing = document.querySelector('body > nav');
-                        if (existing) existing.remove();
-                        document.body.prepend(navEl);
-                        // mark active link
-                        const anchor = navEl.querySelector('a[href="apps.html"]');
-                        if (anchor) {
-                            const li = anchor.closest('li');
-                            if (li) li.classList.add('active');
-                        }
-                    } else {
-                        // fallback: insert into placeholder
-                        document.getElementById('nav-placeholder').innerHTML = html;
-                    }
-                })
-                .catch(() => { /* silent fallback */ });
-
-            // Apps data (use pages located inside the `app/` folder)
-            const apps = [
-                { id: 'gym-adventure', title: 'Gym Adventure', desc: 'Interactive mini-game and demo for gym workflows.', preview: 'app/gym-adventure.html', download: 'app/gym-adventure.html', full: 'app/gym-adventure.html' },
-                { id: 'gym-login', title: 'Gym Login Demo', desc: 'Login UI and demo for the gym project.', preview: 'app/gym-login.html', download: 'app/gym-login.html', full: 'app/gym-login.html' },
-                { id: 'photo-translator', title: 'Travel Buddy (Photo Translator)', desc: 'Translate text from photos and get quick travel assistance.', preview: 'app/photo-translator.html', download: 'app/photo-translator.html', full: 'app/photo-translator.html' },
-                { id: 'piano-lab', title: 'Piano Lab', desc: 'Small interactive piano and sound demo.', preview: 'app/piano-lab.html', download: 'app/piano-lab.html', full: 'app/piano-lab.html' },
-                { id: 'language-learning', title: 'Language Learning', desc: 'Interactive language learning maps and lessons.', preview: 'app/language-learning.html', download: 'app/language-learning.html', full: 'app/language-learning.html' }
-            ];
-
-            const container = document.getElementById('apps-container');
-
-            function createCard(app) {
-                const section = document.createElement('section');
-                section.className = 'project-card';
-                section.innerHTML = `
-                    <div class="project-card__grid">
-                        <div class="project-card__media">
-                            <figure>
-                                <div class="preview-frame" data-src="${app.preview}" role="button" tabindex="0" aria-label="Open preview of ${app.title}">
-                                    <iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
-                                </div>
-                            </figure>
-                        </div>
-                        <div class="project-card__text">
-                            <h3>${app.title}</h3>
-                            <p>${app.desc}</p>
-                            <div class="project-card__links">
-                                <a class="btn btn-download" href="${app.download}" download>Download</a>
-                                <a class="btn" href="${app.full}" target="_blank" rel="noopener">Open full page</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // wire lightbox open
-                const preview = section.querySelector('.preview-frame');
-                preview.addEventListener('click', () => openLightbox(app.preview, app.title));
-                preview.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') openLightbox(app.preview, app.title); });
-
-                return section;
-            }
-
-            apps.forEach(a => container.appendChild(createCard(a)));
-
-            // Lightbox
-            const lightbox = document.getElementById('lightbox');
-            const lightboxContent = document.getElementById('lightbox-content');
-            const lightboxClose = document.getElementById('lightbox-close');
-
-            function openLightbox(src, title) {
-                lightboxContent.innerHTML = `<iframe src="${src}" title="${title} (preview)" sandbox="allow-scripts allow-same-origin"></iframe>`;
-                lightbox.setAttribute('aria-hidden', 'false');
-                lightbox.classList.add('open');
-            }
-
-            function closeLightbox() {
-                lightbox.classList.remove('open');
-                lightbox.setAttribute('aria-hidden', 'true');
-                lightboxContent.innerHTML = '';
-            }
-
-            lightboxClose.addEventListener('click', closeLightbox);
-            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
-        </script>
-    </body>
-    </html>

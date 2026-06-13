@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinguaBloom — AI Coach</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="stylesheet" href="linguabloom.css" />
+</head>
+<body class="coach-page">
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="logo">
+        <span>LB</span>
+        LinguaBloom
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+        <button class="icon-btn" id="coachSettingsBtn" aria-label="Settings" style="display:none">⚙</button>
+      </div>
+    </header>
+
+    <!-- ── Setup Screen ──────────────────────────────────────── -->
+    <div class="coach-setup" id="coachSetup">
+      <div class="coach-hero">
+        <div class="coach-avatar-large">
+          <span>🧑‍🏫</span>
+          <div class="avatar-ring"></div>
+        </div>
+        <h1 class="coach-hero-title">Meet Luna</h1>
+        <p class="coach-hero-sub">Your personal AI language coach. Have real conversations, get instant feedback, and learn at your pace.</p>
+      </div>
+
+      <div class="setup-form">
+        <div class="provider-tabs" id="providerTabs">
+          <button class="provider-tab active" data-provider="openai">
+            <span>OpenAI</span>
+            <small>GPT-4o mini</small>
+          </button>
+          <button class="provider-tab" data-provider="anthropic">
+            <span>Claude</span>
+            <small>Haiku</small>
+          </button>
+        </div>
+
+        <div class="setup-field">
+          <label class="setup-label" for="apiKeyInput">API Key</label>
+          <div class="api-key-wrap">
+            <input type="password" id="apiKeyInput" class="setup-input" placeholder="Paste your API key here…" autocomplete="off" spellcheck="false" />
+            <button class="toggle-vis" id="toggleKeyVis" type="button" aria-label="Toggle key visibility">👁</button>
+          </div>
+          <span class="setup-hint">🔒 Stored in your browser only — never sent anywhere else</span>
+        </div>
+
+        <div class="setup-field">
+          <label class="setup-label">I'm learning</label>
+          <div class="language-pills" id="setupLanguagePills"></div>
+        </div>
+
+        <div class="setup-field">
+          <label class="setup-label">My level</label>
+          <div class="level-pills" id="setupLevelPills">
+            <button class="level-pill active" data-level="beginner"><span>🌱</span><span>Beginner</span></button>
+            <button class="level-pill" data-level="intermediate"><span>🌿</span><span>Intermediate</span></button>
+            <button class="level-pill" data-level="advanced"><span>🌳</span><span>Advanced</span></button>
+          </div>
+        </div>
+
+        <button class="btn btn-coach setup-start-btn" id="startCoachBtn" disabled>
+          Start Learning with Luna →
+        </button>
+
+        <p class="setup-note">Get a free API key from <strong>openai.com</strong> or <strong>anthropic.com</strong>. Your key is saved in your browser and never shared.</p>
+      </div>
+    </div>
+
+    <!-- ── Chat Screen ───────────────────────────────────────── -->
+    <div class="coach-chat" id="coachChat" style="display:none">
+      <div class="chat-info-bar">
+        <div class="chat-coach-info">
+          <div class="chat-avatar">🧑‍🏫</div>
+          <div class="chat-coach-text">
+            <strong>Luna</strong>
+            <span id="chatInfoSub">Spanish · Beginner</span>
+          </div>
+        </div>
+        <div class="chat-info-actions">
+          <button class="icon-btn tts-toggle" id="ttsToggle" aria-label="Toggle voice output" title="Toggle voice">🔊</button>
+        </div>
+      </div>
+
+      <div class="messages-area" id="messagesArea"></div>
+
+      <div class="suggestions" id="suggestions" style="display:none"></div>
+
+      <div class="chat-compose">
+        <button class="mic-btn" id="micBtn" aria-label="Voice input">
+          <span class="mic-icon">🎤</span>
+          <span class="mic-ring"></span>
+        </button>
+        <input type="text" id="chatInput" class="chat-input" placeholder="Ask Luna anything…" />
+        <button class="send-btn" id="sendBtn" aria-label="Send" disabled>↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Settings Modal ──────────────────────────────────────── -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Coach Settings</h3>
+        <button class="icon-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="control-group">
+        <label for="settingsProvider">AI Provider</label>
+        <select id="settingsProvider" class="control-select">
+          <option value="openai">OpenAI (GPT-4o mini)</option>
+          <option value="anthropic">Claude (Haiku)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="settingsApiKey">API Key</label>
+        <input type="password" id="settingsApiKey" class="control-input" placeholder="Your API key…" autocomplete="off" />
+      </div>
+      <div class="control-group">
+        <label for="settingsLanguage">Language</label>
+        <select id="settingsLanguage" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="settingsLevel">Level</label>
+        <select id="settingsLevel" class="control-select">
+          <option value="beginner">🌱 Beginner</option>
+          <option value="intermediate">🌿 Intermediate</option>
+          <option value="advanced">🌳 Advanced</option>
+        </select>
+      </div>
+      <div class="control-actions">
+        <button class="tiny-btn" id="clearChatBtn" style="background:var(--orange);border-bottom-color:var(--orange-dark)">Clear Chat</button>
+        <button class="btn btn-primary" id="saveSettingsBtn" style="flex:1;padding:12px 20px">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    // ── Constants ────────────────────────────────────────────
+    const STORAGE_KEY = 'linguabloom-coach-v1';
+
+    const LANGUAGES = [
+      { id: 'spanish',    label: 'Spanish',    flag: '🇪🇸', voiceLang: 'es-ES' },
+      { id: 'french',     label: 'French',     flag: '🇫🇷', voiceLang: 'fr-FR' },
+      { id: 'german',     label: 'German',     flag: '🇩🇪', voiceLang: 'de-DE' },
+      { id: 'italian',    label: 'Italian',    flag: '🇮🇹', voiceLang: 'it-IT' },
+      { id: 'portuguese', label: 'Portuguese', flag: '🇧🇷', voiceLang: 'pt-BR' },
+      { id: 'japanese',   label: 'Japanese',   flag: '🇯🇵', voiceLang: 'ja-JP' },
+      { id: 'mandarin',   label: 'Mandarin',   flag: '🇨🇳', voiceLang: 'zh-CN' },
+      { id: 'korean',     label: 'Korean',     flag: '🇰🇷', voiceLang: 'ko-KR' },
+      { id: 'arabic',     label: 'Arabic',     flag: '🇸🇦', voiceLang: 'ar-SA' },
+      { id: 'russian',    label: 'Russian',    flag: '🇷🇺', voiceLang: 'ru-RU' },
+    ];
+
+    const SUGGESTIONS = {
+      beginner: [
+        'Teach me to say hello',
+        'How do I introduce myself?',
+        'What are the most useful beginner phrases?',
+        'Give me a simple vocabulary quiz',
+      ],
+      intermediate: [
+        'Let\'s practice ordering at a restaurant',
+        'Explain past tense with examples',
+        'Give me a short conversation to practice',
+        'Quiz me on common phrases',
+      ],
+      advanced: [
+        'Let\'s have a full conversation',
+        'Explain a tricky grammar rule',
+        'Teach me some common idioms',
+        'Give me a challenging translation exercise',
+      ],
+    };
+
+    // ── State ────────────────────────────────────────────────
+    let state = {
+      provider: 'openai',
+      apiKey: '',
+      language: 'spanish',
+      level: 'beginner',
+      ttsEnabled: true,
+      messages: [],
+    };
+
+    function load() {
+      try {
+        const s = localStorage.getItem(STORAGE_KEY);
+        if (s) Object.assign(state, JSON.parse(s));
+      } catch (_) {}
+    }
+
+    function save() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+    }
+
+    function getLang(id) {
+      return LANGUAGES.find(l => l.id === id) || LANGUAGES[0];
+    }
+
+    // ── System Prompt ────────────────────────────────────────
+    function buildSystem() {
+      const lang = getLang(state.language).label;
+      const lvl  = state.level;
+      const lvlGuide = {
+        beginner:     'Focus on simple, practical phrases and common vocabulary. Use lots of English with small doses of the target language introduced naturally.',
+        intermediate: 'Mix English explanations with more target-language exposure. Introduce grammar patterns, common idioms, and encourage short sentences.',
+        advanced:     'Conduct conversation primarily in the target language. Explore nuance, idioms, cultural context, and advanced grammar.',
+      }[lvl] || '';
+      return `You are Luna, an enthusiastic and encouraging AI language coach helping someone learn ${lang} at the ${lvl} level.
+
+Teaching guidelines:
+- Keep responses friendly, concise, and engaging (under 200 words unless doing a full lesson)
+- When showing ${lang} text, write it clearly then give the English translation in parentheses — e.g. "Hola, ¿cómo estás? (Hello, how are you?)"
+- For non-Latin scripts (Japanese, Chinese, Korean, Arabic, Russian): always include romanization/pronunciation right after the native script
+- ${lvlGuide}
+- After teaching something, give a small challenge or ask a question to check understanding
+- If the student makes an error, gently show the correct form using a positive framing
+- Be warm, celebratory, and motivating!`;
+    }
+
+    // ── API ──────────────────────────────────────────────────
+    async function chat(userText) {
+      const systemMsg = buildSystem();
+      const history   = state.messages.map(m => ({ role: m.role, content: m.content }));
+      const newMsg    = { role: 'user', content: userText };
+
+      if (state.provider === 'openai') {
+        return await callOpenAI(systemMsg, [...history, newMsg]);
+      } else {
+        return await callAnthropic(systemMsg, [...history, newMsg]);
+      }
+    }
+
+    async function callOpenAI(system, messages) {
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${state.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'system', content: system }, ...messages],
+          max_tokens: 500,
+          temperature: 0.8,
+        }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.error?.message || `OpenAI error ${r.status}`);
+      }
+      return (await r.json()).choices[0].message.content.trim();
+    }
+
+    async function callAnthropic(system, messages) {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': state.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 500,
+          system,
+          messages,
+        }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        throw new Error(e.error?.message || `Anthropic error ${r.status}`);
+      }
+      return (await r.json()).content[0].text.trim();
+    }
+
+    // ── TTS ──────────────────────────────────────────────────
+    function speak(text) {
+      if (!state.ttsEnabled || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const clean = text
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/#{1,6}\s/g, '')
+        .replace(/`(.*?)`/g, '$1')
+        .replace(/\n+/g, ' ')
+        .replace(/\(.*?\)/g, '');
+      const u = new SpeechSynthesisUtterance(clean);
+      u.lang = 'en-US';
+      u.rate = 0.95;
+      u.pitch = 1.05;
+      window.speechSynthesis.speak(u);
+    }
+
+    // ── Voice Input ──────────────────────────────────────────
+    let recog = null;
+    let recording = false;
+
+    function initRecog() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return null;
+      const r = new SR();
+      r.continuous = false;
+      r.interimResults = false;
+      r.lang = 'en-US';
+      r.onresult = e => {
+        const t = e.results[0][0].transcript;
+        document.getElementById('chatInput').value = t;
+        document.getElementById('sendBtn').disabled = false;
+        stopRecording();
+        sendMessage();
+      };
+      r.onerror = e => { stopRecording(); appendError('Mic error: ' + e.error); };
+      r.onend   = () => stopRecording();
+      return r;
+    }
+
+    function startRecording() {
+      if (!recog) recog = initRecog();
+      if (!recog) { appendError('Voice input is not supported in this browser.'); return; }
+      recording = true;
+      try { recog.start(); } catch (_) {}
+      document.getElementById('micBtn').classList.add('recording');
+      document.getElementById('chatInput').placeholder = 'Listening…';
+    }
+
+    function stopRecording() {
+      recording = false;
+      try { recog?.stop(); } catch (_) {}
+      document.getElementById('micBtn').classList.remove('recording');
+      document.getElementById('chatInput').placeholder = 'Ask Luna anything…';
+    }
+
+    // ── Render ───────────────────────────────────────────────
+    function md(text) {
+      return '<p>' + text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        + '</p>';
+    }
+
+    function appendMessage(role, content, persist = true) {
+      if (persist) state.messages.push({ role, content });
+      const area = document.getElementById('messagesArea');
+      const div  = document.createElement('div');
+      div.className = `message message-${role}`;
+      if (role === 'assistant') {
+        const escaped = content.replace(/'/g, "\\'").replace(/\n/g, '\\n');
+        div.innerHTML = `
+          <div class="message-avatar">🧑‍🏫</div>
+          <div class="message-bubble">
+            <div class="message-content">${md(content)}</div>
+            <button class="msg-speak-btn" onclick="window.__luna_speak('${escaped}')" title="Read aloud">🔊</button>
+          </div>`;
+      } else {
+        div.innerHTML = `
+          <div class="message-bubble">
+            <div class="message-content">${md(content)}</div>
+          </div>`;
+      }
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    window.__luna_speak = text => speak(text);
+
+    function showTyping() {
+      const area = document.getElementById('messagesArea');
+      const div  = document.createElement('div');
+      div.id = 'typingMsg';
+      div.className = 'message message-assistant';
+      div.innerHTML = `
+        <div class="message-avatar">🧑‍🏫</div>
+        <div class="message-bubble">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function hideTyping() { document.getElementById('typingMsg')?.remove(); }
+
+    function appendError(msg) {
+      const area = document.getElementById('messagesArea');
+      const div  = document.createElement('div');
+      div.className = 'message message-error';
+      div.innerHTML = `<div class="error-bubble">⚠️ ${msg}</div>`;
+      area.appendChild(div);
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function renderSuggestions() {
+      const el   = document.getElementById('suggestions');
+      const list = SUGGESTIONS[state.level] || SUGGESTIONS.beginner;
+      el.innerHTML = list.map(s =>
+        `<button class="suggestion-chip" onclick="window.__luna_suggest(${JSON.stringify(s)})">${s}</button>`
+      ).join('');
+      el.style.display = 'flex';
+    }
+
+    window.__luna_suggest = text => {
+      document.getElementById('chatInput').value = text;
+      sendMessage();
+    };
+
+    function hideSuggestions() {
+      document.getElementById('suggestions').style.display = 'none';
+    }
+
+    // ── Send ─────────────────────────────────────────────────
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text  = input.value.trim();
+      if (!text) return;
+
+      hideSuggestions();
+      input.value = '';
+      document.getElementById('sendBtn').disabled = true;
+      input.disabled = true;
+
+      appendMessage('user', text);
+      showTyping();
+
+      try {
+        const reply = await chat(text);
+        hideTyping();
+        appendMessage('assistant', reply);
+        save();
+        speak(reply);
+      } catch (err) {
+        hideTyping();
+        appendError(err.message || 'Something went wrong. Check your API key and try again.');
+      } finally {
+        input.disabled = false;
+        input.focus();
+      }
+    }
+
+    // ── Setup Screen ─────────────────────────────────────────
+    function initSetup() {
+      // Provider tabs
+      document.querySelectorAll('.provider-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.provider === state.provider);
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.provider-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.provider = btn.dataset.provider;
+        });
+      });
+
+      // Language pills
+      const pillWrap = document.getElementById('setupLanguagePills');
+      LANGUAGES.forEach(lang => {
+        const btn = document.createElement('button');
+        btn.className = 'lang-pill' + (lang.id === state.language ? ' active' : '');
+        btn.dataset.lang = lang.id;
+        btn.innerHTML = `<span>${lang.flag}</span><span>${lang.label}</span>`;
+        btn.addEventListener('click', () => {
+          pillWrap.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.language = lang.id;
+        });
+        pillWrap.appendChild(btn);
+      });
+
+      // Level pills
+      document.querySelectorAll('.level-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.level === state.level);
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.level-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.level = btn.dataset.level;
+        });
+      });
+
+      // API key
+      const keyInput = document.getElementById('apiKeyInput');
+      if (state.apiKey) keyInput.value = state.apiKey;
+      document.getElementById('startCoachBtn').disabled = !state.apiKey;
+
+      keyInput.addEventListener('input', () => {
+        state.apiKey = keyInput.value.trim();
+        document.getElementById('startCoachBtn').disabled = !state.apiKey;
+      });
+
+      document.getElementById('toggleKeyVis').addEventListener('click', () => {
+        keyInput.type = keyInput.type === 'password' ? 'text' : 'password';
+      });
+
+      document.getElementById('startCoachBtn').addEventListener('click', () => {
+        state.provider = document.querySelector('.provider-tab.active').dataset.provider;
+        state.apiKey   = document.getElementById('apiKeyInput').value.trim();
+        state.language = document.querySelector('.lang-pill.active')?.dataset.lang || 'spanish';
+        state.level    = document.querySelector('.level-pill.active')?.dataset.level || 'beginner';
+        save();
+        showChat();
+      });
+    }
+
+    // ── Chat Screen ──────────────────────────────────────────
+    function initChat() {
+      const lang      = getLang(state.language);
+      const levelText = state.level.charAt(0).toUpperCase() + state.level.slice(1);
+      document.getElementById('chatInfoSub').textContent = `${lang.label} · ${levelText}`;
+
+      // TTS toggle
+      const ttsBtn = document.getElementById('ttsToggle');
+      ttsBtn.textContent = state.ttsEnabled ? '🔊' : '🔇';
+      ttsBtn.onclick = () => {
+        state.ttsEnabled = !state.ttsEnabled;
+        ttsBtn.textContent = state.ttsEnabled ? '🔊' : '🔇';
+        if (!state.ttsEnabled) window.speechSynthesis?.cancel();
+      };
+
+      // Mic
+      document.getElementById('micBtn').addEventListener('click', () => {
+        recording ? stopRecording() : startRecording();
+      });
+
+      // Input
+      const inp = document.getElementById('chatInput');
+      inp.addEventListener('input', () => {
+        document.getElementById('sendBtn').disabled = !inp.value.trim();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+      });
+      document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+      // Settings btn
+      document.getElementById('coachSettingsBtn').style.display = '';
+      document.getElementById('coachSettingsBtn').addEventListener('click', openSettings);
+
+      // Render history or welcome
+      if (state.messages.length > 0) {
+        state.messages.forEach(m => appendMessage(m.role, m.content, false));
+        document.getElementById('messagesArea').scrollTop = 9999;
+      } else {
+        const welcome = `Hi! I'm Luna, your ${lang.label} coach. I'm here to help you learn ${lang.label} at a ${state.level} pace.\n\nWhat would you like to work on today?`;
+        appendMessage('assistant', welcome, false);
+        speak(welcome);
+        renderSuggestions();
+      }
+    }
+
+    function showChat() {
+      document.getElementById('coachSetup').style.display = 'none';
+      document.getElementById('coachChat').style.display  = 'flex';
+      initChat();
+    }
+
+    // ── Settings Modal ───────────────────────────────────────
+    function openSettings() {
+      document.getElementById('settingsProvider').value = state.provider;
+      document.getElementById('settingsApiKey').value   = state.apiKey;
+      document.getElementById('settingsLevel').value    = state.level;
+
+      const sel = document.getElementById('settingsLanguage');
+      if (!sel.options.length) {
+        LANGUAGES.forEach(l => sel.add(new Option(`${l.flag} ${l.label}`, l.id)));
+      }
+      sel.value = state.language;
+      document.getElementById('settingsModal').classList.add('show');
+    }
+
+    document.getElementById('closeSettings').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.remove('show');
+    });
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      state.provider = document.getElementById('settingsProvider').value;
+      state.apiKey   = document.getElementById('settingsApiKey').value.trim();
+      state.language = document.getElementById('settingsLanguage').value;
+      state.level    = document.getElementById('settingsLevel').value;
+      save();
+
+      const lang      = getLang(state.language);
+      const levelText = state.level.charAt(0).toUpperCase() + state.level.slice(1);
+      document.getElementById('chatInfoSub').textContent = `${lang.label} · ${levelText}`;
+      document.getElementById('settingsModal').classList.remove('show');
+    });
+
+    document.getElementById('clearChatBtn').addEventListener('click', () => {
+      if (!confirm('Clear the chat history?')) return;
+      state.messages = [];
+      save();
+      document.getElementById('messagesArea').innerHTML = '';
+      const lang    = getLang(state.language);
+      const welcome = `Chat cleared! Ready to keep learning ${lang.label}. What would you like to practice?`;
+      appendMessage('assistant', welcome, false);
+      renderSuggestions();
+      document.getElementById('settingsModal').classList.remove('show');
+    });
+
+    // ── Back ─────────────────────────────────────────────────
+    document.getElementById('backBtn').addEventListener('click', () => {
+      window.location.href = 'levels.html';
+    });
+
+    // ── Boot ─────────────────────────────────────────────────
+    load();
+    initSetup();
+    if (state.apiKey) showChat();
+  })();
+  </script>
+</body>
+</html>

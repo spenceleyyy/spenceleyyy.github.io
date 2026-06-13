@@ -41,6 +41,15 @@
         </div>
         <div id="levelsLanguage" style="display:none"></div>
       </div>
+      <a href="coach.html" class="coach-cta" id="coachCta">
+        <div class="coach-cta-icon">🧑‍🏫</div>
+        <div class="coach-cta-text">
+          <strong>Chat with Luna — AI Coach</strong>
+          <span>Personalized lessons &amp; voice conversations</span>
+        </div>
+        <div class="coach-cta-arrow">›</div>
+      </a>
+
       <div class="levels-map" id="levelsGrid"></div>
     </section>
 
@@ -75,11 +84,15 @@
     </section>
 
     <nav class="bottom-nav" id="bottomNav">
-      <button class="nav-tab active" id="navLearn">
+      <button class="nav-tab active" id="navLearn" data-tab="learn">
         <div class="nav-icon">🌱</div>
         <div class="nav-label">Learn</div>
       </button>
-      <button class="nav-tab" id="navStats">
+      <button class="nav-tab" id="navCoach" data-tab="coach">
+        <div class="nav-icon">🧑‍🏫</div>
+        <div class="nav-label">Coach</div>
+      </button>
+      <button class="nav-tab" id="navStats" data-tab="stats">
         <div class="nav-icon">📊</div>
         <div class="nav-label">Stats</div>
       </button>
@@ -157,5 +170,10 @@
   </div>
 
   <script src="linguabloom.js" defer></script>
+  <script>
+    document.getElementById('navCoach').addEventListener('click', () => {
+      window.location.href = 'coach.html';
+    });
+  </script>
 </body>
 </html>
