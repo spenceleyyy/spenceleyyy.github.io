@@ -134,7 +134,7 @@
           <div class="project-card__media">
             <figure>
               <div class="preview-frame" role="button" tabindex="0" aria-label="Open preview of ${app.title}">
-                <iframe src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin"></iframe>
+                <iframe src="" data-src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
               </div>
             </figure>
           </div>
@@ -149,9 +149,19 @@
         </div>
       `;
       const frame = section.querySelector('.preview-frame');
-      frame.addEventListener('click', () => openLightbox(app.preview, app.title));
+      frame.addEventListener('click', () => {
+        // load preview into lightbox (do not load card iframe to avoid permissions)
+        openLightbox(app.preview, app.title);
+        // also lazy-load the card iframe for a live preview after first user interaction
+        const iframe = frame.querySelector('iframe[data-src]');
+        if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
+      });
       frame.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') openLightbox(app.preview, app.title);
+        if (e.key === 'Enter' || e.key === ' ') {
+          openLightbox(app.preview, app.title);
+          const iframe = frame.querySelector('iframe[data-src]');
+          if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
+        }
       });
       return section;
     }
