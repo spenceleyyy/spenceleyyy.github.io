@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Let's Go" />
   <title>Let's Go</title>
+  <link rel="manifest" href="manifest-gym.json" />
   <link rel="icon" href="../logos/RSlogoFIT.png" />
   <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
   <style>
@@ -3219,19 +3220,94 @@ You have tools to log workouts, food, and weight directly into the app — use t
     if(provider === 'openai'){
       // OpenAI path: send a chat completion request
       if(imgB64){ loadEl.remove(); appendMsg('bot','Error: image attachments are not supported with OpenAI in this coach. Please use Anthropic or remove the image.'); return; }
-      const messages = [...histMsgs.map(h=>({role:h.role,content:h.content})), {role:'system', content: sys}, {role:'user', content: text}];
+      // Map internal roles to OpenAI-compatible roles ('bot' -> 'assistant')
+      const mappedHistory = histMsgs.map(h => ({
+        role: (h.role === 'bot' ? 'assistant' : (h.role === 'user' ? 'user' : h.role)),
+        content: h.content
+      }));
+      const messages = [{ role: 'system', content: sys }, ...mappedHistory, { role: 'user', content: text }];
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`
         },
-        body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens: 1024, temperature: 0.8 })
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages,
+          max_tokens: 1024,
+          temperature: 0.8,
+          // Enable function calling so the model can return tool actions
+          functions: [
+            {
+              name: 'log_workout',
+              description: 'Create and log a workout. Provide name, date (optional), and exercises array.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  date: { type: 'string', description: 'ISO date string; optional' },
+                  exercises: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        name: { type: 'string' },
+                        sets: {
+                          type: 'array',
+                          items: { type: 'object', properties: { weight: { type: 'number' }, reps: { type: 'number' }, rpe: { type: ['number','null'] } } }
+                        }
+                      }
+                    }
+                  }
+                },
+                required: ['name','exercises']
+              }
+            },
+            {
+              name: 'log_food',
+              description: 'Log a food item with nutrition values.',
+              parameters: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  calories: { type: 'number' },
+                  protein: { type: 'number' },
+                  carbs: { type: 'number' },
+                  fat: { type: 'number' }
+                },
+                required: ['name']
+              }
+            },
+            {
+              name: 'log_weight',
+              description: 'Log a body weight measurement (lbs).',
+              parameters: { type: 'object', properties: { weight_lbs: { type: 'number' } }, required: ['weight_lbs'] }
+            }
+          ],
+          function_call: 'auto'
+        })
       });
       if(!resp.ok){ const e = await resp.json().catch(()=>({})); throw new Error(e.error?.message || `OpenAI error ${resp.status}`); }
       const data = await resp.json(); loadEl.remove();
-      const reply = (data.choices && data.choices[0] && (data.choices[0].message?.content || data.choices[0].message?.content)) || data.choices?.[0]?.text || '';
-      appendMsg('bot', String(reply).trim() || 'No response.');
+      const msg = data.choices?.[0]?.message || {};
+      // If the model returned a function call, execute it
+      if (msg.function_call) {
+        try {
+          const fname = msg.function_call.name;
+          const fargs = JSON.parse(msg.function_call.arguments || '{}');
+          // executeTool expects specific shapes; call and show result
+          const resultHtml = executeTool(fname, fargs);
+          if (resultHtml) appendMsgHTML(resultHtml);
+          // Also append a short assistant confirmation
+          appendMsg('bot', `Performed ${fname}.`);
+        } catch (e) {
+          appendMsg('bot', 'Error executing function: ' + e.message);
+        }
+      } else {
+        const reply = (msg.content) || data.choices?.[0]?.text || '';
+        appendMsg('bot', String(reply).trim() || 'No response.');
+      }
     } else {
       // Anthropic path (existing behaviour)
       const mc=imgB64?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},{type:'text',text:text||'Analyze this.'}]:[{type:'text',text}];

@@ -1,0 +1,13 @@
+{
+  "name": "Let's Go — Workout",
+  "short_name": "Let's Go",
+  "start_url": "gym-login.html",
+  "scope": "/app/",
+  "display": "standalone",
+  "background_color": "#f4f3ff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    { "src": "../logos/RSlogoFIT.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../logos/RSlogoFIT.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
