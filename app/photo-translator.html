@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Travel Buddy | RS</title>
   <link rel="icon" href="logos/RSlogoUPDATED.png" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="manifest-photo-translator.json" />
+  <link rel="apple-touch-icon" href="logos/RSlogoUPDATED.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -652,6 +655,12 @@
       }
     }
   </style>
+  <!-- PWA: register service worker for app scope -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
 </head>
 <body>
   <main class="phone-app">
