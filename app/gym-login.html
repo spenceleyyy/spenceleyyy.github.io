@@ -3210,25 +3210,48 @@ Recent workouts: ${JSON.stringify(ws.map(w=>({name:w.name,date:new Date(w.date).
 Today's food: ${JSON.stringify((store.getFoodLogs()[todayKey()]||[]).map(l=>({name:l.name,cal:l.calories})))}
 You have tools to log workouts, food, and weight directly into the app — use them whenever the user reports what they did or asks you to record something. Be concise and encouraging.`;
   try{
-    const mc=imgB64?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},{type:'text',text:text||'Analyze this.'}]:[{type:'text',text}];
+    // Determine preferred provider (saved when key was added). Default to Anthropic
+    const provider = localStorage.getItem('aq_api_provider') || (store.getApiKey('anthropic')? 'anthropic' : (store.getApiKey('openai')? 'openai' : 'anthropic'));
+
     // Build conversation history (last 8 turns, text-only for past messages)
     const histMsgs=_coachMsgHistory.slice(-8,-1).map(m=>({role:m.role,content:m.text}));
-    const allMsgs=[...histMsgs,{role:'user',content:mc}];
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-      headers:{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
-      body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1024,system:sys,tools:COACH_TOOLS,messages:allMsgs})});
-    if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||`Error ${resp.status}`); }
-    const data=await resp.json(); loadEl.remove();
-    const textBlocks=data.content.filter(b=>b.type==='text');
-    const toolBlocks=data.content.filter(b=>b.type==='tool_use');
-    if(textBlocks.length){ const t=textBlocks.map(b=>b.text).join('\n'); appendMsg('bot',t); }
-    for(const block of toolBlocks){
-      const html=executeTool(block.name,block.input);
-      if(html) appendMsgHTML(html);
-      if(block.name==='log_workout'||block.name==='log_weight') renderHome();
-      if(block.name==='log_food') { if(typeof renderFoodHome==='function') renderFoodHome(); }
+
+    if(provider === 'openai'){
+      // OpenAI path: send a chat completion request
+      if(imgB64){ loadEl.remove(); appendMsg('bot','Error: image attachments are not supported with OpenAI in this coach. Please use Anthropic or remove the image.'); return; }
+      const messages = [...histMsgs.map(h=>({role:h.role,content:h.content})), {role:'system', content: sys}, {role:'user', content: text}];
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`
+        },
+        body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens: 1024, temperature: 0.8 })
+      });
+      if(!resp.ok){ const e = await resp.json().catch(()=>({})); throw new Error(e.error?.message || `OpenAI error ${resp.status}`); }
+      const data = await resp.json(); loadEl.remove();
+      const reply = (data.choices && data.choices[0] && (data.choices[0].message?.content || data.choices[0].message?.content)) || data.choices?.[0]?.text || '';
+      appendMsg('bot', String(reply).trim() || 'No response.');
+    } else {
+      // Anthropic path (existing behaviour)
+      const mc=imgB64?[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imgB64}},{type:'text',text:text||'Analyze this.'}]:[{type:'text',text}];
+      const allMsgs=[...histMsgs,{role:'user',content:mc}];
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+        headers:{'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
+        body:JSON.stringify({model:'claude-opus-4-6',max_tokens:1024,system:sys,tools:COACH_TOOLS,messages:allMsgs})});
+      if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||`Error ${resp.status}`); }
+      const data=await resp.json(); loadEl.remove();
+      const textBlocks=data.content.filter(b=>b.type==='text');
+      const toolBlocks=data.content.filter(b=>b.type==='tool_use');
+      if(textBlocks.length){ const t=textBlocks.map(b=>b.text).join('\n'); appendMsg('bot',t); }
+      for(const block of toolBlocks){
+        const html=executeTool(block.name,block.input);
+        if(html) appendMsgHTML(html);
+        if(block.name==='log_workout'||block.name==='log_weight') renderHome();
+        if(block.name==='log_food') { if(typeof renderFoodHome==='function') renderFoodHome(); }
+      }
+      if(!textBlocks.length&&!toolBlocks.length) appendMsg('bot',data.content[0]?.text||'No response.');
     }
-    if(!textBlocks.length&&!toolBlocks.length) appendMsg('bot',data.content[0]?.text||'No response.');
   }catch(err){ loadEl.remove(); appendMsg('bot','Error: '+err.message); }
 }
 const _coachMsgHistory = [];
