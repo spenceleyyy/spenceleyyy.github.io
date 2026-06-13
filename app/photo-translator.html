@@ -655,12 +655,8 @@
       }
     }
   </style>
-  <!-- PWA: register service worker for app scope -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
-  </script>
+  <!-- PWA: centralized service worker registration -->
+  <script src="app-pwa.js"></script>
 </head>
 <body>
   <main class="phone-app">

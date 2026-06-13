@@ -75,7 +75,10 @@
     <section class="project-card">
       <div class="project-card__badge">Apps</div>
       <h1 class="project-card__title">Interactive Apps</h1>
-      <div id="apps-container"></div>
+        <div id="apps-container"></div>
+        <div id="install-toast" aria-live="polite" style="position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:1200;display:none;background:rgba(17,24,39,0.95);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(2,6,23,.6);font-weight:600;">
+          Opened app in a new tab — use your browser menu → "Install app" to add to your Home screen.
+        </div>
     </section>
   </main>
 
@@ -103,6 +106,13 @@
         desc: 'Translate text from photos and get quick travel assistance.',
         preview: 'app/photo-translator.html',
         full:    'app/photo-translator.html'
+      },
+      {
+        id: 'piano-lab',
+        title: 'Piano Lab',
+        desc: 'Play, practice, and visualise piano with MIDI support and interactive lessons.',
+        preview: 'app/piano-lab.html',
+        full:    'app/piano-lab.html'
       },
       {
         id: 'gym-adventure',
@@ -133,6 +143,7 @@
             <p>${app.desc}</p>
             <div class="project-card__links">
               <a class="btn btn-download" href="${app.full}" target="_blank" rel="noopener">Open App</a>
+                <button class="btn btn-install" data-app-url="${app.full}" type="button" style="margin-left:8px">Open & Install</button>
             </div>
           </div>
         </div>
@@ -146,6 +157,24 @@
     }
 
     apps.forEach(a => container.appendChild(createCard(a)));
+
+      // Install helper: opens app in new tab and shows a short instruction toast
+      function openAndGuide(url) {
+        window.open(url, '_blank', 'noopener');
+        const t = document.getElementById('install-toast');
+        t.style.display = 'block';
+        t.style.opacity = '1';
+        clearTimeout(window._installToastTimer);
+        window._installToastTimer = setTimeout(() => { t.style.opacity = '0'; setTimeout(()=>t.style.display='none',300); }, 6000);
+      }
+
+      // Delegate install button clicks
+      container.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-install');
+        if (!btn) return;
+        const url = btn.getAttribute('data-app-url');
+        openAndGuide(url);
+      });
 
     const lightbox        = document.getElementById('lightbox');
     const lightboxContent = document.getElementById('lightbox-content');
