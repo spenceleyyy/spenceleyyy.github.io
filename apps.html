@@ -149,10 +149,9 @@
         </div>
       `;
       const frame = section.querySelector('.preview-frame');
+      // Clicking the wrapper should open the lightbox and lazy-load the card iframe
       frame.addEventListener('click', () => {
-        // load preview into lightbox (do not load card iframe to avoid permissions)
         openLightbox(app.preview, app.title);
-        // also lazy-load the card iframe for a live preview after first user interaction
         const iframe = frame.querySelector('iframe[data-src]');
         if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
       });
@@ -163,6 +162,22 @@
           if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
         }
       });
+
+      // Some browsers target the iframe element itself for clicks; attach handlers
+      const iframeEl = section.querySelector('iframe[data-src]');
+      if (iframeEl) {
+        iframeEl.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (!iframeEl.src) iframeEl.src = iframeEl.getAttribute('data-src');
+          openLightbox(app.preview, app.title);
+        });
+        iframeEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            if (!iframeEl.src) iframeEl.src = iframeEl.getAttribute('data-src');
+            openLightbox(app.preview, app.title);
+          }
+        });
+      }
       return section;
     }
 
