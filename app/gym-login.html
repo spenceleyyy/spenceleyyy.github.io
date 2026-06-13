@@ -707,6 +707,10 @@
     <div style="display:grid;gap:14px;">
       <div class="auth-field"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email" /></div>
       <div class="auth-field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" /></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--label2);">
+        <input id="staySignedIn" type="checkbox" checked style="width:18px;height:18px;margin:0;" />
+        <label for="staySignedIn" style="margin:0;cursor:pointer;">Stay signed in on this device</label>
+      </div>
       <div class="status-msg" id="authStatus" style="color:var(--rose);min-height:18px;"></div>
       <button class="btn-primary full lg" id="authSubmitBtn" onclick="handleAuthSubmit()">Sign In</button>
       <div style="text-align:center;margin-top:4px;">
@@ -1531,6 +1535,26 @@ const SUPABASE_URL      = 'https://grflsepatlfgimruwrfz.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Xmo72uRzD4-kr9lnaGqNzQ_KMiuTweZ';
 const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Persist and restore session: listen for auth state changes and cache the session
+try{
+  _sb.auth.onAuthStateChange((event, session) => {
+    try{
+      const persist = localStorage.getItem('aq_stay_signed_in') === '1';
+      if (session) {
+        const dest = persist ? localStorage : sessionStorage;
+        try { dest.setItem('sb_session', JSON.stringify(session)); } catch(_){}
+        try{ store.setData('email', session.user.email); }catch(_){}
+        store._pullFromCloud().catch(()=>{});
+        try{ $('authView') && $('authView').classList.add('hidden'); }catch(_){}
+        if (localStorage.getItem('aq_onboarded')) enterApp(); else try{ $('onboardingView').classList.remove('hidden'); }catch(_){}
+      } else {
+        try{ localStorage.removeItem('sb_session'); }catch(_){}
+        try{ sessionStorage.removeItem('sb_session'); }catch(_){}
+      }
+    }catch(_){}
+  });
+}catch(_e){}
+
 /* ═══════════════════════════════════════════════
    EXERCISE POSE SVG ILLUSTRATIONS
    Stick-figure poses showing each movement archetype
@@ -2216,6 +2240,24 @@ function enterApp(){
         $('onboardingView').classList.remove('hidden');
       }
     } else {
+      // Not logged in — try to restore from cached session refresh token if user opted in
+      const persist = localStorage.getItem('aq_stay_signed_in') === '1';
+      const cached = persist ? localStorage.getItem('sb_session') : sessionStorage.getItem('sb_session');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          const refresh = parsed?.refresh_token || parsed?.data?.refresh_token;
+          if (refresh) {
+            const { data:{ session: restored } } = await _sb.auth.setSession({ refresh_token: refresh });
+            if (restored) {
+              store.setData('email', restored.user.email);
+              await store._pullFromCloud();
+              if (localStorage.getItem('aq_onboarded')) enterApp(); else $('onboardingView').classList.remove('hidden');
+              return;
+            }
+          }
+        } catch(e) { /* fallthrough to show auth view */ }
+      }
       // Not logged in — show auth screen
       $('authView').classList.remove('hidden');
     }
@@ -3814,6 +3856,9 @@ async function handleAuthSubmit(){
 
   if (_authMode === 'signin') {
     $('authStatus').textContent = 'Signing in…';
+    const stay = !!document.getElementById('staySignedIn')?.checked;
+    // persist user preference
+    try { localStorage.setItem('aq_stay_signed_in', stay ? '1' : '0'); } catch(_){}
     const { error } = await _sb.auth.signInWithPassword({ email, password });
     if (error) { $('authStatus').textContent = error.message; $('authSubmitBtn').disabled=false; return; }
     const { data:{ session } } = await _sb.auth.getSession();
@@ -3824,6 +3869,8 @@ async function handleAuthSubmit(){
     else $('onboardingView').classList.remove('hidden');
 
   } else {
+    const stay = !!document.getElementById('staySignedIn')?.checked;
+    try { localStorage.setItem('aq_stay_signed_in', stay ? '1' : '0'); } catch(_){}
     if (password.length < 6) { $('authStatus').textContent = 'Password must be at least 6 characters.'; $('authSubmitBtn').disabled=false; return; }
     $('authStatus').textContent = 'Creating account…';
     const { data, error } = await _sb.auth.signUp({ email, password });
@@ -3856,6 +3903,8 @@ async function signOut(){
   await _sb.auth.signOut();
   localStorage.removeItem('aq_users');
   localStorage.removeItem('aq_onboarded');
+  try{ localStorage.removeItem('sb_session'); }catch(_){}
+  try{ sessionStorage.removeItem('sb_session'); }catch(_){}
   $('appView').classList.add('hidden');
   $('authView').classList.remove('hidden');
   $('authStatus').textContent = '';
