@@ -134,8 +134,9 @@
           <div class="project-card__media">
             <figure>
               <div class="preview-frame" role="button" tabindex="0" aria-label="Open preview of ${app.title}">
-                <iframe src="" data-src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
-              </div>
+                  <iframe src="" data-src="${app.preview}" title="${app.title} preview" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+                  <div class="preview-overlay" role="button" tabindex="0" aria-label="Open preview of ${app.title}"></div>
+                </div>
             </figure>
           </div>
           <div class="project-card__text">
@@ -149,34 +150,53 @@
         </div>
       `;
       const frame = section.querySelector('.preview-frame');
-      // Clicking the wrapper should open the lightbox and lazy-load the card iframe
-      frame.addEventListener('click', () => {
-        openLightbox(app.preview, app.title);
-        const iframe = frame.querySelector('iframe[data-src]');
-        if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
-      });
-      frame.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          openLightbox(app.preview, app.title);
-          const iframe = frame.querySelector('iframe[data-src]');
-          if (iframe && !iframe.src) iframe.src = iframe.getAttribute('data-src');
-        }
-      });
+      // Use an overlay to capture clicks for lazy previews (some apps request camera).
+      const overlay = section.querySelector('.preview-overlay');
 
-      // Some browsers target the iframe element itself for clicks; attach handlers
-      const iframeEl = section.querySelector('iframe[data-src]');
-      if (iframeEl) {
-        iframeEl.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (!iframeEl.src) iframeEl.src = iframeEl.getAttribute('data-src');
-          openLightbox(app.preview, app.title);
-        });
-        iframeEl.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            if (!iframeEl.src) iframeEl.src = iframeEl.getAttribute('data-src');
-            openLightbox(app.preview, app.title);
-          }
-        });
+      // Decide whether this app is safe to auto-load in the preview iframe.
+      const safeToAutoload = (app) => {
+        // keep camera / photo apps lazy to avoid permission prompts
+        const p = (app.preview || '').toLowerCase();
+        if (p.includes('photo') || p.includes('camera') || p.includes('translator')) return false;
+        return true;
+      };
+
+      const iframe = frame.querySelector('iframe[data-src]');
+
+      const setIframeSrc = (value) => {
+        try {
+          const abs = new URL(value, location.href).href;
+          iframe.setAttribute('src', abs);
+          console.log('Set preview iframe src ->', abs);
+        } catch (err) {
+          console.error('setIframeSrc invalid', value, err);
+          iframe.setAttribute('src', value);
+        }
+      };
+
+      const activatePreview = () => {
+        if (iframe && !iframe.src) {
+          const data = iframe.getAttribute('data-src') || iframe.dataset.src;
+          setIframeSrc(data);
+        }
+        openLightbox(app.preview, app.title);
+      };
+
+      // If it's safe, autoload the preview so users see the live app immediately.
+      if (iframe && safeToAutoload(app)) {
+        const data = iframe.getAttribute('data-src') || iframe.dataset.src;
+        setIframeSrc(data);
+        if (overlay) overlay.style.display = 'none';
+        // let users interact with the iframe directly
+      } else {
+        // Keep overlay active to capture the initial click and then load the iframe
+        if (overlay) {
+          overlay.addEventListener('click', activatePreview);
+          overlay.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activatePreview(); });
+        } else {
+          frame.addEventListener('click', activatePreview);
+          frame.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activatePreview(); });
+        }
       }
       return section;
     }
@@ -206,7 +226,14 @@
     const lightboxClose   = document.getElementById('lightbox-close');
 
     function openLightbox(src, title) {
-      lightboxContent.innerHTML = `<iframe src="${src}" title="${title} preview" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      try {
+        const abs = new URL(src, location.href).href;
+        console.log('Opening lightbox with', abs);
+        lightboxContent.innerHTML = `<iframe src="${abs}" title="${title} preview" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      } catch (err) {
+        console.error('openLightbox: invalid src', src, err);
+        lightboxContent.innerHTML = `<div style="padding:2rem;color:#fff">Preview unavailable</div>`;
+      }
       lightbox.setAttribute('aria-hidden', 'false');
       lightbox.classList.add('open');
     }

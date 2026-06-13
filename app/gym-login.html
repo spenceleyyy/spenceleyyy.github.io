@@ -3924,5 +3924,132 @@ if(_hsParams.has('hsteps') || _hsParams.has('hwt') || _hsParams.has('hhr') || _h
 applyDayTheme();
 observeScrollFade();
 </script>
+<script>
+// Progress photo upload and timeline support
+(function(){
+  const STORAGE_KEY = 'aq_progress_photos_v1';
+  const fileInput = document.getElementById('progressPhotoInput');
+  const profileGrid = document.getElementById('profilePhotoGrid');
+  const timelineGrid = document.getElementById('timelineGrid');
+  const viewTimelineBtn = document.getElementById('viewTimelineBtn');
+  const compareBeforeImg = document.getElementById('compareBeforeImg');
+  const compareAfterImg  = document.getElementById('compareAfterImg');
+  const compareEmpty = document.getElementById('compareEmpty');
+  const compareMeta = document.getElementById('compareMeta');
+  const compareSlider = document.getElementById('compareSlider');
+  const compareOver = document.getElementById('compareOver');
+
+  let photos = [];
+  let compareBeforeId = null;
+  let compareAfterId = null;
+
+  function loadPhotos(){
+    try{ photos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }catch(e){ photos = []; }
+  }
+
+  function savePhotos(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(photos)); }catch(e){ console.error('savePhotos', e); }
+  }
+
+  function makeTile(p){
+    const d = document.createElement('div'); d.className = 'photo-tile'; d.dataset.id = p.id;
+    const img = document.createElement('img'); img.src = p.data; img.alt = p.date;
+    const date = document.createElement('div'); date.className='photo-tile-date'; date.textContent = new Date(p.date).toLocaleDateString();
+    d.appendChild(img); d.appendChild(date);
+    d.addEventListener('click', () => onTileClick(p.id));
+    return d;
+  }
+
+  function renderProfileGrid(){
+    if(!profileGrid) return;
+    profileGrid.innerHTML = '';
+    // show most-recent first
+    photos.slice().reverse().forEach(p=> profileGrid.appendChild(makeTile(p)));
+  }
+
+  function renderTimelineGrid(){
+    if(!timelineGrid) return;
+    timelineGrid.innerHTML = '';
+    photos.slice().reverse().forEach(p=> timelineGrid.appendChild(makeTile(p)));
+  }
+
+  function onTileClick(id){
+    // toggle selection: set before then after
+    if (!compareBeforeId || compareBeforeId === id && !compareAfterId) {
+      // set or clear before
+      compareBeforeId = (compareBeforeId === id) ? null : id;
+    } else if (!compareAfterId || compareAfterId === id) {
+      compareAfterId = (compareAfterId === id) ? null : id;
+    } else {
+      // if both set and clicking a new one, shift: move before->after, set new before
+      compareBeforeId = id;
+      compareAfterId = null;
+    }
+    updateCompareUI();
+  }
+
+  function updateCompareUI(){
+    const before = photos.find(p=>p.id===compareBeforeId);
+    const after  = photos.find(p=>p.id===compareAfterId);
+    if(before){ compareBeforeImg.src = before.data; }
+    else { compareBeforeImg.src = ''; }
+    if(after){ compareAfterImg.src = after.data; }
+    else { compareAfterImg.src = ''; }
+
+    // update outline classes in grids
+    document.querySelectorAll('.photo-tile').forEach(tile=>{
+      tile.classList.remove('sel-before','sel-after');
+      const id = tile.dataset.id;
+      if(id === compareBeforeId) tile.classList.add('sel-before');
+      if(id === compareAfterId) tile.classList.add('sel-after');
+    });
+
+    if(before && after){
+      compareEmpty.style.display = 'none';
+      compareOver.style.width = (compareSlider ? compareSlider.value : 50) + '%';
+      const bDate = new Date(before.date).toLocaleDateString();
+      const aDate = new Date(after.date).toLocaleDateString();
+      compareMeta.textContent = `Before: ${bDate} — After: ${aDate}`;
+    } else if (before || after){
+      compareEmpty.style.display = 'none';
+      compareMeta.textContent = before ? `Selected: ${new Date(before.date).toLocaleDateString()}` : `Selected: ${new Date(after.date).toLocaleDateString()}`;
+    } else {
+      compareEmpty.style.display = '';
+      compareMeta.textContent = 'Tap photos to set Before / After.';
+    }
+  }
+
+  if(compareSlider){
+    compareSlider.addEventListener('input', ()=>{
+      const v = compareSlider.value; compareOver.style.width = v + '%';
+    });
+  }
+
+  if(fileInput){
+    fileInput.addEventListener('change', async (ev)=>{
+      const files = Array.from(ev.target.files || []);
+      if(!files.length) return;
+      for(const f of files){
+        // read as data URL (could be optimized/compressed later)
+        const data = await new Promise((res, rej)=>{
+          const r = new FileReader(); r.onload = ()=>res(r.result); r.onerror = rej; r.readAsDataURL(f);
+        });
+        const entry = { id: Date.now().toString(36) + Math.random().toString(36).slice(2,8), date: new Date().toISOString(), name: f.name, data };
+        photos.push(entry);
+        // keep last 200
+        if (photos.length > 200) photos = photos.slice(photos.length-200);
+      }
+      savePhotos(); renderProfileGrid(); renderTimelineGrid();
+      // show timeline for user to compare
+      if (typeof showScreen === 'function') showScreen('photo-timeline'); else document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen==='photo-timeline'));
+    });
+  }
+
+  if(viewTimelineBtn){ viewTimelineBtn.addEventListener('click', ()=>{ if (typeof showScreen === 'function') showScreen('photo-timeline'); else document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen==='photo-timeline')); }); }
+
+  // initial load
+  loadPhotos(); renderProfileGrid(); renderTimelineGrid(); updateCompareUI();
+})();
+</script>
 </body>
 </html>

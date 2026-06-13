@@ -46,8 +46,9 @@ body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
 #lightbox-content iframe{width:100%;height:100%;border:0}
 #lightbox-close{position:absolute;right:18px;top:18px;background:transparent;border:0;color:#fff;font-size:20px;padding:8px;border-radius:8px;cursor:pointer}
 
-.preview-frame{width:100%;display:block;cursor:pointer;border-radius:12px;overflow:hidden}
+.preview-frame{width:100%;display:block;cursor:pointer;border-radius:12px;overflow:hidden;position:relative}
 .preview-frame iframe{width:100%;border:0;aspect-ratio:9 / 16;height:auto;max-height:640px}
+.preview-frame .preview-overlay{position:absolute;inset:0;z-index:2;background:transparent;cursor:pointer;border-radius:12px}
 
 /* Ensure navigation inserted via #nav-placeholder displays correctly on this page */
 #nav-placeholder > nav{position:fixed !important;top:0;left:0;right:0;width:100%;z-index:1200}
