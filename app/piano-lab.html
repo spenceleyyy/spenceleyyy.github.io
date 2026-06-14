@@ -1276,7 +1276,7 @@ function progsvg(chords){
 }
 
 // ── Staff notation SVG helpers ──
-function staffsvg(notes, highlight, label){
+function staffsvg(notes, highlight, label, showNoteNames=true){
   highlight = highlight !== undefined ? highlight : -1;
   label = label || '';
   const W=320, H=120;
@@ -1303,7 +1303,7 @@ function staffsvg(notes, highlight, label){
     if(y>=80){const cnt=Math.floor((y-68)/8);for(let l=1;l<=cnt;l++){const ly=68+l*8;s+=`<line x1="${x-10}" y1="${ly}" x2="${x+10}" y2="${ly}" stroke="#9080b8" stroke-width="1.2"/>`;}}
     s+=`<ellipse cx="${x}" cy="${y}" rx="7" ry="5.5" fill="${noteFill}" transform="rotate(-15,${x},${y})"/>`;
     if(note.includes('#')){s+=`<text x="${x-16}" y="${y+5}" font-size="14" fill="${noteFill}" font-family="serif">♯</text>`;}
-    s+=`<text x="${x}" y="${H+14}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" font-weight="800" fill="${noteFill}">${note.replace(/\d/,'')}</text>`;
+    if(showNoteNames) s+=`<text x="${x}" y="${H+14}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="11" font-weight="800" fill="${noteFill}">${note.replace(/\d/,'')}</text>`;
   });
   if(label)s+=`<text x="${W/2}" y="${H+28}" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="700" fill="#9880c0">${label}</text>`;
   return s+'</svg>';
@@ -1745,6 +1745,7 @@ function renderStep(){
   else if(step.type==='seq')renderSeq(step,area);
   else if(step.type==='mc')renderMC(step,area);
   else if(step.type==='ear')renderEar(step,area);
+  else nextStep();
 }
 
 // mark a step as missed (only once per step index, so retests don't recurse)
@@ -1759,16 +1760,18 @@ function markMissed(step){
 
 // ── STAFF step: show a note on the treble clef, identify or play it ──
 function renderStaff(s, area){
+  mcAns = false;
   const d = document.createElement('div');
   d.className = 'step vis';
   d.style.gap = '10px';
-  
+
   const isIdentify = s.mode === 'identify'; // show note, pick name
   const isPlay     = s.mode === 'play';     // show name, find on piano
-  
+
   let svgHtml = '';
   if(s.notes && s.notes.length > 0){
-    svgHtml = `<div class="info-visual">${staffsvg(s.notes, s.highlight !== undefined ? s.highlight : -1)}</div>`;
+    const showNoteLabels = !isIdentify && !isPlay;
+    svgHtml = `<div class="info-visual">${staffsvg(s.notes, s.highlight !== undefined ? s.highlight : -1, '', showNoteLabels)}</div>`;
     if(s.caption) svgHtml += `<div class="vis-caption">${s.caption}</div>`;
   }
   if(s.chord){
@@ -1942,7 +1945,6 @@ function renderSeq(s,area){
       else{
         const nsb=document.getElementById('sb'+sqI);
         if(nsb){nsb.className='sb c';nsb.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
-        highlightKey('pk',sqN[sqI]);
         setFB('','Next: '+sqN[sqI].replace(/\d/,''));
       }
     }else{
@@ -2848,7 +2850,7 @@ function getDueCards(){
       const lesson = L.find(l=>l.id===card.lessonId);
       if(!lesson) return;
       const step = lesson.steps[card.stepIdx];
-      if(!step) return;
+      if(!step || !['mc','find','ear'].includes(step.type)) return;
       due.push({ id, card, step, lesson });
     }
   });
@@ -2920,6 +2922,7 @@ function renderReviewCard(){
   if(step.type === 'mc')        renderRevMC(id, step, body);
   else if(step.type === 'find') renderRevFind(id, step, body);
   else if(step.type === 'ear')  renderRevEar(id, step, body);
+  else { RV.idx++; RV.strikeCount=0; renderReviewCard(); }
 }
 
 // ── Review MC ──
@@ -2984,12 +2987,13 @@ function renderRevFind(id, step, body){
       RV.strikeCount++;
       const fb2=document.getElementById('rev-fb');
       if(fb2){fb2.className='rev-feedback bad';fb2.textContent='That\'s '+note.replace(/\d/,'')+'  — find '+step.label;}
+      highlightKey('rev-pk', step.tgt);
       if(RV.strikeCount>=3){
         done=true;
         handleRevAnswer(id,1,note,step.tgt,null,null,body);
       }
     }
-  },true,false);
+  },false,false);
 }
 
 // ── Review Ear ──

@@ -1,4 +1,4 @@
-    const STORAGE_KEY = "linguabloom-progress-v2";
+const STORAGE_KEY = "linguabloom-progress-v2";
     const STREAK_KEY = "linguabloom-streak";
     const COMPLETED_KEY = "linguabloom-completed";
     const LEVELS_PER_DIFFICULTY = 5;
@@ -1906,7 +1906,15 @@
             ? state.levelIndex + 1
             : -1;
 
-        (lesson.levels?.[difficulty] || []).slice(0, LEVELS_PER_DIFFICULTY).forEach((module, idx) => {
+        // Winding positions: 5 nodes snake across the container
+        // x positions as % of container width, alternating in an S-curve
+        // 0 = far left, 100 = far right, 50 = center
+        const nodePositions = [30, 70, 25, 75, 40];
+
+        const modules = (lesson.levels?.[difficulty] || []).slice(0, LEVELS_PER_DIFFICULTY);
+        const nodeEls = [];
+
+        modules.forEach((module, idx) => {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "path-node";
@@ -1915,15 +1923,55 @@
           if (isLocked) btn.classList.add("locked");
           else if (isDone) btn.classList.add("done");
           if (difficulty === state.difficulty && idx === state.levelIndex) btn.classList.add("active");
-          btn.textContent = isDone ? "✓" : nodeIcons[idx % nodeIcons.length];
+          const icon = isDone ? "✓" : nodeIcons[idx % nodeIcons.length];
+          btn.innerHTML = `<span class="node-icon">${icon}</span>`;
           btn.title = module.title;
           btn.setAttribute("aria-label", module.title);
+          // Set winding x position via CSS custom property
+          btn.style.setProperty("--nx", (nodePositions[idx] ?? 50) + "%");
           btn.addEventListener("click", () => {
             if (isLocked) return;
             showLevelSheet(difficulty, idx, module, isDone);
           });
           path.appendChild(btn);
+          nodeEls.push(btn);
         });
+
+        // Draw SVG bezier curve connecting the nodes
+        (function drawCurve() {
+          const NODE_W = 78;
+          const nodePositions = [30, 70, 25, 75, 40];
+          const containerW = 360; // approximate container width in px
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("class", "path-curve");
+          svg.setAttribute("aria-hidden", "true");
+
+          const nCount = modules.length;
+          if (nCount < 2) { path.insertBefore(svg, path.firstChild); return; }
+
+          // Node center points: x from --nx %, y from nth-child top + half node height
+          const yOffsets = [20, 130, 240, 350, 460];
+          const halfNode = NODE_W / 2;
+          const points = modules.map((_, i) => ({
+            x: (nodePositions[i] / 100) * containerW,
+            y: (yOffsets[i] ?? i * 110 + 20) + halfNode
+          }));
+
+          // Build smooth bezier path through all points
+          let d = `M ${points[0].x} ${points[0].y}`;
+          for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[i];
+            const p1 = points[i + 1];
+            const cx = (p0.x + p1.x) / 2;
+            d += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
+          }
+
+          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pathEl.setAttribute("d", d);
+          svg.appendChild(pathEl);
+          path.insertBefore(svg, path.firstChild);
+        })();
+
         unit.appendChild(path);
         levelsGrid.appendChild(unit);
       });
