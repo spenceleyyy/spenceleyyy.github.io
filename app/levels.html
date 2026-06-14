@@ -3,14 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LinguaBloom — Redirecting</title>
-  <meta http-equiv="refresh" content="0; url=Language%20Learning/levels.html" />
-  <link rel="canonical" href="Language%20Learning/levels.html" />
+  <title>LinguaBloom — Levels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
+  <meta name="theme-color" content="#ff8d62" />
+  <link rel="stylesheet" href="linguabloom.css" />
 </head>
 <body>
-  <p>Redirecting to levels…</p>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="logo">
+        <span>LB</span>
+        LinguaBloom
+      </div>
+      <div class="levels-stats">
+        <div class="stat-pill streak">🔥 <span id="streakStat">0</span></div>
+        <div class="stat-pill xp">⭐ <span id="levelsXp">0</span></div>
+        <div class="stat-pill hearts">❤ <span id="levelsHearts">3</span></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+      </div>
+    </header>
+
+    <section class="view active levels-view" id="viewLevels">
+      <div class="levels-header">
+        <div class="unit-banner">
+          <div class="unit-text">
+            <h2 id="levelsTitle">Unit 1</h2>
+            <p id="levelsSubtitle">Start learning</p>
+          </div>
+          <button class="unit-guide" type="button" aria-label="Unit guide">📘</button>
+        </div>
+        <div id="levelsLanguage" style="display:none"></div>
+      </div>
+      <a href="coach.html" class="coach-cta" id="coachCta">
+        <div class="coach-cta-icon">🧑‍🏫</div>
+        <div class="coach-cta-text">
+          <strong>Chat with Luna — AI Coach</strong>
+          <span>Personalized lessons &amp; voice conversations</span>
+        </div>
+        <div class="coach-cta-arrow">›</div>
+      </a>
+
+      <div class="levels-map" id="levelsGrid"></div>
+    </section>
+
+    <section class="view stats-view" id="viewStats">
+      <div class="stats-scroll">
+        <div class="stats-hero">
+          <div class="stats-hero-flame">🔥</div>
+          <div class="stats-hero-number" id="statsStreakBig">0</div>
+          <div class="stats-hero-label">Day Streak</div>
+        </div>
+        <div class="stats-cards">
+          <div class="scard scard-xp">
+            <div class="scard-icon">⭐</div>
+            <div class="scard-value" id="statsXpVal">0</div>
+            <div class="scard-label">Total XP</div>
+          </div>
+          <div class="scard scard-done">
+            <div class="scard-icon">✓</div>
+            <div class="scard-value" id="statsDoneVal">0</div>
+            <div class="scard-label">Completed</div>
+          </div>
+        </div>
+        <div class="stats-block">
+          <div class="stats-block-title">Weekly Activity</div>
+          <div class="week-dots" id="weekDots"></div>
+        </div>
+        <div class="stats-block">
+          <div class="stats-block-title">Progress</div>
+          <div class="unit-progress-list" id="unitProgressList"></div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-tab active" id="navLearn" data-tab="learn">
+        <div class="nav-icon">🌱</div>
+        <div class="nav-label">Learn</div>
+      </button>
+      <button class="nav-tab" id="navCoach" data-tab="coach">
+        <div class="nav-icon">🧑‍🏫</div>
+        <div class="nav-label">Coach</div>
+      </button>
+      <button class="nav-tab" id="navStats" data-tab="stats">
+        <div class="nav-icon">📊</div>
+        <div class="nav-label">Stats</div>
+      </button>
+    </nav>
+  </div>
+
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="icon-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="control-group">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="packSelect">Language Pack</label>
+        <select id="packSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="scriptModeSelect">Script display</label>
+        <select id="scriptModeSelect" class="control-select">
+          <option value="both">Hanzi + Pinyin</option>
+          <option value="hanzi">Hanzi only</option>
+          <option value="romanized">Pinyin only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="focusSelect">I want to learn</label>
+        <select id="focusSelect" class="control-select">
+          <option value="all">Everything</option>
+          <option value="new-words">New words</option>
+          <option value="conversations">Conversations</option>
+          <option value="spoken">Spoken only</option>
+          <option value="review">Review</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="speakerSelect">Speaker</label>
+        <select id="speakerSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="speedRange">Speech speed <span class="range-value" id="speedValue">1.0x</span></label>
+        <input type="range" id="speedRange" class="control-range" min="0.6" max="1.4" step="0.1" value="1" />
+      </div>
+      <div class="control-actions">
+        <span class="save-status" id="saveStatus">Progress saved</span>
+        <button class="tiny-btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="level-sheet" id="levelSheet">
+    <div class="level-sheet-backdrop" id="levelSheetBackdrop"></div>
+    <div class="level-sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-icon-wrap" id="sheetIconWrap">
+        <span id="sheetIcon">⭐</span>
+      </div>
+      <h3 class="sheet-title" id="sheetTitle">Level</h3>
+      <p class="sheet-desc" id="sheetDesc">Description</p>
+      <div class="sheet-badge-row">
+        <div class="sheet-badge" id="sheetStarBadge">★★★</div>
+        <div class="sheet-badge sheet-badge-xp">+10 XP per ✓</div>
+      </div>
+      <button class="btn btn-primary sheet-start" id="sheetStartBtn">Start Lesson</button>
+    </div>
+  </div>
+
+  <script src="linguabloom.js" defer></script>
   <script>
-    window.location.replace("Language%20Learning/levels.html");
+    document.getElementById('navCoach').addEventListener('click', () => {
+      window.location.href = 'coach.html';
+    });
   </script>
 </body>
 </html>

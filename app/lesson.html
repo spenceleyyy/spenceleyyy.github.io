@@ -3,14 +3,144 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LinguaBloom — Redirecting</title>
-  <meta http-equiv="refresh" content="0; url=Language%20Learning/lesson.html" />
-  <link rel="canonical" href="Language%20Learning/lesson.html" />
+  <title>LinguaBloom — Lesson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
+  <meta name="theme-color" content="#ff8d62" />
+  <link rel="stylesheet" href="linguabloom.css" />
 </head>
 <body>
-  <p>Redirecting to the lesson…</p>
-  <script>
-    window.location.replace("Language%20Learning/lesson.html");
-  </script>
+  <div class="app-shell">
+    <header class="top-bar">
+      <div class="logo">
+        <span>LB</span>
+        LinguaBloom
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+      </div>
+    </header>
+
+    <section class="view active lesson-view" id="viewLesson">
+      <div class="lesson-header">
+        <div class="lesson-top">
+          <div class="progress">
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">0/0</div>
+          </div>
+          <div class="lesson-stats">
+            <button class="lesson-stat" id="audioToggle" type="button">🔊</button>
+            <div class="lesson-stat" id="heartPanel">❤❤❤</div>
+            <div class="lesson-stat xp">⭐ <span id="xpPanel">0</span></div>
+          </div>
+        </div>
+        <div class="lesson-meta">
+          <div class="chip" id="unitChip">Level 1</div>
+          <div class="chip" id="topicChip">Basics</div>
+          <div class="chip" id="languageChip">Spanish</div>
+        </div>
+      </div>
+
+      <div class="lesson-card">
+        <div class="prompt-row">
+          <h2 class="prompt-title" id="promptTitle">Translate this sentence</h2>
+          <button class="prompt-audio" id="replayBtn" type="button" aria-label="Replay audio">🔁</button>
+        </div>
+        <div class="prompt-text" id="promptText">Loading...</div>
+        <div class="choice-grid" id="choiceGrid"></div>
+
+        <div class="build-area" id="buildArea">
+          <div class="build-bank" id="buildBank"></div>
+          <div class="build-answer" id="buildAnswer"></div>
+        </div>
+
+        <div class="match-area" id="matchArea">
+          <div class="match-grid">
+            <div class="match-col" id="matchLeft"></div>
+            <div class="match-col" id="matchRight"></div>
+          </div>
+        </div>
+
+        <div class="speak-area" id="speakArea">
+          <button class="audio-btn" id="recordBtn">Tap to Speak</button>
+          <div class="speak-status" id="speakStatus" role="status" aria-live="polite">Mic idle</div>
+          <div class="prompt-text" id="speakTranscript"></div>
+        </div>
+
+        <div class="input-area" id="inputArea">
+          <input type="text" id="textInput" placeholder="Type your answer..." autocomplete="off" />
+        </div>
+
+        <div class="word-card minimal">
+          <h4 id="wordTitle">Word helper</h4>
+          <p id="wordDefinition">Tap any highlighted word to see its meaning.</p>
+        </div>
+      </div>
+      <div class="lesson-actions">
+        <button class="btn btn-secondary" id="skipBtn">Skip</button>
+        <button class="btn btn-primary" id="checkBtn">Check</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="icon-btn" id="closeSettings">✕</button>
+      </div>
+      <div class="control-group">
+        <label for="profileSelect">Profile</label>
+        <select id="profileSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="packSelect">Language Pack</label>
+        <select id="packSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="languageSelect">Language</label>
+        <select id="languageSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="scriptModeSelect">Script display</label>
+        <select id="scriptModeSelect" class="control-select">
+          <option value="both">Hanzi + Pinyin</option>
+          <option value="hanzi">Hanzi only</option>
+          <option value="romanized">Pinyin only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="focusSelect">I want to learn</label>
+        <select id="focusSelect" class="control-select">
+          <option value="all">Everything</option>
+          <option value="new-words">New words</option>
+          <option value="conversations">Conversations</option>
+          <option value="spoken">Spoken only</option>
+          <option value="review">Review</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="speakerSelect">Speaker</label>
+        <select id="speakerSelect" class="control-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="speedRange">Speech speed <span class="range-value" id="speedValue">1.0x</span></label>
+        <input type="range" id="speedRange" class="control-range" min="0.6" max="1.4" step="0.1" value="1" />
+      </div>
+      <div class="control-actions">
+        <span class="save-status" id="saveStatus">Progress saved</span>
+        <button class="tiny-btn" id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+  <script src="linguabloom.js" defer></script>
 </body>
 </html>

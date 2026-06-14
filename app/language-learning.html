@@ -3,14 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LinguaBloom — Redirecting</title>
-  <meta http-equiv="refresh" content="0; url=Language%20Learning/language-learning.html" />
-  <link rel="canonical" href="Language%20Learning/language-learning.html" />
+  <title>LinguaBloom</title>
+  <link rel="manifest" href="linguabloom.webmanifest" />
+  <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
+  <meta name="theme-color" content="#ff8d62" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    body {
+      margin: 0;
+      background: #f9f7f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      color: #888;
+      font-size: 15px;
+    }
+  </style>
 </head>
 <body>
-  <p>Redirecting to the LinguaBloom app…</p>
+  <p>Loading…</p>
   <script>
-    window.location.replace("Language%20Learning/language-learning.html");
+    (function () {
+      var raw = localStorage.getItem("linguabloom-progress-v2");
+      window.location.replace(raw ? "levels.html" : "language-select.html");
+    })();
   </script>
 </body>
 </html>
