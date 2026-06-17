@@ -143,6 +143,14 @@
         <label for="speedRange">Speech speed <span class="range-value" id="speedValue">1.0x</span></label>
         <input type="range" id="speedRange" class="control-range" min="0.6" max="1.4" step="0.1" value="1" />
       </div>
+      <div class="control-group">
+        <label for="azureKeyInput">Azure TTS Key <span style="font-weight:400;opacity:.6">(optional — for realistic AI voices)</span></label>
+        <input type="password" id="azureKeyInput" class="control-select" placeholder="Paste your Azure key here…" autocomplete="off" />
+      </div>
+      <div class="control-group">
+        <label for="azureRegionInput">Azure Region</label>
+        <input type="text" id="azureRegionInput" class="control-select" placeholder="e.g. eastus" value="eastus" />
+      </div>
       <div class="control-actions">
         <span class="save-status" id="saveStatus">Progress saved</span>
         <button class="tiny-btn" id="resetBtn">Reset</button>

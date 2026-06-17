@@ -2,33 +2,49 @@ const STORAGE_KEY = "linguabloom-progress-v2";
     const STREAK_KEY = "linguabloom-streak";
     const COMPLETED_KEY = "linguabloom-completed";
     const LEVELS_PER_DIFFICULTY = 5;
-    const DIFFICULTY_ORDER = ["beginner", "intermediate", "advanced"];
+    const DIFFICULTY_ORDER = ["beginner", "intermediate", "advanced", "fluent", "mastery"];
     const DIFFICULTY_LABELS = {
       beginner: "Beginner",
       intermediate: "Intermediate",
-      advanced: "Advanced"
+      advanced: "Advanced",
+      fluent: "Fluent",
+      mastery: "Mastery"
     };
     const CURRICULUM = {
       beginner: [
-        { id: "beg-1", title: "Hello & Goodbye", description: "Greet people confidently.", group: "greetings" },
-        { id: "beg-2", title: "Polite Basics", description: "Kind words in everyday moments.", group: "polite" },
-        { id: "beg-3", title: "Around the Lake", description: "Ask for directions and help.", group: "directions" },
-        { id: "beg-4", title: "Cafe Basics", description: "Order drinks and snacks.", group: "cafe" },
-        { id: "beg-5", title: "Simple Opinions", description: "Talk about the city.", group: "opinions" }
+        { id: "beg-1", title: "Hello & Goodbye",   description: "Greet people confidently.",          group: "greetings" },
+        { id: "beg-2", title: "Polite Basics",      description: "Kind words in everyday moments.",    group: "polite" },
+        { id: "beg-3", title: "Around the Lake",    description: "Ask for directions and help.",       group: "directions" },
+        { id: "beg-4", title: "Cafe Basics",        description: "Order drinks and snacks.",           group: "cafe" },
+        { id: "beg-5", title: "Simple Opinions",    description: "Talk about the city.",               group: "opinions" }
       ],
       intermediate: [
-        { id: "int-1", title: "Travel Day", description: "Get around town.", group: "travel" },
-        { id: "int-2", title: "Shopping Trip", description: "Ask about prices and sizes.", group: "shopping" },
-        { id: "int-3", title: "Making Plans", description: "Set a time and place.", group: "plans" },
-        { id: "int-4", title: "Need a Hand", description: "Handle small problems.", group: "problems" },
-        { id: "int-5", title: "City Opinions", description: "Share quick thoughts.", group: "opinions" }
+        { id: "int-1", title: "Travel Day",         description: "Get around town.",                  group: "travel" },
+        { id: "int-2", title: "Shopping Trip",      description: "Ask about prices and sizes.",        group: "shopping" },
+        { id: "int-3", title: "Making Plans",       description: "Set a time and place.",              group: "plans" },
+        { id: "int-4", title: "Need a Hand",        description: "Handle small problems.",             group: "problems" },
+        { id: "int-5", title: "City Opinions",      description: "Share quick thoughts.",              group: "opinions" }
       ],
       advanced: [
-        { id: "adv-1", title: "Handle Problems", description: "Explain what went wrong.", group: "problems" },
-        { id: "adv-2", title: "Local Plans", description: "Coordinate with friends.", group: "plans" },
-        { id: "adv-3", title: "Travel Fixes", description: "Deal with delays.", group: "travel" },
-        { id: "adv-4", title: "Shopping Details", description: "Clarify what you need.", group: "shopping" },
-        { id: "adv-5", title: "Cafe Conversations", description: "Relaxed, longer phrases.", group: "cafe" }
+        { id: "adv-1", title: "Handle Problems",    description: "Explain what went wrong.",           group: "problems" },
+        { id: "adv-2", title: "Local Plans",        description: "Coordinate with friends.",           group: "plans" },
+        { id: "adv-3", title: "Travel Fixes",       description: "Deal with delays.",                  group: "travel" },
+        { id: "adv-4", title: "Shopping Details",   description: "Clarify what you need.",             group: "shopping" },
+        { id: "adv-5", title: "Cafe Conversations", description: "Relaxed, longer phrases.",           group: "cafe" }
+      ],
+      fluent: [
+        { id: "flu-1", title: "At the Hospital",    description: "Describe symptoms and pain.",        group: "health" },
+        { id: "flu-2", title: "Work Talk",          description: "Office and career phrases.",         group: "work" },
+        { id: "flu-3", title: "Family & Home",      description: "Talk about people you love.",        group: "family" },
+        { id: "flu-4", title: "Food & Cooking",     description: "Describe dishes and recipes.",       group: "food" },
+        { id: "flu-5", title: "Weather & Seasons",  description: "Small talk about the weather.",      group: "weather" }
+      ],
+      mastery: [
+        { id: "mas-1", title: "Making Excuses",     description: "Politely get out of plans.",         group: "social" },
+        { id: "mas-2", title: "Giving Opinions",    description: "Agree, disagree, discuss.",          group: "debate" },
+        { id: "mas-3", title: "Phone & Messages",   description: "Text and call in Chinese.",          group: "digital" },
+        { id: "mas-4", title: "Chinese Festivals",  description: "Traditions and celebrations.",       group: "culture" },
+        { id: "mas-5", title: "Storytelling",       description: "Narrate events past and future.",    group: "narrative" }
       ]
     };
 
@@ -390,7 +406,43 @@ const STORAGE_KEY = "linguabloom-progress-v2";
               "手机": "phone",
               "医生": "doctor",
               "火车": "train",
-              "问题": "problem"
+              "问题": "problem",
+              "疼": "pain/hurt",
+              "发烧": "fever",
+              "药": "medicine",
+              "工作": "work/job",
+              "同事": "colleague",
+              "老板": "boss",
+              "会议": "meeting",
+              "家": "home/family",
+              "妈妈": "mother",
+              "爸爸": "father",
+              "孩子": "child/children",
+              "吃": "eat",
+              "好吃": "delicious/tasty",
+              "做饭": "cook",
+              "菜": "dish/vegetable",
+              "天气": "weather",
+              "热": "hot",
+              "冷": "cold",
+              "下雨": "raining",
+              "今天": "today",
+              "想": "want/think/miss",
+              "因为": "because",
+              "可能": "maybe/possible",
+              "同意": "agree",
+              "觉得": "feel/think",
+              "但是": "but/however",
+              "手机": "phone",
+              "发消息": "send message",
+              "微信": "WeChat",
+              "春节": "Spring Festival",
+              "红包": "red envelope",
+              "传统": "tradition",
+              "故事": "story",
+              "以前": "before/in the past",
+              "以后": "after/in the future",
+              "发生": "happen/occur"
             },
             romanization: {
               "你好": "ni hao",
@@ -429,7 +481,43 @@ const STORAGE_KEY = "linguabloom-progress-v2";
               "手机": "shou ji",
               "医生": "yi sheng",
               "火车": "huo che",
-              "问题": "wen ti"
+              "问题": "wen ti",
+              "疼": "teng",
+              "发烧": "fa shao",
+              "药": "yao",
+              "工作": "gong zuo",
+              "同事": "tong shi",
+              "老板": "lao ban",
+              "会议": "hui yi",
+              "家": "jia",
+              "妈妈": "ma ma",
+              "爸爸": "ba ba",
+              "孩子": "hai zi",
+              "吃": "chi",
+              "好吃": "hao chi",
+              "做饭": "zuo fan",
+              "菜": "cai",
+              "天气": "tian qi",
+              "热": "re",
+              "冷": "leng",
+              "下雨": "xia yu",
+              "今天": "jin tian",
+              "想": "xiang",
+              "因为": "yin wei",
+              "可能": "ke neng",
+              "同意": "tong yi",
+              "觉得": "jue de",
+              "但是": "dan shi",
+              "手机": "shou ji",
+              "发消息": "fa xiao xi",
+              "微信": "wei xin",
+              "春节": "chun jie",
+              "红包": "hong bao",
+              "传统": "chuan tong",
+              "故事": "gu shi",
+              "以前": "yi qian",
+              "以后": "yi hou",
+              "发生": "fa sheng"
             },
             phrases: {
               greetings: group(["conversation"], ["你好", "早上", "晚上", "回头"], [
@@ -485,6 +573,66 @@ const STORAGE_KEY = "linguabloom-progress-v2";
                 { en: "I need a doctor", target: "我 需要 医生", romanized: "wo xu yao yi sheng" },
                 { en: "The train is delayed", target: "火车 晚点 了", romanized: "huo che wan dian le" },
                 { en: "I have a problem", target: "我 有 问题", romanized: "wo you wen ti" }
+              ]),
+              health: group(["health"], ["疼", "发烧", "药", "医生"], [
+                { en: "It hurts here", target: "这里 疼", romanized: "zhe li teng" },
+                { en: "I have a fever", target: "我 发烧 了", romanized: "wo fa shao le" },
+                { en: "I need medicine", target: "我 需要 药", romanized: "wo xu yao yao" },
+                { en: "I need to see a doctor", target: "我 需要 看 医生", romanized: "wo xu yao kan yi sheng" }
+              ]),
+              work: group(["work"], ["工作", "同事", "老板", "会议"], [
+                { en: "I work here", target: "我 在 这里 工作", romanized: "wo zai zhe li gong zuo" },
+                { en: "My colleague", target: "我 的 同事", romanized: "wo de tong shi" },
+                { en: "I have a meeting", target: "我 有 会议", romanized: "wo you hui yi" },
+                { en: "My boss", target: "我 的 老板", romanized: "wo de lao ban" }
+              ]),
+              family: group(["family"], ["家", "妈妈", "爸爸", "孩子"], [
+                { en: "My home", target: "我 的 家", romanized: "wo de jia" },
+                { en: "My mother", target: "我 妈妈", romanized: "wo ma ma" },
+                { en: "My father", target: "我 爸爸", romanized: "wo ba ba" },
+                { en: "My child", target: "我 的 孩子", romanized: "wo de hai zi" }
+              ]),
+              food: group(["food"], ["吃", "好吃", "做饭", "菜"], [
+                { en: "Let's eat", target: "我们 吃饭 吧", romanized: "wo men chi fan ba" },
+                { en: "This is tasty", target: "这个 很 好吃", romanized: "zhe ge hen hao chi" },
+                { en: "I like to cook", target: "我 喜欢 做饭", romanized: "wo xi huan zuo fan" },
+                { en: "What dish is this?", target: "这是 什么 菜", romanized: "zhe shi shen me cai" }
+              ]),
+              weather: group(["weather"], ["天气", "热", "冷", "下雨"], [
+                { en: "How's the weather?", target: "天气 怎么样", romanized: "tian qi zen me yang" },
+                { en: "It's very hot today", target: "今天 很 热", romanized: "jin tian hen re" },
+                { en: "It's cold", target: "很 冷", romanized: "hen leng" },
+                { en: "It's raining", target: "下雨 了", romanized: "xia yu le" }
+              ]),
+              social: group(["social"], ["想", "因为", "可能", "今天"], [
+                { en: "I don't feel like it", target: "我 不 想 去", romanized: "wo bu xiang qu" },
+                { en: "Because I'm busy", target: "因为 我 很 忙", romanized: "yin wei wo hen mang" },
+                { en: "Maybe next time", target: "可能 下次 吧", romanized: "ke neng xia ci ba" },
+                { en: "Not today", target: "今天 不 行", romanized: "jin tian bu xing" }
+              ]),
+              debate: group(["debate"], ["同意", "觉得", "但是", "可能"], [
+                { en: "I agree", target: "我 同意", romanized: "wo tong yi" },
+                { en: "I think that", target: "我 觉得", romanized: "wo jue de" },
+                { en: "But", target: "但是", romanized: "dan shi" },
+                { en: "Maybe you're right", target: "可能 你 说得 对", romanized: "ke neng ni shuo de dui" }
+              ]),
+              digital: group(["digital"], ["手机", "发消息", "微信", "今天"], [
+                { en: "Check your phone", target: "看 一下 手机", romanized: "kan yi xia shou ji" },
+                { en: "Send me a message", target: "给 我 发 消息", romanized: "gei wo fa xiao xi" },
+                { en: "Add me on WeChat", target: "加 我 微信 吧", romanized: "jia wo wei xin ba" },
+                { en: "I'll send you the details", target: "我 发 给 你 详情", romanized: "wo fa gei ni xiang qing" }
+              ]),
+              culture: group(["culture"], ["春节", "红包", "传统", "家"], [
+                { en: "Happy New Year!", target: "新年 快乐", romanized: "xin nian kuai le" },
+                { en: "Red envelope", target: "红包", romanized: "hong bao" },
+                { en: "Chinese tradition", target: "中国 传统", romanized: "zhong guo chuan tong" },
+                { en: "Family reunion", target: "家人 团聚", romanized: "jia ren tuan ju" }
+              ]),
+              narrative: group(["narrative"], ["故事", "以前", "以后", "发生"], [
+                { en: "Let me tell you a story", target: "我 给 你 讲 个 故事", romanized: "wo gei ni jiang ge gu shi" },
+                { en: "Before", target: "以前", romanized: "yi qian" },
+                { en: "After that", target: "以后", romanized: "yi hou" },
+                { en: "What happened?", target: "发生 了 什么", romanized: "fa sheng le shen me" }
               ])
             }
           },
@@ -928,6 +1076,8 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       xp: 0,
       correctCount: 0,
       audioEnabled: true,
+      azureKey: localStorage.getItem("linguabloom-azure-key") || "",
+      azureRegion: localStorage.getItem("linguabloom-azure-region") || "eastus",
       selectedOption: null,
       buildAnswer: [],
       matchPairs: [],
@@ -1162,6 +1312,41 @@ const STORAGE_KEY = "linguabloom-progress-v2";
           speak(word, true);
         });
       });
+
+      // Draw all paths after the DOM is fully laid out
+      setTimeout(() => {
+        document.querySelectorAll(".level-path").forEach(path => {
+          const svgEl = path._svgEl;
+          if (!svgEl || !path._nodeX) return;
+          const nodeX = path._nodeX, nodeY = path._nodeY;
+          const N = path._N, COIN = path._COIN;
+          // Use parent width, or levelsGrid width, or viewport — whatever is available
+          const cw = path.offsetWidth || path.parentElement?.offsetWidth || levelsGrid?.offsetWidth || (window.innerWidth - 32) || 300;
+          const svgH = nodeY[N - 1] + COIN + 80;
+          path.style.minHeight = svgH + "px";
+          svgEl.setAttribute("viewBox", "0 0 " + cw + " " + svgH);
+          svgEl.setAttribute("width", cw);
+          svgEl.setAttribute("height", svgH);
+          svgEl.style.cssText = "position:absolute;top:0;left:0;width:" + cw + "px;height:" + svgH + "px;pointer-events:none;z-index:0;overflow:visible;";
+
+          const pts = Array.from({length: N}, (_, i) => ({
+            x: (nodeX[i] / 100) * cw,
+            y: nodeY[i] + COIN / 2
+          }));
+
+          let d = "M " + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+          for (let i = 0; i < pts.length - 1; i++) {
+            const a = pts[i], b = pts[i+1];
+            const midY = ((a.y + b.y) / 2).toFixed(1);
+            d += " C " + a.x.toFixed(1) + " " + midY + ", " + b.x.toFixed(1) + " " + midY + ", " + b.x.toFixed(1) + " " + b.y.toFixed(1);
+          }
+
+          svgEl.innerHTML = "";
+          const pe = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pe.setAttribute("d", d);
+          svgEl.appendChild(pe);
+        });
+      }, 300);
     };
 
     const splitTokens = (text) => {
@@ -1532,7 +1717,92 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       }
     };
 
+
+    // ── LEARN SCREEN ─────────────────────────────────────────────────────
+    // Shows Hanzi + pinyin + English for each word in the lesson
+    // Tapping a word card reveals more detail
+    const showLearnScreen = (difficulty, levelIndex, module) => {
+      // Build learn screen dynamically over the levels page
+      const existing = document.getElementById('learn-screen');
+      if (existing) existing.remove();
+
+      const lesson = getLesson();
+      const group  = module.group || 'greetings';
+      const phrases = lesson.phrases?.[group] || [];
+      const vocab   = lesson.vocab || {};
+      const rom     = lesson.romanization || {};
+      const langLabel = state.languageKey === 'mandarin' ? '中文' : state.languageKey;
+
+      // Build word list — from phrases first, then vocab
+      const words = [];
+      phrases.forEach(p => {
+        words.push({ hanzi: p.target, pinyin: p.romanized, english: p.en, type: 'phrase' });
+      });
+      (module.newWords || []).forEach(w => {
+        if (!words.find(x => x.hanzi === w)) {
+          words.push({ hanzi: w, pinyin: rom[w] || '', english: vocab[w] || '', type: 'word' });
+        }
+      });
+      // Fallback — show vocab words for the group
+      if (!words.length) {
+        Object.entries(vocab).slice(levelIndex * 4, levelIndex * 4 + 6).forEach(([h, en]) => {
+          words.push({ hanzi: h, pinyin: rom[h] || '', english: en, type: 'word' });
+        });
+      }
+
+      const screen = document.createElement('div');
+      screen.id = 'learn-screen';
+      screen.innerHTML = `
+        <div class="learn-header">
+          <button class="learn-back" id="learnBack">←</button>
+          <div class="learn-title">${module.title}</div>
+          <div class="learn-tag">Learn</div>
+        </div>
+        <div class="learn-body">
+          <div class="learn-kicker">Tap any card to flip it</div>
+          <div class="learn-grid" id="learnGrid"></div>
+          <button class="btn btn-primary learn-done-btn" id="learnDone">
+            Start Practice →
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(screen);
+      requestAnimationFrame(() => screen.classList.add('open'));
+
+      const grid = screen.querySelector('#learnGrid');
+      words.forEach((w, i) => {
+        const card = document.createElement('div');
+        card.className = 'word-flip-card';
+        card.innerHTML = `
+          <div class="wfc-inner">
+            <div class="wfc-front">
+              <div class="wfc-hanzi">${w.hanzi}</div>
+              <div class="wfc-pinyin">${w.pinyin || ''}</div>
+            </div>
+            <div class="wfc-back">
+              <div class="wfc-english">${w.english}</div>
+              <div class="wfc-pinyin-sm">${w.pinyin || ''}</div>
+            </div>
+          </div>
+        `;
+        card.addEventListener('click', () => card.classList.toggle('flipped'));
+        grid.appendChild(card);
+      });
+
+      screen.querySelector('#learnBack').addEventListener('click', () => {
+        screen.classList.remove('open');
+        setTimeout(() => screen.remove(), 320);
+      });
+
+      screen.querySelector('#learnDone').addEventListener('click', () => {
+        screen.classList.remove('open');
+        setTimeout(() => { screen.remove(); startLesson(difficulty, levelIndex); }, 320);
+      });
+    };
+
     const saveProgress = () => {
+
       const data = loadStorage();
       if (!data.profiles[state.profileId]) data.profiles[state.profileId] = {};
       const tasksSnapshot = state.tasks.map((task) => {
@@ -1883,7 +2153,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       if (levelsHearts) levelsHearts.textContent = state.hearts;
       if (streakStat) streakStat.textContent = getStreakCount();
 
-      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥" };
+      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥", fluent: "🗣️", mastery: "🏆" };
       const nodeIcons = ["⭐", "📘", "🎯", "💬", "🔥"];
       DIFFICULTY_ORDER.forEach((difficulty, unitIndex) => {
         const unit = document.createElement("div");
@@ -1906,71 +2176,137 @@ const STORAGE_KEY = "linguabloom-progress-v2";
             ? state.levelIndex + 1
             : -1;
 
-        // Winding positions: 5 nodes snake across the container
-        // x positions as % of container width, alternating in an S-curve
-        // 0 = far left, 100 = far right, 50 = center
-        const nodePositions = [30, 70, 25, 75, 40];
-
         const modules = (lesson.levels?.[difficulty] || []).slice(0, LEVELS_PER_DIFFICULTY);
-        const nodeEls = [];
+        const N = modules.length;
 
-        modules.forEach((module, idx) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "path-node";
-          const isLocked = idx > maxUnlocked;
-          const isDone = completedLevels.has(module.id);
-          if (isLocked) btn.classList.add("locked");
-          else if (isDone) btn.classList.add("done");
-          if (difficulty === state.difficulty && idx === state.levelIndex) btn.classList.add("active");
-          const icon = isDone ? "✓" : nodeIcons[idx % nodeIcons.length];
-          btn.innerHTML = `<span class="node-icon">${icon}</span>`;
-          btn.title = module.title;
-          btn.setAttribute("aria-label", module.title);
-          // Set winding x position via CSS custom property
-          btn.style.setProperty("--nx", (nodePositions[idx] ?? 50) + "%");
-          btn.addEventListener("click", () => {
-            if (isLocked) return;
-            showLevelSheet(difficulty, idx, module, isDone);
-          });
-          path.appendChild(btn);
-          nodeEls.push(btn);
-        });
+        // Coin positions: x% from left edge, y px from top
+        const nodeX = [28, 68, 22, 72, 38];
+        const nodeY = [24, 160, 296, 432, 568];
+        const COIN  = 76;
+        const HALF  = COIN / 2;
 
-        // Draw SVG bezier curve connecting the nodes
-        (function drawCurve() {
-          const NODE_W = 78;
-          const nodePositions = [30, 70, 25, 75, 40];
-          const containerW = 360; // approximate container width in px
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("class", "path-curve");
-          svg.setAttribute("aria-hidden", "true");
+        // Draw dotted connector lines immediately with calculated positions
+        const _cw = Math.min(window.innerWidth, 520) - 32;
+        for (let i = 0; i < N - 1; i++) {
+          const x1 = (nodeX[i]   / 100) * _cw + HALF;
+          const y1 = nodeY[i]   + HALF;
+          const x2 = (nodeX[i+1] / 100) * _cw + HALF;
+          const y2 = nodeY[i+1] + HALF;
+          const dx = x2 - x1, dy = y2 - y1;
+          const len   = Math.sqrt(dx*dx + dy*dy);
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          const line = document.createElement("div");
+          line.className = "path-line";
+          line.style.cssText =
+            "position:absolute;" +
+            "left:"   + x1.toFixed(1) + "px;" +
+            "top:"    + (y1 - 2).toFixed(1) + "px;" +
+            "width:"  + len.toFixed(1) + "px;" +
+            "height:4px;" +
+            "transform-origin:0 50%;" +
+            "transform:rotate(" + angle.toFixed(2) + "deg);" +
+            "z-index:-1;" +
+            "border-radius:2px;" +
+            "background:repeating-linear-gradient(90deg,#a090c0 0px,#a090c0 8px,transparent 8px,transparent 16px);";
+          path.appendChild(line);
+        }
 
-          const nCount = modules.length;
-          if (nCount < 2) { path.insertBefore(svg, path.firstChild); return; }
+        modules.forEach((module, mi) => {
+          const isLocked = mi > maxUnlocked;
+          const isDone   = completedLevels.has(module.id);
+          const isActive = difficulty === state.difficulty && mi === state.levelIndex;
 
-          // Node center points: x from --nx %, y from nth-child top + half node height
-          const yOffsets = [20, 130, 240, 350, 460];
-          const halfNode = NODE_W / 2;
-          const points = modules.map((_, i) => ({
-            x: (nodePositions[i] / 100) * containerW,
-            y: (yOffsets[i] ?? i * 110 + 20) + halfNode
-          }));
+          const wrap = document.createElement("div");
+          wrap.className = "node-group";
+          wrap.style.cssText = "left:" + nodeX[mi] + "%;top:" + nodeY[mi] + "px;";
 
-          // Build smooth bezier path through all points
-          let d = `M ${points[0].x} ${points[0].y}`;
-          for (let i = 0; i < points.length - 1; i++) {
-            const p0 = points[i];
-            const p1 = points[i + 1];
-            const cx = (p0.x + p1.x) / 2;
-            d += ` C ${cx} ${p0.y}, ${cx} ${p1.y}, ${p1.x} ${p1.y}`;
+          // Progress ring for active node
+          if (isActive) {
+            const rs = 90, cx = 45, cy = 45, r = 41;
+            const circ = 2 * Math.PI * r;
+            const arc  = (circ * 0.32).toFixed(1);
+            const ringEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            ringEl.setAttribute("class", "coin-ring");
+            ringEl.setAttribute("viewBox", "0 0 " + rs + " " + rs);
+            ringEl.innerHTML =
+              "<circle cx='" + cx + "' cy='" + cy + "' r='" + r + "' fill='none' stroke='rgba(255,255,255,.18)' stroke-width='4'/>" +
+              "<circle cx='" + cx + "' cy='" + cy + "' r='" + r + "' fill='none' stroke='rgba(255,255,255,.88)' stroke-width='4.5' stroke-dasharray='" + arc + " " + circ.toFixed(1) + "' stroke-linecap='round' transform='rotate(-90 " + cx + " " + cy + ")'/>";
+            wrap.appendChild(ringEl);
           }
 
-          const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          pathEl.setAttribute("d", d);
-          svg.appendChild(pathEl);
-          path.insertBefore(svg, path.firstChild);
-        })();
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "path-node" + (isLocked ? " locked" : isDone ? " done" : isActive ? " active" : "");
+          btn.innerHTML = "<span class='node-num'>" + (isDone ? "✓" : (mi + 1)) + "</span>";
+          btn.title = module.title;
+          btn.setAttribute("aria-label", module.title);
+          btn.addEventListener("click", () => { if (!isLocked) showLevelSheet(difficulty, mi, module, isDone); });
+          wrap.appendChild(btn);
+
+          if (isActive) {
+            const sl = document.createElement("div");
+            sl.className = "node-start-lbl";
+            sl.textContent = "START";
+            // Position above-left of coin like reference
+            sl.style.cssText = "position:absolute;bottom:calc(100% + 2px);left:-8px;z-index:10;";
+            wrap.appendChild(sl);
+            const st = document.createElement("div");
+            st.className = "node-stars";
+            st.style.cssText = "position:absolute;bottom:calc(100% - 18px);left:-12px;z-index:10;";
+            wrap.appendChild(st);
+          }
+
+          const lbl = document.createElement("div");
+          lbl.className = "node-title-lbl";
+          lbl.textContent = module.title;
+          wrap.appendChild(lbl);
+
+          path.appendChild(wrap);
+        });
+
+        // Position lines after appending to DOM using requestAnimationFrame
+        window._positionLines = window._positionLines || null;
+        const _positionLines = () => {
+          // Don't rely on getBoundingClientRect — it returns 0 when view is hidden.
+          // Calculate width directly from viewport.
+          const shellW = Math.min(window.innerWidth, 520);
+          const cw = shellW - 32; // subtract unit-block padding (16px each side)
+          path.querySelectorAll(".path-line").forEach(line => {
+            const fi = parseInt(line.dataset.fromIdx);
+            const ti = parseInt(line.dataset.toIdx);
+            const nx = JSON.parse(line.dataset.nodeX);
+            const ny = JSON.parse(line.dataset.nodeY);
+
+            const x1 = (nx[fi] / 100) * cw + HALF;
+            const y1 = ny[fi] + HALF;
+            const x2 = (nx[ti] / 100) * cw + HALF;
+            const y2 = ny[ti] + HALF;
+
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            line.style.cssText = [
+              "position:absolute",
+              "left:" + x1.toFixed(1) + "px",
+              "top:" + (y1 - 2).toFixed(1) + "px",
+              "width:" + len.toFixed(1) + "px",
+              "height:4px",
+              "transform-origin:0 50%",
+              "transform:rotate(" + angle.toFixed(2) + "deg)",
+              "z-index:0",
+              "border-radius:2px"
+            ].join(";");
+          });
+          const svgH = ny[N-1] + COIN + 100;
+          path.style.minHeight = svgH + "px";
+        };
+
+        window._positionLines = _positionLines;
+        requestAnimationFrame(() => requestAnimationFrame(_positionLines));
+        setTimeout(_positionLines, 200);
+        setTimeout(_positionLines, 600);
+        window.addEventListener("resize", _positionLines, {passive:true});
 
         unit.appendChild(path);
         levelsGrid.appendChild(unit);
@@ -1988,6 +2324,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       document.body.dataset.view = viewId;
       if (viewId === "viewLevels") {
         renderLevels();
+        setTimeout(() => { if (window._positionLines) window._positionLines(); }, 80);
       }
     };
 
@@ -2184,7 +2521,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       sheetPendingDifficulty = difficulty;
       sheetPendingIdx = idx;
       const groupIcons = { greetings: "👋", polite: "🙏", directions: "🗺", cafe: "☕", travel: "✈️", shopping: "🛍", plans: "📅", opinions: "💬", problems: "🆘" };
-      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥" };
+      const diffIcons = { beginner: "🌱", intermediate: "⚡", advanced: "🔥", fluent: "🗣️", mastery: "🏆" };
       const icon = groupIcons[module.group] || diffIcons[difficulty] || "⭐";
       if (sheetIcon) sheetIcon.textContent = icon;
       if (sheetIconWrap) {
@@ -2324,23 +2661,97 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       state.activeVoiceName = pickRandomVoice();
     };
 
-    const speak = (text, force = false) => {
-      if ((!state.audioEnabled && !force) || !window.speechSynthesis) return;
-      const lesson = getLesson();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lesson.voice;
-      utterance.rate = state.speechRate;
-      const voices = window.speechSynthesis.getVoices();
-      const preferred = state.activeVoiceName || state.voiceName;
+    const AZURE_VOICE_MAP = {
+      "zh-CN": "zh-CN-XiaoxiaoNeural",
+      "es-ES": "es-ES-ElviraNeural",
+      "fr-FR": "fr-FR-DeniseNeural",
+      "de-DE": "de-DE-KatjaNeural",
+      "ja-JP": "ja-JP-NanamiNeural",
+      "ko-KR": "ko-KR-SunHiNeural",
+      "it-IT": "it-IT-ElsaNeural"
+    };
+
+    // Cache decoded audio buffers to avoid re-fetching
+    const _azureCache = {};
+    let _azureCtx = null;
+    const _getAudioCtx = () => {
+      if (!_azureCtx || _azureCtx.state === "closed") {
+        _azureCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (_azureCtx.state === "suspended") _azureCtx.resume();
+      return _azureCtx;
+    };
+
+    const _speakAzure = async (text, lang, rate) => {
+      const region = state.azureRegion || "eastus";
+      const key    = state.azureKey;
+      if (!key) return false;
+
+      const voiceName = AZURE_VOICE_MAP[lang] || "en-US-JennyNeural";
+      const cacheKey  = `${voiceName}:${rate}:${text}`;
+      try {
+        let arrayBuf = _azureCache[cacheKey];
+        if (!arrayBuf) {
+          const ssml = "<speak version='1.0' xml:lang='" + lang + "'><voice name='" + voiceName + "'><prosody rate='" + (rate < 1 ? (Math.round((rate - 1) * 100) + "%") : (rate > 1 ? "+" + Math.round((rate - 1) * 100) + "%" : "0%")) + "'>" + text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</prosody></voice></speak>";
+
+          const res = await fetch(
+            "https://" + region + ".tts.speech.microsoft.com/cognitiveservices/v1",
+            {
+              method: "POST",
+              headers: {
+                "Ocp-Apim-Subscription-Key": key,
+                "Content-Type": "application/ssml+xml",
+                "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3"
+              },
+              body: ssml
+            }
+          );
+          if (!res.ok) { console.warn("Azure TTS error:", res.status); return false; }
+          arrayBuf = await res.arrayBuffer();
+          if (Object.keys(_azureCache).length < 200) _azureCache[cacheKey] = arrayBuf;
+        }
+
+        const ctx    = _getAudioCtx();
+        const decoded = await ctx.decodeAudioData(arrayBuf.slice(0));
+        const src    = ctx.createBufferSource();
+        src.buffer   = decoded;
+        src.connect(ctx.destination);
+        src.start(0);
+        return true;
+      } catch (e) {
+        console.warn("Azure TTS failed:", e);
+        return false;
+      }
+    };
+
+    const _speakNative = (text, lang, rate) => {
+      if (!window.speechSynthesis) return;
+      const utterance  = new SpeechSynthesisUtterance(text);
+      utterance.lang   = lang;
+      utterance.rate   = rate;
+      const voices     = window.speechSynthesis.getVoices();
+      const preferred  = state.activeVoiceName || state.voiceName;
       const match =
         (preferred ? voices.find((v) => v.name === preferred) : null) ||
-        voices.find((v) => v.lang === lesson.voice) ||
-        voices.find((v) => v.lang.startsWith(lesson.voice.split("-")[0]));
+        voices.find((v) => v.lang === lang) ||
+        voices.find((v) => v.lang.startsWith(lang.split("-")[0]));
       if (match) utterance.voice = match;
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     };
 
+    const speak = async (text, force = false) => {
+      if (!state.audioEnabled && !force) return;
+      const lesson = getLesson();
+      const lang   = lesson.voice || "zh-CN";
+      const rate   = state.speechRate || 1.0;
+      // Try Azure first; fall back to Web Speech
+      if (state.azureKey) {
+        const ok = await _speakAzure(text, lang, rate);
+        if (ok) return;
+      }
+      _speakNative(text, lang, rate);
+    };
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognizer = null;
     let recording = false;
@@ -2382,7 +2793,6 @@ const STORAGE_KEY = "linguabloom-progress-v2";
         }
       };
     };
-
     const updateStatus = () => {
       if (!progressText || !progressFill) return;
       const total = state.tasks.length;
@@ -2714,6 +3124,26 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       if (speedValue) speedValue.textContent = `${state.speechRate.toFixed(1)}x`;
       saveProgress();
     });
+
+    // Azure TTS key/region wiring
+    const azureKeyInput    = document.getElementById("azureKeyInput");
+    const azureRegionInput = document.getElementById("azureRegionInput");
+    if (azureKeyInput) {
+      azureKeyInput.value = state.azureKey || "";
+      azureKeyInput.addEventListener("input", () => {
+        state.azureKey = azureKeyInput.value.trim();
+        localStorage.setItem("linguabloom-azure-key", state.azureKey);
+        if (saveStatus) saveStatus.textContent = state.azureKey ? "Azure key saved ✓" : "Key cleared";
+        setTimeout(() => { if (saveStatus) saveStatus.textContent = "Progress saved"; }, 2000);
+      });
+    }
+    if (azureRegionInput) {
+      azureRegionInput.value = state.azureRegion || "eastus";
+      azureRegionInput.addEventListener("input", () => {
+        state.azureRegion = azureRegionInput.value.trim() || "eastus";
+        localStorage.setItem("linguabloom-azure-region", state.azureRegion);
+      });
+    }
 
     if (resetBtn) resetBtn.addEventListener("click", () => {
       resetProgress(true);

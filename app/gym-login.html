@@ -600,7 +600,21 @@
     .aw-rpe-toggle { background:none; border:none; font-size:.74rem; color:var(--label3);
       cursor:pointer; display:flex; align-items:center; gap:4px; }
     .aw-rpe-panel { flex:1; display:flex; align-items:center; gap:8px; }
-    .aw-rpe-panel input[type=range] { flex:1; }
+    .aw-rpe-panel input[type=range] { flex:1; min-width:120px; height:28px; accent-color:var(--violet); cursor:pointer; }
+    .aw-rpe-panel input[type=range]::-webkit-slider-runnable-track {
+      height:6px; border-radius:999px; background:var(--violet-lt);
+    }
+    .aw-rpe-panel input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:22px; height:22px; margin-top:-8px;
+      border-radius:50%; background:var(--violet); box-shadow:0 2px 8px rgba(139,127,220,.35);
+    }
+    .aw-rpe-panel input[type=range]::-moz-range-track {
+      height:6px; border-radius:999px; background:var(--violet-lt);
+    }
+    .aw-rpe-panel input[type=range]::-moz-range-thumb {
+      width:22px; height:22px; border:none; border-radius:50%;
+      background:var(--violet); box-shadow:0 2px 8px rgba(139,127,220,.35);
+    }
     .aw-rpe-val { font-size:.82rem; font-weight:700; color:var(--violet); min-width:24px; }
 
     .aw-log-btn { width:100%; padding:1rem; background:var(--violet); color:#fff;
@@ -922,10 +936,10 @@
               </div>
             </div>
           </div>
-          <!-- RPE (collapsed by default) -->
+          <!-- RPE -->
           <div class="aw-rpe-row" id="rpeRow">
-            <button class="aw-rpe-toggle" id="rpeToggle">⊕ Rate effort (RPE)</button>
-            <div class="aw-rpe-panel hidden" id="rpePanel">
+            <button class="aw-rpe-toggle" id="rpeToggle">⊖ Rate effort (RPE)</button>
+            <div class="aw-rpe-panel" id="rpePanel">
               <input id="setRpe" type="range" min="1" max="10" value="7" />
               <span class="aw-rpe-val"><span id="rpeVal">7</span>/10</span>
             </div>
@@ -2735,6 +2749,10 @@ function updateRestLabel(){
   $('restLabel').textContent='Rest (superset)';
 }
 function renderSetHistory(){
+  if(!activeWorkout || activeWorkout.exercises.length===0){
+    $('setHistoryList').innerHTML='<div style="padding:8px 0;color:var(--label2);font-size:.8rem;">Add an exercise to start logging sets.</div>';
+    return;
+  }
   const ex=activeWorkout.exercises[activeWorkout.currentIdx];
   if(ex.sets.length===0){ $('setHistoryList').innerHTML='<div style="padding:8px 0;color:var(--label2);font-size:.8rem;">No sets yet.</div>'; return; }
   $('setHistoryList').innerHTML=ex.sets.map((s,i)=>`

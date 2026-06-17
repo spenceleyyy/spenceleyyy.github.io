@@ -338,6 +338,9 @@ body {
   padding: 10px 0;
 }
 
+/* Nudge any inline SVG path so dashes visually meet node connectors. Tweak values if needed. */
+.level-path svg { transform: translate(-4px, -8px); transform-origin: 50% 50%; }
+
 .level-path::before {
   content: '';
   position: absolute;
@@ -822,6 +825,35 @@ button.lesson-stat:hover { background: var(--vio-l); }
   margin-top: auto;
   box-shadow: none;
 }
+
+/* --- Connector fixes: ensure dashed SVG paths visually meet nodes --- */
+.path-node { position: relative; }
+
+/* vertical bridge centered under each node to join the dashed path */
+.path-node::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba(74,58,104,0.12); /* matches muted ink */
+  bottom: -32px;
+  box-shadow: 0 6px 10px rgba(0,0,0,.08);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* target SVG path if present inside the level container; thicken and soften stroke */
+.level-path svg path,
+.path-curve path {
+  stroke: rgba(74,58,104,0.14) !important;
+  stroke-width: 6 !important;
+}
+
+/* small tweak: ensure node labels sit a little lower to avoid overlap */
+.path-node .label, .path-node label { display: block; margin-top: 8px; }
 
 .word-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
 .word-card p  { font-size: 13px; color: var(--mut); }
