@@ -1,9 +1,15 @@
-const CACHE = 'app-shell-v2';
+const CACHE = 'app-shell-v3';
 const ASSETS = [
   'index.html',
   'piano-lab.html',
   'language-learning.html',
   'photo-translator.html',
+  'gym-login.html',
+  'manifest-gym.json',
+  'logos/gym-icon-180.png',
+  'logos/gym-icon-192.png',
+  'logos/gym-icon-512.png',
+  'logos/gym-icon-1024.png',
   'logos/logo-192.svg',
   'logos/logo-512.svg'
 ];

@@ -27,7 +27,7 @@
   --v-mint:#5ee0b0; --v-sky:#5cb8f0; --v-lem:#ffd866;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;}
+html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none;touch-action:pan-y;background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;}
 #app{width:100%;height:100%;position:relative;overflow:hidden;}
 .screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;transform:translateY(14px);transition:opacity .2s,transform .2s;pointer-events:none;}
 .screen.active{opacity:1;transform:none;pointer-events:all;}
@@ -116,7 +116,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .mc-q{font-family:'Quicksand',sans-serif;font-size:1.1rem;font-weight:500;color:var(--ink);line-height:1.35;}
 .mc-hint{font-size:.75rem;font-weight:500;color:var(--mut);text-align:center;}
 .mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.mb{padding:14px 8px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:'Quicksand',sans-serif;font-size:1rem;font-weight:500;color:var(--ink);cursor:pointer;transition:all .13s;text-align:center;line-height:1.2;}
+.mb{padding:14px 8px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:'Quicksand',sans-serif;font-size:1rem;font-weight:500;color:var(--ink);cursor:pointer;transition:all .13s;text-align:center;line-height:1.2;touch-action:manipulation;}
 .mb:active{transform:scale(.95);}
 .mb.hi{background:var(--lilac);border-color:var(--lav);color:var(--vio);}
 .mb.ok{background:#c8fce0;border-color:#90e8c0;color:#1a9060;}
@@ -125,7 +125,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 
 /* PIANO */
 .pw-wrap{flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-height:0;}
-.pscroll{width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:none;}
+.pscroll{width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:none;touch-action:pan-x;}
 .pscroll::-webkit-scrollbar{display:none;}
 .pk{position:relative;display:flex;height:132px;}
 .wk{position:relative;width:44px;height:132px;background:var(--wk);border:1.5px solid var(--wkb);border-top:none;border-radius:0 0 10px 10px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;z-index:1;flex-shrink:0;transition:background .06s,transform .06s;-webkit-user-select:none;user-select:none;box-shadow:inset 0 -2px 0 rgba(180,150,230,.35);}
@@ -236,7 +236,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ws-fb.good{background:#c8fce0;color:#1a9060;}
 .ws-fb.bad{background:#ffe0ea;color:var(--rose-d);}
 .ws-piano-wrap{flex:1;display:flex;flex-direction:column;justify-content:flex-end;min-height:0;}
-.pscroll2{width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:none;}
+.pscroll2{width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:none;touch-action:pan-x;}
 .pscroll2::-webkit-scrollbar{display:none;}
 
 /* BOTTOM ACTION BAR */
@@ -276,7 +276,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .rev-skip{background:none;border:none;font-size:.75rem;font-weight:500;color:var(--mut);cursor:pointer;margin-left:auto;padding:4px 8px;}
 .rev-bar-outer{height:6px;background:var(--lilac);border-radius:99px;overflow:hidden;}
 .rev-bar-fill{height:100%;background:linear-gradient(90deg,var(--vio),#d09cfc);border-radius:99px;transition:width .35s;}
-.rev-body{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:14px 16px 12px;gap:10px;}
+.rev-body{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;padding:14px 16px 12px;gap:10px;}
 .rev-card-label{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);}
 .rev-q{font-family:'Quicksand',sans-serif;font-size:1.3rem;font-weight:600;color:var(--ink);line-height:1.2;}
 .rev-context{font-size:.78rem;font-weight:500;color:var(--mut);line-height:1.4;}
@@ -284,7 +284,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .rev-feedback.good{background:#c8fce0;color:#1a9060;}
 .rev-feedback.bad{background:#ffe0ea;color:var(--rose-d);}
 .rev-mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.rev-btn{padding:13px 8px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:'Quicksand',sans-serif;font-size:.95rem;font-weight:500;color:var(--ink);cursor:pointer;transition:all .14s;text-align:center;}
+.rev-btn{padding:13px 8px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--rsm);font-family:'Quicksand',sans-serif;font-size:.95rem;font-weight:500;color:var(--ink);cursor:pointer;transition:all .14s;text-align:center;touch-action:manipulation;}
 .rev-btn:active{transform:scale(.96);}
 .rev-btn.ok{background:#c8fce0;border-color:#90e8c0;color:#1a9060;}
 .rev-btn.no{background:#ffe0ea;border-color:var(--rose);color:var(--rose-d);}
@@ -2111,7 +2111,7 @@ function finishLesson(){
   const xpG=passed?Math.round(CL.xp*(acc/100)):Math.round(CL.xp*0.15);
   if(passed){
     if(!isSpecial){S.ld[CL.id]=true;S.str++;}
-    harvestCards(CL._isWarmup?null:CL); // warm-up steps already belong to harvested lessons
+    harvestCards(CL._isWarmup?null:(L.find(l=>l.id===CL.id)||null)); // use original (non-shuffled) lesson so stepIdx matches L
   }
   S.cor+=lCor;S.ans+=lAns;S.done++;
   addXP(xpG);sv();
@@ -4012,10 +4012,27 @@ function srNextNote(){
   });
   body.appendChild(modeRow);
 
-  // Staff
+  // Chord mode: 35% chance once player has 3+ lessons done
+  const doneCount=Object.keys(S.ld||{}).length;
+  const useChord=SR.mode==='identify'&&doneCount>=3&&Math.random()<0.35;
+  let displayNotes, highlightIdx;
+  if(useChord){
+    const pool=srNotePool().filter(n=>noteBaseName(n)!==noteBaseName(note));
+    const ctx=pool[Math.floor(Math.random()*pool.length)];
+    const targetFirst=Math.random()<0.5;
+    displayNotes=targetFirst?[note,ctx]:[ctx,note];
+    highlightIdx=targetFirst?0:1;
+  } else {
+    displayNotes=[note]; highlightIdx=0;
+  }
+
+  // Staff — note names always hidden so they can't cheat
   const staffWrap=document.createElement('div'); staffWrap.className='sr-staff-wrap';
-  staffWrap.innerHTML = `<div class="sr-prompt">${SR.mode==='identify'?'What note is this?':'Find this note on the piano'}</div>` +
-    `<div class="info-visual">${staffsvg([note],-1)}</div>`;
+  const prompt=useChord
+    ?'What is the <b style="color:var(--vio)">dark</b> note?'
+    :(SR.mode==='identify'?'What note is this?':'Find this note on the piano');
+  staffWrap.innerHTML=`<div class="sr-prompt">${prompt}</div>`+
+    `<div class="info-visual">${staffsvg(displayNotes,highlightIdx,'',false)}</div>`;
   body.appendChild(staffWrap);
 
   if(SR.mode==='identify'){
@@ -4027,8 +4044,16 @@ function srNextNote(){
       grid.appendChild(btn);
     });
     body.appendChild(grid);
-    const fb=document.createElement('div'); fb.className='fb'; fb.id='sr-fb'; fb.textContent='Tap the note name you see';
+    const fb=document.createElement('div'); fb.className='fb'; fb.id='sr-fb';
+    fb.textContent=useChord?'Name the highlighted note':'Tap the note name you see';
     body.appendChild(fb);
+    // Piano so the user can hear any note while deciding
+    const pianoLbl=document.createElement('div'); pianoLbl.className='piano-or'; pianoLbl.textContent='Play to hear notes';
+    body.appendChild(pianoLbl);
+    const pwrap=document.createElement('div'); pwrap.className='pw-wrap'; pwrap.style.maxHeight='120px';
+    pwrap.innerHTML='<div class="pscroll"><div class="pk" id="sr-pk"></div></div>';
+    body.appendChild(pwrap);
+    buildPiano('sr-pk',null,played=>{playNote(played,.6);},false,false);
   } else {
     const fb=document.createElement('div'); fb.className='fb'; fb.id='sr-fb'; fb.textContent='Find this note on the piano below';
     body.appendChild(fb);
