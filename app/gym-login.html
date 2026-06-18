@@ -2225,13 +2225,23 @@ $('fabSheet').addEventListener('click',e=>{
 });
 
 function enterApp(){
+  const isFirstEntry = $('appView').classList.contains('hidden');
   $('appView').classList.remove('hidden');
-  // Restore any in-progress workout that survived an app close/backgrounding
-  try {
-    const saved = localStorage.getItem('aq_active_workout');
-    if (saved) activeWorkout = JSON.parse(saved);
-  } catch(_) {}
-  showScreen('home',false); screenHistory=['home'];
+  // Restore in-progress workout from localStorage if not already in memory
+  if (!activeWorkout) {
+    try {
+      const saved = localStorage.getItem('aq_active_workout');
+      if (saved) activeWorkout = JSON.parse(saved);
+    } catch(_) {}
+  }
+  // Only reset navigation on a real app open, not token-refresh re-calls
+  if (isFirstEntry) {
+    showScreen('home',false); screenHistory=['home'];
+    if (activeWorkout) {
+      // Take user straight back to their in-progress workout
+      showScreen('active-workout');
+    }
+  }
   const pending = sessionStorage.getItem('pendingHealthSync');
   if(pending){ mergeShortcutsHealth(new URLSearchParams(pending)); sessionStorage.removeItem('pendingHealthSync'); }
   updateHealthLastSync();
