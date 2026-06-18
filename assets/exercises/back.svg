@@ -1,10 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" fill="none">
-  <circle cx="60" cy="20" r="8" stroke="#fef7e0" stroke-width="3"/>
-  <line x1="60" y1="28" x2="60" y2="58" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="36" x2="34" y2="34" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="36" x2="86" y2="34" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="34" y1="34" x2="30" y2="46" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="86" y1="34" x2="90" y2="46" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="58" x2="44" y2="74" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="58" x2="76" y2="74" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Pull-up bar with mounts -->
+  <rect x="8" y="4" width="104" height="6" rx="3" fill="#c8c4a8"/>
+  <line x1="22" y1="4" x2="22" y2="1" stroke="#c8c4a8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="98" y1="4" x2="98" y2="1" stroke="#c8c4a8" stroke-width="4" stroke-linecap="round"/>
+  <!-- Arms (straight hang, angling inward) -->
+  <line x1="40" y1="7" x2="50" y2="30" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="80" y1="7" x2="70" y2="30" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <!-- Shoulder cross-line -->
+  <line x1="50" y1="30" x2="70" y2="30" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <!-- Torso -->
+  <line x1="60" y1="30" x2="60" y2="56" stroke="#fef7e0" stroke-width="10" stroke-linecap="round"/>
+  <!-- Legs hanging straight -->
+  <line x1="55" y1="56" x2="50" y2="72" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="50" y1="72" x2="48" y2="84" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="65" y1="56" x2="70" y2="72" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="70" y1="72" x2="72" y2="84" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <!-- Head -->
+  <circle cx="60" cy="19" r="9" fill="#fef7e0"/>
 </svg>

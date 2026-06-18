@@ -1,12 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" fill="none">
-  <circle cx="30" cy="22" r="7" stroke="#fef7e0" stroke-width="3"/>
-  <line x1="30" y1="29" x2="30" y2="54" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="30" y1="38" x2="14" y2="48" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="30" y1="38" x2="46" y2="46" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="30" y1="54" x2="20" y2="74" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="30" y1="54" x2="42" y2="70" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="84" cy="22" r="7" stroke="#fef7e0" stroke-width="3"/>
-  <line x1="84" y1="29" x2="84" y2="58" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="84" y1="40" x2="70" y2="52" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="84" y1="40" x2="98" y2="52" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Figure 1: arms raised overhead (left) -->
+  <line x1="30" y1="28" x2="30" y2="52" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="27" y1="34" x2="16" y2="20" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="33" y1="34" x2="44" y2="20" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="27" y1="52" x2="22" y2="70" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="22" y1="70" x2="18" y2="80" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="33" y1="52" x2="38" y2="70" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="38" y1="70" x2="42" y2="80" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="30" cy="18" r="8" fill="#fef7e0"/>
+  <!-- Figure 2: arms spread wide / jumping jack (right) -->
+  <line x1="90" y1="28" x2="90" y2="52" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="87" y1="35" x2="72" y2="28" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="93" y1="35" x2="108" y2="28" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="87" y1="52" x2="78" y2="70" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="78" y1="70" x2="72" y2="80" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="93" y1="52" x2="102" y2="70" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="102" y1="70" x2="108" y2="80" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="90" cy="18" r="8" fill="#fef7e0"/>
 </svg>

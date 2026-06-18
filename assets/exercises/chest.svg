@@ -1,10 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" fill="none">
-  <rect x="10" y="68" width="100" height="6" rx="3" stroke="#fef7e0" stroke-width="3"/>
-  <line x1="20" y1="60" x2="100" y2="60" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <circle cx="60" cy="28" r="8" stroke="#fef7e0" stroke-width="3"/>
-  <line x1="60" y1="36" x2="60" y2="56" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="42" x2="38" y2="50" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="60" y1="42" x2="82" y2="50" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="38" y1="50" x2="30" y2="42" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
-  <line x1="82" y1="50" x2="90" y2="42" stroke="#fef7e0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Bench -->
+  <rect x="6" y="58" width="86" height="7" rx="3" fill="#c8c4a8"/>
+  <line x1="14" y1="65" x2="14" y2="80" stroke="#c8c4a8" stroke-width="4" stroke-linecap="round"/>
+  <line x1="78" y1="65" x2="78" y2="80" stroke="#c8c4a8" stroke-width="4" stroke-linecap="round"/>
+  <!-- Body on bench (horizontal torso) -->
+  <line x1="16" y1="54" x2="72" y2="54" stroke="#fef7e0" stroke-width="10" stroke-linecap="round"/>
+  <!-- Leg off end of bench -->
+  <line x1="72" y1="54" x2="84" y2="62" stroke="#fef7e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="84" y1="62" x2="90" y2="76" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <!-- Left arm pressing -->
+  <line x1="26" y1="52" x2="22" y2="34" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="22" y1="34" x2="30" y2="20" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <!-- Right arm pressing -->
+  <line x1="58" y1="52" x2="62" y2="34" stroke="#fef7e0" stroke-width="7" stroke-linecap="round"/>
+  <line x1="62" y1="34" x2="56" y2="20" stroke="#fef7e0" stroke-width="6" stroke-linecap="round"/>
+  <!-- Barbell -->
+  <line x1="8" y1="20" x2="112" y2="20" stroke="#c8c4a8" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="8" cy="20" r="6" fill="#c8c4a8"/>
+  <circle cx="112" cy="20" r="6" fill="#c8c4a8"/>
+  <!-- Head (person lying, head at left) -->
+  <circle cx="9" cy="54" r="8" fill="#fef7e0"/>
 </svg>
