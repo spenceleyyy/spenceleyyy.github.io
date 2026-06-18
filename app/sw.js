@@ -1,4 +1,4 @@
-const CACHE = 'app-shell-v3';
+const CACHE = 'app-shell-v4';
 const ASSETS = [
   'index.html',
   'piano-lab.html',
@@ -6,6 +6,10 @@ const ASSETS = [
   'photo-translator.html',
   'gym-login.html',
   'manifest-gym.json',
+  'apple-touch-icon.png',
+  'logos/gym-icon-120.png',
+  'logos/gym-icon-152.png',
+  'logos/gym-icon-167.png',
   'logos/gym-icon-180.png',
   'logos/gym-icon-192.png',
   'logos/gym-icon-512.png',
