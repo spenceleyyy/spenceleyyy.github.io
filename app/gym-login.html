@@ -2037,6 +2037,8 @@ const TEMPLATES = [
    APP STATE & STORAGE
 ═══════════════════════════════════════════════ */
 let currentUser = 'me', screenHistory = [], activeWorkout = null;
+function saveActiveWorkout(){ try{ if(activeWorkout) localStorage.setItem('aq_active_workout', JSON.stringify(activeWorkout)); }catch(_){} }
+function clearActiveWorkout(){ activeWorkout=null; try{ localStorage.removeItem('aq_active_workout'); }catch(_){} }
 let restInterval = null, restSecsLeft = 0;
 let selectedFoodItem = null, labelScanB64 = null, photoEstB64 = null;
 let pendingAiFood = null, coachImgB64 = null;
@@ -2224,6 +2226,11 @@ $('fabSheet').addEventListener('click',e=>{
 
 function enterApp(){
   $('appView').classList.remove('hidden');
+  // Restore any in-progress workout that survived an app close/backgrounding
+  try {
+    const saved = localStorage.getItem('aq_active_workout');
+    if (saved) activeWorkout = JSON.parse(saved);
+  } catch(_) {}
   showScreen('home',false); screenHistory=['home'];
   const pending = sessionStorage.getItem('pendingHealthSync');
   if(pending){ mergeShortcutsHealth(new URLSearchParams(pending)); sessionStorage.removeItem('pendingHealthSync'); }
@@ -2609,6 +2616,7 @@ function beginWorkout(nameOrEv){
   activeWorkout={ name, startTime:Date.now(), currentIdx:0,
     exercises:workoutQueue.map(id=>{ const ex=EXERCISES.find(e=>e.id===id); return {id,name:ex?.name||id,bw:ex?.bw||false,sets:[]}; })
   };
+  saveActiveWorkout();
   showScreen('active-workout');
 }
 function addExercisesToWorkout(){
@@ -2624,6 +2632,7 @@ function addExercisesToWorkout(){
     const firstNew=activeWorkout.exercises.findIndex(e=>e.id===workoutQueue[0]);
     if(firstNew>=0) activeWorkout.currentIdx=firstNew;
   }
+  saveActiveWorkout();
   showScreen('active-workout');
 }
 
@@ -2710,8 +2719,8 @@ function bindWorkoutInputs(){
   };
   $('setRpe').oninput=()=>$('rpeVal').textContent=$('setRpe').value;
   $('logSetBtn').onclick=logSet;
-  $('prevExBtn').onclick=()=>{ activeWorkout.currentIdx--; updateExBanner(); renderSetHistory(); };
-  $('nextExBtn').onclick=()=>{ activeWorkout.currentIdx++; updateExBanner(); renderSetHistory(); };
+  $('prevExBtn').onclick=()=>{ activeWorkout.currentIdx--; saveActiveWorkout(); updateExBanner(); renderSetHistory(); };
+  $('nextExBtn').onclick=()=>{ activeWorkout.currentIdx++; saveActiveWorkout(); updateExBanner(); renderSetHistory(); };
   $('addMoreExBtn').onclick=()=>{ workoutQueue=[]; showScreen('exercise-select'); };
   $('finishWorkoutBtn').onclick=finishWorkout;
   $('switchExBtn').onclick=openOverview;
@@ -2719,7 +2728,7 @@ function bindWorkoutInputs(){
   $('addRest').onclick=()=>{ restSecsLeft+=30; updateRestDisplay(); };
   $('awQuitBtn').onclick=()=>{
     if(confirm('Quit workout? Progress will be lost.')){
-      clearRest(); if(_awTimerInterval){clearInterval(_awTimerInterval);_awTimerInterval=null;} activeWorkout=null; showScreen('workout-home');
+      clearRest(); if(_awTimerInterval){clearInterval(_awTimerInterval);_awTimerInterval=null;} clearActiveWorkout(); showScreen('workout-home');
     }
   };
   $('awOverviewBtn').onclick=openOverview;
@@ -2734,7 +2743,7 @@ function openOverview(){
       <div class="aw-ov-sets">${ex.sets.length} set${ex.sets.length!==1?'s':''}</div>
     </div>`).join('');
   $('awOverviewList').querySelectorAll('.aw-ov-ex').forEach(row=>{
-    row.addEventListener('click',()=>{ activeWorkout.currentIdx=parseInt(row.dataset.ovi); closeOverview(); updateExBanner(); renderSetHistory(); });
+    row.addEventListener('click',()=>{ activeWorkout.currentIdx=parseInt(row.dataset.ovi); saveActiveWorkout(); closeOverview(); updateExBanner(); renderSetHistory(); });
   });
   $('awOverviewSheet').classList.remove('hidden');
 }
@@ -2744,6 +2753,7 @@ function logSet(){
   if(r<=0){ showToast('Enter reps before logging'); $('setR').focus(); return; }
   if(w<0){ showToast('Weight can\'t be negative'); return; }
   activeWorkout.exercises[activeWorkout.currentIdx].sets.push({weight:w,reps:r,rpe,timestamp:Date.now()});
+  saveActiveWorkout();
   $('setW').value=w; $('setR').value='';
   renderSetHistory(); updateExBanner();
   // If already resting (superset mid-rest), keep the timer running instead of resetting
@@ -2771,6 +2781,7 @@ function renderSetHistory(){
     btn.addEventListener('click',()=>{
       const idx=parseInt(btn.dataset.si);
       activeWorkout.exercises[activeWorkout.currentIdx].sets.splice(idx,1);
+      saveActiveWorkout();
       renderSetHistory(); updateExBanner();
       showToast('Set removed');
     });
@@ -2795,7 +2806,7 @@ function finishWorkout(){
     duration:Date.now()-activeWorkout.startTime, exercises:activeWorkout.exercises.filter(ex=>ex.sets.length>0) };
   if(workout.exercises.length===0){ alert('Log at least one set first!'); return; }
   const all=store.getWorkouts(); all.push(workout); store.saveWorkouts(all);
-  activeWorkout=null; showScreen('workout-done');
+  clearActiveWorkout(); showScreen('workout-done');
 }
 function renderDone(){
   const w=store.getWorkouts().slice(-1)[0]; if(!w) return;
