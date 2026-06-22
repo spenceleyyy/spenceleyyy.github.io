@@ -410,11 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function buildPdfFromCanvas(canvas) {
-        const jpegDataUrl = canvas.toDataURL('image/jpeg', 0.92);
-        const base64 = jpegDataUrl.split(',')[1];
-        const imgBytes = base64ToUint8Array(base64);
         const width = canvas.width;
         const height = canvas.height;
+        const imgBytes = canvasToRgbBytes(canvas);
 
         const header = '%PDF-1.4\n';
         const catalog = '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
@@ -435,7 +433,7 @@ ${contentStream}endstream
 endobj
 `;
         const imageHeader = `5 0 obj
-<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>
+<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Length ${imgBytes.length} >>
 stream
 `;
         const imageFooter = '\nendstream\nendobj\n';
@@ -483,12 +481,16 @@ ${cursor}
         return new Blob([pdfBytes], { type: 'application/pdf' });
     }
 
-    function base64ToUint8Array(base64) {
-        const binary = atob(base64);
-        const len = binary.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i += 1) {
-            bytes[i] = binary.charCodeAt(i);
+    function canvasToRgbBytes(canvas) {
+        const ctx = canvas.getContext('2d');
+        const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const bytes = new Uint8Array(width * height * 3);
+        let rgbIndex = 0;
+        for (let rgbaIndex = 0; rgbaIndex < data.length; rgbaIndex += 4) {
+            bytes[rgbIndex] = data[rgbaIndex];
+            bytes[rgbIndex + 1] = data[rgbaIndex + 1];
+            bytes[rgbIndex + 2] = data[rgbaIndex + 2];
+            rgbIndex += 3;
         }
         return bytes;
     }
