@@ -24,11 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const motionReduced = motionMediaQuery.matches;
     
-    const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATEd.pdf";
-    const DEFAULT_LOGO_FALLBACK = "/logos/RSlogoUPDATED.png";
-    const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.pdf";
-    const NEURO_LOGO_FALLBACK = "/logos/NeuroErgoHead.png";
+    const DEFAULT_LOGO_PATH = "logos/RSlogoUPDATEd.pdf";
+    const DEFAULT_LOGO_FALLBACK = "logos/RSlogoUPDATED.png";
+    const NEURO_LOGO_PATH = "logos/NeuroErgoHead.pdf";
+    const NEURO_LOGO_FALLBACK = "logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
+    const QR_RENDER_SCALE = 4;
     const LOGO_RENDER_SCALE = 4;
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
@@ -159,11 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function buildQRCodeCanvas(text, size, options = {}) {
+    function buildQRCodeCanvas(text, displaySize, options = {}) {
         const {
             rounded = false,
             backgroundColor = DEFAULT_BACKGROUND_COLOR,
         } = options;
+        const size = Math.round(displaySize * QR_RENDER_SCALE);
         const tempContainer = document.createElement('div');
         const generator = new QRCode(tempContainer, {
             text: '',
@@ -189,6 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
+        canvas.style.width = `${displaySize}px`;
+        canvas.style.height = `${displaySize}px`;
         const ctx = canvas.getContext('2d');
 
         const outerRadius = rounded ? Math.min(size * OUTER_RADIUS_RATIO, size / 5) : 0;
