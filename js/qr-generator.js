@@ -30,7 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const NEURO_LOGO_FALLBACK = "logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
     const QR_RENDER_SCALE = 4;
-    const LOGO_RENDER_SCALE = 4;
+    const LOGO_SIZE_RATIO = 0.44;
+    const LOGO_INSET_RATIO = 0.02;
+    const LOGO_RENDER_SCALE = 2;
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
     const PDF_WORKER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addLogoToQR(canvas, backgroundColor = DEFAULT_BACKGROUND_COLOR) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
-        const logoMaxSize = Math.round(canvasSize * 0.35);
+        const logoMaxSize = Math.round(canvasSize * LOGO_SIZE_RATIO);
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
 
@@ -271,9 +273,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoFallback = logoChoice.fallback;
 
         const renderLogoCommon = (sourceWidth, sourceHeight, draw) => {
-            const renderSize = Math.min(logoMaxSize, sourceWidth, sourceHeight);
+            const renderSize = logoMaxSize;
             const logoRadius = renderSize / 2;
-            const inset = Math.max(2, renderSize * 0.05);
+            const inset = Math.max(2, Math.round(renderSize * LOGO_INSET_RATIO));
+            const drawSize = renderSize - inset * 2;
+            const drawX = Math.round(centerX - logoRadius + inset);
+            const drawY = Math.round(centerY - logoRadius + inset);
 
             ctx.save();
             ctx.beginPath();
@@ -283,12 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.clip();
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
-            draw(
-                centerX - logoRadius + inset,
-                centerY - logoRadius + inset,
-                renderSize - inset * 2,
-                renderSize - inset * 2,
-            );
+            draw(drawX, drawY, drawSize, drawSize);
             ctx.restore();
         };
 
