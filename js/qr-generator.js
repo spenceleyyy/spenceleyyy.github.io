@@ -26,8 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const DEFAULT_LOGO_PATH = "/logos/RSlogoUPDATEd.pdf";
     const DEFAULT_LOGO_FALLBACK = "/logos/RSlogoUPDATED.png";
-    const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.png";
+    const NEURO_LOGO_PATH = "/logos/NeuroErgoHead.pdf";
+    const NEURO_LOGO_FALLBACK = "/logos/NeuroErgoHead.png";
     const QR_SIZE = 600; 
+    const LOGO_RENDER_SCALE = 4;
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
     const PDF_WORKER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
@@ -259,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoChoice = (useCustomLogo && useCustomLogo.checked && customLogoDataUrl)
             ? { primary: customLogoDataUrl, fallback: null }
             : (useNeuroLogo && useNeuroLogo.checked
-                ? { primary: NEURO_LOGO_PATH, fallback: null }
+                ? { primary: NEURO_LOGO_PATH, fallback: NEURO_LOGO_FALLBACK }
                 : { primary: DEFAULT_LOGO_PATH, fallback: DEFAULT_LOGO_FALLBACK });
         const logoToUse = logoChoice.primary;
         const logoFallback = logoChoice.fallback;
@@ -322,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
             const page = await pdf.getPage(1);
             const viewport = page.getViewport({ scale: 1 });
-            const scale = logoMaxSize / Math.max(viewport.width, viewport.height);
+            const scale = (logoMaxSize * LOGO_RENDER_SCALE) / Math.max(viewport.width, viewport.height);
             const scaledViewport = page.getViewport({ scale });
             const pdfCanvas = document.createElement('canvas');
             pdfCanvas.width = scaledViewport.width;
