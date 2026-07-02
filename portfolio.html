@@ -46,7 +46,7 @@
       --char-y: 0px;
       --char-z: 500px;
       --char-tilt: 0deg;
-      --char-floor-lift: 880px;
+      --char-floor-lift: 0px;
     }
 
     * {
@@ -259,8 +259,14 @@
     .face.floor {
       width: var(--room-w);
       height: var(--room-d);
-      transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / 2));
-      background: linear-gradient(180deg, #fafaf8 0%, #f6f6f4 100%);
+      /* translateZ must be negative: it applies along the rotated axis, so a
+         positive value would place the floor at the ceiling (Chrome depth-sorts
+         this correctly and hides everything attached to the floor). */
+      transform: translate(-50%, -50%) rotateX(90deg) translateZ(calc(var(--room-h) / -2));
+      background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.045) 0 2px, transparent 2px 230px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 2px, transparent 2px 190px),
+        linear-gradient(180deg, #f1f1ef 0%, #f8f8f6 55%, #f0f0ee 100%);
     }
 
     .face.floor::before {
@@ -270,13 +276,12 @@
     .face.ceiling {
       width: var(--room-w);
       height: var(--room-d);
-      transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--room-h) / 2));
+      /* See .face.floor: negative translateZ keeps this face at the top. */
+      transform: translate(-50%, -50%) rotateX(-90deg) translateZ(calc(var(--room-h) / -2));
       background:
         radial-gradient(ellipse at 50% 52%, rgba(255, 247, 232, 0.26) 0%, rgba(255, 247, 232, 0.12) 35%, transparent 60%),
         radial-gradient(ellipse at 50% 22%, rgba(255, 255, 255, 0.45) 0%, transparent 45%),
-        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.045) 0 2px, transparent 2px 230px),
-        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.03) 0 2px, transparent 2px 190px),
-        linear-gradient(180deg, #f1f1ef 0%, #f8f8f6 55%, #f0f0ee 100%);
+        linear-gradient(180deg, #fafaf8 0%, #f6f6f4 100%);
     }
 
     /* ========== MUSEUM LIGHTING SYSTEM ========== */
@@ -880,11 +885,14 @@
       position: absolute;
       left: 0;
       top: 0;
-      transform: translate(-50%, -100%) rotateX(90deg);
-      transform-origin: 50% 100%;
+      /* Stand the canvas upright from the floor plane; the -280px drop grounds
+         the model's feet (the Three.js camera centers the model in the canvas,
+         leaving empty space below its feet — the drop is ~0.47 of the height). */
+      transform: translate(-50%, 0%) translateZ(-280px) rotateX(90deg);
+      transform-origin: 50% 0%;
       transform-style: preserve-3d;
-      width: 120px;
-      height: 150px;
+      width: 480px;
+      height: 600px;
       cursor: grab;
       pointer-events: auto;
     }
@@ -1776,7 +1784,6 @@
         </div>
         <div class="face floor">
           <div id="floor-shadow" aria-hidden="true"></div>
-          <div class="floor-center-decal" aria-hidden="true"></div>
           <div class="character-plane" aria-hidden="true">
             <div class="character-shadow" aria-hidden="true"></div>
             <div class="character" aria-hidden="true">
@@ -1962,9 +1969,9 @@
     const debugCharacterMode = false;
     const spawnConfig = {
       x: 0,
-      z: 4600,
+      z: 2600,
       yaw: -180,
-      floor: 880,
+      floor: 0,
     };
     if (debugCharacterMode) {
       document.body.classList.add("debug-char-mode");
@@ -2400,7 +2407,7 @@
       charX = clamp(spawnConfig.x, walls.left, walls.right);
       charZ = getSpawnZ();
       charYaw = normalizeYaw(spawnConfig.yaw);
-      charFloorOffset = clamp(spawnConfig.floor, 200, 1400);
+      charFloorOffset = clamp(spawnConfig.floor, -400, 1400);
       if (floorOffsetRange) floorOffsetRange.value = Math.round(charFloorOffset);
       if (floorOffsetInput) floorOffsetInput.value = Math.round(charFloorOffset);
       hasSpawned = true;
@@ -3310,7 +3317,7 @@
     function setFloorOffset(value) {
       const next = Number(value);
       if (Number.isNaN(next)) return;
-      charFloorOffset = clamp(next, 200, 1400);
+      charFloorOffset = clamp(next, -400, 1400);
       if (floorOffsetRange) floorOffsetRange.value = Math.round(charFloorOffset);
       if (floorOffsetInput) floorOffsetInput.value = Math.round(charFloorOffset);
       updateCharacter();
