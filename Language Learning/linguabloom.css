@@ -4868,3 +4868,85 @@ body.coach-page.time-night {
    the title and the guide button */
 .levels-page .companion-mini { right: 88px; bottom: 10px; }
 .levels-page .companion-mini { right: 102px; }
+
+/* ============================================================
+   POLISH + FIX PASS — quiet life for nav, physical words
+   ============================================================ */
+
+/* ── Navigation ambience — alive, never busy ────────────────── */
+
+/* a warm light wash slowly wanders across nav pages */
+.scenery-nav::before {
+  content: '';
+  position: absolute;
+  top: -10vh; left: 8vw;
+  width: 70vw; height: 50vh;
+  background: radial-gradient(ellipse at center, rgba(255,224,190,.22) 0%, transparent 65%);
+  pointer-events: none;
+  animation: lightWander 38s ease-in-out infinite alternate;
+}
+
+@keyframes lightWander {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-9vw, 7vh) scale(1.12); }
+}
+
+/* nav sparkles are shy — long pauses between fades */
+.scenery-nav .sc-spark {
+  color: rgba(242,182,43,.55);
+  font-size: 11px;
+  filter: none;
+  animation: shySparkle 9s ease-in-out infinite;
+}
+
+.scenery-nav .sc-spark.s1 { top: 22vh; left: 12vw; }
+.scenery-nav .sc-spark.s2 { top: 48vh; right: 10vw; left: auto; animation-delay: 4.5s; }
+
+@keyframes shySparkle {
+  0%, 72%, 100% { opacity: 0; transform: scale(.6) rotate(0deg); }
+  80%, 92%      { opacity: .8; transform: scale(1.05) rotate(18deg); }
+}
+
+/* stat cards lift a touch under the pointer */
+.scard { transition: transform .2s cubic-bezier(.34,1.4,.64,1), box-shadow .2s; }
+.scard:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.week-dot:hover { transform: translateY(-2px); }
+
+/* ── Words as physical objects ──────────────────────────────── */
+
+/* a chip mid-drag goes translucent and tilts a little */
+.build-word.dragging {
+  opacity: .45;
+  transform: rotate(2deg) scale(1.04);
+  box-shadow: var(--shadow-lg);
+}
+
+/* the answer line brightens while a word hovers over it */
+.lesson-page .build-answer.drop-hover,
+.build-answer.drop-hover {
+  box-shadow: 0 0 0 4px rgba(114,224,213,.3), 0 8px 22px rgba(94,68,84,.12);
+}
+
+.build-bank.drop-hover .build-word { opacity: .8; }
+
+/* brief glow when a word lands */
+.build-answer.just-dropped {
+  animation: answerGlow .45s ease-out;
+}
+
+@keyframes answerGlow {
+  0%   { box-shadow: 0 0 0 6px rgba(114,224,213,.4), 0 8px 22px rgba(94,68,84,.12); }
+  100% { box-shadow: 0 0 0 0 rgba(114,224,213,0), 0 8px 22px rgba(94,68,84,.1); }
+}
+
+/* only the word that just landed animates, not the whole row */
+.build-answer .build-word { animation: none; }
+.build-answer .build-word:last-child {
+  animation: wordLand .3s cubic-bezier(.34,1.5,.64,1), mintBreath .7s ease-out;
+}
+
+/* refreshed placeholder wording */
+.lesson-page .build-answer:empty::before,
+.lesson-page .build-answer:not(:has(.build-word))::before {
+  content: 'Build your answer here…';
+}

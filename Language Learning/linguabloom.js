@@ -2896,37 +2896,91 @@ const STORAGE_KEY = "linguabloom-progress-v2";
 
     const renderBuildTask = (task) => {
       if (!buildBank || !buildAnswer) return;
-      buildBank.innerHTML = "";
-      buildAnswer.innerHTML = "";
+      // Every word is a token with a stable unique id (duplicates stay
+      // distinct). Moving a word transfers the token between the two
+      // arrays — chips are re-rendered from state, so nothing can vanish.
+      const tokens = task.words.map((word, i) => ({ id: `${i}:${word}`, word }));
+      const bankTokens = tokens.slice();
+      const answerTokens = [];
       state.buildAnswer = [];
-      task.words.forEach((word) => {
-        const romanized = resolveWordRomanization(word, task) || "";
-        const btn = document.createElement("button");
-        btn.className = "build-word";
-        btn.innerHTML = renderTextWithDefinitions(word, { romanize: true, forceRomanized: romanized });
-        btn.addEventListener("click", () => {
-          state.buildAnswer.push(word);
-          btn.remove();
-          renderBuildAnswer();
-        });
-        buildBank.appendChild(btn);
-        attachWordListeners(btn);
-      });
-      const renderBuildAnswer = () => {
-        buildAnswer.innerHTML = "";
-        state.buildAnswer.forEach((word, idx) => {
-          const btn = document.createElement("button");
-          btn.className = "build-word";
-          const romanized = resolveWordRomanization(word, task) || "";
-          btn.innerHTML = renderTextWithDefinitions(word, { romanize: true, forceRomanized: romanized });
-          btn.addEventListener("click", () => {
-            state.buildAnswer.splice(idx, 1);
-            renderBuildAnswer();
-          });
-          buildAnswer.appendChild(btn);
-        });
+
+      const syncState = () => {
+        state.buildAnswer = answerTokens.map((t) => t.word);
       };
-      renderBuildAnswer();
+
+      const findToken = (id) => tokens.find((t) => t.id === id);
+
+      const moveToken = (token, dest) => {
+        if (!token || state.pendingAdvance) return;
+        const from = dest === "answer" ? bankTokens : answerTokens;
+        const to = dest === "answer" ? answerTokens : bankTokens;
+        const idx = from.findIndex((t) => t.id === token.id);
+        if (idx === -1) return; // already where it belongs
+        to.push(from.splice(idx, 1)[0]);
+        render();
+        if (dest === "answer") {
+          buildAnswer.classList.remove("just-dropped");
+          void buildAnswer.offsetWidth;
+          buildAnswer.classList.add("just-dropped");
+        }
+      };
+
+      const makeChip = (token, home) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "build-word";
+        btn.dataset.tokenId = token.id;
+        btn.draggable = true;
+        const romanized = resolveWordRomanization(token.word, task) || "";
+        btn.innerHTML = renderTextWithDefinitions(token.word, { romanize: true, forceRomanized: romanized });
+        btn.addEventListener("click", () => moveToken(token, home === "bank" ? "answer" : "bank"));
+        btn.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text/plain", token.id);
+          event.dataTransfer.effectAllowed = "move";
+          btn.classList.add("dragging");
+        });
+        btn.addEventListener("dragend", () => btn.classList.remove("dragging"));
+        attachWordListeners(btn);
+        return btn;
+      };
+
+      const render = () => {
+        buildBank.innerHTML = "";
+        buildAnswer.innerHTML = "";
+        bankTokens.forEach((t) => buildBank.appendChild(makeChip(t, "bank")));
+        answerTokens.forEach((t) => buildAnswer.appendChild(makeChip(t, "answer")));
+        syncState();
+      };
+
+      // Drop targets (property assignment so listeners never stack
+      // across tasks). Dropping anywhere outside the answer box sends
+      // the word back to the bank.
+      const wireDrop = (el, dest) => {
+        el.ondragover = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          el.classList.add("drop-hover");
+        };
+        el.ondragleave = () => el.classList.remove("drop-hover");
+        el.ondrop = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          el.classList.remove("drop-hover");
+          moveToken(findToken(event.dataTransfer.getData("text/plain")), dest);
+        };
+      };
+      wireDrop(buildAnswer, "answer");
+      wireDrop(buildBank, "bank");
+      if (viewLessonEl) {
+        viewLessonEl.ondragover = (event) => event.preventDefault();
+        viewLessonEl.ondrop = (event) => {
+          event.preventDefault();
+          const token = findToken(event.dataTransfer.getData("text/plain"));
+          if (token && answerTokens.some((t) => t.id === token.id)) moveToken(token, "bank");
+        };
+      }
+
+      render();
     };
 
     const renderMatchTask = (task) => {
