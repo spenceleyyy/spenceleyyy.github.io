@@ -8,10 +8,10 @@
   "theme_color": "#ff8d62",
   "icons": [
     {
-      "src": "../logos/RSlogoUPDATED.png",
+      "src": "LL.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
