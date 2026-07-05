@@ -1289,12 +1289,53 @@ const STORAGE_KEY = "linguabloom-progress-v2";
           return `<span class="${classes.join(" ")}" data-word="${token}" data-definition="${definition}">${token}</span>`;
         })
         : "";
-      const shouldShowRomanized = romanized && state.scriptMode !== "hanzi";
+      // Hanzi is never shown without its written equivalent (pinyin)
+      const shouldShowRomanized = !!romanized;
       if (!decorated && shouldShowRomanized) {
         return `<span class="romanization-line">${romanized}</span>`;
       }
       if (!shouldShowRomanized) return decorated || text;
       return `${decorated}<span class="romanization-line">${romanized}</span>`;
+    };
+
+    const viewLessonEl = document.getElementById("viewLesson");
+
+    const hideWordPop = () => { document.querySelector(".word-pop")?.remove(); };
+
+    const showWordPop = (chip, word, definition, romanized, isNew) => {
+      hideWordPop();
+      const pop = document.createElement("div");
+      pop.className = "word-pop" + (isNew ? " word-pop-new" : "");
+      pop.innerHTML =
+        (isNew ? '<div class="word-pop-badge">New word</div>' : "") +
+        '<div class="word-pop-word">' + escapeHTML(word) + "</div>" +
+        (romanized ? '<div class="word-pop-pinyin">' + escapeHTML(romanized) + "</div>" : "") +
+        '<div class="word-pop-def">' + escapeHTML(definition) + "</div>";
+      document.body.appendChild(pop);
+      const rect = chip.getBoundingClientRect();
+      const pw = pop.offsetWidth;
+      let left = rect.left + rect.width / 2 - pw / 2;
+      left = Math.max(10, Math.min(left, window.innerWidth - pw - 10));
+      let top = rect.top - pop.offsetHeight - 12;
+      if (top < 8) top = rect.bottom + 12;
+      pop.style.left = left + "px";
+      pop.style.top = top + "px";
+      const dismiss = (event) => {
+        if (pop.contains(event.target)) return;
+        hideWordPop();
+        document.removeEventListener("pointerdown", dismiss, true);
+      };
+      setTimeout(() => document.addEventListener("pointerdown", dismiss, true), 0);
+    };
+
+    // Word-chip lock state for the current task.
+    // Definitions unlock once the answer is submitted (state.pendingAdvance).
+    const syncLessonAids = () => {
+      if (!viewLessonEl) return;
+      const locked = !state.pendingAdvance;
+      viewLessonEl.classList.toggle("answers-locked", locked);
+      const hasNew = !!viewLessonEl.querySelector(".word-chip.new-word");
+      document.getElementById("newWordBtn")?.classList.toggle("has-new", hasNew);
     };
 
     const attachWordListeners = (container) => {
@@ -1305,11 +1346,24 @@ const STORAGE_KEY = "linguabloom-progress-v2";
           const definition = chip.dataset.definition || "Definition not available yet.";
           const lesson = getLesson();
           const romanized = lesson.romanizationMap?.get(word) || lesson.romanizationMap?.get(word.trim()) || "";
+          const isNew = chip.classList.contains("new-word");
+          const inActionBtn = !!chip.closest(".build-word, .match-item");
+          // Before submitting, known words stay locked — only new words open early.
+          if (!state.pendingAdvance && !isNew) {
+            if (chip.closest(".prompt-text")) {
+              chip.classList.remove("nudge");
+              void chip.offsetWidth;
+              chip.classList.add("nudge");
+              if (wordDefinition) wordDefinition.textContent = "Submit your answer to unlock word meanings.";
+            }
+            return;
+          }
           if (wordTitle) wordTitle.textContent = word;
           if (wordDefinition) {
             wordDefinition.textContent = romanized ? `${definition} · ${romanized}` : definition;
           }
-          speak(word, true);
+          if (!inActionBtn) showWordPop(chip, word, definition, romanized, isNew && !state.pendingAdvance);
+          if (!state.quietMode) speak(word, true);
         });
       });
 
@@ -1828,6 +1882,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
         correctCount: state.correctCount,
         audioEnabled: state.audioEnabled,
         wordStats: state.wordStats,
+        savedWords: state.savedWords || {},
         lastSaved: Date.now()
       };
       data.activeProfile = state.profileId;
@@ -1864,6 +1919,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       state.correctCount = saved.correctCount ?? 0;
       state.audioEnabled = saved.audioEnabled ?? true;
       state.wordStats = saved.wordStats || {};
+      state.savedWords = saved.savedWords && typeof saved.savedWords === "object" ? saved.savedWords : {};
       state.lastSaved = saved.lastSaved ?? null;
     };
 
@@ -1960,7 +2016,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       });
       const addOption = document.createElement("option");
       addOption.value = "__new__";
-      addOption.textContent = "➕ Add profile";
+      addOption.textContent = "+ Add profile";
       profileSelect.appendChild(addOption);
       profileSelect.value = state.profileId;
     };
@@ -1983,6 +2039,8 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       document.querySelector(".lesson-card")?.style.setProperty("--new-word-border", borderPalette[idx]);
       if (unitChip) unitChip.textContent = `${DIFFICULTY_LABELS[state.difficulty]} ${state.levelIndex + 1}`;
       if (topicChip) topicChip.textContent = module.title;
+      const learningContext = document.getElementById("learningContext");
+      if (learningContext) learningContext.textContent = `You’re learning: ${module.title || "new phrases"}`;
       if (languageChip) languageChip.textContent = lesson.label;
       if (wordTitle) wordTitle.textContent = "Word helper";
       if (wordDefinition) wordDefinition.textContent = "Tap any highlighted word to see its meaning.";
@@ -2454,6 +2512,11 @@ const STORAGE_KEY = "linguabloom-progress-v2";
     };
 
     const showCompletionScreen = (completedModule) => {
+      // Quiet mode is scoped to a single lesson — it ends with the lesson.
+      if (state.quietMode) {
+        state.quietMode = false;
+        syncQuietUI();
+      }
       const xpEarned = state.sessionXp || 0;
       const streak = getStreakCount();
       const existing = document.getElementById('completionOverlay');
@@ -2465,7 +2528,9 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       overlay.innerHTML = `
         <div class="completion-card">
           <div class="completion-emoji">🎉</div>
+          <div class="completion-water" aria-hidden="true"><span class="wc-drop d1"></span><span class="wc-drop d2"></span><span class="wc-drop d3"></span><span class="wc-leaf"></span></div>
           <h2 class="completion-title">Lesson Complete!</h2>
+          <p class="completion-plant-note">Your plant was watered — a new leaf unfurled.</p>
           ${moduleTitle ? `<p class="completion-module">${moduleTitle}</p>` : ''}
           <div class="completion-stats">
             <div class="completion-stat">
@@ -2473,11 +2538,11 @@ const STORAGE_KEY = "linguabloom-progress-v2";
               <span class="stat-label">XP earned</span>
             </div>
             <div class="completion-stat">
-              <span class="stat-big">🔥 ${streak}</span>
+              <span class="stat-big">${streak}</span>
               <span class="stat-label">day streak</span>
             </div>
             <div class="completion-stat">
-              <span class="stat-big">❤ ${state.hearts}</span>
+              <span class="stat-big">${state.hearts}</span>
               <span class="stat-label">lives left</span>
             </div>
           </div>
@@ -2741,6 +2806,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
     };
 
     const speak = async (text, force = false) => {
+      if (state.quietMode) return; // quiet mode: no audio at all
       if (!state.audioEnabled && !force) return;
       const lesson = getLesson();
       const lang   = lesson.voice || "zh-CN";
@@ -2800,6 +2866,9 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       progressText.textContent = `${shownIndex}/${total || 0}`;
       const percent = total ? (shownIndex / total) * 100 : 0;
       progressFill.style.width = `${percent}%`;
+      document.querySelectorAll("#progressMilestones i").forEach((dot, i) => {
+        dot.classList.toggle("lit", percent >= (i + 1) * 25);
+      });
       if (heartPanel) heartPanel.innerHTML = '<span style="color:#FF4B4B">' + '❤'.repeat(state.hearts) + '</span>' + '<span style="opacity:0.25">❤</span>'.repeat(Math.max(0, 3 - state.hearts));
       if (xpPanel) xpPanel.textContent = state.xp;
       if (levelsXp) levelsXp.textContent = state.xp;
@@ -2938,6 +3007,14 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       if (!promptText || !promptTitle || !choiceGrid || !inputArea || !buildArea || !matchArea || !speakArea || !textInput) return;
       applyLessonUI();
       if (!state.tasks.length) return;
+      // Quiet mode: speaking tasks become sentence-building for this lesson
+      if (state.quietMode) {
+        const pending = state.tasks[state.index];
+        if (pending && pending.type === "speak") {
+          const words = (pending.answer || "").split(/\s+/).filter(Boolean);
+          state.tasks[state.index] = { ...pending, type: "build", words: shuffle(words.length ? words : [pending.answer || ""]) };
+        }
+      }
       const task = state.tasks[state.index];
       state.selectedOption = null;
       textInput.value = "";
@@ -2975,10 +3052,13 @@ const STORAGE_KEY = "linguabloom-progress-v2";
         renderSpeakTask();
       }
       attachWordListeners(promptText);
-      if (state.currentAudio) {
+      if (state.currentAudio && !state.quietMode) {
         speak(state.currentAudio);
       }
       updateStatus();
+      syncLessonAids();
+      resetLessonTools();
+      syncCompanion();
     };
 
     const handleAnswer = () => {
@@ -3016,9 +3096,11 @@ const STORAGE_KEY = "linguabloom-progress-v2";
         state.sessionXp = (state.sessionXp || 0) + 10;
         state.correctCount += 1;
         showAnswerFeedback(task, true);
+        companionReact("happy");
       } else {
         state.hearts = Math.max(0, state.hearts - 1);
         showAnswerFeedback(task, false);
+        companionReact("worried");
       }
       playTone(correct);
       if (state.hearts === 0) {
@@ -3033,6 +3115,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       }
       state.pendingAdvance = true;
       if (checkBtn) checkBtn.textContent = "Continue";
+      syncLessonAids();
     };
 
     if (checkBtn) checkBtn.addEventListener("click", () => {
@@ -3073,6 +3156,193 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       audioToggle.textContent = state.audioEnabled ? "🔊" : "🔇";
       audioToggle.classList.toggle("muted", !state.audioEnabled);
       saveProgress();
+    });
+
+    // ── Quiet mode — a lesson-scoped toggle, never persisted ──
+    const quietToggle = document.getElementById("quietToggle");
+    const syncQuietUI = () => {
+      if (!quietToggle) return;
+      quietToggle.classList.toggle("on", !!state.quietMode);
+      quietToggle.setAttribute("aria-pressed", state.quietMode ? "true" : "false");
+      const label = quietToggle.querySelector(".quiet-label");
+      if (label) label.textContent = state.quietMode ? "Quiet mode on" : "I can’t speak or listen right now";
+      if (viewLessonEl) viewLessonEl.classList.toggle("quiet-on", !!state.quietMode);
+    };
+    if (quietToggle) {
+      quietToggle.addEventListener("click", () => {
+        state.quietMode = !state.quietMode;
+        syncQuietUI();
+        if (state.quietMode) {
+          try { window.speechSynthesis?.cancel(); } catch (_) { /* no-op */ }
+          const current = state.tasks[state.index];
+          if (current && current.type === "speak" && !state.pendingAdvance) renderTask();
+        }
+      });
+      syncQuietUI();
+    }
+
+    // ── Plant companion — grows with completed lessons ────────
+    const companionEl = document.getElementById("companion");
+
+    const syncCompanion = () => {
+      if (!companionEl) return;
+      const n = getCompletedLevels().size;
+      const stage = n >= 10 ? 4 : n >= 6 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0;
+      companionEl.classList.remove("stage-0", "stage-1", "stage-2", "stage-3", "stage-4");
+      companionEl.classList.add("stage-" + stage);
+    };
+
+    const companionReact = (mood) => {
+      if (!companionEl) return;
+      companionEl.classList.remove("happy", "worried");
+      void companionEl.offsetWidth;
+      companionEl.classList.add(mood);
+      clearTimeout(companionEl._moodTimer);
+      companionEl._moodTimer = setTimeout(() => companionEl.classList.remove(mood), 2200);
+    };
+
+    syncCompanion();
+
+    // ── Learning tools — hint, example, new word ──────────────
+    const hintBtn = document.getElementById("hintBtn");
+    const exampleBtn = document.getElementById("exampleBtn");
+    const newWordBtn = document.getElementById("newWordBtn");
+    const HINT_COST = 5;
+    let hintLevel = 0;
+
+    const resetLessonTools = () => {
+      hintLevel = 0;
+      hideWordPop();
+    };
+
+    const positionToolPop = (pop, anchor) => {
+      const rect = anchor.getBoundingClientRect();
+      const pw = pop.offsetWidth;
+      let left = rect.left + rect.width / 2 - pw / 2;
+      left = Math.max(10, Math.min(left, window.innerWidth - pw - 10));
+      let top = rect.top - pop.offsetHeight - 12;
+      if (top < 8) top = rect.bottom + 12;
+      pop.style.left = left + "px";
+      pop.style.top = top + "px";
+    };
+
+    const showToolPop = (anchor, html, extraClass = "") => {
+      hideWordPop();
+      const pop = document.createElement("div");
+      pop.className = "word-pop tool-pop" + (extraClass ? " " + extraClass : "");
+      pop.innerHTML = html;
+      document.body.appendChild(pop);
+      positionToolPop(pop, anchor);
+      const dismiss = (event) => {
+        if (pop.contains(event.target)) return;
+        hideWordPop();
+        document.removeEventListener("pointerdown", dismiss, true);
+      };
+      setTimeout(() => document.addEventListener("pointerdown", dismiss, true), 0);
+      return pop;
+    };
+
+    const importantToken = (answer) =>
+      (answer || "").split(/\s+/).filter(Boolean).sort((a, b) => b.length - a.length)[0] || "";
+
+    const findSimilarItem = (task) => {
+      const items = (getModule().items || []).filter((item) => item.target && item.target !== task.answer);
+      const tagged = items.filter((item) => item.tags?.some((tag) => task.tags?.includes(tag)));
+      return (tagged.length ? tagged : items)[0] || null;
+    };
+
+    if (hintBtn) hintBtn.addEventListener("click", () => {
+      const task = state.tasks[state.index];
+      if (!task || !task.answer || task.type === "match") {
+        showToolPop(hintBtn, '<div class="word-pop-def">No hints here — trust your memory on this one.</div>');
+        return;
+      }
+      if (hintLevel < 4) {
+        hintLevel += 1;
+        state.xp = Math.max(0, state.xp - HINT_COST);
+        updateStatus();
+      }
+      const tokens = task.answer.split(/\s+/).filter(Boolean);
+      const rows = [];
+      rows.push(`<div class="hint-row"><b>1 · First letter</b><span>${escapeHTML(task.answer.trim().charAt(0))}…</span></div>`);
+      if (hintLevel >= 2) {
+        const shape = tokens.map((t) => "＿".repeat(Math.min([...t].length, 8))).join("&ensp;");
+        rows.push(`<div class="hint-row"><b>2 · Shape</b><span>${shape}</span></div>`);
+      }
+      if (hintLevel >= 3) {
+        const key = importantToken(task.answer);
+        const rom = getRomanizationForText(key);
+        rows.push(`<div class="hint-row"><b>3 · Key word</b><span>${escapeHTML(key)}${rom ? ` <i>${escapeHTML(rom)}</i>` : ""}</span></div>`);
+      }
+      if (hintLevel >= 4) {
+        const sim = findSimilarItem(task);
+        if (sim) rows.push(`<div class="hint-row"><b>4 · Similar</b><span>${escapeHTML(sim.target)}${sim.romanized ? ` <i>${escapeHTML(sim.romanized)}</i>` : ""} — ${escapeHTML(sim.en || "")}</span></div>`);
+      }
+      showToolPop(hintBtn,
+        rows.join("") +
+        `<div class="hint-foot">${hintLevel < 4 ? "Tap again for the next hint · " : ""}−${HINT_COST} XP each</div>`,
+        "hint-pop");
+    });
+
+    if (exampleBtn) exampleBtn.addEventListener("click", () => {
+      const task = state.tasks[state.index];
+      const pool = (getModule().items || []).filter((item) => item.target && item.target !== task?.answer);
+      const picks = shuffle(pool.slice()).slice(0, 3);
+      if (!picks.length) {
+        showToolPop(exampleBtn, '<div class="word-pop-def">No extra examples in this unit yet.</div>');
+        return;
+      }
+      const html = picks.map((item, i) =>
+        `<button type="button" class="example-row" data-say="${escapeHTML(item.target)}">
+           <span class="ex-native">${escapeHTML(item.target)}</span>
+           ${item.romanized ? `<span class="ex-pinyin">${escapeHTML(item.romanized)}</span>` : ""}
+           <span class="ex-en">${escapeHTML(item.en || "")}</span>
+         </button>`).join("");
+      const pop = showToolPop(exampleBtn, `<div class="tool-pop-title">From this unit</div>${html}<div class="hint-foot">${state.quietMode ? "Quiet mode — audio paused" : "Tap a sentence to hear it"}</div>`, "example-pop");
+      pop.querySelectorAll(".example-row").forEach((row) => {
+        row.addEventListener("click", (event) => {
+          event.stopPropagation();
+          speak(row.dataset.say, true);
+        });
+      });
+    });
+
+    if (newWordBtn) newWordBtn.addEventListener("click", () => {
+      const chip = viewLessonEl?.querySelector(".word-chip.new-word");
+      if (!chip) {
+        showToolPop(newWordBtn, '<div class="word-pop-def">No new words in this task — keep going, more are on the way.</div>');
+        return;
+      }
+      const word = chip.dataset.word || chip.textContent;
+      const key = normalize(word);
+      const definition = chip.dataset.definition || "New word";
+      const rom = getRomanizationForText(word);
+      const exampleItem = (getModule().items || []).find((item) => item.target && item.target.includes(word));
+      state.savedWords = state.savedWords || {};
+      const saved = !!state.savedWords[key];
+      const pop = showToolPop(newWordBtn,
+        `<div class="word-pop-badge">New word</div>
+         <div class="word-pop-word">${escapeHTML(word)}</div>
+         ${rom ? `<div class="word-pop-pinyin">${escapeHTML(rom)}</div>` : ""}
+         <div class="word-pop-def">${escapeHTML(definition)}</div>
+         ${exampleItem ? `<div class="vocab-example">${escapeHTML(exampleItem.target)}${exampleItem.romanized ? ` <i>${escapeHTML(exampleItem.romanized)}</i>` : ""}<em>${escapeHTML(exampleItem.en || "")}</em></div>` : ""}
+         <div class="vocab-actions">
+           <button type="button" class="vocab-say">Hear it</button>
+           <button type="button" class="vocab-save${saved ? " saved" : ""}">${saved ? "Saved ✓" : "Save word"}</button>
+         </div>`,
+        "word-pop-new vocab-pop");
+      pop.querySelector(".vocab-say")?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        speak(word, true);
+      });
+      pop.querySelector(".vocab-save")?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const btn = event.currentTarget;
+        state.savedWords[key] = !state.savedWords[key];
+        saveProgress();
+        btn.classList.toggle("saved", !!state.savedWords[key]);
+        btn.textContent = state.savedWords[key] ? "Saved ✓" : "Save word";
+      });
     });
 
     const applyProfileSelection = (name) => {

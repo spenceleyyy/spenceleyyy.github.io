@@ -9,10 +9,131 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="manifest" href="linguabloom.webmanifest" />
   <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
-  <meta name="theme-color" content="#ff8d62" />
+  <meta name="theme-color" content="#ff9aa2" />
   <link rel="stylesheet" href="linguabloom.css" />
 </head>
-<body>
+<body class="lesson-page">
+  <script>document.body.classList.add("time-"+(function(){var h=new Date().getHours();return h<5?"night":h<11?"morning":h<17?"day":h<21?"evening":"night";})());</script>
+  <div class="scenery" aria-hidden="true">
+    <i class="sc-sun"></i>
+    <i class="sc-cloud c1"></i><i class="sc-cloud c2"></i><i class="sc-cloud c3"></i>
+    <i class="sc-spark s1">✦</i><i class="sc-spark s2">✧</i><i class="sc-spark s3">✦</i>
+    <i class="sc-birds">‿ ‿</i>
+    <i class="sc-leaf">❧</i><i class="sc-butterfly">ꕥ</i>
+    <svg class="sc-world" viewBox="0 0 400 800" preserveAspectRatio="xMidYMax slice">
+      <!-- volumetric light from the high sun -->
+      <g class="w-rays">
+        <polygon points="292,0 336,0 224,270 196,270"/>
+        <polygon points="352,0 382,0 292,250 268,250"/>
+      </g>
+      <!-- drifting pollen in the warm air -->
+      <g class="w-pollen">
+        <circle cx="120" cy="300" r="1.6"/><circle cx="210" cy="352" r="1.2"/>
+        <circle cx="290" cy="278" r="1.4"/><circle cx="170" cy="432" r="1.2"/>
+        <circle cx="330" cy="418" r="1.5"/><circle cx="70" cy="388" r="1.2"/>
+      </g>
+      <!-- a soft cloud bank resting on the far peaks -->
+      <g class="w-cloudbank">
+        <ellipse cx="88" cy="455" rx="72" ry="22"/><ellipse cx="152" cy="441" rx="54" ry="17"/>
+        <ellipse cx="308" cy="462" rx="82" ry="24"/><ellipse cx="252" cy="448" rx="48" ry="15"/>
+      </g>
+      <!-- far mountains -->
+      <path class="w-mount w-m1" d="M-10 585 Q60 468 130 560 Q170 512 220 575 L220 645 L-10 645 Z"/>
+      <path class="w-mount w-m2" d="M170 588 Q255 462 335 570 Q368 530 410 578 L410 645 L170 645 Z"/>
+      <!-- valley haze -->
+      <rect class="w-haze" x="-12" y="556" width="424" height="60" rx="30"/>
+      <!-- forest line -->
+      <path class="w-forest" d="M-8 600 q16 -18 32 0 q16 -22 32 0 q16 -16 32 0 q16 -21 32 0 q16 -15 32 0 q16 -20 32 0 q16 -16 32 0 q16 -22 32 0 q16 -15 32 0 q16 -19 32 0 q16 -16 32 0 q16 -20 32 0 q16 -14 32 0 L408 665 L-8 665 Z"/>
+      <!-- village on the far slope -->
+      <g class="w-village">
+        <g class="w-cottage" transform="translate(238,583)">
+          <rect class="w-wall" x="0" y="0" width="17" height="12" rx="1"/>
+          <path class="w-roof" d="M-2.5 0 L8.5 -9 L19.5 0 Z"/>
+          <rect class="w-win" x="6.5" y="4.5" width="4" height="5" rx="0.6"/>
+        </g>
+        <g class="w-church" transform="translate(268,578)">
+          <rect class="w-wall" x="0" y="4" width="8" height="14" rx="0.8"/>
+          <path class="w-roof" d="M-1 4.5 L4 -7 L9 4.5 Z"/>
+        </g>
+        <g class="w-mill" transform="translate(306,578)">
+          <path class="w-wall" d="M-5.5 18 L-3 -1 L3 -1 L5.5 18 Z"/>
+          <circle class="w-roof" cx="0" cy="-2" r="3"/>
+          <g class="w-blades">
+            <rect x="-1.1" y="-16" width="2.2" height="14.5" rx="1.1"/>
+            <rect x="-1.1" y="-0.5" width="2.2" height="14.5" rx="1.1"/>
+            <rect x="-16" y="-1.1" width="14.5" height="2.2" rx="1.1"/>
+            <rect x="0.5" y="-1.1" width="14.5" height="2.2" rx="1.1"/>
+          </g>
+        </g>
+      </g>
+      <!-- mid hill -->
+      <path class="w-hill1" d="M-8 630 Q96 596 200 622 Q300 644 408 618 L408 728 L-8 728 Z"/>
+      <g class="w-fence">
+        <path class="w-rail" d="M28 636 L104 626"/>
+        <path class="w-rail" d="M28 641 L104 631"/>
+        <rect x="30" y="631" width="2.4" height="13" rx="1"/>
+        <rect x="53" y="628" width="2.4" height="13" rx="1"/>
+        <rect x="76" y="625" width="2.4" height="13" rx="1"/>
+        <rect x="99" y="622" width="2.4" height="13" rx="1"/>
+      </g>
+      <g class="w-tree" transform="translate(140,626)">
+        <rect class="w-trunk" x="-2" y="-6" width="4" height="12" rx="1.6"/>
+        <ellipse class="w-crown" cx="0" cy="-16" rx="14" ry="13"/>
+        <ellipse class="w-crown2" cx="-8" cy="-10" rx="8" ry="7"/>
+      </g>
+      <g class="w-tree w-tree-b" transform="translate(356,632)">
+        <rect class="w-trunk" x="-1.7" y="-5" width="3.4" height="10" rx="1.4"/>
+        <ellipse class="w-crown" cx="0" cy="-13" rx="11" ry="10"/>
+      </g>
+      <circle class="w-dotflower df1" cx="60" cy="650" r="1.6"/>
+      <circle class="w-dotflower df2" cx="118" cy="646" r="1.4"/>
+      <circle class="w-dotflower df3" cx="182" cy="652" r="1.6"/>
+      <circle class="w-dotflower df1" cx="330" cy="648" r="1.4"/>
+      <!-- near meadow -->
+      <path class="w-hill2" d="M-8 700 Q110 672 236 694 Q330 708 408 688 L408 802 L-8 802 Z"/>
+      <ellipse class="w-stone" cx="96" cy="722" rx="9" ry="4.5"/>
+      <ellipse class="w-stone w-stone-sm" cx="110" cy="727" rx="5" ry="2.8"/>
+      <ellipse class="w-stone" cx="316" cy="712" rx="7" ry="3.6"/>
+      <path class="w-fallen" transform="translate(212,740) rotate(28)" d="M0 0 q5 -6 10 0 q-5 6 -10 0 Z"/>
+      <path class="w-fallen" transform="translate(80,748) rotate(-22) scale(.8)" d="M0 0 q5 -6 10 0 q-5 6 -10 0 Z"/>
+      <g class="w-shroom" transform="translate(126,732)">
+        <rect class="w-stem" x="-1.6" y="-5" width="3.2" height="5.5" rx="1.2"/>
+        <path class="w-cap" d="M-5.5 -4.5 a5.5 4.6 0 0 1 11 0 Z"/>
+        <circle class="w-spot" cx="-2" cy="-6.6" r="0.9"/>
+        <circle class="w-spot" cx="2.2" cy="-5.9" r="0.7"/>
+      </g>
+      <g class="w-shroom w-shroom-b" transform="translate(288,750)">
+        <rect class="w-stem" x="-1.3" y="-4" width="2.6" height="4.5" rx="1"/>
+        <path class="w-cap" d="M-4.4 -3.6 a4.4 3.8 0 0 1 8.8 0 Z"/>
+      </g>
+      <path class="w-bush" d="M-8 804 q8 -34 36 -25 q20 -20 48 -5 q18 -11 34 7 L110 804 Z"/>
+      <path class="w-bush w-bush-b" d="M298 804 q7 -27 32 -20 q19 -17 45 -3 q15 -9 38 5 L413 804 Z"/>
+      <g class="w-grass" transform="translate(58,772)"><path d="M0 0 C -1 -8 -3 -10 -5 -14 M0 0 C 0 -9 1 -13 1 -16 M0 0 C 2 -8 4 -10 6 -13"/></g>
+      <g class="w-grass g2" transform="translate(168,790)"><path d="M0 0 C -1 -7 -3 -9 -4 -12 M0 0 C 0 -8 1 -11 1 -14 M0 0 C 2 -7 3 -9 5 -12"/></g>
+      <g class="w-grass g3" transform="translate(252,764)"><path d="M0 0 C -1 -8 -3 -10 -5 -14 M0 0 C 0 -9 1 -12 1 -15 M0 0 C 2 -8 4 -10 5 -13"/></g>
+      <g class="w-grass" transform="translate(360,780)"><path d="M0 0 C -1 -7 -2 -9 -4 -12 M0 0 C 0 -8 1 -11 1 -13 M0 0 C 2 -7 3 -9 4 -11"/></g>
+      <g class="w-flower wf-pink" transform="translate(44,758)">
+        <path class="w-fstem" d="M0 0 L0 -13"/>
+        <circle class="w-petal" cx="0" cy="-17" r="2.6"/><circle class="w-petal" cx="-3.4" cy="-14.5" r="2.6"/><circle class="w-petal" cx="3.4" cy="-14.5" r="2.6"/><circle class="w-petal" cx="-2.1" cy="-11" r="2.6"/><circle class="w-petal" cx="2.1" cy="-11" r="2.6"/>
+        <circle class="w-fcore" cx="0" cy="-14" r="1.7"/>
+      </g>
+      <g class="w-flower wf-butter" transform="translate(148,770)">
+        <path class="w-fstem" d="M0 0 L0 -11"/>
+        <circle class="w-petal" cx="0" cy="-15" r="2.2"/><circle class="w-petal" cx="-3" cy="-12.7" r="2.2"/><circle class="w-petal" cx="3" cy="-12.7" r="2.2"/><circle class="w-petal" cx="-1.9" cy="-9.6" r="2.2"/><circle class="w-petal" cx="1.9" cy="-9.6" r="2.2"/>
+        <circle class="w-fcore" cx="0" cy="-12.3" r="1.5"/>
+      </g>
+      <g class="w-flower wf-lav" transform="translate(238,784)">
+        <path class="w-fstem" d="M0 0 L0 -12"/>
+        <circle class="w-petal" cx="0" cy="-16" r="2.4"/><circle class="w-petal" cx="-3.2" cy="-13.6" r="2.4"/><circle class="w-petal" cx="3.2" cy="-13.6" r="2.4"/><circle class="w-petal" cx="-2" cy="-10.3" r="2.4"/><circle class="w-petal" cx="2" cy="-10.3" r="2.4"/>
+        <circle class="w-fcore" cx="0" cy="-13.2" r="1.6"/>
+      </g>
+      <g class="w-flower wf-pink" transform="translate(340,762)">
+        <path class="w-fstem" d="M0 0 L0 -10"/>
+        <circle class="w-petal" cx="0" cy="-14" r="2.1"/><circle class="w-petal" cx="-2.8" cy="-11.9" r="2.1"/><circle class="w-petal" cx="2.8" cy="-11.9" r="2.1"/><circle class="w-petal" cx="-1.75" cy="-9" r="2.1"/><circle class="w-petal" cx="1.75" cy="-9" r="2.1"/>
+        <circle class="w-fcore" cx="0" cy="-11.6" r="1.4"/>
+      </g>
+    </svg>
+  </div>
   <div class="app-shell">
     <header class="top-bar">
       <div class="logo">
@@ -20,8 +141,8 @@
         LinguaBloom
       </div>
       <div class="top-actions">
-        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
-        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+        <button class="icon-btn" id="backBtn" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg></button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><circle cx="9" cy="6" r="2.2"/><path d="M4 12h16"/><circle cx="15" cy="12" r="2.2"/><path d="M4 18h16"/><circle cx="7" cy="18" r="2.2"/></svg></button>
       </div>
     </header>
 
@@ -35,24 +156,32 @@
             <div class="progress-text" id="progressText">0/0</div>
           </div>
           <div class="lesson-stats">
-            <button class="lesson-stat" id="audioToggle" type="button">🔊</button>
-            <div class="lesson-stat" id="heartPanel">❤❤❤</div>
-            <div class="lesson-stat xp">⭐ <span id="xpPanel">0</span></div>
+            <button class="lesson-stat" id="audioToggle" type="button" aria-label="Toggle sound"></button>
+            <div class="lesson-stat" id="heartPanel">♥♥♥</div>
+            <div class="lesson-stat xp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z"/></svg> <span id="xpPanel">0</span></div>
           </div>
         </div>
+        <div class="progress-milestones" id="progressMilestones" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
         <div class="lesson-meta">
           <div class="chip" id="unitChip">Level 1</div>
           <div class="chip" id="topicChip">Basics</div>
           <div class="chip" id="languageChip">Spanish</div>
+          <div class="chip chip-focus">Today's focus · Mixed practice</div>
+          <button class="quiet-toggle" id="quietToggle" type="button" aria-pressed="false">
+            <svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/><path d="M4 4l16 16"/></svg>
+            <span class="quiet-label">I can’t speak or listen right now</span>
+          </button>
         </div>
       </div>
 
       <div class="lesson-card">
+        <p class="learning-context" id="learningContext"></p>
         <div class="prompt-row">
           <h2 class="prompt-title" id="promptTitle">Translate this sentence</h2>
-          <button class="prompt-audio" id="replayBtn" type="button" aria-label="Replay audio">🔁</button>
+          <button class="prompt-audio" id="replayBtn" type="button" aria-label="Replay audio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.2-6.5L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.2 6.5L3 16"/><path d="M3 21v-5h5"/></svg></button>
         </div>
         <div class="prompt-text" id="promptText">Loading...</div>
+        <p class="prompt-hint" aria-hidden="true">Take your time — every answer helps you grow.</p>
         <div class="choice-grid" id="choiceGrid"></div>
 
         <div class="build-area" id="buildArea">
@@ -77,12 +206,37 @@
           <input type="text" id="textInput" placeholder="Type your answer..." autocomplete="off" />
         </div>
 
-        <div class="word-card minimal">
-          <h4 id="wordTitle">Word helper</h4>
-          <p id="wordDefinition">Tap any highlighted word to see its meaning.</p>
+        <div class="utility-row" aria-label="Learning tools">
+          <button class="util-btn" id="hintBtn" type="button"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 1 3.5 10.9c-.8.6-1.5 1.3-1.5 2.1h-4c0-.8-.7-1.5-1.5-2.1A6 6 0 0 1 12 3z"/></svg><span>Hint</span></button>
+          <button class="util-btn" id="exampleBtn" type="button"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-4.5-2-8-2v14c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2V4c-3.5 0-6 .5-8 2z"/><path d="M12 6v14"/></svg><span>Example</span></button>
+          <button class="util-btn" id="newWordBtn" type="button"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/><path d="M10.5 8v5M8 10.5h5"/></svg><span>New word</span></button>
         </div>
       </div>
       <div class="lesson-actions">
+        <div class="companion" aria-hidden="true" id="companion">
+          <div class="plant">
+            <span class="leaf leaf-b1"></span>
+            <span class="leaf leaf-b2"></span>
+            <span class="leaf leaf-b3"></span>
+            <span class="leaf leaf-b4"></span>
+            <span class="bloom bloom-1">❀</span>
+            <span class="bloom bloom-2">✿</span>
+            <span class="sprout-head">
+              <span class="eye eye-l"></span>
+              <span class="eye eye-r"></span>
+              <span class="cheek cheek-l"></span>
+              <span class="cheek cheek-r"></span>
+              <span class="mouth"></span>
+            </span>
+          </div>
+          <div class="pot">
+            <span class="pot-band"></span>
+            <span class="pot-vine">❦</span>
+            <span class="pot-fruit"></span>
+          </div>
+          <span class="companion-stone"></span>
+          <span class="companion-flowers">✿ ❀</span>
+        </div>
         <button class="btn btn-secondary" id="skipBtn">Skip</button>
         <button class="btn btn-primary" id="checkBtn">Check</button>
       </div>
@@ -93,7 +247,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3>Settings</h3>
-        <button class="icon-btn" id="closeSettings">✕</button>
+        <button class="icon-btn" id="closeSettings" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="control-group">
         <label for="profileSelect">Profile</label>

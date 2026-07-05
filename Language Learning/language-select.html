@@ -9,10 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="manifest" href="linguabloom.webmanifest" />
   <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
-  <meta name="theme-color" content="#ff8d62" />
+  <meta name="theme-color" content="#ff9aa2" />
   <link rel="stylesheet" href="linguabloom.css" />
 </head>
 <body class="language-page">
+  <script>document.body.classList.add("time-"+(function(){var h=new Date().getHours();return h<5?"night":h<11?"morning":h<17?"day":h<21?"evening":"night";})());</script>
+  <div class="scenery scenery-nav" aria-hidden="true">
+    <i class="sc-cloud c1"></i><i class="sc-cloud c2"></i>
+    <i class="sc-leaf">❧</i><i class="sc-butterfly">ꕥ</i>
+  </div>
   <div class="app-shell">
     <header class="top-bar">
       <div class="logo">
@@ -20,8 +25,8 @@
         LinguaBloom
       </div>
       <div class="top-actions">
-        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
-        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+        <button class="icon-btn" id="backBtn" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg></button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><circle cx="9" cy="6" r="2.2"/><path d="M4 12h16"/><circle cx="15" cy="12" r="2.2"/><path d="M4 18h16"/><circle cx="7" cy="18" r="2.2"/></svg></button>
       </div>
     </header>
 
@@ -53,7 +58,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3>Settings</h3>
-        <button class="icon-btn" id="closeSettings">✕</button>
+        <button class="icon-btn" id="closeSettings" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="control-group">
         <label for="profileSelect">Profile</label>

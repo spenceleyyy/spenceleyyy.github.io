@@ -9,10 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="manifest" href="linguabloom.webmanifest" />
   <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
-  <meta name="theme-color" content="#ff8d62" />
+  <meta name="theme-color" content="#ff9aa2" />
   <link rel="stylesheet" href="linguabloom.css" />
 </head>
-<body>
+<body class="levels-page">
+  <script>document.body.classList.add("time-"+(function(){var h=new Date().getHours();return h<5?"night":h<11?"morning":h<17?"day":h<21?"evening":"night";})());</script>
+  <div class="scenery scenery-nav" aria-hidden="true">
+    <i class="sc-cloud c1"></i><i class="sc-cloud c2"></i>
+    <i class="sc-leaf">❧</i><i class="sc-butterfly">ꕥ</i>
+  </div>
   <div class="app-shell">
     <header class="top-bar">
       <div class="logo">
@@ -20,13 +25,13 @@
         LinguaBloom
       </div>
       <div class="levels-stats">
-        <div class="stat-pill streak">🔥 <span id="streakStat">0</span></div>
-        <div class="stat-pill xp">⭐ <span id="levelsXp">0</span></div>
-        <div class="stat-pill hearts">❤ <span id="levelsHearts">3</span></div>
+        <div class="stat-pill streak"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2 3.5-.6 5 .4 7.6 1-.8 1.6-2.1 1.6-3.6 2.1 2 3.5 4.5 3.5 7a5.5 5.5 0 1 1-11 0c0-3.6 2.6-6.4 5.5-11z"/></svg> <span id="streakStat">0</span></div>
+        <div class="stat-pill xp"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z"/></svg> <span id="levelsXp">0</span></div>
+        <div class="stat-pill hearts"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20S5 15.5 3 11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/></svg> <span id="levelsHearts">3</span></div>
       </div>
       <div class="top-actions">
-        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
-        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+        <button class="icon-btn" id="backBtn" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg></button>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><circle cx="9" cy="6" r="2.2"/><path d="M4 12h16"/><circle cx="15" cy="12" r="2.2"/><path d="M4 18h16"/><circle cx="7" cy="18" r="2.2"/></svg></button>
       </div>
     </header>
 
@@ -37,17 +42,31 @@
             <h2 id="levelsTitle">Unit 1</h2>
             <p id="levelsSubtitle">Start learning</p>
           </div>
-          <button class="unit-guide" type="button" aria-label="Unit guide">📘</button>
+          <button class="unit-guide" type="button" aria-label="Unit guide"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.5-4.5-2-8-2v14c3.5 0 6 .5 8 2 2-1.5 4.5-2 8-2V4c-3.5 0-6 .5-8 2z"/><path d="M12 6v14"/></svg></button>
         </div>
         <div id="levelsLanguage" style="display:none"></div>
+        <div class="companion companion-mini" aria-hidden="true" id="companion">
+          <div class="plant">
+            <span class="leaf leaf-b1"></span><span class="leaf leaf-b2"></span>
+            <span class="leaf leaf-b3"></span><span class="leaf leaf-b4"></span>
+            <span class="bloom bloom-1">❀</span><span class="bloom bloom-2">✿</span>
+            <span class="sprout-head">
+              <span class="eye eye-l"></span><span class="eye eye-r"></span>
+              <span class="cheek cheek-l"></span><span class="cheek cheek-r"></span>
+              <span class="mouth"></span>
+            </span>
+          </div>
+          <div class="pot"><span class="pot-band"></span><span class="pot-vine">❦</span><span class="pot-fruit"></span></div>
+          <span class="companion-shelf"></span>
+        </div>
       </div>
       <a href="coach.html" class="coach-cta" id="coachCta">
-        <div class="coach-cta-icon">🧑‍🏫</div>
+        <div class="coach-cta-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11.5V15c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.5"/><path d="M22 9v5"/></svg></div>
         <div class="coach-cta-text">
           <strong>Chat with Luna — AI Coach</strong>
           <span>Personalized lessons &amp; voice conversations</span>
         </div>
-        <div class="coach-cta-arrow">›</div>
+        <div class="coach-cta-arrow"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></div>
       </a>
 
       <div class="levels-map" id="levelsGrid"></div>
@@ -56,18 +75,18 @@
     <section class="view stats-view" id="viewStats">
       <div class="stats-scroll">
         <div class="stats-hero">
-          <div class="stats-hero-flame">🔥</div>
+          <div class="stats-hero-flame"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2 3.5-.6 5 .4 7.6 1-.8 1.6-2.1 1.6-3.6 2.1 2 3.5 4.5 3.5 7a5.5 5.5 0 1 1-11 0c0-3.6 2.6-6.4 5.5-11z"/></svg></div>
           <div class="stats-hero-number" id="statsStreakBig">0</div>
           <div class="stats-hero-label">Day Streak</div>
         </div>
         <div class="stats-cards">
           <div class="scard scard-xp">
-            <div class="scard-icon">⭐</div>
+            <div class="scard-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.6L19.5 10.5l-5.6 1.9L12 18l-1.9-5.6L4.5 10.5l5.6-1.9L12 3z"/></svg></div>
             <div class="scard-value" id="statsXpVal">0</div>
             <div class="scard-label">Total XP</div>
           </div>
           <div class="scard scard-done">
-            <div class="scard-icon">✓</div>
+            <div class="scard-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/></svg></div>
             <div class="scard-value" id="statsDoneVal">0</div>
             <div class="scard-label">Completed</div>
           </div>
@@ -85,15 +104,15 @@
 
     <nav class="bottom-nav" id="bottomNav">
       <button class="nav-tab active" id="navLearn" data-tab="learn">
-        <div class="nav-icon">🌱</div>
+        <div class="nav-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-8"/><path d="M12 13c0-4.2-3-6.5-7.5-6.5 0 4.2 3 6.5 7.5 6.5z"/><path d="M12 10.5c0-3.6 2.6-5.3 6.5-5.3 0 3.6-2.6 5.3-6.5 5.3z"/></svg></div>
         <div class="nav-label">Learn</div>
       </button>
       <button class="nav-tab" id="navCoach" data-tab="coach">
-        <div class="nav-icon">🧑‍🏫</div>
+        <div class="nav-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11.5V15c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.5"/><path d="M22 9v5"/></svg></div>
         <div class="nav-label">Coach</div>
       </button>
       <button class="nav-tab" id="navStats" data-tab="stats">
-        <div class="nav-icon">📊</div>
+        <div class="nav-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20v-8"/><path d="M12 20V5"/><path d="M19 20v-5"/></svg></div>
         <div class="nav-label">Stats</div>
       </button>
     </nav>
@@ -103,7 +122,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3>Settings</h3>
-        <button class="icon-btn" id="closeSettings">✕</button>
+        <button class="icon-btn" id="closeSettings" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="control-group">
         <label for="profileSelect">Profile</label>
@@ -165,7 +184,7 @@
     <div class="level-sheet-panel">
       <div class="sheet-handle"></div>
       <div class="sheet-icon-wrap" id="sheetIconWrap">
-        <span id="sheetIcon">⭐</span>
+        <span id="sheetIcon"></span>
       </div>
       <h3 class="sheet-title" id="sheetTitle">Level</h3>
       <p class="sheet-desc" id="sheetDesc">Description</p>

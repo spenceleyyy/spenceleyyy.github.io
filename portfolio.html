@@ -2375,8 +2375,9 @@
 
     function getWallBoundaries() {
       const extents = getRoomExtents();
-      // Hard hedge hitbox: keep character in the central aisle so they cannot step over the hedge.
-      const insetX = Math.max(1410, roomMetrics.width * 0.3525);
+      // Hard hedge hitbox: stop at the hedge line (rails sit 400px off the walls,
+      // inner edge ≈ half-width - 400; leave ~160px so the model doesn't clip it).
+      const insetX = Math.max(560, roomMetrics.width * 0.14);
       // Disable depth clamps so movement is not blocked by an artificial front/back Z boundary.
       const backWallInset = 0;
       const frontWallInset = 0;
@@ -3233,7 +3234,7 @@
     }
 
     function startMovementLoop() {
-      const speed = 5;
+      const speed = 11;
 
       function loop() {
         const walls = getWallBoundaries();

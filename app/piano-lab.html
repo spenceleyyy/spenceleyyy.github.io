@@ -3368,7 +3368,12 @@ async function coachSend(userMsg){
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1200,
@@ -3433,6 +3438,7 @@ function renderCoach(){
     <div class="api-input-row">
       <input class="api-input" id="api-key-input" type="password"
         placeholder="${hasKey?'sk-ant-… (saved)':'sk-ant-api…'}"
+        autocomplete="off" autocapitalize="off" spellcheck="false"
         value="${hasKey?'••••••••••••'+getApiKey().slice(-4):''}"/>
       <button class="api-save-btn" onclick="saveApiKey()">Save</button>
     </div>
@@ -3632,12 +3638,27 @@ function saveApiKey(){
   const status = document.getElementById('api-status');
   if(!input) return;
   const val = input.value.trim();
-  if(!val || val.startsWith('••')){
-    if(status){status.textContent='No change.';status.className='api-status';}
+  if(!val){
+    if(status){
+      status.textContent='Please paste your Anthropic API key before saving.';
+      status.className='api-status err';
+    }
+    input.focus();
+    return;
+  }
+  if(val.startsWith('••')){
+    if(status){
+      status.textContent='No change. Your saved key is still connected.';
+      status.className='api-status';
+    }
     return;
   }
   if(!val.startsWith('sk-ant')){
-    if(status){status.textContent='Invalid key — should start with sk-ant';status.className='api-status err';}
+    if(status){
+      status.textContent='Invalid key format — your key should start with sk-ant.';
+      status.className='api-status err';
+    }
+    input.focus();
     return;
   }
   setApiKey(val);

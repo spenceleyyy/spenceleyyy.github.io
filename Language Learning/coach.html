@@ -9,10 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="manifest" href="linguabloom.webmanifest" />
   <link rel="apple-touch-icon" href="../logos/RSlogoFIT.png" />
-  <meta name="theme-color" content="#7c3aed" />
+  <meta name="theme-color" content="#ff9aa2" />
   <link rel="stylesheet" href="linguabloom.css" />
 </head>
 <body class="coach-page">
+  <script>document.body.classList.add("time-"+(function(){var h=new Date().getHours();return h<5?"night":h<11?"morning":h<17?"day":h<21?"evening":"night";})());</script>
+  <div class="scenery scenery-nav" aria-hidden="true">
+    <i class="sc-cloud c1"></i><i class="sc-cloud c2"></i>
+    <i class="sc-leaf">❧</i><i class="sc-butterfly">ꕥ</i>
+  </div>
   <div class="app-shell">
     <header class="top-bar">
       <div class="logo">
@@ -20,8 +25,8 @@
         LinguaBloom
       </div>
       <div class="top-actions">
-        <button class="icon-btn" id="backBtn" aria-label="Back">←</button>
-        <button class="icon-btn" id="coachSettingsBtn" aria-label="Settings" style="display:none">⚙</button>
+        <button class="icon-btn" id="backBtn" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg></button>
+        <button class="icon-btn" id="coachSettingsBtn" aria-label="Settings" style="display:none"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16"/><circle cx="9" cy="6" r="2.2"/><path d="M4 12h16"/><circle cx="15" cy="12" r="2.2"/><path d="M4 18h16"/><circle cx="7" cy="18" r="2.2"/></svg></button>
       </div>
     </header>
 
@@ -29,11 +34,25 @@
     <div class="coach-setup" id="coachSetup">
       <div class="coach-hero">
         <div class="coach-avatar-large">
-          <span>🧑‍🏫</span>
+          <span class="hero-cap"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11.5V15c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.5"/><path d="M22 9v5"/></svg></span>
           <div class="avatar-ring"></div>
         </div>
         <h1 class="coach-hero-title">Meet Luna</h1>
         <p class="coach-hero-sub">Your personal AI language coach. Have real conversations, get instant feedback, and learn at your pace.</p>
+        <div class="companion companion-mini" aria-hidden="true" id="companion">
+          <div class="plant">
+            <span class="leaf leaf-b1"></span><span class="leaf leaf-b2"></span>
+            <span class="leaf leaf-b3"></span><span class="leaf leaf-b4"></span>
+            <span class="bloom bloom-1">❀</span><span class="bloom bloom-2">✿</span>
+            <span class="sprout-head">
+              <span class="eye eye-l"></span><span class="eye eye-r"></span>
+              <span class="cheek cheek-l"></span><span class="cheek cheek-r"></span>
+              <span class="mouth"></span>
+            </span>
+          </div>
+          <div class="pot"><span class="pot-band"></span><span class="pot-vine">❦</span><span class="pot-fruit"></span></div>
+          <span class="companion-shelf"></span>
+        </div>
       </div>
 
       <div class="setup-form">
@@ -52,9 +71,9 @@
           <label class="setup-label" for="apiKeyInput">API Key</label>
           <div class="api-key-wrap">
             <input type="password" id="apiKeyInput" class="setup-input" placeholder="Paste your API key here…" autocomplete="off" spellcheck="false" />
-            <button class="toggle-vis" id="toggleKeyVis" type="button" aria-label="Toggle key visibility">👁</button>
+            <button class="toggle-vis" id="toggleKeyVis" type="button" aria-label="Toggle key visibility"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="3"/></svg></button>
           </div>
-          <span class="setup-hint">🔒 Stored in your browser only — never sent anywhere else</span>
+          <span class="setup-hint"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg> Stored in your browser only — never sent anywhere else</span>
         </div>
 
         <div class="setup-field">
@@ -65,9 +84,9 @@
         <div class="setup-field">
           <label class="setup-label">My level</label>
           <div class="level-pills" id="setupLevelPills">
-            <button class="level-pill active" data-level="beginner"><span>🌱</span><span>Beginner</span></button>
-            <button class="level-pill" data-level="intermediate"><span>🌿</span><span>Intermediate</span></button>
-            <button class="level-pill" data-level="advanced"><span>🌳</span><span>Advanced</span></button>
+            <button class="level-pill active" data-level="beginner"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-8"/><path d="M12 13c0-4.2-3-6.5-7.5-6.5 0 4.2 3 6.5 7.5 6.5z"/><path d="M12 10.5c0-3.6 2.6-5.3 6.5-5.3 0 3.6-2.6 5.3-6.5 5.3z"/></svg><span>Beginner</span></button>
+            <button class="level-pill" data-level="intermediate"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20C6 11 11 5 20 4c0 9-5 15-14 16z"/><path d="M6 20c2-5 5-9 10-12"/></svg><span>Intermediate</span></button>
+            <button class="level-pill" data-level="advanced"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-5"/><path d="M12 3a6.5 6.5 0 0 1 6.5 6.5c0 3.6-2.9 6-6.5 6s-6.5-2.4-6.5-6A6.5 6.5 0 0 1 12 3z"/></svg><span>Advanced</span></button>
           </div>
         </div>
 
@@ -83,14 +102,14 @@
     <div class="coach-chat" id="coachChat" style="display:none">
       <div class="chat-info-bar">
         <div class="chat-coach-info">
-          <div class="chat-avatar">🧑‍🏫</div>
+          <div class="chat-avatar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5L2 9z"/><path d="M6 11.5V15c0 1.6 2.7 3 6 3s6-1.4 6-3v-3.5"/><path d="M22 9v5"/></svg></div>
           <div class="chat-coach-text">
             <strong>Luna</strong>
             <span id="chatInfoSub">Spanish · Beginner</span>
           </div>
         </div>
         <div class="chat-info-actions">
-          <button class="icon-btn tts-toggle" id="ttsToggle" aria-label="Toggle voice output" title="Toggle voice">🔊</button>
+          <button class="icon-btn tts-toggle" id="ttsToggle" aria-label="Toggle voice output" title="Toggle voice"><svg class="ic ic-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6"/></svg><svg class="ic ic-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4z"/><path d="M16 9.5l5 5"/><path d="M21 9.5l-5 5"/></svg></button>
         </div>
       </div>
 
@@ -100,11 +119,11 @@
 
       <div class="chat-compose">
         <button class="mic-btn" id="micBtn" aria-label="Voice input">
-          <span class="mic-icon">🎤</span>
+          <span class="mic-icon"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
           <span class="mic-ring"></span>
         </button>
         <input type="text" id="chatInput" class="chat-input" placeholder="Ask Luna anything…" />
-        <button class="send-btn" id="sendBtn" aria-label="Send" disabled>↑</button>
+        <button class="send-btn" id="sendBtn" aria-label="Send" disabled><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5L21 3l-6.5 18-3.2-7.3-7.8-2.2z"/><path d="M11.3 13.7L21 3"/></svg></button>
       </div>
     </div>
   </div>
@@ -114,7 +133,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3>Coach Settings</h3>
-        <button class="icon-btn" id="closeSettings">✕</button>
+        <button class="icon-btn" id="closeSettings" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="control-group">
         <label for="settingsProvider">AI Provider</label>
@@ -134,13 +153,13 @@
       <div class="control-group">
         <label for="settingsLevel">Level</label>
         <select id="settingsLevel" class="control-select">
-          <option value="beginner">🌱 Beginner</option>
-          <option value="intermediate">🌿 Intermediate</option>
-          <option value="advanced">🌳 Advanced</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
         </select>
       </div>
       <div class="control-actions">
-        <button class="tiny-btn" id="clearChatBtn" style="background:var(--orange);border-bottom-color:var(--orange-dark)">Clear Chat</button>
+        <button class="tiny-btn" id="clearChatBtn">Clear Chat</button>
         <button class="btn btn-primary" id="saveSettingsBtn" style="flex:1;padding:12px 20px">Save Changes</button>
       </div>
     </div>
@@ -365,10 +384,10 @@ Teaching guidelines:
       if (role === 'assistant') {
         const escaped = content.replace(/'/g, "\\'").replace(/\n/g, '\\n');
         div.innerHTML = `
-          <div class="message-avatar">🧑‍🏫</div>
+          <div class="message-avatar"></div>
           <div class="message-bubble">
             <div class="message-content">${md(content)}</div>
-            <button class="msg-speak-btn" onclick="window.__luna_speak('${escaped}')" title="Read aloud">🔊</button>
+            <button class="msg-speak-btn" onclick="window.__luna_speak('${escaped}')" title="Read aloud"><svg class="ic ic-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6"/></svg></button>
           </div>`;
       } else {
         div.innerHTML = `
@@ -388,7 +407,7 @@ Teaching guidelines:
       div.id = 'typingMsg';
       div.className = 'message message-assistant';
       div.innerHTML = `
-        <div class="message-avatar">🧑‍🏫</div>
+        <div class="message-avatar"></div>
         <div class="message-bubble">
           <div class="typing-dots"><span></span><span></span><span></span></div>
         </div>`;
@@ -402,7 +421,7 @@ Teaching guidelines:
       const area = document.getElementById('messagesArea');
       const div  = document.createElement('div');
       div.className = 'message message-error';
-      div.innerHTML = `<div class="error-bubble">⚠️ ${msg}</div>`;
+      div.innerHTML = `<div class="error-bubble">${msg}</div>`;
       area.appendChild(div);
       area.scrollTop = area.scrollHeight;
     }
@@ -523,10 +542,10 @@ Teaching guidelines:
 
       // TTS toggle
       const ttsBtn = document.getElementById('ttsToggle');
-      ttsBtn.textContent = state.ttsEnabled ? '🔊' : '🔇';
+      ttsBtn.classList.toggle('muted', !state.ttsEnabled);
       ttsBtn.onclick = () => {
         state.ttsEnabled = !state.ttsEnabled;
-        ttsBtn.textContent = state.ttsEnabled ? '🔊' : '🔇';
+        ttsBtn.classList.toggle('muted', !state.ttsEnabled);
         if (!state.ttsEnabled) window.speechSynthesis?.cancel();
       };
 
