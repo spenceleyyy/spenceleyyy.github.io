@@ -1,4 +1,8 @@
 const STORAGE_KEY = "linguabloom-progress-v2";
+
+// Ask the browser to treat our storage as durable (protects saved
+// progress from eviction on iOS/Safari home-screen installs).
+try { navigator.storage?.persist?.(); } catch (_e) { /* unsupported */ }
     const STREAK_KEY = "linguabloom-streak";
     const COMPLETED_KEY = "linguabloom-completed";
     const LEVELS_PER_DIFFICULTY = 5;
@@ -3072,6 +3076,12 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       const task = state.tasks[state.index];
       state.selectedOption = null;
       textInput.value = "";
+      // Matching has no sentence to translate — the pairs ARE the task,
+      // so a phrase floating above them only confuses. Hide it (and its
+      // audio, which would speak that same stray phrase).
+      const isMatch = task.type === "match";
+      promptText.style.display = isMatch ? "none" : "";
+      if (replayBtn) replayBtn.style.display = isMatch ? "none" : "";
       promptText.innerHTML = renderTextWithDefinitions(task.prompt, { romanize: true });
       promptTitle.textContent =
         task.type === "typing" ? "Type the translation" :
@@ -3087,7 +3097,7 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       speakArea.style.display = "none";
 
       selectTaskVoice();
-      state.currentAudio = task.audio || task.native || task.answer || "";
+      state.currentAudio = isMatch ? "" : (task.audio || task.native || task.answer || "");
       if (task.type === "typing") {
         choiceGrid.innerHTML = "";
         inputArea.style.display = "flex";
@@ -3170,6 +3180,9 @@ const STORAGE_KEY = "linguabloom-progress-v2";
       state.pendingAdvance = true;
       if (checkBtn) checkBtn.textContent = "Continue";
       syncLessonAids();
+      // persist immediately — don't lose XP/hearts if the tab closes
+      // before the user taps Continue
+      updateStatus();
     };
 
     if (checkBtn) checkBtn.addEventListener("click", () => {
