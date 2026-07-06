@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Reinitialize dropdown functionality after loading
             initializeDropdowns();
+            initializeNavToggle();
             highlightActiveNavLink();
             updateNavHeight();
             initializeChickenNav();
@@ -43,11 +44,44 @@ function initializeDropdowns() {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const menu = dropdown.querySelector('.dropdown-menu');
         
-        // Prevent default link behavior
+        // Prevent default link behavior; on mobile, tap expands the submenu
         if (toggle) {
             toggle.addEventListener('click', (e) => {
                 e.preventDefault();
+                const navToggle = document.querySelector('nav.nav-solid .nav-toggle');
+                const isMobile = navToggle && getComputedStyle(navToggle).display !== 'none';
+                if (isMobile) {
+                    dropdown.classList.toggle('open');
+                }
             });
+        }
+    });
+}
+
+// Mobile hamburger toggle
+function initializeNavToggle() {
+    const nav = document.querySelector('nav.nav-solid');
+    const btn = nav ? nav.querySelector('.nav-toggle') : null;
+    if (!nav || !btn) {
+        return;
+    }
+    const close = () => {
+        nav.classList.remove('nav-open');
+        btn.setAttribute('aria-expanded', 'false');
+        nav.querySelectorAll('.dropdown.open').forEach((d) => d.classList.remove('open'));
+    };
+    btn.addEventListener('click', () => {
+        const open = nav.classList.toggle('nav-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    // navigating (or tapping outside) closes the panel
+    nav.querySelectorAll('.nav-links a:not(.dropdown-toggle)').forEach((a) => {
+        a.addEventListener('click', close);
+    });
+    document.addEventListener('click', (e) => {
+        if (nav.classList.contains('nav-open') && !nav.contains(e.target)) {
+            close();
         }
     });
 }

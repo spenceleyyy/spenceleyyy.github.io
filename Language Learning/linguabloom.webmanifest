@@ -5,10 +5,15 @@
   "scope": "./",
   "display": "standalone",
   "background_color": "#fff1dc",
-  "theme_color": "#ff8d62",
+  "theme_color": "#ff9aa2",
   "icons": [
     {
-      "src": "LL.png",
+      "src": "LL-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "LL-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

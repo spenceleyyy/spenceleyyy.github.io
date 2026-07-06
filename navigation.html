@@ -189,12 +189,139 @@
         nav .nav-links {
             margin-left: auto;
         }
+
+        /* Self-contained dropdown behavior (desktop) so every page gets it */
+        nav.nav-solid .nav-links .dropdown { position: relative; }
+
+        nav.nav-solid .nav-links .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: inherit;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            border-radius: 12px;
+            padding: 0.4rem 0;
+            list-style: none;
+            margin: 0;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        nav.nav-solid .nav-links .dropdown-menu a {
+            padding: 0.45rem 1.1rem;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 951px) {
+            nav.nav-solid .nav-links .dropdown:hover > .dropdown-menu,
+            nav.nav-solid .nav-links .dropdown:focus-within > .dropdown-menu {
+                display: block;
+            }
+        }
+
+        /* Hamburger (hidden on desktop) */
+        .nav-toggle {
+            display: none;
+            margin-left: auto;
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(128, 128, 128, 0.4);
+            border-radius: 12px;
+            background: rgba(128, 128, 128, 0.12);
+            color: inherit;
+            cursor: pointer;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 0;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            border-radius: 2px;
+            background: currentColor;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+
+        nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+        nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* ── Mobile navigation ─────────────────────────────── */
+        @media (max-width: 950px) {
+            nav.nav-solid { padding: 0.7rem 4%; }
+            nav.nav-solid .logo-image { height: 42px; }
+            nav.nav-solid .full-name {
+                font-size: 1.1rem !important;
+                letter-spacing: normal !important;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 52vw;
+            }
+            nav.nav-solid .nav-content { flex-wrap: nowrap; }
+            .nav-toggle { display: flex; }
+
+            /* the link panel overlays the page instead of growing the bar */
+            nav.nav-solid .nav-links {
+                display: none !important;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                margin: 0;
+                padding: 0.5rem 5% 1rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+                background: inherit;
+                -webkit-backdrop-filter: saturate(180%) blur(20px);
+                backdrop-filter: saturate(180%) blur(20px);
+                border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+                box-shadow: 0 18px 30px rgba(0, 0, 0, 0.35);
+                max-height: calc(100dvh - 70px);
+                overflow-y: auto;
+                list-style: none;
+            }
+
+            nav.nav-solid.nav-open .nav-links { display: flex !important; }
+
+            nav.nav-solid .nav-links a {
+                padding: 0.7rem 0.25rem;
+                font-size: 1.05rem;
+            }
+
+            nav.nav-solid .nav-links a::after { display: none; }
+
+            /* dropdowns become tap-to-expand accordions */
+            nav.nav-solid .nav-links .dropdown-menu {
+                position: static;
+                background: rgba(128, 128, 128, 0.12);
+                border: none;
+                border-radius: 10px;
+                box-shadow: none;
+                margin: 0 0 0.4rem;
+                padding: 0.15rem 0;
+            }
+
+            nav.nav-solid .nav-links .dropdown.open > .dropdown-menu { display: block; }
+            nav.nav-solid .nav-links .dropdown-menu a { white-space: normal; padding: 0.55rem 1rem; }
+
+            /* the mentorship duck naps on small screens */
+            body.mentorship-page nav .nav-chicken { display: none; }
+        }
     </style>
     <div class="nav-content">
         <a href="index.html" class="logo-link">
             <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
             <span class="full-name">Robert J. Spenceley</span>
         </a>
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
         <ul class="nav-links">
             <li><a href="index.html#about">About</a></li>
             <li><a href="projects.html">Research</a></li>

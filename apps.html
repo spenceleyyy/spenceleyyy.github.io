@@ -34,13 +34,41 @@
         font-weight:500; display:block; padding:0.5rem 0; transition:color 0.25s; }
       .nav-links a:hover, .nav-links a:focus { color:var(--nav-hover-1); }
       .dropdown-menu { min-width:220px; display:none; position:absolute; right:0; background:transparent; }
-      .dropdown:hover>.dropdown-menu { display:block; }
+      @media (min-width:951px) { .dropdown:hover>.dropdown-menu { display:block; } }
+      .nav-toggle { display:none; margin-left:auto; width:44px; height:44px; border:1px solid rgba(255,255,255,0.22);
+        border-radius:12px; background:rgba(255,255,255,0.06); cursor:pointer; flex-direction:column;
+        align-items:center; justify-content:center; gap:5px; padding:0; }
+      .nav-toggle span { display:block; width:20px; height:2px; border-radius:2px; background:var(--color-text-dark,#FFFFED);
+        transition:transform .25s ease, opacity .2s ease; }
+      nav.nav-open .nav-toggle span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+      nav.nav-open .nav-toggle span:nth-child(2){ opacity:0; }
+      nav.nav-open .nav-toggle span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+      @media (max-width:950px) {
+        nav { padding:0.7rem 4%; }
+        .logo-image { height:42px; }
+        .full-name { font-size:1.15rem; }
+        .nav-toggle { display:flex; }
+        .nav-content { flex-wrap:wrap; }
+        .nav-links { display:none; position:absolute; top:100%; left:0; right:0; margin:0;
+          padding:0.5rem 5% 1rem; flex-direction:column; align-items:stretch; gap:0;
+          background:rgba(23,45,51,0.97); -webkit-backdrop-filter:saturate(180%) blur(20px);
+          backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid rgba(255,255,255,0.14);
+          box-shadow:0 18px 30px rgba(0,0,0,0.35); max-height:calc(100dvh - 70px); overflow-y:auto; }
+        nav.nav-open .nav-links { display:flex; }
+        .nav-links a { padding:0.7rem 0.25rem; font-size:1.05rem; }
+        .nav-links .dropdown-menu { position:static !important; background:rgba(255,255,255,0.06) !important;
+          border-radius:10px; margin:0 0 0.4rem !important; }
+        .nav-links .dropdown.open > .dropdown-menu { display:block; }
+      }
     </style>
     <div class="nav-content">
       <a href="index.html" class="logo-link" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;color:inherit">
         <img src="logos/RSlogoUPDATED.png" alt="RS Logo" class="logo-image">
         <span class="full-name">Robert J. Spenceley</span>
       </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
       <ul class="nav-links">
         <li><a href="index.html#about">About</a></li>
         <li><a href="projects.html">Research</a></li>
@@ -247,6 +275,26 @@
     lightboxClose.addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+  <script>
+    (function () {
+      var nav = document.querySelector('nav.nav-solid');
+      var btn = nav && nav.querySelector('.nav-toggle');
+      if (!nav || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = nav.classList.toggle('nav-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      nav.querySelectorAll('.dropdown-toggle').forEach(function (t) {
+        t.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (getComputedStyle(btn).display !== 'none') t.parentElement.classList.toggle('open');
+        });
+      });
+      nav.querySelectorAll('.nav-links a:not(.dropdown-toggle)').forEach(function (a) {
+        a.addEventListener('click', function () { nav.classList.remove('nav-open'); });
+      });
+    })();
   </script>
 </body>
 </html>
