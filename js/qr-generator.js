@@ -306,7 +306,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoToUse = logoChoice.primary;
         const logoFallback = logoChoice.fallback;
 
-        const renderLogoCommon = (sourceWidth, sourceHeight, draw) => {
+        const drawPreservingAspect = (naturalW, naturalH, x, y, maxSize, draw) => {
+            const aspectRatio = naturalW / naturalH;
+            let width = maxSize;
+            let height = maxSize;
+
+            if (aspectRatio > 1) {
+                height = Math.round(maxSize / aspectRatio);
+            } else if (aspectRatio < 1) {
+                width = Math.round(maxSize * aspectRatio);
+            }
+
+            const offsetX = Math.round(x + (maxSize - width) / 2);
+            const offsetY = Math.round(y + (maxSize - height) / 2);
+            draw(offsetX, offsetY, width, height);
+        };
+
+        const renderLogoCommon = (draw) => {
             const circleSize = Math.max(logoMaxSize, fixedLogoContentSize + 12);
             const logoRadius = circleSize / 2;
             const drawSize = fixedLogoContentSize;
@@ -326,15 +342,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const renderLogoFromImage = (img) => {
-            const naturalW = img.naturalWidth || logoMaxSize;
-            const naturalH = img.naturalHeight || logoMaxSize;
-            renderLogoCommon(naturalW, naturalH, (x, y, w, h) => ctx.drawImage(img, x, y, w, h));
+            renderLogoCommon((x, y, w, h) => drawPreservingAspect(img.naturalWidth || fixedLogoContentSize, img.naturalHeight || fixedLogoContentSize, x, y, w, (dx, dy, dw, dh) => ctx.drawImage(img, dx, dy, dw, dh)));
         };
 
         const renderLogoFromCanvas = (sourceCanvas) => {
-            const w = sourceCanvas.width || logoMaxSize;
-            const h = sourceCanvas.height || logoMaxSize;
-            renderLogoCommon(w, h, (x, y, width, height) => ctx.drawImage(sourceCanvas, x, y, width, height));
+            renderLogoCommon((x, y, w, h) => drawPreservingAspect(sourceCanvas.width || fixedLogoContentSize, sourceCanvas.height || fixedLogoContentSize, x, y, w, (dx, dy, dw, dh) => ctx.drawImage(sourceCanvas, dx, dy, dw, dh)));
         };
 
         const renderFallback = () => {
@@ -361,7 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const pdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
             const page = await pdf.getPage(1);
             const viewport = page.getViewport({ scale: 1 });
-            const scale = (logoMaxSize * LOGO_RENDER_SCALE) / Math.max(viewport.width, viewport.height);
+            const renderTargetSize = Math.round(fixedLogoContentSize * LOGO_RENDER_SCALE);
+            const scale = renderTargetSize / Math.max(viewport.width, viewport.height);
             const scaledViewport = page.getViewport({ scale });
             const pdfCanvas = document.createElement('canvas');
             pdfCanvas.width = scaledViewport.width;
