@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
     const DEFAULT_LOGO_SIZE_PERCENT = 44;
+    const FIXED_LOGO_CONTENT_RATIO = 0.24;
 
     const logoSizeSlider = document.getElementById('logo-size');
     const logoSizeValue = document.getElementById('logo-size-value');
@@ -293,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
         const logoMaxSize = Math.round(canvasSize * getLogoSizeRatio());
+        const fixedLogoContentSize = Math.round(canvasSize * FIXED_LOGO_CONTENT_RATIO);
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
 
@@ -305,12 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoFallback = logoChoice.fallback;
 
         const renderLogoCommon = (sourceWidth, sourceHeight, draw) => {
-            const renderSize = logoMaxSize;
-            const logoRadius = renderSize / 2;
-            const inset = Math.max(2, Math.round(renderSize * LOGO_INSET_RATIO));
-            const drawSize = renderSize - inset * 2;
-            const drawX = Math.round(centerX - logoRadius + inset);
-            const drawY = Math.round(centerY - logoRadius + inset);
+            const circleSize = Math.max(logoMaxSize, fixedLogoContentSize + 12);
+            const logoRadius = circleSize / 2;
+            const drawSize = fixedLogoContentSize;
+            const drawX = Math.round(centerX - drawSize / 2);
+            const drawY = Math.round(centerY - drawSize / 2);
 
             ctx.save();
             ctx.beginPath();
