@@ -84,7 +84,7 @@
             background: linear-gradient(180deg, rgba(199,125,255,0.25), rgba(255,255,255,0));
         }
 
-        nav {
+        nav.nav-solid {
             position: sticky;
             top: 0;
             width: 100%;
@@ -92,10 +92,10 @@
             border-bottom: 1px solid var(--border);
             -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
-            z-index: 6;
+            z-index: 1000;
         }
 
-        .nav-content {
+        nav.nav-solid .nav-content {
             max-width: 1400px;
             margin: 0 auto;
             padding: 1rem 6vw;
@@ -103,6 +103,10 @@
             justify-content: space-between;
             align-items: center;
             gap: 2rem;
+        }
+
+        nav.nav-solid .nav-links a {
+            color: var(--text-primary);
         }
 
         .logo-link {
@@ -423,6 +427,28 @@
             gap: 1rem;
             flex-wrap: wrap;
             align-items: center;
+        }
+
+        .logo-size-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            border-radius: 18px;
+            border: 1px solid rgba(0,0,0,0.12);
+            background: #ffffff;
+            min-width: 190px;
+        }
+
+        .logo-size-row input[type="range"] {
+            width: 180px;
+        }
+
+        .logo-size-row span {
+            min-width: 3.2rem;
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-primary);
         }
 
         .color-swatch {
@@ -846,6 +872,14 @@
                             <span>Background</span>
                             <input type="color" id="qr-bg-color" value="#ffffff">
                         </label>
+                    </div>
+                </div>
+
+                <div class="input-group" id="logo-size-control">
+                    <label for="logo-size">Logo circle size</label>
+                    <div class="logo-size-row">
+                        <input type="range" id="logo-size" min="24" max="60" value="44" step="1">
+                        <span id="logo-size-value">44%</span>
                     </div>
                 </div>
 

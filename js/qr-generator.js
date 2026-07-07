@@ -35,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const LOGO_RENDER_SCALE = 2;
     const DEFAULT_BACKGROUND_COLOR = '#ffffff';
     const OUTER_RADIUS_RATIO = 0.06;
+    const DEFAULT_LOGO_SIZE_PERCENT = 44;
+
+    const logoSizeSlider = document.getElementById('logo-size');
+    const logoSizeValue = document.getElementById('logo-size-value');
+    const logoSizeControl = document.getElementById('logo-size-control');
     const PDF_WORKER_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
 
     if (window.pdfjsLib) {
@@ -65,6 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!includeLogoCheckbox.checked && customLogoName) {
                 customLogoName.style.display = 'none';
                 customLogoName.textContent = '';
+            }
+            if (logoSizeControl) {
+                logoSizeControl.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
             }
             rerenderIfNeeded();
         };
@@ -122,6 +130,30 @@ document.addEventListener('DOMContentLoaded', () => {
             backgroundColorInput.value = DEFAULT_BACKGROUND_COLOR;
         }
         backgroundColorInput.addEventListener('input', rerenderIfNeeded);
+    }
+
+    function getLogoSizeRatio() {
+        if (!logoSizeSlider) return LOGO_SIZE_RATIO;
+        const parsed = Number(logoSizeSlider.value);
+        return Number.isFinite(parsed) ? parsed / 100 : LOGO_SIZE_RATIO;
+    }
+
+    function updateLogoSizeLabel() {
+        if (!logoSizeValue || !logoSizeSlider) return;
+        logoSizeValue.textContent = `${logoSizeSlider.value}%`;
+    }
+
+    if (logoSizeSlider) {
+        logoSizeSlider.value = String(DEFAULT_LOGO_SIZE_PERCENT);
+        updateLogoSizeLabel();
+        logoSizeSlider.addEventListener('input', () => {
+            updateLogoSizeLabel();
+            rerenderIfNeeded();
+        });
+    }
+
+    if (logoSizeControl && includeLogoCheckbox) {
+        logoSizeControl.style.display = includeLogoCheckbox.checked ? 'block' : 'none';
     }
 
     // Generate QR Code using Canvas API directly
@@ -214,10 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (rounded) {
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, size, size);
             ctx.save();
             beginRoundedPath();
-            ctx.fillStyle = backgroundColor;
-            ctx.fill();
             ctx.clip();
         } else {
             ctx.fillStyle = backgroundColor;
@@ -260,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function addLogoToQR(canvas, backgroundColor = DEFAULT_BACKGROUND_COLOR) {
         const ctx = canvas.getContext('2d');
         const canvasSize = canvas.width;
-        const logoMaxSize = Math.round(canvasSize * LOGO_SIZE_RATIO);
+        const logoMaxSize = Math.round(canvasSize * getLogoSizeRatio());
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
 
