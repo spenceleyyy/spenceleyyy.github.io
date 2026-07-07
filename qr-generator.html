@@ -228,8 +228,9 @@
         main {
             position: relative;
             z-index: 1;
-            padding: 8vh 6vw 6vh;
-            max-width: 1400px;
+            padding: 8vh 4vw 6vh;
+            max-width: 1600px;
+            width: min(100%, 1600px);
             margin: 0 auto;
         }
 
@@ -237,11 +238,23 @@
             margin-bottom: 6rem;
         }
 
-        .hero {
+        .hero,
+        .composer {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 3rem;
             align-items: center;
+        }
+
+        .hero,
+        .composer {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        @media (min-width: 1080px) {
+            .hero,
+            .composer {
+                grid-template-columns: repeat(2, minmax(420px, 1fr));
+            }
         }
 
         .eyebrow {
@@ -875,14 +888,6 @@
                     </div>
                 </div>
 
-                <div class="input-group" id="logo-size-control">
-                    <label for="logo-size">Logo circle size</label>
-                    <div class="logo-size-row">
-                        <input type="range" id="logo-size" min="24" max="60" value="44" step="1">
-                        <span id="logo-size-value">44%</span>
-                    </div>
-                </div>
-
                 <button id="generate-qr" class="primary-button"><span>Generate Code</span></button>
             </div>
 
@@ -894,6 +899,13 @@
                         <div id="qr-display-content">
                             <div id="qrcode-wrapper">
                             <div id="qrcode"></div>
+                            </div>
+                            <div class="input-group" id="logo-size-control">
+                                <label for="logo-size">Logo circle size</label>
+                                <div class="logo-size-row">
+                                    <input type="range" id="logo-size" min="24" max="60" value="44" step="1">
+                                    <span id="logo-size-value">44%</span>
+                                </div>
                             </div>
                             <div class="qr-downloads" id="qr-download-controls">
                                 <select id="qr-format">
