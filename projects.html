@@ -1054,15 +1054,15 @@
             <div class="view-toggle-shell">
                 <p class="view-toggle-label">View</p>
                 <div class="view-toggle" role="group" aria-label="Toggle between storyboard and list views">
-                    <button class="toggle-btn is-active" type="button" data-view-target="storyboard">Storyboard</button>
-                    <button class="toggle-btn" type="button" data-view-target="list">List</button>
+                    <button class="toggle-btn" type="button" data-view-target="storyboard">Storyboard</button>
+                    <button class="toggle-btn is-active" type="button" data-view-target="list">List</button>
                 </div>
             </div>
         </div>
-        <p>Short intro about the work goes here. Swap in your own copy when ready.</p>
+        <p></p>
     </header>
 
-    <div id="storyboard-view" class="view-section is-active" aria-hidden="false">
+    <div id="storyboard-view" class="view-section" aria-hidden="true">
         <section class="storyboard-phri-grid" aria-label="PHRI projects">
             <article class="project-card" id="project-phri-ania">
                 <div class="project-card__badge">01</div>
@@ -1258,7 +1258,7 @@
 
     </div>
 
-    <div id="list-view" class="view-section" aria-hidden="true">
+    <div id="list-view" class="view-section is-active" aria-hidden="false">
         <div class="page-header">
             <h1>Research Projects</h1>
             <p>Exploring the intersection of neuroscience, robotics, and human factors through rigorous experimental research.</p>
@@ -1625,7 +1625,7 @@
                 }
             };
 
-            setView('storyboard');
+            setView('list');
 
             viewButtons.forEach(button => {
                 button.addEventListener('click', () => {

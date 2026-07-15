@@ -67,11 +67,13 @@ function initializeNavToggle() {
     }
     const close = () => {
         nav.classList.remove('nav-open');
+        document.body.classList.remove('nav-panel-open');
         btn.setAttribute('aria-expanded', 'false');
         nav.querySelectorAll('.dropdown.open').forEach((d) => d.classList.remove('open'));
     };
     btn.addEventListener('click', () => {
         const open = nav.classList.toggle('nav-open');
+        document.body.classList.toggle('nav-panel-open', open);
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
         btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     });

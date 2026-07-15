@@ -86,6 +86,50 @@
       display: block;
     }
 
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 2;
+    }
+
+    .viewer.is-captured .photo-overlay {
+      opacity: 1;
+    }
+
+    .photo-overlay-circle {
+      position: absolute;
+      width: 25vmin;
+      height: 25vmin;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.10);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      cursor: grab;
+      touch-action: none;
+      will-change: transform, width, height;
+      pointer-events: auto;
+    }
+      height: 25vmin;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.10);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      cursor: grab;
+      touch-action: none;
+      will-change: transform, width, height;
+    }
+
+    .photo-overlay-circle.dragging {
+      cursor: grabbing;
+    }
+
     .viewer.is-captured video {
       display: none;
     }
@@ -672,6 +716,10 @@
         <video id="camera" autoplay playsinline></video>
         <canvas id="snapshot" aria-label="Captured photo"></canvas>
 
+        <div class="photo-overlay" id="photoOverlay" aria-hidden="true">
+          <div class="photo-overlay-circle" id="photoOverlayCircle" aria-label="Move circle around photo" title="Drag to move" role="slider"></div>
+        </div>
+
         <div class="scan-overlay" id="scanOverlay" aria-live="polite">
           <svg class="squiggles" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <path class="squiggle-path path-a" d="M-5 20 C 15 10, 25 35, 45 25 S 75 5, 105 20" />
@@ -809,6 +857,8 @@
     const statusPill = document.getElementById("statusPill");
     const detectedPill = document.getElementById("detectedPill");
     const scanOverlay = document.getElementById("scanOverlay");
+    const photoOverlay = document.getElementById("photoOverlay");
+    const photoOverlayCircle = document.getElementById("photoOverlayCircle");
     const detectedLabel = document.getElementById("detectedLabel");
     const sourceInput = document.getElementById("sourceInput");
     const targetOutput = document.getElementById("targetOutput");
@@ -867,6 +917,11 @@
       mode: "camera",
       target: targetLanguage.value,
       autoSavePending: false,
+      overlay: {
+        x: 0.5,
+        y: 0.5,
+        sizeRatio: 0.25,
+      },
     };
     const overlayMode = "block";
 
@@ -918,6 +973,38 @@
     const closeTranslatorSheet = () => {
       translatorSheet.classList.remove("is-open");
       translatorSheet.setAttribute("aria-hidden", "true");
+    };
+
+    const updatePhotoOverlayPosition = () => {
+      if (!photoOverlay || !photoOverlayCircle) {
+        return;
+      }
+      const bounds = photoOverlay.getBoundingClientRect();
+      const diameter = Math.round(Math.min(bounds.width, bounds.height) * state.overlay.sizeRatio);
+      const radius = diameter / 2;
+      const x = clampValue(state.overlay.x * bounds.width - radius, 0, bounds.width - diameter);
+      const y = clampValue(state.overlay.y * bounds.height - radius, 0, bounds.height - diameter);
+      photoOverlayCircle.style.width = `${diameter}px`;
+      photoOverlayCircle.style.height = `${diameter}px`;
+      photoOverlayCircle.style.transform = `translate(${x}px, ${y}px)`;
+    };
+
+    const setPhotoOverlayCenter = (clientX, clientY) => {
+      if (!photoOverlay) {
+        return;
+      }
+      const bounds = photoOverlay.getBoundingClientRect();
+      const relativeX = (clientX - bounds.left) / bounds.width;
+      const relativeY = (clientY - bounds.top) / bounds.height;
+      state.overlay.x = clampValue(relativeX, 0, 1);
+      state.overlay.y = clampValue(relativeY, 0, 1);
+      updatePhotoOverlayPosition();
+    };
+
+    const resetPhotoOverlay = () => {
+      state.overlay.x = 0.5;
+      state.overlay.y = 0.5;
+      updatePhotoOverlayPosition();
     };
 
     const getNativeTranslatePlugin = () => {
@@ -1773,6 +1860,7 @@
       state.baseImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       updateBaseImageCache();
       viewer.classList.add("is-captured");
+      resetPhotoOverlay();
       return true;
     };
 
@@ -1804,6 +1892,7 @@
           updateBaseImageCache();
           state.blocks = [];
           viewer.classList.add("is-captured");
+          resetPhotoOverlay();
           closeTranslatorSheet();
           state.autoSavePending = true;
           translateSnapshot();
@@ -1878,6 +1967,42 @@
         handleUpload(file);
       }
     });
+
+    let overlayDragging = false;
+
+    const onOverlayPointerMove = (event) => {
+      if (!overlayDragging) {
+        return;
+      }
+      event.preventDefault();
+      setPhotoOverlayCenter(event.clientX, event.clientY);
+    };
+
+    const onOverlayPointerUp = (event) => {
+      if (!overlayDragging) {
+        return;
+      }
+      overlayDragging = false;
+      if (photoOverlayCircle) {
+        photoOverlayCircle.classList.remove("dragging");
+        photoOverlayCircle.releasePointerCapture?.(event.pointerId);
+      }
+    };
+
+    if (photoOverlayCircle) {
+      photoOverlayCircle.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        overlayDragging = true;
+        photoOverlayCircle.classList.add("dragging");
+        photoOverlayCircle.setPointerCapture(event.pointerId);
+        setPhotoOverlayCenter(event.clientX, event.clientY);
+      });
+    }
+
+    window.addEventListener("pointermove", onOverlayPointerMove);
+    window.addEventListener("pointerup", onOverlayPointerUp);
+    window.addEventListener("pointercancel", onOverlayPointerUp);
+    window.addEventListener("resize", updatePhotoOverlayPosition);
 
     sourceInput.addEventListener("input", () => {
       state.mode = "manual";
