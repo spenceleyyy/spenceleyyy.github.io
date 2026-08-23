@@ -1,11 +1,20 @@
 :root{
-  --card-bg: #0f1a1b;
-  --card-border: rgba(255,255,255,0.04);
+  --color-primary: #e890be;
+  --color-background-main: #172D33;
+  --color-background-secondary: #47304F;
+  --color-text-dark: #FFFFED;
+  --color-text-body: #A294A6;
+  --card-bg: var(--color-background-main);
+  --card-border: rgba(255,255,255,0.1);
   --accent: #e890be;
-  --muted: #a9a3a9;
+  --muted: #A294A6;
 }
 *{box-sizing:border-box}
-body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background:#071216; color:#fff; margin:0}
+body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif; background:var(--color-background-main); color:var(--color-text-dark); margin:0}
+
+/* Nav pieces the shared navigation relies on page CSS for (matches people/projects pages) */
+.logo-link{display:flex;align-items:center;gap:0.75rem;text-decoration:none}
+.full-name{font-family:'Style Script', cursive;font-size:1.5rem;color:var(--color-text-dark)}
 .apps-main{max-width:1200px;margin:0 auto;padding:2rem}
 .apps-hero{margin-bottom:1.5rem}
 .apps-hero h1{font-size:2rem;margin-bottom:0.25rem}
@@ -24,7 +33,7 @@ body.apps-page{font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
 .btn-secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
 
 /* Project-like card styles to match projects page */
-.project-card{border:1px solid rgba(255,255,255,0.04);border-radius:18px;padding:1.5rem;background:#071216;max-width:1100px;margin:0 auto;color:#fff}
+.project-card{border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:1.5rem;background:var(--color-background-main);box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:1100px;margin:0 auto;color:var(--color-text-dark)}
 .project-card__badge{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,0.06);font-weight:600;margin-bottom:0.5rem}
 .project-card__title{font-size:1.75rem;margin:0 0 1rem 0}
 .project-card__grid{display:grid;grid-template-columns:1fr minmax(280px,0.6fr);gap:1.25rem;align-items:start}

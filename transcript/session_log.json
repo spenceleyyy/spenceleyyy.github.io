@@ -1,0 +1,47 @@
+[
+  {
+    "text": "Enter.",
+    "start": 0.3463859558105469,
+    "end": 2.346385955810547,
+    "speaker": "You",
+    "manual_codes": [],
+    "n_words": 1,
+    "context_dependency_score": 0,
+    "deictic_density": 0.0,
+    "flagged": false
+  },
+  {
+    "text": "Hey, so we",
+    "start": 9.016385955810547,
+    "end": 11.016385955810547,
+    "speaker": "You",
+    "manual_codes": [],
+    "n_words": 3,
+    "context_dependency_score": 0,
+    "deictic_density": 0.0,
+    "flagged": false
+  },
+  {
+    "type": "freeform_code",
+    "code": "p",
+    "label": "Pointing to person",
+    "timestamp": 16.45105218887329
+  },
+  {
+    "text": "We need to analyze this document.",
+    "start": 10.346385955810547,
+    "end": 13.346385955810547,
+    "speaker": "You",
+    "manual_codes": [
+      {
+        "code": "p",
+        "label": "Pointing to person",
+        "logged_at": 22.98064422607422
+      }
+    ],
+    "n_words": 6,
+    "context_dependency_score": 1,
+    "deictic_density": 0.167,
+    "flagged": true
+  }
+]
