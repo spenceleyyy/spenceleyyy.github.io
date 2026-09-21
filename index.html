@@ -750,7 +750,7 @@
                 <div class="gallery-container">
                     <div class="gallery-track">
                         <div class="gallery-item">
-                            <img src="People/NeuroErgoHFES25.png" alt="NeuroErgo HFES 2025">
+                            <img src="People/NeuroErgoHFES25.jpg" alt="NeuroErgo HFES 2025">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">NeuroErgonomics Lab takes on ASPIRE HFES 2025.</p>
                             </div>
@@ -762,31 +762,31 @@
                             </div>
                         </div>
                         <div class="gallery-item">
-                            <img src="People/HFESEExpo.png" alt="HFES Expo">
+                            <img src="People/HFESEExpo.jpg" alt="HFES Expo">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">UW-Madison's HFES chapter showcases human factors methodologies at the UW Engineering Expo.</p>
                             </div>
                         </div>
                         <div class="gallery-item">
-                            <img src="People/EMGAakash.png" alt="EMG with Aakash">
+                            <img src="People/EMGAakash.jpg" alt="EMG with Aakash">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">EMG with Dr. Aakash .</p>
                             </div>
                         </div>
                         <div class="gallery-item">
-                            <img src="People/ANIAPoster.png" alt="ANIA poster">
+                            <img src="People/ANIAPoster.jpg" alt="ANIA poster">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">Undergraduate research assistance, Ania Gugulski, presented her work on ERN in pHRI at the UW undergraduate research symposium.</p>
                             </div>
                         </div>
                         <div class="gallery-item">
-                            <img src="People/TACOTIME.png" alt="Taco time">
+                            <img src="People/TACOTIME.jpg" alt="Taco time">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">TACO TUESDAY with undergraduate research assistance, Yunyang, and research intern, Radiya.</p>
                             </div>
                         </div>
                         <div class="gallery-item">
-                            <img src="People/THEDOG.png" alt="The dog">
+                            <img src="People/THEDOG.jpg" alt="The dog">
                             <div class="gallery-overlay">
                                 <p class="gallery-text">HOT DOG CAR.</p>
                             </div>
@@ -892,175 +892,186 @@
 
     <script src="js/navigation.js"></script>
     <script>
-        // --- 1. BRAIN BACKGROUND (Loads GLB file) ---
-        const brainContainer = document.getElementById('brain-container');
-        const brainScene = new THREE.Scene();
-        const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100); 
-        const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-
-        brainRenderer.setSize(window.innerWidth, window.innerHeight);
-        brainRenderer.setClearColor(0x000000, 0);
-        brainContainer.appendChild(brainRenderer.domElement);
-
-        const brainGroup = new THREE.Group();
-        brainScene.add(brainGroup);
-
-        const centerBrainModel = (model) => {
-            const box = new THREE.Box3().setFromObject(model);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            model.position.sub(center);
-        };
-
-        const updateBrainScale = () => {
-            const width = window.innerWidth;
-            let scale = 0.9;
-            let cameraZ = 10;
-
-            if (width <= 480) {
-                scale = 0.6;
-                cameraZ = 13;
-            } else if (width <= 768) {
-                scale = 0.75;
-                cameraZ = 11.5;
-            }
-
-            brainGroup.scale.set(scale, scale, scale);
-            brainCamera.position.z = cameraZ;
-        };
-        updateBrainScale();
-
-        const brainAmbient = new THREE.AmbientLight(0xffffff, 1.2); 
-        brainScene.add(brainAmbient);
-
-        const brainLight1 = new THREE.DirectionalLight(0xffffff, 1.5); 
-        brainLight1.position.set(5, 5, 5);
-        brainScene.add(brainLight1);
-
-        brainCamera.position.z = 10;
+        // --- 1 & 2. THREE.JS BACKGROUNDS (brain model + contact sphere) ---
+        // Everything WebGL-related is wrapped in try/catch: if a browser
+        // can't create a WebGL context (hardware acceleration off, GPU
+        // blocked, etc.) this fails gracefully instead of throwing an
+        // uncaught error that would stop the rest of this script - including
+        // the image gallery further down - from ever running.
         let brainScrollRotation = 0;
-        let loadedBrainModel; 
-        
-        const visibleMaterial = new THREE.MeshBasicMaterial({
-            color: 0xA294A6,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.85
-        });
+        let loadedBrainModel;
 
-        function initGLTFLoader() {
-            if (typeof THREE.GLTFLoader === 'undefined') {
-                if (initGLTFLoader.attempts > 10) {
-                    return; 
+        try {
+            const brainContainer = document.getElementById('brain-container');
+            const brainScene = new THREE.Scene();
+            const brainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+            const brainRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            brainRenderer.setSize(window.innerWidth, window.innerHeight);
+            brainRenderer.setClearColor(0x000000, 0);
+            brainContainer.appendChild(brainRenderer.domElement);
+
+            const brainGroup = new THREE.Group();
+            brainScene.add(brainGroup);
+
+            const centerBrainModel = (model) => {
+                const box = new THREE.Box3().setFromObject(model);
+                const center = new THREE.Vector3();
+                box.getCenter(center);
+                model.position.sub(center);
+            };
+
+            const updateBrainScale = () => {
+                const width = window.innerWidth;
+                let scale = 0.9;
+                let cameraZ = 10;
+
+                if (width <= 480) {
+                    scale = 0.6;
+                    cameraZ = 13;
+                } else if (width <= 768) {
+                    scale = 0.75;
+                    cameraZ = 11.5;
                 }
-                
-                initGLTFLoader.attempts = (initGLTFLoader.attempts || 0) + 1;
-                setTimeout(initGLTFLoader, 100);
-                return;
+
+                brainGroup.scale.set(scale, scale, scale);
+                brainCamera.position.z = cameraZ;
+            };
+            updateBrainScale();
+
+            const brainAmbient = new THREE.AmbientLight(0xffffff, 1.2);
+            brainScene.add(brainAmbient);
+
+            const brainLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+            brainLight1.position.set(5, 5, 5);
+            brainScene.add(brainLight1);
+
+            brainCamera.position.z = 10;
+
+            const visibleMaterial = new THREE.MeshBasicMaterial({
+                color: 0xA294A6,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.85
+            });
+
+            function initGLTFLoader() {
+                if (typeof THREE.GLTFLoader === 'undefined') {
+                    if (initGLTFLoader.attempts > 10) {
+                        return;
+                    }
+
+                    initGLTFLoader.attempts = (initGLTFLoader.attempts || 0) + 1;
+                    setTimeout(initGLTFLoader, 100);
+                    return;
+                }
+
+                const loader = new THREE.GLTFLoader();
+
+                loader.load(
+                    '/models/uploads-files-2145984-brain.glb',
+                    function (gltf) {
+                        loadedBrainModel = gltf.scene;
+
+                        loadedBrainModel.traverse((child) => {
+                            if (child.isMesh) {
+                                child.material = visibleMaterial;
+                            }
+                        });
+
+                        loadedBrainModel.scale.set(8, 8, 8);
+                        loadedBrainModel.rotation.set(0, Math.PI / 4, 0);
+                        loadedBrainModel.position.set(0, 0, 0);
+
+                        brainGroup.add(loadedBrainModel);
+                        centerBrainModel(loadedBrainModel);
+                        updateBrainScale();
+                    },
+                    function (xhr) {},
+                    function (error) {
+                        console.error('An error occurred loading the GLB model:', error);
+                    }
+                );
             }
 
-            const loader = new THREE.GLTFLoader();
-
-            loader.load(
-                '/models/uploads-files-2145984-brain.glb',
-                function (gltf) {
-                    loadedBrainModel = gltf.scene;
-                    
-                    loadedBrainModel.traverse((child) => {
-                        if (child.isMesh) {
-                            child.material = visibleMaterial;
-                        }
-                    });
-                    
-                    loadedBrainModel.scale.set(8, 8, 8);
-                    loadedBrainModel.rotation.set(0, Math.PI / 4, 0); 
-                    loadedBrainModel.position.set(0, 0, 0);
-
-                    brainGroup.add(loadedBrainModel);
-                    centerBrainModel(loadedBrainModel);
-                    updateBrainScale();
-                    animate(); 
-                },
-                function (xhr) {},
-                function (error) {
-                    console.error('An error occurred loading the GLB model:', error);
-                }
-            );
-        }
-
-        window.onload = function() {
+            // Start loading the brain model right away instead of waiting for
+            // window.onload, which would also wait on every image on the page
+            // (including the People gallery) to finish downloading first.
             initGLTFLoader();
-        };
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (loadedBrainModel) {
-                loadedBrainModel.rotation.y = brainScrollRotation * 0.5; 
-                loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
+
+            // --- Contact page 3D sphere ---
+            const contactContainer = document.getElementById('contact-3d');
+            const contactScene = new THREE.Scene();
+            const contactCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+            const contactRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            contactRenderer.setSize(window.innerWidth, window.innerHeight);
+            contactRenderer.setClearColor(0x000000, 0);
+            contactContainer.appendChild(contactRenderer.domElement);
+
+            const sphereGroup = new THREE.Group();
+
+            const contactGeometry = new THREE.IcosahedronGeometry(3, 1);
+            const contactMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0071e3,
+                wireframe: true,
+                shininess: 50
+            });
+
+            const contactSphere = new THREE.Mesh(contactGeometry, contactMaterial);
+            sphereGroup.add(contactSphere);
+            contactScene.add(sphereGroup);
+
+            const contactAmbient = new THREE.AmbientLight(0xffffff, 0.8);
+            contactScene.add(contactAmbient);
+
+            contactCamera.position.z = 8;
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                if (loadedBrainModel) {
+                    loadedBrainModel.rotation.y = brainScrollRotation * 0.5;
+                    loadedBrainModel.rotation.x = Math.sin(brainScrollRotation * 0.3) * 0.1;
+                }
+
+                brainRenderer.render(brainScene, brainCamera);
+
+                sphereGroup.rotation.y += 0.005;
+                sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
+                contactRenderer.render(contactScene, contactCamera);
             }
-            
-            brainRenderer.render(brainScene, brainCamera);
-            
-            sphereGroup.rotation.y += 0.005;
-            sphereGroup.rotation.x = Math.sin(Date.now() * 0.0005) * 0.1;
-            contactRenderer.render(contactScene, contactCamera);
+            animate();
+
+            window.addEventListener('resize', () => {
+                brainCamera.aspect = window.innerWidth / window.innerHeight;
+                brainCamera.updateProjectionMatrix();
+                brainRenderer.setSize(window.innerWidth, window.innerHeight);
+                updateBrainScale();
+
+                contactCamera.aspect = window.innerWidth / window.innerHeight;
+                contactCamera.updateProjectionMatrix();
+                contactRenderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        } catch (err) {
+            console.error('3D background unavailable, continuing without it:', err);
         }
-
-        // --- 2. CONTACT PAGE 3D SPHERE ---
-        const contactContainer = document.getElementById('contact-3d');
-        const contactScene = new THREE.Scene();
-        const contactCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-        const contactRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-
-        contactRenderer.setSize(window.innerWidth, window.innerHeight);
-        contactRenderer.setClearColor(0x000000, 0);
-        contactContainer.appendChild(contactRenderer.domElement);
-
-        const sphereGroup = new THREE.Group();
-
-        const contactGeometry = new THREE.IcosahedronGeometry(3, 1);
-        const contactMaterial = new THREE.MeshPhongMaterial({
-            color: 0x0071e3, 
-            wireframe: true, 
-            shininess: 50
-        });
-
-        const contactSphere = new THREE.Mesh(contactGeometry, contactMaterial);
-        sphereGroup.add(contactSphere);
-        contactScene.add(sphereGroup);
-
-        const contactAmbient = new THREE.AmbientLight(0xffffff, 0.8);
-        contactScene.add(contactAmbient);
-
-        contactCamera.position.z = 8;
 
         // --- 3. EVENT HANDLERS ---
         window.addEventListener('scroll', () => {
             brainScrollRotation = window.scrollY * 0.0008;
-            
+
             const contactSection = document.getElementById('contact');
             if (contactSection) {
                 const rect = contactSection.getBoundingClientRect();
                 const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-                
+
                 if (isVisible) {
                     contactSection.classList.add('active');
                 } else {
                     contactSection.classList.remove('active');
                 }
             }
-        });
-        
-        window.addEventListener('resize', () => {
-            brainCamera.aspect = window.innerWidth / window.innerHeight;
-            brainCamera.updateProjectionMatrix();
-            brainRenderer.setSize(window.innerWidth, window.innerHeight);
-            updateBrainScale();
-            
-            contactCamera.aspect = window.innerWidth / window.innerHeight;
-            contactCamera.updateProjectionMatrix();
-            contactRenderer.setSize(window.innerWidth, window.innerHeight);
         });
         
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

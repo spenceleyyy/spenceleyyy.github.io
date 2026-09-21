@@ -137,8 +137,8 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                 </div>
             </section>
 
-            <section class="analysis-section layout-right" style="display: flex;">
-                <div class="visual-panel" style="flex: 3.5;">
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
                     <div class="plot-container">
                         <h3>Interactive MPG Scatterplot</h3>
                         <p class="plot-description">Explore fuel efficiency with hoverable tooltips for each vehicle.</p>
@@ -158,7 +158,7 @@ print(animate(p, nframes = 140, fps = 20, renderer = magick_renderer()))</code><
                     </div>
                 </div>
 
-                <div class="code-panel" style="flex: 1;">
+                <div class="code-panel">
                     <div class="code-header">
                         <div class="code-title">
                             <span class="code-icon"></span>
@@ -196,8 +196,8 @@ girafe(
                 </div>
             </section>
 
-            <section class="analysis-section layout-left" style="display: flex;">
-                <div class="visual-panel" style="flex: 3.5;">
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
                     <div class="plot-container">
                         <h3>Annotated Point Plot</h3>
                         <p class="plot-description">An interactive annotated point plot with hover-enabled tooltips.</p>
@@ -216,7 +216,7 @@ girafe(
                     </div>
                 </div>
 
-                <div class="code-panel" style="flex: 1;">
+                <div class="code-panel">
                     <div class="code-header">
                         <div class="code-title">
                             <span class="code-icon"></span>
@@ -256,9 +256,626 @@ girafe(
                 </div>
             </section>
 
-            <!-- Add more sections here in alternating layout -->
-            <!-- Next section would use layout-right class -->
-            
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Parallel Coordinates: Car Specs</h3>
+                        <p class="plot-description">Adapted from a brushing exercise &mdash; hover any line to trace one car's specs across every measured feature.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/parallel_coordinates_mtcars.html"
+                                    class="plot-iframe"
+                                    title="Interactive parallel coordinates plot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-4">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-4" class="language-r">mtcars.df <- mtcars %>% rownames_to_column("name")
+l.mtcars.df <- mtcars.df %>%
+  pivot_longer(-name, names_to = "feature", values_to = "value") %>%
+  group_by(feature) %>%
+  mutate(s.value = as.numeric(scale(value))) %>%
+  ungroup()
+
+p <- ggplot(l.mtcars.df, aes(feature, s.value, group = name)) +
+  geom_line_interactive(
+    aes(tooltip = paste0(name, " (", round(value, 1), ")"),
+        data_id = name),
+    alpha = 0.45, linewidth = 0.7, color = "#47304F") +
+  theme_bw(base_size = 13) +
+  labs(x = NULL, y = "Scaled value (z-score)",
+       title = "Each line is a car — hover to trace one")
+
+girafe(ggobj = p, width_svg = 9, height_svg = 5,
+  options = list(
+    opts_hover(css = "stroke:#e890be;stroke-width:3px;"),
+    opts_hover_inv(css = "opacity:0.12;")
+  ))</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Gapminder: Life Expectancy vs. GDP</h3>
+                        <p class="plot-description">Adapted from a brushed Gapminder demo &mdash; animated across five decades, tracing the U.S. and Rwanda as economies and life expectancy diverge and recover.</p>
+                        <div class="plot-wrapper">
+                            <video controls autoplay loop muted class="plot-video">
+                                <source src="Interactive Data Plots/gapminder_bubble.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">gganimate</span>
+                            <span class="badge">gapminder</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-5">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-5" class="language-r">trace_countries <- c("United States", "Rwanda")
+
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, color = continent)) +
+  geom_path(data = gapminder %>% filter(country %in% trace_countries),
+            aes(group = country), color = "grey35", alpha = 0.7) +
+  geom_point(alpha = 0.85) +
+  geom_text(data = gapminder %>% filter(country %in% trace_countries, year == max(year)),
+            aes(label = country), vjust = -1.3, fontface = "bold") +
+  scale_x_log10(labels = comma) +
+  scale_size(range = c(2, 16), guide = "none") +
+  coord_cartesian(xlim = c(230, 60000), ylim = c(20, 85)) +
+  labs(title = "Life expectancy vs. GDP per capita — {round(frame_time)}",
+       x = "GDP per capita ($, log scale)", y = "Life expectancy (years)") +
+  theme_bw(base_size = 15) +
+  transition_time(year) + ease_aes("linear")
+
+animate(p, nframes = 130, fps = 14,
+        renderer = av_renderer("gapminder_bubble.mp4"))</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>UMAP Projection of Car Specs</h3>
+                        <p class="plot-description">Adapted from a parallel-coordinates + UMAP sensitivity demo &mdash; a single tuned embedding groups cars by engine size; hover a point for details.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/umap_mtcars.html"
+                                    class="plot-iframe"
+                                    title="Interactive UMAP projection"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">uwot</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-6">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-6" class="language-r">set.seed(42)
+umap_out <- umap(mtcars.df %>% select(-name) %>% scale(),
+                  n_neighbors = 8, min_dist = 0.05)
+umap.df <- mtcars.df %>% mutate(UMAP1 = umap_out[,1], UMAP2 = umap_out[,2])
+
+p <- ggplot(umap.df, aes(UMAP1, UMAP2, color = factor(cyl))) +
+  geom_point_interactive(
+    aes(tooltip = paste0(name, "\n", cyl, " cyl · ", round(mpg,1), " mpg"),
+        data_id = name), size = 4.2) +
+  scale_color_manual(values = c("4" = "#e890be", "6" = "#9ad7ff", "8" = "#73ffa0")) +
+  theme_bw(base_size = 13) +
+  labs(title = "UMAP projection of car specs")
+
+girafe(ggobj = p, width_svg = 8, height_svg = 5.5,
+  options = list(opts_hover(css = "stroke:#172D33;stroke-width:2px;r:7px;")))</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Median Salary by Major Category</h3>
+                        <p class="plot-description">Adapted from a percentile-trimming Shiny exercise &mdash; violin + jitter plot of starting salaries by field; hover a point for the specific major.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/salary_by_major.html"
+                                    class="plot-iframe"
+                                    title="Interactive salary by major plot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-7">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-7" class="language-r">majors_filtered <- grads %>% group_by(Major_category) %>% filter(n() >= 8) %>% ungroup()
+cat_summ <- majors_filtered %>% group_by(Major_category) %>%
+  summarise(mean_salary = mean(Median, na.rm = TRUE)) %>%
+  mutate(Major_category = fct_reorder(Major_category, mean_salary))
+majors_plot <- majors_filtered %>%
+  mutate(Major_category = factor(Major_category, levels = levels(cat_summ$Major_category)))
+
+p <- ggplot(majors_plot, aes(Major_category, Median, fill = Major_category)) +
+  geom_violin(alpha = 0.55, color = NA) +
+  geom_point_interactive(
+    aes(tooltip = paste0(Major, "\n$", comma(Median)), data_id = Major),
+    position = position_jitter(width = 0.15), alpha = 0.65, size = 1.7) +
+  geom_hline(yintercept = median(majors_plot$Median, na.rm = TRUE), linetype = "dashed") +
+  coord_flip() +
+  scale_y_continuous(labels = comma) +
+  theme_bw(base_size = 12) +
+  labs(x = NULL, y = "Median salary ($)")
+
+girafe(ggobj = p, width_svg = 9, height_svg = 6.5,
+  options = list(opts_hover(css = "stroke:black;stroke-width:1.5px;r:4px;")))</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Sortable Car Specs Table</h3>
+                        <p class="plot-description">Adapted from a minimal Shiny data-table demo &mdash; every column sorts, filters, and pages entirely client-side.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/mtcars_datatable.html"
+                                    class="plot-iframe"
+                                    title="Interactive sortable car specs table"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">DT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-8">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-8" class="language-r">mtcars_dt <- mtcars %>% rownames_to_column("Car")
+
+datatable(
+  mtcars_dt,
+  rownames = FALSE,
+  filter = "top",
+  options = list(pageLength = 10, scrollX = TRUE)
+)</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Pick-a-Feature Scatterplot</h3>
+                        <p class="plot-description">Adapted from a dropdown-driven scatterplot demo &mdash; choose which spec to plot against MPG from the menu.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/dropdown_scatterplot.html"
+                                    class="plot-iframe"
+                                    title="Dropdown-driven scatterplot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">plotly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-9">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-9" class="language-r">features <- setdiff(names(mtcars), "mpg")
+
+buttons <- lapply(features, function(f) {
+  list(method = "update",
+       args = list(list(x = list(mtcars[[f]])),
+                   list(xaxis = list(title = f))),
+       label = f)
+})
+
+plot_ly(x = ~mtcars[[features[1]]], y = ~mtcars$mpg,
+        type = "scatter", mode = "markers",
+        text = rownames(mtcars), hoverinfo = "text+x+y") %>%
+  layout(title = "Vehicle feature vs. MPG",
+         updatemenus = list(list(buttons = buttons)))</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Box-Zoom Scatterplot</h3>
+                        <p class="plot-description">Adapted from a brush-to-zoom demo &mdash; drag a box to zoom in, double-click to reset.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/zoom_scatterplot.html"
+                                    class="plot-iframe"
+                                    title="Box-zoom scatterplot"
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">plotly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-10">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-10" class="language-r">plot_ly(mtcars, x = ~wt, y = ~mpg,
+        type = "scatter", mode = "markers",
+        text = rownames(mtcars), hoverinfo = "text+x+y") %>%
+  layout(title = "Drag to box-zoom · double-click to reset",
+         dragmode = "zoom")</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Linked Boxplot &amp; Histogram</h3>
+                        <p class="plot-description">Adapted from a click-to-select demo &mdash; drag-select points on the boxplot and the histogram highlights the same points.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/click_select_boxplot.html"
+                                    class="plot-iframe"
+                                    title="Linked boxplot and histogram"
+                                    loading="lazy"
+                                    style="height: 480px;">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">crosstalk</span>
+                            <span class="badge">plotly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-11">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-11" class="language-r">sd_tg <- SharedData$new(ToothGrowth)
+
+p1 <- plot_ly(sd_tg, x = ~supp, y = ~len, type = "box",
+              boxpoints = "all", jitter = 0.5, pointpos = 0)
+
+p2 <- plot_ly(sd_tg, x = ~len, type = "histogram", nbinsx = 15)
+
+bscols(
+  highlight(p1, on = "plotly_selected", off = "plotly_deselect"),
+  highlight(p2, on = "plotly_selected", off = "plotly_deselect")
+)</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Belief in Automation Over Time</h3>
+                        <p class="plot-description">From a driving-simulation study &mdash; each line traces one participant's belief in manual (blue) vs. automated (green) driving as the speed condition changes.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/belief_plots.png" alt="Belief in automation over time, faceted by speed condition" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-12">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-12" class="language-r">ggplot() +
+  geom_vline(xintercept = 10, linetype = 2) +
+  geom_path(data = mean_change_df,
+            aes(timestep, belief_m, group = iteration),
+            color = "#33a02c", alpha = 0.25) +
+  geom_path(data = mean_change_df,
+            aes(timestep, belief_a, group = iteration),
+            color = "#1f78b4", alpha = 0.25) +
+  facet_grid(condition_mean ~ .) +
+  labs(x = "Time (Seconds)", y = "Belief in Automation (%)") +
+  theme_bw()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Time to First Automation Use</h3>
+                        <p class="plot-description">From the same study &mdash; when each participant first switched on automation, faceted by speed condition.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/action_plots.png" alt="Histogram of time to first automation activation, faceted by speed condition" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-13">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-13" class="language-r">ggplot(filter(mean_change_df, timestep == minsep_time),
+       aes(x = minsep_time)) +
+  geom_vline(xintercept = 10, color = "grey", linetype = 2) +
+  geom_histogram(binwidth = 1) +
+  facet_grid(condition_mean ~ .) +
+  labs(x = "Time of First Automation Activation (Seconds)",
+       y = "Number of Participants") +
+  theme_bw()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Believed Driving Ability by Condition</h3>
+                        <p class="plot-description">From the same study &mdash; the modeled distributions (outline) versus what participants actually believed (filled), by speed condition.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/distr_plots.png" alt="Density plot of believed driving ability, faceted by speed condition" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-14">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-14" class="language-r">ggplot(distr_df, aes(values, fill = condition_type)) +
+  stat_function(fun = dnorm, args = list(mean = 70, sd = 15)) +
+  stat_function(fun = dnorm, args = list(mean = 90, sd = 5)) +
+  stat_density(alpha = 0.75, position = "dodge") +
+  facet_grid(condition_mean ~ ., scales = "free") +
+  labs(x = "Belief in driving ability",
+       y = "Density of believed ability") +
+  theme_bw()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left full-width">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Driver Beliefs and Automation Engagement</h3>
+                        <p class="plot-description">The three panels above combined into a single figure with <code>patchwork</code>.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/combined_belief_action_distr.png" alt="Combined figure: belief distributions, belief over time, and time to first automation use" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">patchwork</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-15">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-15" class="language-r">distr_plots + belief_plots + action_plots +
+  plot_annotation(title = "Driver Beliefs and Automation Engagement Over Time")</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Top All-Time Athletics Marks</h3>
+                        <p class="plot-description">Adapted from a live athletics-analysis Shiny app &mdash; filter world all-time top-25 marks by sex, age category, and event.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/athletics_top_marks.html"
+                                    class="plot-iframe"
+                                    title="Interactive top all-time athletics marks"
+                                    loading="lazy"
+                                    style="height: 720px;">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">crosstalk</span>
+                            <span class="badge">plotly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-16">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-16" class="language-r">ath <- ath_raw %>%
+  filter(sex %in% c("male", "female"),
+         age_cat %in% c("senior", "u18", "u20"),
+         normalized_discipline != "",
+         rank_num <= 25)
+
+sd_ath <- SharedData$new(ath)
+
+p <- plot_ly(sd_ath, x = ~date, y = ~mark_numeric,
+             type = "scatter", mode = "markers",
+             text = ~paste(competitor, mark))
+
+bscols(
+  filter_select("sex", "Sex", sd_ath, ~Sex),
+  filter_select("age", "Age category", sd_ath, ~`Age category`),
+  filter_select("disc", "Event", sd_ath, ~Event),
+  filter_slider("rank", "Max all-time rank", sd_ath, ~`All-time rank`)
+)
+p</code></pre>
+                </div>
+            </section>
+
         </div>
     </main>
 

@@ -1,0 +1,174 @@
+---
+title: "10.23 class notes"
+author: "Rob Spenceley"
+date: "2025-10-23"
+output: html_document
+---
+
+
+#Loading packages
+```{r}
+#you should do all of this in this order so you make sure you are calling the right functions 
+
+library(tidyverse)
+library(data.table)
+library(osmdata)
+library(sf)
+library(ggrepel)
+library(maps)
+library(mapproj)
+library(usmap)
+
+set.seed(48)
+```
+
+#Reading the data in
+```{r}
+braking <- read.csv("braking_data.csv")
+```
+
+#Taking a look 
+```{r}
+head(braking)
+
+view(braking)
+```
+acc_br= braking 
+acc_sw = sway 
+so this is showing data from a study where there was hard braking incidents. So if braking acceleration is over a certain threshold then this would be considered a hard braking event
+so every point in this data is a hard braking event, and we have the coordinates of that data, so, we want to see where it is occuring 
+
+# Read in the map data - Wisconsin
+```{r}
+wi_map_county = st_as_sf(map('county', c("wisconsin", "illinois", "minnesota"), plot = F, fill = T))
+wi_only_map = st_as_sf(map('county', "wisconsin", plot = F, fill = T))
+
+#st_as_sf is the standard way to import this kind of map. So, what you are doing here is 
+#if you want to add more states, then you just change "wisconsin" to c("list of states),
+
+view(wi_map_county)
+```
+
+the geoms here are multipolygons, so you want to wait to combine until the very end
+
+# plot
+```{r}
+ggplot()+
+  geom_sf(data = wi_map_county)+
+  geom_point(data = braking, aes(x= lon, y = lat))+
+  theme_void()
+
+#when you are doing this kind of map, you should do your sf layer FIRST 
+#For maps, USE THEME VOID!!!!!
+```
+
+# oly wisc
+```{r}
+ggplot()+
+  geom_sf(data = wi_only_map)+
+  geom_point(data = braking, aes(x= lon, y = lat))+
+  theme_void()
+
+#when you are doing this kind of map, you should do your sf layer FIRST 
+#For maps, USE THEME VOID!!!!!
+```
+
+# Filter to include only Dane country 
+```{r}
+latitudes <- c(43.3, 42.9)
+longitude <- c(-89.9, -89.0)
+
+dan_co_hb_df = braking %>%
+  filter(lat <= 43.3 & lat >= 42.9 &
+           lon >= -89.9 & lon <= -89.0)
+
+```
+
+#reanme
+```{r}
+wi_map_county = st_as_sf(map('county', c("wisconsin", "illinois", "minnesota"), plot = F, fill = T))
+```
+
+# re plot
+
+```{r}
+
+ggplot()+
+  geom_sf(data = wi_only_map)+
+  geom_point(data = dan_co_hb_df, aes(x= lon, y = lat))+
+  theme_void()
+```
+
+# Open street map data integration
+need to get the madison region using get bounding box (gbb)
+```{r}
+msn = getbb("Madison, Wisconsin", featuretype = "city")
+
+msn_streets = msn %>%
+  opq() %>%
+  add_osm_feature(key = "highway", 
+                  value = c("motorway", "trunk", "primary", "secondary", "tertiary")) %>%
+  osmdata_sf()
+```
+
+# plottig the street data 
+```{r}
+ggplot()+
+  geom_sf(data = msn_streets$osm_lines, alpha = 0.8, size = 0.4, color = "grey")+
+  geom_point(data = dan_co_hb_df, aes(x = lon, y = lat), size = 0.5)+
+  lims(x = c(msn[1,1], msn[1,2]), y = c(msn[2,1], msn[2,2]))+
+  theme_void()
+```
+
+# new layers
+```{r}
+ggplot()+
+  geom_sf(data = msn_streets$osm_lines, alpha = 0.8, size = 0.4, color = "grey")+
+  geom_point(data = dan_co_hb_df, aes(x = lon, y = lat), size = 0.5)+
+  lims(x = c(msn[1,1], msn[1,2]), y = c(msn[2,1], msn[2,2]))+
+  facet_wrap(~participant)+
+  theme_void()
+```
+#creating a new representation
+```{r}
+hb_per_part <- dan_co_hb_df %>%
+  group_by(participant) %>%
+  summarise(AF_count = sum(str_count(participant, "AF(0[1-9]|1[0-9]|20|21)")))
+
+hb_per_part
+```
+#plotting totals
+```{r}
+ggplot(hb_per_part, aes(x = participant, y = AF_count)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  theme_minimal() +
+  labs(x = "Participant", y = "AF Count", title = "AF01–AF21 Count per Participant") +
+  coord_flip()+
+  theme_bw()
+```
+
+# REAL suggestion 
+```{r}
+brake_sm_df = braking %>%
+  group_by(participant) %>%
+  summarize(total = n())
+
+brake_sm_df
+```
+#Plot
+this plot is less engaging but far more explainatory 
+```{r}
+ggplot(data = brake_sm_df, aes(x = total,xend = 0, y = reorder(participant, total),yend=reorder(participant, total)))+
+  geom_point()+
+  geom_segment()+
+  scale_x_continuous(expand = c(0,0.), limits = c(0, 1250))+
+  xlab("Total hard braking events")+
+  ylab("Participant")+
+ theme_bw() +
+   theme(
+     axis.ticks.y = element_blank(),
+     axis.line.x  = element_blank(),
+     panel.grid.major.y = element_blank(),
+     panel.grid.minor.y = element_blank()) #this has to go after theme_bw
+```
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outpost — AI Companion prototype</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Outpost</strong>
+        <span class="muted">AI companion prototype</span>
+      </div>
+      <div class="topbar-right">
+        <span id="seed-indicator" class="muted small"></span>
+        <button id="pause" class="btn ghost" data-track="pause" title="Space">Pause</button>
+        <button id="new-game" class="btn ghost" data-track="new-game">New game</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="col dashboard" aria-label="Colony status">
+        <h2>Colony</h2>
+        <div id="resources" class="cards"></div>
+        <div id="colony" class="card colony"></div>
+        <h2 class="mt">Workforce</h2>
+        <div id="workforce" class="card workforce"></div>
+        <details class="rules">
+          <summary>Rules in brief</summary>
+          <ul>
+            <li>Keep at least one colonist alive for <b>5 minutes</b>.</li>
+            <li>Each colonist eats <b>2 food</b> and draws <b>1 energy</b> per 10 s. A staffed farm gives 8 food (and draws 1 energy). A staffed generator gives 8 energy. <b>Unstaffed structures produce nothing.</b></li>
+            <li>Every structure costs 0.5 materials per 10 s. At zero materials for 10 s, something breaks.</li>
+            <li>Food at zero: a colonist starves every 4 s. Energy at zero: farms run at half.</li>
+            <li>Tasks need idle villagers and take time. More workers finish faster, up to 4. Cost is paid at the start; mining pays at the end and thins each run.</li>
+            <li>A colonist arrives every 20 s while there is room and food and energy hold. Dust storms halve generators for 10 s.</li>
+            <li>Keys: <kbd>1</kbd>–<kbd>4</kbd> start a task, <kbd>f</kbd>/<kbd>F</kbd> and <kbd>p</kbd>/<kbd>P</kbd> add/remove farmers and power crew, <kbd>Space</kbd> pauses.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section class="col centre" aria-label="Village">
+        <div class="timeline">
+          <span id="clock">Relief ship in 5:00</span>
+          <div class="bar"><i id="clock-bar"></i></div>
+        </div>
+        <div id="ai-strip" class="ai-strip"></div>
+        <div id="map-wrap" class="map-wrap"></div>
+        <div id="active-tasks" class="active-tasks"></div>
+        <div id="tasks" class="task-row"></div>
+      </section>
+
+      <section class="col side" aria-label="Logs and AI">
+        <div class="panel">
+          <h3>AI advisor <span class="muted small">(LM Studio)</span></h3>
+          <div id="ai-status" class="ai-status"></div>
+          <form id="ai-settings" class="ai-settings" onsubmit="return false">
+            <label><input type="checkbox" name="enabled"> enabled</label>
+            <label><input type="checkbox" name="allowAct"> allow AI to act</label>
+            <label>min gap <input type="number" name="minIntervalS" min="1" step="1" style="width:44px"> s</label>
+            <label>timeout <input type="number" name="timeoutS" min="5" step="5" style="width:44px"> s</label>
+            <label><input type="checkbox" name="noThink"> disable thinking</label>
+            <label class="wide">server <input type="text" name="baseUrl" placeholder="http://localhost:1234/v1"></label>
+            <label class="wide">model <input type="text" name="model" placeholder="(auto from /models)"></label>
+            <button id="ai-ask" type="button" class="btn ghost small">Ask for advice now</button>
+          </form>
+          <ul id="ai-log" class="log ai-log"></ul>
+        </div>
+        <div class="panel">
+          <h3>Colony log</h3>
+          <ul id="game-log" class="log"></ul>
+        </div>
+        <div class="panel">
+          <h3>Triggers</h3>
+          <ul id="trigger-config" class="trigger-config"></ul>
+          <ul id="trigger-log" class="log trigger-log"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer id="monitor" class="monitor"></footer>
+
+    <div id="gameover" class="modal" hidden>
+      <div class="modal-card">
+        <h2 id="gameover-title"></h2>
+        <p id="gameover-text"></p>
+        <button id="gameover-new" class="btn primary">Start again</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+  <script src="js/input-monitor.js"></script>
+  <script src="js/triggers.js"></script>
+  <script src="js/villagers.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/overlay.js"></script>
+  <script src="js/llm.js"></script>
+  <script src="js/advisor.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
