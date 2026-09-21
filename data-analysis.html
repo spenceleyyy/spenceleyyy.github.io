@@ -876,6 +876,228 @@ p</code></pre>
                 </div>
             </section>
 
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Hard-Braking Events: Tri-State</h3>
+                        <p class="plot-description">From a driving study near Madison &mdash; every hard-braking event recorded across Wisconsin, Illinois, and Minnesota.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/braking_wi_il_mn.png" alt="Map of hard-braking events across Wisconsin, Illinois, and Minnesota" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">sf</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-17">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-17" class="language-r">wi_map_county <- st_as_sf(map("county", c("wisconsin", "illinois", "minnesota"),
+                               plot = FALSE, fill = TRUE))
+
+ggplot() +
+  geom_sf(data = wi_map_county) +
+  geom_point(data = braking, aes(lon, lat), color = "#e890be", alpha = 0.7) +
+  theme_void()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Hard-Braking Events: Wisconsin</h3>
+                        <p class="plot-description">The same events, zoomed to Wisconsin &mdash; the Madison cluster stands out clearly.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/braking_wisconsin.png" alt="Map of hard-braking events across Wisconsin" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">sf</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-18">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-18" class="language-r">wi_only_map <- st_as_sf(map("county", "wisconsin", plot = FALSE, fill = TRUE))
+
+ggplot() +
+  geom_sf(data = wi_only_map) +
+  geom_point(data = braking, aes(lon, lat), color = "#e890be", alpha = 0.7) +
+  theme_void()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Hard-Braking Events: Dane County</h3>
+                        <p class="plot-description">Filtered to the Dane County (Madison) area, where the bulk of the driving took place.</p>
+                        <div class="plot-wrapper">
+                            <img src="Interactive Data Plots/braking_dane_county.png" alt="Map of hard-braking events filtered to Dane County" class="plot-image">
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">sf</span>
+                            <span class="badge">ggplot2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-19">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-19" class="language-r">dan_co_hb_df <- braking %>%
+  filter(lat <= 43.3 & lat >= 42.9 & lon >= -89.9 & lon <= -89.0)
+
+ggplot() +
+  geom_sf(data = wi_only_map) +
+  geom_point(data = dan_co_hb_df, aes(lon, lat), color = "#9ad7ff", alpha = 0.8) +
+  theme_void()</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Hard-Braking Events on Madison Streets</h3>
+                        <p class="plot-description">Zoomed to the driving area with hover tooltips per event. The original notebook overlays OpenStreetMap's road network here via a live Overpass query &mdash; that public API was rate-limiting every request while this page was built, so the street layer is omitted for now.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/braking_madison_zoomed.html"
+                                    class="plot-iframe"
+                                    title="Interactive map of hard-braking events near Madison"
+                                    loading="lazy"
+                                    style="height: 560px;">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">sf</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-20">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-20" class="language-r"># Original notebook overlays OpenStreetMap's road network here via:
+#   msn_streets <- getbb("Madison, Wisconsin") %>% opq() %>%
+#     add_osm_feature(key = "highway", value = c("motorway","trunk",
+#       "primary","secondary","tertiary")) %>% osmdata_sf()
+# omitted below since the public Overpass API was rate-limited at build time
+
+p <- ggplot() +
+  geom_sf(data = wi_only_map) +
+  geom_point_interactive(
+    data = dan_co_hb_df,
+    aes(lon, lat, tooltip = paste(participant, date_st), data_id = participant),
+    color = "#e890be", size = 1) +
+  coord_sf(xlim = range(dan_co_hb_df$lon), ylim = range(dan_co_hb_df$lat)) +
+  theme_void()
+
+girafe(ggobj = p, width_svg = 8, height_svg = 6.5)</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-left">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Hard-Braking Events by Participant</h3>
+                        <p class="plot-description">The same map, faceted so each participant's braking pattern is visible individually; hover a point for the date.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/braking_madison_by_participant.html"
+                                    class="plot-iframe"
+                                    title="Interactive map of hard-braking events faceted by participant"
+                                    loading="lazy"
+                                    style="height: 760px;">
+                            </iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">sf</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <span class="code-icon"></span>
+                            <span>R Code</span>
+                        </div>
+                        <button class="copy-btn" data-target="code-21">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="code-21" class="language-r">p <- ggplot() +
+  geom_sf(data = wi_only_map) +
+  geom_point_interactive(
+    data = dan_co_hb_df,
+    aes(lon, lat, tooltip = paste(participant, date_st), data_id = participant),
+    color = "#e890be", size = 0.8) +
+  coord_sf(xlim = range(dan_co_hb_df$lon), ylim = range(dan_co_hb_df$lat)) +
+  facet_wrap(~participant) +
+  theme_void()
+
+girafe(ggobj = p, width_svg = 10, height_svg = 9)</code></pre>
+                </div>
+            </section>
+
         </div>
     </main>
 
