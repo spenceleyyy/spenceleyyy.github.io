@@ -1089,15 +1089,19 @@ girafe(ggobj = p, width_svg = 8, height_svg = 6.5)</code></pre>
                             Copy
                         </button>
                     </div>
-                    <pre><code id="code-21" class="language-r">p <- ggplot() +
-  geom_sf(data = wi_only_map) +
+                    <pre><code id="code-21" class="language-r"># fill = NA on the county layer avoids each tiny facet turning into a
+# solid block of color with no visible reference at this zoom level
+p <- ggplot() +
+  geom_sf(data = wi_only_map, fill = NA, color = "#c9c2cc", linewidth = 0.25) +
   geom_point_interactive(
     data = dan_co_hb_df,
     aes(lon, lat, tooltip = paste(participant, date_st), data_id = participant),
-    color = "#e890be", size = 0.8) +
+    color = "#c2185b", size = 0.8) +
   coord_sf(xlim = range(dan_co_hb_df$lon), ylim = range(dan_co_hb_df$lat)) +
   facet_wrap(~participant) +
-  theme_void()
+  theme_void() +
+  theme(panel.background = element_rect(fill = "#f6f4f0", color = NA),
+        panel.border = element_rect(fill = NA, color = "#d8d2cf", linewidth = 0.4))
 
 girafe(ggobj = p, width_svg = 10, height_svg = 9)</code></pre>
                 </div>
