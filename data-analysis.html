@@ -1004,7 +1004,7 @@ ggplot() +
                 <div class="visual-panel">
                     <div class="plot-container">
                         <h3>Hard-Braking Events on Madison Streets</h3>
-                        <p class="plot-description">Zoomed to the driving area with hover tooltips per event. The original notebook overlays OpenStreetMap's road network here via a live Overpass query &mdash; that public API was rate-limiting every request while this page was built, so the street layer is omitted for now.</p>
+                        <p class="plot-description">Zoomed to the driving area, with OpenStreetMap's road network pulled in via a one-time Overpass query at build time. Hover a point for the date.</p>
                         <div class="plot-wrapper">
                             <iframe src="Interactive Data Plots/braking_madison_zoomed.html"
                                     class="plot-iframe"
@@ -1035,18 +1035,17 @@ ggplot() +
                             Copy
                         </button>
                     </div>
-                    <pre><code id="code-20" class="language-r"># Original notebook overlays OpenStreetMap's road network here via:
-#   msn_streets <- getbb("Madison, Wisconsin") %>% opq() %>%
-#     add_osm_feature(key = "highway", value = c("motorway","trunk",
-#       "primary","secondary","tertiary")) %>% osmdata_sf()
-# omitted below since the public Overpass API was rate-limited at build time
+                    <pre><code id="code-20" class="language-r">msn_streets <- getbb("Madison, Wisconsin") %>% opq() %>%
+  add_osm_feature(key = "highway",
+    value = c("motorway", "trunk", "primary", "secondary")) %>%
+  osmdata_sf()
 
 p <- ggplot() +
-  geom_sf(data = wi_only_map) +
+  geom_sf(data = msn_streets$osm_lines, color = "#9a9490", linewidth = 0.3) +
   geom_point_interactive(
     data = dan_co_hb_df,
     aes(lon, lat, tooltip = paste(participant, date_st), data_id = participant),
-    color = "#e890be", size = 1) +
+    color = "#c2185b", size = 1.4) +
   coord_sf(xlim = range(dan_co_hb_df$lon), ylim = range(dan_co_hb_df$lat)) +
   theme_void()
 
@@ -1089,10 +1088,8 @@ girafe(ggobj = p, width_svg = 8, height_svg = 6.5)</code></pre>
                             Copy
                         </button>
                     </div>
-                    <pre><code id="code-21" class="language-r"># fill = NA on the county layer avoids each tiny facet turning into a
-# solid block of color with no visible reference at this zoom level
 p <- ggplot() +
-  geom_sf(data = wi_only_map, fill = NA, color = "#c9c2cc", linewidth = 0.25) +
+  geom_sf(data = msn_streets$osm_lines, color = "#9a9490", linewidth = 0.2) +
   geom_point_interactive(
     data = dan_co_hb_df,
     aes(lon, lat, tooltip = paste(participant, date_st), data_id = participant),
