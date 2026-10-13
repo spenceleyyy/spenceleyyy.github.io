@@ -227,10 +227,11 @@ need to get the madison region using get bounding box (gbb)
 ```{r}
 msn = getbb("Madison, Wisconsin", featuretype = "city")
 
-msn_streets = msn %>%
-  opq() %>%
+msn_streets <- msn %>%
+  opq(timeout = 120) %>%
   add_osm_feature(key = "highway", 
                   value = c("motorway", "trunk", "primary", "secondary", "tertiary")) %>%
+  
   osmdata_sf()
 ```
 
@@ -286,4 +287,47 @@ ggplot(data = brake_sm_df, aes(x = total,xend = 0, y = reorder(participant, tota
      panel.grid.minor.y = element_blank()) #this has to go after theme_bw
 ```
 
+```{r}
+library(dplyr)
+
+tx <- txhousing %>%                          # Texas housing data, included in ggplot2
+  group_by(city, year) %>%
+  summarise(median_price = median(median, na.rm = TRUE), .groups = "drop") %>%
+  filter(!is.na(median_price))
+
+focus <- "Austin"
+
+after <- ggplot(tx, aes(year, median_price / 1000, group = city)) +
+  geom_line(colour = "grey85") +                                      # Ground: all cities
+  geom_line(data = filter(tx, city == focus), colour = "#0072B2", linewidth = 1.2) +  # Figure
+  annotate("text", x = 2015.3, y = tx$median_price[tx$city == focus & tx$year == 2015] / 1000,
+           label = focus, hjust = 0, colour = "#0072B2", fontface = "bold", size = 3.5) +
+  coord_cartesian(clip = "off") +
+  labs(title = "After: Austin prices rose 40% from 2011 to 2015",
+       x = NULL, y = "Median sale price ($1000s)") +
+  theme_classic() +
+  theme(plot.margin = margin(5, 50, 5, 5))
+
+after
+```
+
+```{r}
+library(patchwork)
+library(ggplot2)
+
+mtcars_named <- mtcars %>% mutate(car = rownames(mtcars))
+target <- "Toyota Corolla"
+
+pop1 <- ggplot(mtcars_named, aes(wt, mpg)) +
+  geom_point(size = 2) +
+  labs(title = "Where is the Corolla?")
+
+pop2 <- ggplot(mtcars_named, aes(wt, mpg)) +
+  geom_point(size = 2, colour = "grey75") +
+  geom_point(data = filter(mtcars_named, car == target), size = 3, colour = "#D55E00") +
+  annotate("text", x = 1.835 + 0.2, y = 33.9, label = target, hjust = 0, colour = "#D55E00", size = 3) +
+  labs(title = "Colour and size make it pop out")
+
+(pop1 + pop2) & labs(x = "Weight (1000 lbs)", y = "Miles per gallon") & theme_classic(base_size = 9)
+```
 

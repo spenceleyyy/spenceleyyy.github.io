@@ -50,7 +50,7 @@
             gap: 1.8rem;
             align-items: center;
             margin-left: auto;
-            overflow-x: auto;
+            overflow: visible;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -193,7 +193,7 @@
             margin-left: auto;
         }
 
-        /* Self-contained dropdown behavior (desktop) so every page gets it */
+        /* Shared dropdown styles override individual page styles. */
         nav.nav-solid .nav-links .dropdown { position: relative; }
 
         nav.nav-solid .nav-links .dropdown-menu {
@@ -201,7 +201,11 @@
             position: absolute;
             top: 100%;
             left: 0;
-            background: inherit;
+            background: rgba(23, 45, 51, 0.98);
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            z-index: 1001;
             border: 1px solid rgba(128, 128, 128, 0.3);
             border-radius: 12px;
             padding: 0.4rem 0;
@@ -215,11 +219,8 @@
             white-space: nowrap;
         }
 
-        @media (min-width: 951px) {
-            nav.nav-solid .nav-links .dropdown:hover > .dropdown-menu,
-            nav.nav-solid .nav-links .dropdown:focus-within > .dropdown-menu {
-                display: block;
-            }
+        nav.nav-solid .nav-links .dropdown.open > .dropdown-menu {
+            display: block;
         }
 
         /* Hamburger (hidden on desktop) */

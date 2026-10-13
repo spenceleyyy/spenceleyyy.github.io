@@ -36,25 +36,53 @@ async function loadNavigation(sources) {
     return '';
 }
 
-// Dropdown functionality
+// Dropdown functionality: click/tap works at every screen size.
 function initializeDropdowns() {
-    const dropdowns = document.querySelectorAll('.dropdown');
-    
+    const nav = document.querySelector('nav.nav-solid');
+    if (!nav) return;
+    const dropdowns = Array.from(nav.querySelectorAll('.dropdown'));
+    const setOpen = (dropdown, open) => {
+        dropdown.classList.toggle('open', open);
+        dropdown.querySelector('.dropdown-toggle').setAttribute('aria-expanded', String(open));
+    };
+    const closeAll = () => dropdowns.forEach(dropdown => setOpen(dropdown, false));
+
     dropdowns.forEach(dropdown => {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const menu = dropdown.querySelector('.dropdown-menu');
-        
-        // Prevent default link behavior; on mobile, tap expands the submenu
-        if (toggle) {
-            toggle.addEventListener('click', (e) => {
-                e.preventDefault();
-                const navToggle = document.querySelector('nav.nav-solid .nav-toggle');
-                const isMobile = navToggle && getComputedStyle(navToggle).display !== 'none';
-                if (isMobile) {
-                    dropdown.classList.toggle('open');
-                }
-            });
-        }
+        if (!toggle || !menu) return;
+        toggle.setAttribute('role', 'button');
+        toggle.setAttribute('aria-expanded', 'false');
+        const toggleMenu = () => {
+            const open = !dropdown.classList.contains('open');
+            closeAll();
+            setOpen(dropdown, open);
+        };
+        toggle.addEventListener('click', event => {
+            event.preventDefault();
+            toggleMenu();
+        });
+        toggle.addEventListener('keydown', event => {
+            if (event.key === ' ') {
+                event.preventDefault();
+                toggleMenu();
+            }
+        });
+        dropdown.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                setOpen(dropdown, false);
+                toggle.focus();
+            }
+        });
+        dropdown.addEventListener('focusout', event => {
+            if (!dropdown.contains(event.relatedTarget)) setOpen(dropdown, false);
+        });
+        menu.addEventListener('click', event => {
+            if (event.target.closest('a')) closeAll();
+        });
+    });
+    document.addEventListener('click', event => {
+        if (!dropdowns.some(dropdown => dropdown.contains(event.target))) closeAll();
     });
 }
 
@@ -69,7 +97,10 @@ function initializeNavToggle() {
         nav.classList.remove('nav-open');
         document.body.classList.remove('nav-panel-open');
         btn.setAttribute('aria-expanded', 'false');
-        nav.querySelectorAll('.dropdown.open').forEach((d) => d.classList.remove('open'));
+        nav.querySelectorAll('.dropdown.open').forEach((dropdown) => {
+            dropdown.classList.remove('open');
+            dropdown.querySelector('.dropdown-toggle').setAttribute('aria-expanded', 'false');
+        });
     };
     btn.addEventListener('click', () => {
         const open = nav.classList.toggle('nav-open');
