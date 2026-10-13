@@ -1104,6 +1104,97 @@ girafe(ggobj = p, width_svg = 10, height_svg = 9)</code></pre>
                 </div>
             </section>
 
+            <section class="analysis-section layout-left" id="austin-housing">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Austin Housing Prices: Figure and Ground</h3>
+                        <p class="plot-description">Grey lines provide context for Texas cities while blue brings Austin into focus. Annual values are medians of the available monthly median sale prices; Austin rose about 40% from 2011 to 2015. Hover a line for its city or an Austin point for its year and price.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/austin_housing_focus.html" class="plot-iframe"
+                                    title="Austin Housing Prices: Figure and Ground" loading="lazy"
+                                    style="height: auto; aspect-ratio: 8 / 5.5;"></iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title"><span class="code-icon"></span><span>R Code</span></div>
+                        <button class="copy-btn" data-target="code-21"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy</button>
+                    </div>
+                    <pre><code id="code-21" class="language-r">library(ggplot2)
+library(dplyr)
+
+tx &lt;- txhousing %&gt;%                          # Texas housing data, included in ggplot2
+  group_by(city, year) %&gt;%
+  summarise(median_price = median(median, na.rm = TRUE), .groups = &quot;drop&quot;) %&gt;%
+  filter(!is.na(median_price))
+
+focus &lt;- &quot;Austin&quot;
+
+after &lt;- ggplot(tx, aes(year, median_price / 1000, group = city)) +
+  geom_line(colour = &quot;grey85&quot;) +                                      # Ground: all cities
+  geom_line(data = filter(tx, city == focus), colour = &quot;#0072B2&quot;, linewidth = 1.2) +  # Figure
+  annotate(&quot;text&quot;, x = 2015.3, y = tx$median_price[tx$city == focus &amp; tx$year == 2015] / 1000,
+           label = focus, hjust = 0, colour = &quot;#0072B2&quot;, fontface = &quot;bold&quot;, size = 3.5) +
+  coord_cartesian(clip = &quot;off&quot;) +
+  labs(title = &quot;After: Austin prices rose 40% from 2011 to 2015&quot;,
+       x = NULL, y = &quot;Median sale price ($1000s)&quot;) +
+  theme_classic() +
+  theme(plot.margin = margin(5, 50, 5, 5))
+
+after</code></pre>
+                </div>
+            </section>
+
+            <section class="analysis-section layout-right full-width" id="corolla-popout">
+                <div class="visual-panel">
+                    <div class="plot-container">
+                        <h3>Make the Toyota Corolla Pop Out</h3>
+                        <p class="plot-description">Compare the same cars side by side: an ordinary scatterplot on the left and a larger orange Corolla against grey points on the right. Colour and size make the target easier to find. Hover a point for the car, weight, and MPG.</p>
+                        <div class="plot-wrapper">
+                            <iframe src="Interactive Data Plots/corolla_popout.html" class="plot-iframe"
+                                    title="Make the Toyota Corolla Pop Out" loading="lazy"
+                                    style="height: auto; aspect-ratio: 10 / 4.5;"></iframe>
+                        </div>
+                        <div class="plot-footer">
+                            <span class="badge">R</span>
+                            <span class="badge">ggplot2</span>
+                            <span class="badge">ggiraph</span>
+                            <span class="badge">patchwork</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-title"><span class="code-icon"></span><span>R Code</span></div>
+                        <button class="copy-btn" data-target="code-22"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy</button>
+                    </div>
+                    <pre><code id="code-22" class="language-r">library(dplyr)
+library(patchwork)
+library(ggplot2)
+
+mtcars_named &lt;- mtcars %&gt;% mutate(car = rownames(mtcars))
+target &lt;- &quot;Toyota Corolla&quot;
+
+pop1 &lt;- ggplot(mtcars_named, aes(wt, mpg)) +
+  geom_point(size = 2) +
+  labs(title = &quot;Where is the Corolla?&quot;)
+
+pop2 &lt;- ggplot(mtcars_named, aes(wt, mpg)) +
+  geom_point(size = 2, colour = &quot;grey75&quot;) +
+  geom_point(data = filter(mtcars_named, car == target), size = 3, colour = &quot;#D55E00&quot;) +
+  annotate(&quot;text&quot;, x = 1.835 + 0.2, y = 33.9, label = target, hjust = 0, colour = &quot;#D55E00&quot;, size = 3) +
+  labs(title = &quot;Colour and size make it pop out&quot;)
+
+(pop1 + pop2) &amp; labs(x = &quot;Weight (1000 lbs)&quot;, y = &quot;Miles per gallon&quot;) &amp; theme_classic(base_size = 9)</code></pre>
+                </div>
+            </section>
+
         </div>
     </main>
 
