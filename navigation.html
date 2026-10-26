@@ -256,52 +256,59 @@
 
         /* ── Mobile navigation ─────────────────────────────── */
         @media (max-width: 950px) {
+            :root {
+                --nav-panel-width: min(280px, 80vw);
+            }
+
             nav.nav-solid {
-                position: fixed;
-                top: 0;
+                width: var(--nav-panel-width);
+                height: 100vh;
                 left: 0;
-                right: 0;
-                width: 100%;
-                height: auto;
-                max-height: 100vh;
-                overflow-y: auto;
-                padding: 0.6rem 1rem;
+                right: auto;
+                bottom: auto;
+                padding: 1rem 1rem 0.75rem;
+                border-bottom: none;
+                border-right: 1px solid rgba(255, 255, 255, 0.12);
+                transform: translateX(-100%);
+                transition: transform 0.28s ease, box-shadow 0.28s ease;
+                inset: 0 auto auto 0;
+                background: rgba(23, 45, 51, 0.98);
             }
-            nav.nav-solid .logo-image { height: 40px; }
-            nav.nav-solid .logo-link {
-                display: flex;
-                align-items: center;
-                gap: 0.6rem;
-                min-width: 0;
+            nav.nav-solid.nav-open {
+                transform: translateX(0);
+                box-shadow: 14px 0 40px rgba(0, 0, 0, 0.35);
             }
+            nav.nav-solid .logo-image { height: 42px; }
             nav.nav-solid .full-name {
-                font-size: 1.05rem !important;
+                font-size: 1.1rem !important;
                 letter-spacing: normal !important;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                max-width: calc(var(--nav-panel-width) - 92px);
             }
             nav.nav-solid .nav-content {
-                display: flex;
-                flex-wrap: wrap;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                gap: 0.5rem;
+                flex-wrap: nowrap;
+                flex-direction: column;
+                align-items: stretch;
+                height: 100%;
+                justify-content: flex-start;
+                gap: 1rem;
             }
             .nav-toggle {
                 display: flex;
-                margin-left: auto;
-                flex-shrink: 0;
-                color: var(--color-text-dark, #FFFFED);
+                margin-left: 0;
+                align-self: flex-end;
             }
 
             nav.nav-solid .nav-links {
-                display: none !important;
-                width: 100%;
+                display: flex !important;
                 position: static;
+                top: auto;
+                left: auto;
+                right: auto;
                 margin: 0;
-                padding: 0.5rem 0 0.25rem;
+                padding: 0;
                 flex-direction: column;
                 align-items: stretch;
                 gap: 0.25rem;
@@ -312,7 +319,6 @@
                 overflow: visible;
                 list-style: none;
             }
-            nav.nav-solid.nav-open .nav-links { display: flex !important; }
 
             nav.nav-solid .nav-links a {
                 padding: 0.85rem 0.25rem;
@@ -336,6 +342,10 @@
 
             body.nav-panel-open {
                 overflow: hidden;
+            }
+            body.nav-panel-open > :not(nav) {
+                transform: translateX(var(--nav-panel-width));
+                transition: transform 0.28s ease;
             }
 
             /* the mentorship duck naps on small screens */

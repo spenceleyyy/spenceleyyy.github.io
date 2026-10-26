@@ -1071,6 +1071,43 @@
             color: var(--color-text-body);
         }
 
+        .hfes-media {
+            display: grid;
+            grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+        .hfes-media figure {
+            min-width: 0;
+        }
+        .hfes-media iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+            background: #fff;
+        }
+        .hfes-media img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--stroke);
+            border-radius: 12px;
+        }
+        .hfes-media a:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 4px;
+        }
+        @media (max-width: 700px) {
+            .hfes-media {
+                grid-template-columns: 1fr;
+            }
+            .hfes-media__proceedings {
+                max-width: 260px;
+            }
+        }
+
         .hero-video.is-active {
             position: fixed;
             inset: 0;
@@ -1102,6 +1139,30 @@
 
     <div id="storyboard-view" class="view-section" aria-hidden="true">
         <div class="research-additions content-shell">
+            <section class="project-card" id="hfes-2026-storyboard" aria-labelledby="hfes-title-storyboard">
+                <div class="project-details">
+                    <h2 class="project-card__title" id="hfes-title-storyboard">HFES 2026</h2>
+                    <h3 class="research-addition__subtitle">An Integrated Multimodal Framework for Measuring Physical Team Processes During State Emergency Operations Center Activations</h3>
+                    <p class="project-authors">Spenceley, R. J., Yadav, A., &amp; Mehta, R. K.</p>
+                    <div class="project-abstract">
+                        <p>An emergency operations center (EOC) is the central hub of activity during a coordinated disaster response. The layout of an EOC must be intuitive, conducive to communication, and free of distractions. We use a mix of objective and subjective measures to inform layout decisions that aid interagency coordination, build effective transactive memory systems, and create resilient teams. We observed an annual drill at an EOC involving 65 individuals. Subjective responses indicate that the physical arrangement of the EOC may be of little importance, given participants’ willingness to move. Audio analysis reveals high degrees of centrality, despite uneven speaking shares, suggesting all speakers within EOC subgroups contribute to group-work. Video analysis exhibits strong temporal consistency, though future work is needed to improve detection confidence. Results demonstrate the plausibility of deploying multimodal methodologies to an EOC, as we find moderate success with video-based metrics and sensitivity to intra-team dynamics with audio recordings.</p>
+                    </div>
+                    <div class="hfes-media">
+                        <figure class="research-addition__media">
+                            <iframe src="projects/Spenceley_HFES2026_sEOC_Presenter_FINAL_PRESENTED.html" title="Spenceley HFES 2026 presentation" loading="lazy" allowfullscreen></iframe>
+                            <figcaption>HFES 2026 conference presentation.</figcaption>
+                        </figure>
+                        <figure class="research-addition__media hfes-media__proceedings">
+                            <a href="https://doi.org/10.1177/10711813261498791" target="_blank" rel="noopener">
+                                <img src="projects/proceedings_2027.jpg" alt="HFES proceedings cover — open the published paper" loading="lazy">
+                            </a>
+                            <figcaption>Read the paper in the HFES proceedings.</figcaption>
+                        </figure>
+                    </div>
+                    <a href="projects/Spenceley_HFES2026_sEOC_Presenter_FINAL_PRESENTED.html" target="_blank" rel="noopener" class="project-link">View Presentation &rarr;</a>
+                </div>
+            </section>
+
             <section class="project-card" id="nec-2026-storyboard" aria-labelledby="nec-title-storyboard">
                 <div class="project-details">
                     <h2 class="project-card__title" id="nec-title-storyboard">Neuroergonomics Conference, 2026</h2>
@@ -1341,6 +1402,30 @@
         </div>
 
         <div class="research-additions">
+            <section class="project-section" id="hfes-2026-list" aria-labelledby="hfes-title-list">
+                <div class="project-details">
+                    <h2 class="project-title" id="hfes-title-list">HFES 2026</h2>
+                    <h3 class="research-addition__subtitle">An Integrated Multimodal Framework for Measuring Physical Team Processes During State Emergency Operations Center Activations</h3>
+                    <p class="project-authors">Spenceley, R. J., Yadav, A., &amp; Mehta, R. K.</p>
+                    <div class="project-abstract">
+                        <p>An emergency operations center (EOC) is the central hub of activity during a coordinated disaster response. The layout of an EOC must be intuitive, conducive to communication, and free of distractions. We use a mix of objective and subjective measures to inform layout decisions that aid interagency coordination, build effective transactive memory systems, and create resilient teams. We observed an annual drill at an EOC involving 65 individuals. Subjective responses indicate that the physical arrangement of the EOC may be of little importance, given participants’ willingness to move. Audio analysis reveals high degrees of centrality, despite uneven speaking shares, suggesting all speakers within EOC subgroups contribute to group-work. Video analysis exhibits strong temporal consistency, though future work is needed to improve detection confidence. Results demonstrate the plausibility of deploying multimodal methodologies to an EOC, as we find moderate success with video-based metrics and sensitivity to intra-team dynamics with audio recordings.</p>
+                    </div>
+                    <div class="hfes-media">
+                        <figure class="research-addition__media">
+                            <iframe src="projects/Spenceley_HFES2026_sEOC_Presenter_FINAL_PRESENTED.html" title="Spenceley HFES 2026 presentation" loading="lazy" allowfullscreen></iframe>
+                            <figcaption>HFES 2026 conference presentation.</figcaption>
+                        </figure>
+                        <figure class="research-addition__media hfes-media__proceedings">
+                            <a href="https://doi.org/10.1177/10711813261498791" target="_blank" rel="noopener">
+                                <img src="projects/proceedings_2027.jpg" alt="HFES proceedings cover — open the published paper" loading="lazy">
+                            </a>
+                            <figcaption>Read the paper in the HFES proceedings.</figcaption>
+                        </figure>
+                    </div>
+                    <a href="projects/Spenceley_HFES2026_sEOC_Presenter_FINAL_PRESENTED.html" target="_blank" rel="noopener" class="project-link">View Presentation &rarr;</a>
+                </div>
+            </section>
+
             <section class="project-section" id="nec-2026-list" aria-labelledby="nec-title-list">
                 <div class="project-details">
                     <h2 class="project-title" id="nec-title-list">Neuroergonomics Conference, 2026</h2>
